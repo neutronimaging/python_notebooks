@@ -11,7 +11,9 @@ from __code.ipywe import fileselector
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 from __code.panoramic_stitching_for_tof.automatically_stitch import AutomaticallyStitch
-from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import BestContrastTabHandler
+from __code.panoramic_stitching_for_tof.best_contrast_tab_handler import (
+    BestContrastTabHandler,
+)
 from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
 from __code.panoramic_stitching_for_tof.data_initialization import DataInitialization
 from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
@@ -49,9 +51,8 @@ class PanoramicStitching:
             str_list_ext = ", ".join(self.file_extension)
             display(
                 format_html_message(
-                    pre_message="None of the folder selected contains the file of extension " "requested ({}}".format(
-                        str_list_ext
-                    ),
+                    pre_message="None of the folder selected contains the file of extension "
+                    "requested ({}}".format(str_list_ext),
                     spacer="",
                 )
             )
@@ -59,7 +60,12 @@ class PanoramicStitching:
 
         final_list_folders.sort()
         nbr_folder = len(final_list_folders)
-        display(format_html_message(pre_message=f"Notebook is about to work with {nbr_folder} folders!", spacer=""))
+        display(
+            format_html_message(
+                pre_message=f"Notebook is about to work with {nbr_folder} folders!",
+                spacer="",
+            )
+        )
 
         # gui initialization
         o_interface = Interface(list_folders=final_list_folders)
@@ -277,7 +283,9 @@ class Interface(QMainWindow):
     def left_left_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.left_left_button, name="left_left")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def left_left_button_released(self):
@@ -286,7 +294,9 @@ class Interface(QMainWindow):
     def left_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.left_button, name="left")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def left_button_released(self):
@@ -295,7 +305,9 @@ class Interface(QMainWindow):
     def right_right_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.right_right_button, name="right_right")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def right_right_button_released(self):
@@ -304,7 +316,9 @@ class Interface(QMainWindow):
     def right_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.right_button, name="right")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def right_button_released(self):
@@ -313,7 +327,9 @@ class Interface(QMainWindow):
     def up_up_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.up_up_button, name="up_up")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def up_up_button_released(self):
@@ -322,7 +338,9 @@ class Interface(QMainWindow):
     def up_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.up_button, name="up")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def up_button_released(self):
@@ -331,7 +349,9 @@ class Interface(QMainWindow):
     def down_down_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.down_down_button, name="down_down")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def down_down_button_released(self):
@@ -340,7 +360,9 @@ class Interface(QMainWindow):
     def down_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.down_button, name="down")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def down_button_released(self):

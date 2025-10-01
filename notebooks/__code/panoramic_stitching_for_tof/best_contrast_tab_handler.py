@@ -13,7 +13,9 @@ class BestContrastTabHandler:
         self.parent = parent
 
     def display_selected_folder(self):
-        folder_name = os.path.basename(self.parent.ui.list_folders_combobox.currentText())
+        folder_name = os.path.basename(
+            self.parent.ui.list_folders_combobox.currentText()
+        )
 
         if self.parent.ui.raw_image_radioButton.isChecked():
             image = self.parent.integrated_images[folder_name].data
@@ -24,7 +26,9 @@ class BestContrastTabHandler:
             # histogram_level = self.parent.histogram_level_best_contrast
             status_best_contrast_button = True
 
-        self.parent.ui.best_contrast_bin_size_value.setEnabled(status_best_contrast_button)
+        self.parent.ui.best_contrast_bin_size_value.setEnabled(
+            status_best_contrast_button
+        )
         self.parent.ui.bin_size_label.setEnabled(status_best_contrast_button)
 
         # _view = self.parent.ui.image_view_best_contrast.getView()
@@ -98,7 +102,9 @@ class BestContrastTabHandler:
 
             list_mean_counts_of_bin = []
             while left_bin_index < len(list_bin) - 1:
-                data_bin = all_data_of_folder[list_bin[left_bin_index] : list_bin[left_bin_index + 1]]
+                data_bin = all_data_of_folder[
+                    list_bin[left_bin_index] : list_bin[left_bin_index + 1]
+                ]
                 mean_data_bin = np.nanmean(data_bin)
                 list_mean_counts_of_bin.append(mean_data_bin)
                 left_bin_index += 1
@@ -107,7 +113,8 @@ class BestContrastTabHandler:
             for _bin_index_numerator in np.arange(len(list_bin) - 1):
                 for _bin_index_denominator in np.arange(len(list_bin) - 1):
                     bin_ratio = (
-                        list_mean_counts_of_bin[_bin_index_numerator] / list_mean_counts_of_bin[_bin_index_denominator]
+                        list_mean_counts_of_bin[_bin_index_numerator]
+                        / list_mean_counts_of_bin[_bin_index_denominator]
                     )
                     diff_with_1 = np.abs(1 - bin_ratio)
 
@@ -126,12 +133,16 @@ class BestContrastTabHandler:
             all_data_of_folder = all_data[folder_key]
 
             image1 = all_data_of_folder[
-                list_bin[best_bin_index["numerator"]] : list_bin[best_bin_index["numerator"] + 1]
+                list_bin[best_bin_index["numerator"]] : list_bin[
+                    best_bin_index["numerator"] + 1
+                ]
             ]
             image_numerator_mean = np.mean(image1, axis=0)
 
             image2 = all_data_of_folder[
-                list_bin[best_bin_index["denominator"]] : list_bin[best_bin_index["denominator"] + 1]
+                list_bin[best_bin_index["denominator"]] : list_bin[
+                    best_bin_index["denominator"] + 1
+                ]
             ]
             image_denominator_mean = np.mean(image2, axis=0)
 
@@ -151,5 +162,7 @@ class BestContrastTabHandler:
 
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.best_contrast_image_radioButton.setEnabled(True)
-        self.parent.ui.statusbar.showMessage("Done calculating the best contrast images!", 10000)
+        self.parent.ui.statusbar.showMessage(
+            "Done calculating the best contrast images!", 10000
+        )
         QApplication.restoreOverrideCursor()

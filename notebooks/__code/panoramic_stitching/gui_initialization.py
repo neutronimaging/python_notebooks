@@ -12,7 +12,10 @@ from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.config_buttons import button
 from __code.panoramic_stitching.gui_handler import GuiHandler
 from __code.panoramic_stitching.mplcanvas import MplCanvas
-from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of, set_widgets_size
+from __code.panoramic_stitching.utilities import (
+    make_full_file_name_to_static_folder_of,
+    set_widgets_size,
+)
 
 
 class GuiInitialization:
@@ -80,7 +83,9 @@ class GuiInitialization:
         self.parent.ui.from_to_error_label.setVisible(False)
 
         # remote control
-        remote_control = make_full_file_name_to_static_folder_of("remote_control_released.png")
+        remote_control = make_full_file_name_to_static_folder_of(
+            "remote_control_released.png"
+        )
         self.parent.ui.remote_control_widget.setIcon(QIcon(remote_control))
         set_widgets_size(
             widgets=[self.parent.ui.remote_control_widget],
@@ -91,22 +96,38 @@ class GuiInitialization:
         # move buttons
         _file_path = os.path.dirname(__file__)
 
-        up_up_arrow_file = make_full_file_name_to_static_folder_of(button["up_up"]["released"])
+        up_up_arrow_file = make_full_file_name_to_static_folder_of(
+            button["up_up"]["released"]
+        )
         self.parent.ui.up_up_button.setIcon(QIcon(up_up_arrow_file))
-        up_arrow_file = make_full_file_name_to_static_folder_of(button["up"]["released"])
+        up_arrow_file = make_full_file_name_to_static_folder_of(
+            button["up"]["released"]
+        )
         self.parent.ui.up_button.setIcon(QIcon(up_arrow_file))
-        left_left_arrow_file = make_full_file_name_to_static_folder_of(button["left_left"]["released"])
+        left_left_arrow_file = make_full_file_name_to_static_folder_of(
+            button["left_left"]["released"]
+        )
         self.parent.ui.left_left_button.setIcon(QIcon(left_left_arrow_file))
-        left_arrow_file = make_full_file_name_to_static_folder_of(button["left"]["released"])
+        left_arrow_file = make_full_file_name_to_static_folder_of(
+            button["left"]["released"]
+        )
         self.parent.ui.left_button.setIcon(QIcon(left_arrow_file))
-        right_arrow_file = make_full_file_name_to_static_folder_of(button["right"]["released"])
+        right_arrow_file = make_full_file_name_to_static_folder_of(
+            button["right"]["released"]
+        )
         self.parent.ui.right_button.setIcon(QIcon(right_arrow_file))
-        right_right_arrow_file = make_full_file_name_to_static_folder_of(button["right_right"]["released"])
+        right_right_arrow_file = make_full_file_name_to_static_folder_of(
+            button["right_right"]["released"]
+        )
         self.parent.ui.right_right_button.setIcon(QIcon(right_right_arrow_file))
 
-        down_arrow_file = make_full_file_name_to_static_folder_of(button["down"]["released"])
+        down_arrow_file = make_full_file_name_to_static_folder_of(
+            button["down"]["released"]
+        )
         self.parent.ui.down_button.setIcon(QIcon(down_arrow_file))
-        down_down_arrow_file = make_full_file_name_to_static_folder_of(button["down_down"]["released"])
+        down_down_arrow_file = make_full_file_name_to_static_folder_of(
+            button["down_down"]["released"]
+        )
         self.parent.ui.down_down_button.setIcon(QIcon(down_down_arrow_file))
 
         list_ui = [self.parent.ui.left_button, self.parent.ui.right_button]
@@ -137,14 +158,21 @@ class GuiInitialization:
             height=self.button_size["double_vertical_arrow"]["height"],
         )
 
-        state_hori_matplotlib = self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
+        state_hori_matplotlib = (
+            self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
+        )
         o_gui = GuiHandler(parent=self.parent)
         o_gui.enabled_horizontal_profile_widgets(enabled=state_hori_matplotlib)
 
-        state_verti_matplotlib = self.parent.ui.enable_vertical_profile_checkbox.isChecked()
+        state_verti_matplotlib = (
+            self.parent.ui.enable_vertical_profile_checkbox.isChecked()
+        )
         o_gui.enabled_vertical_profile_widgets(enabled=state_verti_matplotlib)
 
-        profile_sliders = [self.parent.ui.horizontal_profile_width_slider, self.parent.ui.vertical_profile_width_slider]
+        profile_sliders = [
+            self.parent.ui.horizontal_profile_width_slider,
+            self.parent.ui.vertical_profile_width_slider,
+        ]
         for _slider in profile_sliders:
             _slider.setMinimum(self.parent.width_profile["min"])
             _slider.setMaximum(self.parent.width_profile["max"])

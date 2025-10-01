@@ -47,7 +47,9 @@ class Get:
             try:
                 _row_value = float(_row_str)
             except:
-                self.parent.ui.statusbar.showMessage("Error Displaying Metadata Graph!", 10000)
+                self.parent.ui.statusbar.showMessage(
+                    "Error Displaying Metadata Graph!", 10000
+                )
                 self.parent.ui.statusbar.setStyleSheet("color: red")
                 return []
 
@@ -101,7 +103,9 @@ class Get:
         slider_index = self.parent.ui.file_slider.value()
 
         index_of_y_axis = self.parent.y_axis_column_index
-        metadata_value = str(self.parent.ui.tableWidget.item(slider_index, index_of_y_axis).text())
+        metadata_value = str(
+            self.parent.ui.tableWidget.item(slider_index, index_of_y_axis).text()
+        )
         if metadata_name.strip() == "":
             return f"{metadata_value} {metadata_units}"
         else:
@@ -123,7 +127,9 @@ class Get:
 
     def color(self, color_type="html", source="metadata"):
         if source == "metadata":
-            color_selected = self.parent.ui.metadata_color_combobox.currentText().lower()
+            color_selected = (
+                self.parent.ui.metadata_color_combobox.currentText().lower()
+            )
         elif source == "graph":
             color_selected = self.parent.ui.graph_color_combobox.currentText().lower()
         else:

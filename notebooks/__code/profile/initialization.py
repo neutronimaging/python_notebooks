@@ -27,20 +27,28 @@ class Initializer:
     def table(self):
         # init the summary table
         list_files_full_name = self.parent.data_dict["file_name"]
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+        list_files_short_name = [
+            os.path.basename(_file) for _file in list_files_full_name
+        ]
 
         list_time_stamp = self.parent.timestamp_dict["list_time_stamp"]
-        list_time_stamp_user_format = self.parent.timestamp_dict["list_time_stamp_user_format"]
+        list_time_stamp_user_format = self.parent.timestamp_dict[
+            "list_time_stamp_user_format"
+        ]
         time_0 = list_time_stamp[0]
         for _row, _file in enumerate(list_files_short_name):
             self.parent.ui.summary_table.insertRow(_row)
             self.set_item_summary_table(row=_row, col=0, value=_file)
-            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
+            self.set_item_summary_table(
+                row=_row, col=1, value=list_time_stamp_user_format[_row]
+            )
             _offset = list_time_stamp[_row] - time_0
             self.set_item_summary_table(row=_row, col=2, value=f"{_offset:0.2f}")
 
             self.parent.ui.all_plots_file_name_table.insertRow(_row)
-            self.set_item_all_plot_file_name_table(row=_row, value=os.path.basename(_file))
+            self.set_item_all_plot_file_name_table(
+                row=_row, value=os.path.basename(_file)
+            )
 
     def parameters(self):
         # init the position of the measurement ROI
@@ -49,7 +57,9 @@ class Initializer:
         self.parent.default_guide_roi["height"] = int(height / 5)
         self.parent.default_guide_roi["x0"] = int(width / 2)
         self.parent.default_guide_roi["y0"] = int(height / 2)
-        self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
+        self.parent.default_profile_width_values = [
+            str(_value) for _value in self.parent.default_profile_width_values
+        ]
 
     def widgets(self):
         _file_path = os.path.dirname(__file__)
@@ -57,28 +67,32 @@ class Initializer:
             os.path.join(_file_path, "../static/profile/button_rotation_left_fast.png")
         )
         self.parent.ui.left_rotation_button_fast.setStyleSheet(
-            "background-image: " "url('" + left_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+            "background-image: "
+            "url('" + left_rotation_fast_file + "'); " + "background-repeat: no-repeat"
         )
 
         right_rotation_fast_file = os.path.abspath(
             os.path.join(_file_path, "../static/profile/button_rotation_right_fast.png")
         )
         self.parent.ui.right_rotation_button_fast.setStyleSheet(
-            "background-image: " "url('" + right_rotation_fast_file + "'); " + "background-repeat: no-repeat"
+            "background-image: "
+            "url('" + right_rotation_fast_file + "'); " + "background-repeat: no-repeat"
         )
 
         left_rotation_slow_file = os.path.abspath(
             os.path.join(_file_path, "../static/profile/button_rotation_left_slow.png")
         )
         self.parent.ui.left_rotation_button_slow.setStyleSheet(
-            "background-image: " "url('" + left_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+            "background-image: "
+            "url('" + left_rotation_slow_file + "'); " + "background-repeat: no-repeat"
         )
 
         right_rotation_slow_file = os.path.abspath(
             os.path.join(_file_path, "../static/profile/button_rotation_right_slow.png")
         )
         self.parent.ui.right_rotation_button_slow.setStyleSheet(
-            "background-image: " "url('" + right_rotation_slow_file + "'); " + "background-repeat: no-repeat"
+            "background-image: "
+            "url('" + right_rotation_slow_file + "'); " + "background-repeat: no-repeat"
         )
 
         self.parent.ui.splitter_2.setSizes([250, 50])
@@ -92,12 +106,16 @@ class Initializer:
         # update size of table columns
         nbr_columns = self.parent.ui.tableWidget.columnCount()
         for _col in range(nbr_columns):
-            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
+            self.parent.ui.tableWidget.setColumnWidth(
+                _col, self.parent.guide_table_width[_col]
+            )
 
         # update size of summary table
         nbr_columns = self.parent.ui.summary_table.columnCount()
         for _col in range(nbr_columns):
-            self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
+            self.parent.ui.summary_table.setColumnWidth(
+                _col, self.parent.summary_table_width[_col]
+            )
 
         self.parent.display_ui = [
             self.parent.ui.display_size_label,

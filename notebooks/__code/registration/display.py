@@ -19,7 +19,9 @@ class Display:
                 _image = o_get.image_selected()
             else:  # display selected images according to slider position
                 # retrieve slider infos
-                slider_index = self.parent.ui.opacity_selection_slider.sliderPosition() / 100
+                slider_index = (
+                    self.parent.ui.opacity_selection_slider.sliderPosition() / 100
+                )
 
                 from_index = int(slider_index)
                 to_index = int(slider_index + 1)
@@ -33,7 +35,9 @@ class Display:
 
                     _from_coefficient = np.abs(to_index - slider_index)
                     _to_coefficient = np.abs(slider_index - from_index)
-                    _image = _from_image * _from_coefficient + _to_image * _to_coefficient
+                    _image = (
+                        _from_image * _from_coefficient + _to_image * _to_coefficient
+                    )
 
         else:  # only 1 row selected
             _image = o_get.image_selected()
@@ -54,7 +58,9 @@ class Display:
         _histo_widget = self.parent.ui.image_view.getHistogramWidget()
         self.parent.histogram_level = _histo_widget.getLevels()
 
-        _opacity_coefficient = self.parent.ui.opacity_slider.value()  # betwween 0 and 100
+        _opacity_coefficient = (
+            self.parent.ui.opacity_slider.value()
+        )  # betwween 0 and 100
         _opacity_image = _opacity_coefficient / 100.0
         _image = np.transpose(_image) * _opacity_image
 
@@ -67,7 +73,9 @@ class Display:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
     def display_only_reference_image(self):
         self.parent.ui.selection_reference_opacity_groupBox.setVisible(False)
@@ -88,7 +96,9 @@ class Display:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
     def live_image(self):
         """no calculation will be done. This will only display the reference image
@@ -108,7 +118,9 @@ class Display:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
         # we do not want a grid on top
         if self.parent.grid_view["item"]:
@@ -120,14 +132,22 @@ class Display:
         grid_size = self.parent.ui.grid_size_slider.value()
         [width, height] = np.shape(live_image)
 
-        pos_adj_dict = Calculate.calculate_matrix_grid(grid_size=grid_size, height=height, width=width)
+        pos_adj_dict = Calculate.calculate_matrix_grid(
+            grid_size=grid_size, height=height, width=width
+        )
         pos = pos_adj_dict["pos"]
         adj = pos_adj_dict["adj"]
 
         line_color = self.parent.grid_view["color"]
         lines = np.array(
             [line_color for n in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
 
         grid = pg.GraphItem()

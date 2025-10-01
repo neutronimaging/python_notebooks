@@ -82,7 +82,8 @@ class ProfileUi(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
 
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_profile.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_profile.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Profile")
@@ -165,7 +166,9 @@ class ProfileUi(QMainWindow):
         nbr_profile = len(list_index_profile_selected)
         nbr_file_selected = len(list_index_file_selected)
         color = Color()
-        list_rgb_profile_color = color.get_list_rgb(nbr_color=(nbr_profile * nbr_file_selected))
+        list_rgb_profile_color = color.get_list_rgb(
+            nbr_color=(nbr_profile * nbr_file_selected)
+        )
         self.ui.all_plots_view.clear()
 
         if nbr_profile == 0:
@@ -175,10 +178,16 @@ class ProfileUi(QMainWindow):
 
         for _color_index_file, _index_file in enumerate(list_index_file_selected):
             _data = self.data_dict["data"][_index_file]
-            for _color_index_profile, _index_profile in enumerate(list_index_profile_selected):
+            for _color_index_profile, _index_profile in enumerate(
+                list_index_profile_selected
+            ):
                 legend = f"File #{_index_file} - Profile #{_index_profile}"
-                _color = list_rgb_profile_color[_color_index_file + _color_index_profile * nbr_file_selected]
-                [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
+                _color = list_rgb_profile_color[
+                    _color_index_file + _color_index_profile * nbr_file_selected
+                ]
+                [x_axis, y_axis] = self.get_profile(
+                    image=np.transpose(_data), profile_roi_row=_index_profile
+                )
                 self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
 
     def display_image(self, recalculate_image=False):
@@ -247,7 +256,9 @@ class ProfileUi(QMainWindow):
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
             if self.is_row_enabled(row=_row):
-                region = _roi.getArraySlice(self.live_image, self.ui.image_view.imageItem)
+                region = _roi.getArraySlice(
+                    self.live_image, self.ui.image_view.imageItem
+                )
 
                 x0 = region[0][0].start
                 x1 = region[0][0].stop
@@ -320,7 +331,9 @@ class ProfileUi(QMainWindow):
         """rename all the profile name"""
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row + 1}")
+            self.ui.all_plots_profiles_table.item(_row, 0).setText(
+                f"Profile # {_row + 1}"
+            )
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):
@@ -329,12 +342,16 @@ class ProfileUi(QMainWindow):
         self.ui.all_plots_profiles_table.setItem(row, 0, item)
 
     def set_item_profile_table(self, row=0):
-        spacerItem_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        spacerItem_left = QSpacerItem(
+            408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
         widget = QComboBox()
         widget.addItems(self.default_profile_width_values)
         widget.blockSignals(True)
         widget.currentIndexChanged.connect(self.profile_width_changed)
-        spacerItem_right = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        spacerItem_right = QSpacerItem(
+            408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
         hori_layout = QHBoxLayout()
         hori_layout.addItem(spacerItem_left)
         hori_layout.addWidget(widget)
@@ -346,12 +363,16 @@ class ProfileUi(QMainWindow):
 
     def set_item_main_table(self, row=0, col=0, value=""):
         if col == 0:
-            spacerItem_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            spacerItem_left = QSpacerItem(
+                408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding
+            )
             widget = QCheckBox()
             widget.blockSignals(True)
             self.list_table_widget_checkbox.insert(row, widget)
             widget.stateChanged.connect(self.guide_state_changed)
-            spacerItem_right = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+            spacerItem_right = QSpacerItem(
+                408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding
+            )
             hori_layout = QHBoxLayout()
             hori_layout.addItem(spacerItem_left)
             hori_layout.addWidget(widget)
@@ -399,7 +420,9 @@ class ProfileUi(QMainWindow):
             y_top = y0
             y_bottom = y0 + height
 
-        Profile = collections.namedtuple("Profile", ["x_left", "x_right", "y_top", "y_bottom", "profile_center"])
+        Profile = collections.namedtuple(
+            "Profile", ["x_left", "x_right", "y_top", "y_bottom", "profile_center"]
+        )
         result = Profile(x_left, x_right, y_top, y_bottom, profile_center)
         return result
 
@@ -420,7 +443,9 @@ class ProfileUi(QMainWindow):
             mean_axis = 0
             x_axis = np.arange(y_top, y_bottom)
 
-        _data = image[x_left:x_right, y_top:y_bottom]  # because pyqtgrpah display transpose images
+        _data = image[
+            x_left:x_right, y_top:y_bottom
+        ]  # because pyqtgrpah display transpose images
         profile = np.mean(_data, axis=mean_axis)
         return [x_axis, profile]
 
@@ -479,7 +504,9 @@ class ProfileUi(QMainWindow):
             return
 
         try:
-            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status="deactivated")
+            self._highlights_guide_profile_pyqt_roi(
+                row=previous_active_row, status="deactivated"
+            )
             self._highlights_guide_profile_pyqt_roi(row=row, status="activated")
         except:
             pass
@@ -634,7 +661,10 @@ class ProfileUi(QMainWindow):
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         if _export_folder:
             o_export = ExportProfiles(parent=self, export_folder=_export_folder)
@@ -656,7 +686,9 @@ class ProfileUi(QMainWindow):
     def help_button_clicked(self):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/profile/")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/profile/"
+        )
 
     def closeEvent(self, event=None):
         pass

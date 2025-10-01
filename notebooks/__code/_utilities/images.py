@@ -16,7 +16,9 @@ def _init_arr_from_stack(list_files, ext=".tiff", slc=None):
         _arr = dxchange.read_tiff(first_file)
         f_type = "tif"
     else:
-        raise ValueError(f"'{first_file}', only '.tif/.tiff' and '.fits' are supported.")
+        raise ValueError(
+            f"'{first_file}', only '.tif/.tiff' and '.fits' are supported."
+        )
     size = (number_of_files, _arr.shape[0], _arr.shape[1])
     return np.empty(size, dtype=_arr.dtype), f_type
 

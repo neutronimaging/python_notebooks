@@ -21,17 +21,31 @@ class ListMetadata:
         self.oncat_session = _oncat.authentication()
 
         if self.oncat_session is None:
-            display(HTML('<span style="font-size: 20px; color:red">Wrong Password!</span>'))
+            display(
+                HTML('<span style="font-size: 20px; color:red">Wrong Password!</span>')
+            )
         else:
-            display(HTML('<span style="font-size: 20px; color:green">Valid Password!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:green">Valid Password!</span>'
+                )
+            )
 
     def select_metadata(self, system=None, list_of_files=[]):
         if not list_of_files:
-            display(HTML('<span style="font-size: 20px; color:red">You need to select at least one file!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:red">You need to select at least one file!</span>'
+                )
+            )
             return
 
         if not system:
-            display(HTML('<span style="font-size: 20px; color:red">No input folder selected!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:red">No input folder selected!</span>'
+                )
+            )
             return
 
         self.instrument = system.System.get_instrument_selected()
@@ -40,12 +54,19 @@ class ListMetadata:
         self.first_file = list_of_files[0]
         self.list_metadata_with_examples = self.retrieve_list_metadata_with_examples()
 
-        display(HTML('<span style="font-size: 20px; color:blue">CTRL + Click to select multiple rows!</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">CTRL + Click to select multiple rows!</span>'
+            )
+        )
         box1 = widgets.HBox(
             [
-                widgets.Label("Select Metadata To Retrieve", layout=widgets.Layout(width="20%")),
+                widgets.Label(
+                    "Select Metadata To Retrieve", layout=widgets.Layout(width="20%")
+                ),
                 widgets.SelectMultiple(
-                    options=self.list_metadata_with_examples, layout=widgets.Layout(width="80%", height="100%")
+                    options=self.list_metadata_with_examples,
+                    layout=widgets.Layout(width="80%", height="100%"),
                 ),
             ],
             layout=widgets.Layout(height="500px"),
@@ -56,7 +77,9 @@ class ListMetadata:
     def retrieve_list_metadata_with_examples(self):
         list_metadata = self.retrieve_list_metadata()
         raw_data = self.raw_oncat_metadata
-        list_metadata_with_examples = ListMetadata.format_list_metadata_with_examples(list_metadata, raw_data)
+        list_metadata_with_examples = ListMetadata.format_list_metadata_with_examples(
+            list_metadata, raw_data
+        )
         return list_metadata_with_examples
 
     @staticmethod
@@ -69,7 +92,10 @@ class ListMetadata:
 
     def retrieve_list_metadata(self):
         _data = oncat.GetEverything(
-            instrument=self.instrument, facility=self.facility, run=self.first_file, oncat=self.oncat_session
+            instrument=self.instrument,
+            facility=self.facility,
+            run=self.first_file,
+            oncat=self.oncat_session,
         )
 
         self.raw_oncat_data = _data.datafiles
@@ -89,7 +115,9 @@ class ListMetadata:
     def export_ascii(self, output_folder):
         list_files = self.list_of_files
         projection = self.create_projection()
-        output_ascii_file_name = ListMetadata.create_output_ascii_name(list_files, output_folder)
+        output_ascii_file_name = ListMetadata.create_output_ascii_name(
+            list_files, output_folder
+        )
 
         o_metadata_selected = oncat.GetProjection(
             instrument=self.instrument,
@@ -103,7 +131,12 @@ class ListMetadata:
 
         name_metadata = self.create_metadata_name_row()
         value_metadata = self.create_metadata_value_rows(list_files, metadata_selected)
-        make_ascii_file(metadata=name_metadata, data=value_metadata, output_file_name=output_ascii_file_name, dim="1d")
+        make_ascii_file(
+            metadata=name_metadata,
+            data=value_metadata,
+            output_file_name=output_ascii_file_name,
+            dim="1d",
+        )
         print("Done!")
         display(
             HTML(
@@ -116,10 +149,14 @@ class ListMetadata:
     def create_metadata_value_rows(self, list_files, metadata_selected):
         value_metadata = []
         for _file in list_files:
-            time_stamp = self.unify_timestamp_format(metadata_selected[_file]["ingested"])
+            time_stamp = self.unify_timestamp_format(
+                metadata_selected[_file]["ingested"]
+            )
             _metadata = []
             for _metadata_name in self.get_list_metadata_selected():
-                _metadata.append(str(metadata_selected[_file]["metadata"][_metadata_name]))
+                _metadata.append(
+                    str(metadata_selected[_file]["metadata"][_metadata_name])
+                )
             row_string = "{}, {}, {}".format(_file, time_stamp, ", ".join(_metadata))
             value_metadata.append(row_string)
         return value_metadata
@@ -130,12 +167,17 @@ class ListMetadata:
         return new_timestamp
 
     def create_metadata_name_row(self):
-        name_metadata = ["#filename, timestamp_user_format, " + ", ".join(self.get_list_metadata_selected())]
+        name_metadata = [
+            "#filename, timestamp_user_format, "
+            + ", ".join(self.get_list_metadata_selected())
+        ]
         return name_metadata
 
     @staticmethod
     def create_output_ascii_name(list_files, output_folder):
-        output_ascii_file_name = os.path.basename(os.path.dirname(list_files[0]) + "_metadata_report_from_oncat.txt")
+        output_ascii_file_name = os.path.basename(
+            os.path.dirname(list_files[0]) + "_metadata_report_from_oncat.txt"
+        )
         output_folder = os.path.abspath(output_folder)
         return os.path.join(output_folder, output_ascii_file_name)
 

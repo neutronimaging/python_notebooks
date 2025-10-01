@@ -31,8 +31,12 @@ class Display(Parent):
         new_data = Algorithms.bin_data(data=data, bin_size=bin_size, bin_type=bin_type)
 
         self.parent.ui.prepare_data_plot.axes.plot(new_data)
-        self.parent.ui.prepare_data_plot.axes.axvline(min_data_range_for_plot, linestyle="--", color="blue")
-        self.parent.ui.prepare_data_plot.axes.axvline(max_data_range_for_plot, linestyle="--", color="red")
+        self.parent.ui.prepare_data_plot.axes.axvline(
+            min_data_range_for_plot, linestyle="--", color="blue"
+        )
+        self.parent.ui.prepare_data_plot.axes.axvline(
+            max_data_range_for_plot, linestyle="--", color="red"
+        )
         self.parent.ui.prepare_data_plot.draw()
 
     def display_current_selected_profile_and_edge_position(self):
@@ -60,9 +64,13 @@ class Display(Parent):
 
             peak_value_array = self.parent.peak_value_arrays[edge_calculation_algorithm]
             edge_position = peak_value_array[file_index_selected]
-            self.parent.ui.calculated_edges_plot.axes.axvline(edge_position, linestyle="--", color=color)
+            self.parent.ui.calculated_edges_plot.axes.axvline(
+                edge_position, linestyle="--", color=color
+            )
 
-        self.parent.ui.calculated_edges_plot.axes.set_xlabel("Pixel (relative position) ")
+        self.parent.ui.calculated_edges_plot.axes.set_xlabel(
+            "Pixel (relative position) "
+        )
         self.parent.ui.calculated_edges_plot.axes.set_ylabel("Mean counts")
         self.parent.ui.calculated_edges_plot.draw()
         self.parent.ui.calculated_edges_widget.setEnabled(True)
@@ -87,14 +95,22 @@ class Display(Parent):
             color = algorithms_colors[edge_calculation_algorithm]
 
             self.parent.ui.recap_edges_plot.axes.plot(
-                relative_timestamp, peak_value_array, "*", color=color, label=edge_calculation_algorithm
+                relative_timestamp,
+                peak_value_array,
+                "*",
+                color=color,
+                label=edge_calculation_algorithm,
             )
             self.parent.ui.recap_edges_plot.axes.plot(
-                relative_timestamp[file_index_selected], peak_value_array[file_index_selected], "+"
+                relative_timestamp[file_index_selected],
+                peak_value_array[file_index_selected],
+                "+",
             )
 
         self.parent.ui.recap_edges_plot.axes.set_xlabel("Relative time (s)")
-        self.parent.ui.recap_edges_plot.axes.set_ylabel("Wave front position (relative pixel position)")
+        self.parent.ui.recap_edges_plot.axes.set_ylabel(
+            "Wave front position (relative pixel position)"
+        )
         self.parent.ui.recap_edges_plot.axes.legend()
         self.parent.ui.recap_edges_plot.draw()
         self.parent.ui.recap_edges_widget.setEnabled(True)

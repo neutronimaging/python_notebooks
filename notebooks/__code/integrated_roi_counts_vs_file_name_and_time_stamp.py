@@ -25,7 +25,9 @@ except AttributeError:
 from __code._utilities.color import Color
 from __code.decorators import wait_cursor
 from __code.file_handler import make_ascii_file, retrieve_time_stamp
-from __code.ui_integrated_roi_counts_vs_file_name_and_time_stamp import Ui_MainWindow as UiMainWindow
+from __code.ui_integrated_roi_counts_vs_file_name_and_time_stamp import (
+    Ui_MainWindow as UiMainWindow,
+)
 
 
 class IntegratedRoiUi(QMainWindow):
@@ -166,7 +168,9 @@ class IntegratedRoiUi(QMainWindow):
         nbr_profile = len(list_index_profile_selected)
         nbr_file_selected = len(list_index_file_selected)
         color = Color()
-        list_rgb_profile_color = color.get_list_rgb(nbr_color=(nbr_profile * nbr_file_selected))
+        list_rgb_profile_color = color.get_list_rgb(
+            nbr_color=(nbr_profile * nbr_file_selected)
+        )
         self.ui.all_plots_view.clear()
         if nbr_profile == 0:
             return
@@ -180,10 +184,16 @@ class IntegratedRoiUi(QMainWindow):
 
         for _color_index_file, _index_file in enumerate(list_index_file_selected):
             _data = self.data_dict["data"][_index_file]
-            for _color_index_profile, _index_profile in enumerate(list_index_profile_selected):
+            for _color_index_profile, _index_profile in enumerate(
+                list_index_profile_selected
+            ):
                 legend = f"File #{_index_file} - Profile #{_index_profile}"
-                _color = list_rgb_profile_color[_color_index_file + _color_index_profile * nbr_file_selected]
-                [x_axis, y_axis] = self.get_profile(image=np.transpose(_data), profile_roi_row=_index_profile)
+                _color = list_rgb_profile_color[
+                    _color_index_file + _color_index_profile * nbr_file_selected
+                ]
+                [x_axis, y_axis] = self.get_profile(
+                    image=np.transpose(_data), profile_roi_row=_index_profile
+                )
                 self.ui.all_plots_view.plot(x_axis, y_axis, name=legend, pen=_color)
 
     def display_image(self, recalculate_image=False):
@@ -252,7 +262,9 @@ class IntegratedRoiUi(QMainWindow):
     def update_guide_table_using_guide_rois(self):
         for _row, _roi in enumerate(self.list_guide_pyqt_roi):
             if self.is_row_enabled(row=_row):
-                region = _roi.getArraySlice(self.live_image, self.ui.image_view.imageItem)
+                region = _roi.getArraySlice(
+                    self.live_image, self.ui.image_view.imageItem
+                )
 
                 x0 = region[0][0].start
                 x1 = region[0][0].stop
@@ -320,7 +332,9 @@ class IntegratedRoiUi(QMainWindow):
         """rename all the profile name"""
         nbr_row = self.ui.tableWidget.rowCount()
         for _row in np.arange(nbr_row):
-            self.ui.all_plots_profiles_table.item(_row, 0).setText(f"Profile # {_row+1}")
+            self.ui.all_plots_profiles_table.item(_row, 0).setText(
+                f"Profile # {_row+1}"
+            )
 
     # setter
     def set_item_all_plots_profile_table(self, row=0):
@@ -346,12 +360,16 @@ class IntegratedRoiUi(QMainWindow):
 
     def set_item_main_table(self, row=0, col=0, value=""):
         if col == 0:
-            spacerItem_left = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            spacerItem_left = QtGui.QSpacerItem(
+                408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding
+            )
             widget = QtGui.QCheckBox()
             widget.blockSignals(True)
             self.list_table_widget_checkbox.insert(row, widget)
             widget.stateChanged.connect(self.guide_state_changed)
-            spacerItem_right = QtGui.QSpacerItem(408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            spacerItem_right = QtGui.QSpacerItem(
+                408, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding
+            )
             hori_layout = QtGui.QHBoxLayout()
             hori_layout.addItem(spacerItem_left)
             hori_layout.addWidget(widget)
@@ -377,7 +395,9 @@ class IntegratedRoiUi(QMainWindow):
         y_top = int(y0)
         y_bottom = int(y0) + int(height)
 
-        Profile = collections.namedtuple("Profile", ["x_left", "x_right", "y_top", "y_bottom"])
+        Profile = collections.namedtuple(
+            "Profile", ["x_left", "x_right", "y_top", "y_bottom"]
+        )
         result = Profile(x_left, x_right, y_top, y_bottom)
         return result
 
@@ -403,7 +423,9 @@ class IntegratedRoiUi(QMainWindow):
 
         x_axis = np.arange(len(self.data_dict["file_name"]))
         for _data in self.data_dict["data"]:
-            _roi_counts = _data[y_top:y_bottom, x_left:x_right]  # because pyqtgrpah display transpose images
+            _roi_counts = _data[
+                y_top:y_bottom, x_left:x_right
+            ]  # because pyqtgrpah display transpose images
             if inte_algo == "add":
                 _counts = np.sum(_roi_counts)
             elif inte_algo == "mean":
@@ -470,7 +492,9 @@ class IntegratedRoiUi(QMainWindow):
             return
 
         try:
-            self._highlights_guide_profile_pyqt_roi(row=previous_active_row, status="deactivated")
+            self._highlights_guide_profile_pyqt_roi(
+                row=previous_active_row, status="deactivated"
+            )
             self._highlights_guide_profile_pyqt_roi(row=row, status="activated")
         except:
             pass
@@ -624,7 +648,10 @@ class IntegratedRoiUi(QMainWindow):
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         if _export_folder:
             o_export = ExportProfiles(parent=self, export_folder=_export_folder)
@@ -658,7 +685,10 @@ class ExportProfiles:
     def _create_output_file_name(self):
         base_name = os.path.basename(self.parent.working_dir)
         nbr_profile = self.parent.ui.tableWidget.rowCount()
-        output_file_name = os.path.join(self.export_folder, f"{base_name}_{nbr_profile}_integrated_counts_regions.txt")
+        output_file_name = os.path.join(
+            self.export_folder,
+            f"{base_name}_{nbr_profile}_integrated_counts_regions.txt",
+        )
         return output_file_name
 
     def _create_metadata(self):
@@ -675,7 +705,9 @@ class ExportProfiles:
             x_right = profile_dimension.x_right
             y_top = profile_dimension.y_top
             y_bottom = profile_dimension.y_bottom
-            metadata.append(f"#ROI #{_profile_index}: [x0, y0, x1, y1] = [{x_left}, {y_top}, {x_right}, {y_bottom}]")
+            metadata.append(
+                f"#ROI #{_profile_index}: [x0, y0, x1, y1] = [{x_left}, {y_top}, {x_right}, {y_bottom}]"
+            )
             axis.append(f"ROI #{_profile_index}")
 
         metadata.append("#")
@@ -686,7 +718,9 @@ class ExportProfiles:
         all_profiles = []
         x_axis = []
         for _data in self.parent.data_dict["data"]:
-            [x_axis, profile] = self.parent.get_profile(image=np.transpose(_data), profile_roi_row=profile_index)
+            [x_axis, profile] = self.parent.get_profile(
+                image=np.transpose(_data), profile_roi_row=profile_index
+            )
             all_profiles.append(list(profile))
 
         data = []
@@ -710,7 +744,9 @@ class ExportProfiles:
             _time_stamp = str(self.parent.ui.summary_table.item(_row, 1).text())
 
             _formated_row_value = " ,".join(_row_value)
-            _formated_row = f"{_file_index}, {_file_name}, {_time_stamp}, " + _formated_row_value
+            _formated_row = (
+                f"{_file_index}, {_file_name}, {_time_stamp}, " + _formated_row_value
+            )
             _data.append(_formated_row)
 
         return _data
@@ -721,7 +757,9 @@ class ExportProfiles:
 
         # create output file name
         _output_file_name = self._create_output_file_name()
-        make_ascii_file(metadata=metadata, data=data, output_file_name=_output_file_name, dim="1d")
+        make_ascii_file(
+            metadata=metadata, data=data, output_file_name=_output_file_name, dim="1d"
+        )
 
 
 class GuideAndProfileRoisHandler:
@@ -740,14 +778,19 @@ class GuideAndProfileRoisHandler:
         self.parent.list_profile_pyqt_roi.insert(self.row, self.__profile)
 
     def update(self):
-        self.parent.ui.image_view.removeItem(self.parent.list_profile_pyqt_roi[self.row])
+        self.parent.ui.image_view.removeItem(
+            self.parent.list_profile_pyqt_roi[self.row]
+        )
         self.parent.list_profile_pyqt_roi[self.row] = self.__profile
 
     def _define_guide(self):
         """define the guide"""
         guide_roi = pg.RectROI(
             [self.parent.default_guide_roi["x0"], self.parent.default_guide_roi["y0"]],
-            [self.parent.default_guide_roi["width"], self.parent.default_guide_roi["height"]],
+            [
+                self.parent.default_guide_roi["width"],
+                self.parent.default_guide_roi["height"],
+            ],
             pen=self.parent.default_guide_roi["color_activated"],
         )
         guide_roi.addScaleHandle([1, 1], [0, 0])
@@ -770,15 +813,21 @@ class Initializer:
     def table(self):
         # init the summary table
         list_files_full_name = self.parent.data_dict["file_name"]
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+        list_files_short_name = [
+            os.path.basename(_file) for _file in list_files_full_name
+        ]
 
         list_time_stamp = self.parent.timestamp_dict["list_time_stamp"]
-        list_time_stamp_user_format = self.parent.timestamp_dict["list_time_stamp_user_format"]
+        list_time_stamp_user_format = self.parent.timestamp_dict[
+            "list_time_stamp_user_format"
+        ]
         time_0 = list_time_stamp[0]
         for _row, _file in enumerate(list_files_short_name):
             self.parent.ui.summary_table.insertRow(_row)
             self.set_item_summary_table(row=_row, col=0, value=_file)
-            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
+            self.set_item_summary_table(
+                row=_row, col=1, value=list_time_stamp_user_format[_row]
+            )
             _offset = list_time_stamp[_row] - time_0
             self.set_item_summary_table(row=_row, col=2, value=f"{_offset:0.2f}")
 
@@ -789,7 +838,9 @@ class Initializer:
         self.parent.default_guide_roi["height"] = int(height / 5)
         self.parent.default_guide_roi["x0"] = int(width / 2)
         self.parent.default_guide_roi["y0"] = int(height / 2)
-        self.parent.default_profile_width_values = [str(_value) for _value in self.parent.default_profile_width_values]
+        self.parent.default_profile_width_values = [
+            str(_value) for _value in self.parent.default_profile_width_values
+        ]
 
     def widgets(self):
         self.parent.ui.splitter_2.setSizes([250, 50])
@@ -801,7 +852,9 @@ class Initializer:
         # update size of summary table
         nbr_columns = self.parent.ui.summary_table.columnCount()
         for _col in range(nbr_columns):
-            self.parent.ui.summary_table.setColumnWidth(_col, self.parent.summary_table_width[_col])
+            self.parent.ui.summary_table.setColumnWidth(
+                _col, self.parent.summary_table_width[_col]
+            )
 
         self.parent.display_ui = [
             self.parent.ui.display_size_label,
@@ -852,7 +905,8 @@ class DisplayImages:
             angle = self.parent.rotation_angle
             # rotate all images
             self.parent.data_dict["data"] = [
-                transform.rotate(_image, angle) for _image in self.parent.data_dict_raw["data"]
+                transform.rotate(_image, angle)
+                for _image in self.parent.data_dict_raw["data"]
             ]
 
         _image = self.parent.data_dict["data"][slider_index]
@@ -876,7 +930,9 @@ class DisplayImages:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
     def calculate_matrix_grid(self, grid_size=1, height=1, width=1):
         """calculate the matrix that defines the vertical and horizontal lines
@@ -926,12 +982,17 @@ class DisplayImages:
             grid_size = self.parent.ui.grid_size_slider.value()
             [width, height] = np.shape(self.parent.live_image)
 
-            pos_adj_dict = self.calculate_matrix_grid(grid_size=grid_size, height=height, width=width)
+            pos_adj_dict = self.calculate_matrix_grid(
+                grid_size=grid_size, height=height, width=width
+            )
             pos = pos_adj_dict["pos"]
             adj = pos_adj_dict["adj"]
 
             line_color = self.parent.grid_view["color"]
-            _transparency_value = 255 - (float(str(self.parent.ui.transparency_slider.value())) / 100) * 255
+            _transparency_value = (
+                255
+                - (float(str(self.parent.ui.transparency_slider.value())) / 100) * 255
+            )
             _list_line_color = list(line_color)
             _list_line_color[3] = _transparency_value
             line_color = tuple(_list_line_color)

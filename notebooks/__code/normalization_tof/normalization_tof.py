@@ -1,5 +1,4 @@
 import glob
-import logging
 import logging as notebook_logging
 import os
 from pathlib import Path
@@ -16,7 +15,12 @@ from __code._utilities.nexus import extract_file_path_from_nexus
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
-from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
+from __code.normalization_tof import (
+    DetectorType,
+    autoreduce_dir,
+    distance_source_detector_m,
+    raw_dir,
+)
 from __code.normalization_tof.config import DEBUG_DATA, timepix1_config, timepix3_config
 from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
     load_data_using_multithreading,
@@ -42,7 +46,7 @@ class NormalizationTof:
     sample_folder = None
     sample_run_numbers = None
     sample_run_numbers_selected = None
-    
+
     ob_folder = None
     ob_run_numbers = None
     ob_run_numbers_selected = None
@@ -52,7 +56,7 @@ class NormalizationTof:
     dc_run_numbers_selected = None
 
     output_folder = None
-    
+
     # {'full_path_data': {'data': None, 'nexus': None}}
     dict_sample = {}
     dict_ob = {}
@@ -104,7 +108,9 @@ class NormalizationTof:
         notebook_logging.info(f"nexus folder: {self.nexus_folder}")
         notebook_logging.info(f"Shared dir: {self.shared_dir}")
 
-        display(HTML("<span style='color:blue; font-size:16px'>Select detector type</span>"))
+        display(
+            HTML("<span style='color:blue; font-size:16px'>Select detector type</span>")
+        )
         self.detector_type_widget = widgets.Dropdown(
             options=[DetectorType.tpx1_legacy, DetectorType.tpx1, DetectorType.tpx3],
             value=DetectorType.tpx1,
@@ -132,7 +138,9 @@ class NormalizationTof:
     def setup_default_paths(self):
         notebook_logging.info("Setting up default paths...")
         self.detector_type = self.detector_type_widget.value
-        self.raw_dir = Path(raw_dir[self.instrument][self.detector_type][0]) / str(self.ipts)
+        self.raw_dir = Path(raw_dir[self.instrument][self.detector_type][0]) / str(
+            self.ipts
+        )
         self.autoreduce_dir = (
             Path(autoreduce_dir[self.instrument][self.detector_type][0])
             / str(self.ipts)
@@ -168,7 +176,9 @@ class NormalizationTof:
         )
 
         self.sample_run_numbers_widget = widgets.Textarea(
-            value=str_sample_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+            value=str_sample_run_numbers,
+            placeholder="",
+            layout=widgets.Layout(width="400px"),
         )
         vertical_layout = widgets.VBox(
             [
@@ -197,9 +207,13 @@ class NormalizationTof:
         Retrieve the full path to the NeXus file for the given run number.
         This function should be implemented to read the NeXus file and extract the path.
         """
-        notebook_logging.info(f"Retrieving file path from NeXus for run number: {run_number}")
+        notebook_logging.info(
+            f"Retrieving file path from NeXus for run number: {run_number}"
+        )
         # Placeholder implementation, replace with actual logic to read NeXus file
-        nexus_file_path = Path(self.nexus_folder) / f"{self.instrument.upper()}_{run_number}.nxs.h5"
+        nexus_file_path = (
+            Path(self.nexus_folder) / f"{self.instrument.upper()}_{run_number}.nxs.h5"
+        )
         notebook_logging.info(f"\tNeXus file path: {nexus_file_path}")
         if nexus_file_path.exists():
             return extract_file_path_from_nexus(nexus_file_path)
@@ -210,7 +224,9 @@ class NormalizationTof:
         """
         Extract the full path to the run number based on the detector type.
         """
-        notebook_logging.info(f"Extracting full path for run number: {run_number} with detector type: {self.detector_type}")
+        notebook_logging.info(
+            f"Extracting full path for run number: {run_number} with detector type: {self.detector_type}"
+        )
 
         if run_number is None:
             raise ValueError("Run number must be provided")
@@ -246,13 +262,15 @@ class NormalizationTof:
         dtype = np.array(data).dtype  # e.g. 'I;16' for 16-bit unsigned integer
 
         # present result in a table
-        display(HTML(f"""
+        display(
+            HTML(f"""
                         <h3>Information for run: {os.path.basename(input_full_path)}</h3>
                     <table border="3px solid black" style="border-collapse:collapse;">
                         <tr><th>Nbr TIFF</th><th>Images height</th><th>Images width</th><th>Data Type</th></tr>
                         <tr><td>{nbr_tiff}</td><td>{shape[0]}</td><td>{shape[1]}</td><td>{dtype}</td></tr>
                     </table>
-        """))
+        """)
+        )
 
     def check_sample(self):
         """
@@ -264,7 +282,9 @@ class NormalizationTof:
         display(HTML("Sample run numbers selected:"))
 
         if self.sample_run_numbers_widget.value.strip() != "":
-            list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
+            list_of_runs = extract_list_of_runs_from_string(
+                self.sample_run_numbers_widget.value
+            )
             notebook_logging.info(f"\t{list_of_runs = }")
 
             list_of_sample_full_path = []
@@ -274,28 +294,52 @@ class NormalizationTof:
 
             for _file_full_path in list_of_sample_full_path:
                 if os.path.exists(_file_full_path):
-                    notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND")
-                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    notebook_logging.info(
+                        f"\tSample run number {_file_full_path} - FOUND"
+                    )
+                    is_valid_run, report_dict = self.check_folder_is_valid(
+                        _file_full_path
+                    )
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
-                        notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
-                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        notebook_logging.info(
+                            f"\tSample run number {_file_full_path} - FOUND with {nbr_tiff} tif* files"
+                        )
+                        display(
+                            HTML(
+                                f"<span style='color:green'>{_file_full_path}</span> - OK"
+                            )
+                        )
                         self.dict_sample[_file_full_path] = {}
-                        self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
+                        self.dict_short_name_full_path["sample"][
+                            os.path.basename(_file_full_path)
+                        ] = _file_full_path
                         self.display_infos(input_full_path=_file_full_path)
                     else:
-                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
+                        display(
+                            HTML(
+                                f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"
+                            )
+                        )
 
                 else:
-                    notebook_logging.info(f"\tSample run number {_file_full_path} - NOT FOUND")
-                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+                    notebook_logging.info(
+                        f"\tSample run number {_file_full_path} - NOT FOUND"
+                    )
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"
+                        )
+                    )
 
         else:
-            notebook_logging.info(f"Sample run numbers selected: {self.sample_run_numbers_selected}")
+            notebook_logging.info(
+                f"Sample run numbers selected: {self.sample_run_numbers_selected}"
+            )
             if self.sample_run_numbers_selected is None:
-                display(HTML(f"<span style='color:red'>No sample runs selected!</span>"))
+                display(HTML("<span style='color:red'>No sample runs selected!</span>"))
                 return
-            
+
             for _run in self.sample_run_numbers_selected:
                 _run = os.path.abspath(_run)
                 if os.path.exists(_run):
@@ -305,20 +349,30 @@ class NormalizationTof:
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
-                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
+                        notebook_logging.info(
+                            f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files"
+                        )
                         self.dict_sample[_run] = {}
-                        self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
+                        self.dict_short_name_full_path["sample"][
+                            os.path.basename(_run)
+                        ] = _run
                         self.display_infos(input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
-                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"
+                        )
+                    )
                     notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
-            
+
             self.sample_run_numbers_selected = None
 
     def select_ob_folder(self):
-        self.select_folder(instruction="Browse ob top folder", next_function=self.ob_folder_selected)
+        self.select_folder(
+            instruction="Browse ob top folder", next_function=self.ob_folder_selected
+        )
 
     def select_ob_run_numbers(self):
         # if self.ob_run_numbers_widget.value.strip() != "":
@@ -341,10 +395,14 @@ class NormalizationTof:
         else:
             str_ob_run_numbers = ""
 
-        ob_label = widgets.HTML(value="<b><font color='green'>List of ob run numbers (ex: 8705, 8707)</font></b>")
+        ob_label = widgets.HTML(
+            value="<b><font color='green'>List of ob run numbers (ex: 8705, 8707)</font></b>"
+        )
 
         self.ob_run_numbers_widget = widgets.Textarea(
-            value=str_ob_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+            value=str_ob_run_numbers,
+            placeholder="",
+            layout=widgets.Layout(width="400px"),
         )
         vertical_layout = widgets.VBox(
             [
@@ -373,7 +431,9 @@ class NormalizationTof:
         self.reset_ob_dicts()
 
         if self.ob_run_numbers_widget.value.strip() != "":
-            list_of_runs = extract_list_of_runs_from_string(self.ob_run_numbers_widget.value)
+            list_of_runs = extract_list_of_runs_from_string(
+                self.ob_run_numbers_widget.value
+            )
             notebook_logging.info(f"\t{list_of_runs = }")
 
             list_of_ob_full_path = []
@@ -384,26 +444,48 @@ class NormalizationTof:
             for _file_full_path in list_of_ob_full_path:
                 if os.path.exists(_file_full_path):
                     notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND")
-                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    is_valid_run, report_dict = self.check_folder_is_valid(
+                        _file_full_path
+                    )
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
-                        notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
-                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        notebook_logging.info(
+                            f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files"
+                        )
+                        display(
+                            HTML(
+                                f"<span style='color:green'>{_file_full_path}</span> - OK"
+                            )
+                        )
                         self.dict_ob[_file_full_path] = {}
-                        self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
+                        self.dict_short_name_full_path["ob"][
+                            os.path.basename(_file_full_path)
+                        ] = _file_full_path
                         self.display_infos(input_full_path=_file_full_path)
                     else:
-                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
+                        display(
+                            HTML(
+                                f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"
+                            )
+                        )
                 else:
-                    notebook_logging.info(f"\tOB run number {_file_full_path} - NOT FOUND")
-                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+                    notebook_logging.info(
+                        f"\tOB run number {_file_full_path} - NOT FOUND"
+                    )
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"
+                        )
+                    )
 
         else:
-            notebook_logging.info(f"OB run numbers selected: {self.ob_run_numbers_selected}")
+            notebook_logging.info(
+                f"OB run numbers selected: {self.ob_run_numbers_selected}"
+            )
             if self.ob_run_numbers_selected is None:
-                display(HTML(f"<span style='color:red'>No OB runs selected!</span>"))
+                display(HTML("<span style='color:red'>No OB runs selected!</span>"))
                 return
-            
+
             for _run in self.ob_run_numbers_selected:
                 _run = os.path.abspath(_run)
                 if os.path.exists(_run):
@@ -413,22 +495,31 @@ class NormalizationTof:
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
-                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-                        self.dict_short_name_full_path["ob"][os.path.basename(_run)] = _run
+                        notebook_logging.info(
+                            f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files"
+                        )
+                        self.dict_short_name_full_path["ob"][os.path.basename(_run)] = (
+                            _run
+                        )
                         self.dict_ob[_run] = {}
                         self.display_infos(input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
-                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"
+                        )
+                    )
                     notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
             self.ob_run_numbers_selected = None
 
     def select_dc_run_numbers(self):
-        self.select_folder(instruction="Browse dc top folder", next_function=self.dc_folder_selected)
+        self.select_folder(
+            instruction="Browse dc top folder", next_function=self.dc_folder_selected
+        )
 
     def select_dc_run_numbers(self):
-
         if self.debug:
             dc_runs = DEBUG_DATA.dc_runs_selected
             dc_run_numbers_list = []
@@ -442,10 +533,14 @@ class NormalizationTof:
         else:
             str_dc_run_numbers = ""
 
-        dc_label = widgets.HTML(value="<b><font color='green'>List of dc run numbers (ex: 8705, 8707)</font></b>")
+        dc_label = widgets.HTML(
+            value="<b><font color='green'>List of dc run numbers (ex: 8705, 8707)</font></b>"
+        )
 
         self.dc_run_numbers_widget = widgets.Textarea(
-            value=str_dc_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+            value=str_dc_run_numbers,
+            placeholder="",
+            layout=widgets.Layout(width="400px"),
         )
         vertical_layout = widgets.VBox(
             [
@@ -474,7 +569,9 @@ class NormalizationTof:
         self.reset_dc_dicts()
 
         if self.dc_run_numbers_widget.value.strip() != "":
-            list_of_runs = extract_list_of_runs_from_string(self.dc_run_numbers_widget.value)
+            list_of_runs = extract_list_of_runs_from_string(
+                self.dc_run_numbers_widget.value
+            )
             notebook_logging.info(f"\t{list_of_runs = }")
 
             list_of_dc_full_path = []
@@ -485,24 +582,46 @@ class NormalizationTof:
             for _file_full_path in list_of_dc_full_path:
                 if os.path.exists(_file_full_path):
                     notebook_logging.info(f"\tDC run number {_file_full_path} - FOUND")
-                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    is_valid_run, report_dict = self.check_folder_is_valid(
+                        _file_full_path
+                    )
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
-                        notebook_logging.info(f"\tDC run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
-                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        notebook_logging.info(
+                            f"\tDC run number {_file_full_path} - FOUND with {nbr_tiff} tif* files"
+                        )
+                        display(
+                            HTML(
+                                f"<span style='color:green'>{_file_full_path}</span> - OK"
+                            )
+                        )
                         self.dict_dc[_file_full_path] = {}
-                        self.dict_short_name_full_path["dc"][os.path.basename(_file_full_path)] = _file_full_path
+                        self.dict_short_name_full_path["dc"][
+                            os.path.basename(_file_full_path)
+                        ] = _file_full_path
                         self.display_infos(input_full_path=_file_full_path)
                     else:
-                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
+                        display(
+                            HTML(
+                                f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"
+                            )
+                        )
                 else:
-                    notebook_logging.info(f"\tDC run number {_file_full_path} - NOT FOUND")
-                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+                    notebook_logging.info(
+                        f"\tDC run number {_file_full_path} - NOT FOUND"
+                    )
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"
+                        )
+                    )
 
         else:
-            notebook_logging.info(f"DC run numbers selected: {self.dc_run_numbers_selected}")
+            notebook_logging.info(
+                f"DC run numbers selected: {self.dc_run_numbers_selected}"
+            )
             if self.dc_run_numbers_selected is None:
-                display(HTML(f"<span style='color:red'>No DC runs selected!</span>"))
+                display(HTML("<span style='color:red'>No DC runs selected!</span>"))
                 return
 
             for _run in self.dc_run_numbers_selected:
@@ -514,14 +633,22 @@ class NormalizationTof:
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
-                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-                        self.dict_short_name_full_path["dc"][os.path.basename(_run)] = _run
+                        notebook_logging.info(
+                            f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files"
+                        )
+                        self.dict_short_name_full_path["dc"][os.path.basename(_run)] = (
+                            _run
+                        )
                         self.dict_dc[_run] = {}
                         self.display_infos(input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
-                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"
+                        )
+                    )
                     notebook_logging.info(f"\tDC run number {_run} - NOT FOUND!")
             self.dc_run_numbers_selected = None
 
@@ -536,11 +663,17 @@ class NormalizationTof:
         if self.dict_ob[full_path].get("data") is None:
             notebook_logging.info("No data found for this OB run, loading it now...")
             # load the data from the OB run
-            notebook_logging.info(f"\tFull path to OB run: {os.path.basename(full_path)}")
+            notebook_logging.info(
+                f"\tFull path to OB run: {os.path.basename(full_path)}"
+            )
             list_tiff = retrieve_list_of_tif(full_path)
             notebook_logging.info(f"\tNumber of TIFF files found: {len(list_tiff)}")
             if len(list_tiff) == 0:
-                display(HTML(f"<span style='color:red'>No TIFF files found in {full_path}!</span>"))
+                display(
+                    HTML(
+                        f"<span style='color:red'>No TIFF files found in {full_path}!</span>"
+                    )
+                )
                 notebook_logging.error(f"No TIFF files found in {full_path}!")
                 return None
             data = load_data_using_multithreading(list_tiff, combine_tof=True)
@@ -615,8 +748,8 @@ class NormalizationTof:
 
     def select_output_folder(self):
         self.select_folder(
-            instruction="Select output folder", 
-            start_dir=self.working_dir, 
+            instruction="Select output folder",
+            start_dir=self.working_dir,
             next_function=self.output_folder_selected,
             newdir_toolbar_button=True,
         )
@@ -624,7 +757,7 @@ class NormalizationTof:
     def retrieve_nexus_file_path(self):
         """
         Retrieve the NeXus file paths for sample and OB runs.
-        
+
         This function assumes that the NeXus files are named in a specific format"""
 
         all_nexus_files_found = True
@@ -683,16 +816,18 @@ class NormalizationTof:
 
         if all_nexus_found:
             _value = True
-            _disabled=False
+            _disabled = False
         else:
             _value = False
             _disabled = True
-        self.proton_charge_flag = widgets.Checkbox(description="Proton charge", 
-                                                   value=_value,
-                                                   disabled=_disabled)
-        
+        self.proton_charge_flag = widgets.Checkbox(
+            description="Proton charge", value=_value, disabled=_disabled
+        )
+
         self.shutter_counts_flag = widgets.Checkbox(
-            description="Shutter counts", value=not tpx3_disabled_flag, disabled=tpx3_disabled_flag
+            description="Shutter counts",
+            value=not tpx3_disabled_flag,
+            disabled=tpx3_disabled_flag,
         )
         self.correct_chips_alignment_flag = widgets.Checkbox(
             description="Correct chips alignment", disabled=False, value=True
@@ -709,36 +844,61 @@ class NormalizationTof:
 
         display(HTML("<hr>"))
 
-        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace OB zeros by local median (will take much more time!)", 
-                                                                      value=False,
-                                                                      layout=widgets.Layout(width="400px"))
-        self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
-                                                           names='value')
+        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(
+            description="Replace OB zeros by local median (will take much more time!)",
+            value=False,
+            layout=widgets.Layout(width="400px"),
+        )
+        self.replace_ob_zeros_by_local_median_flag.observe(
+            self._on_replace_ob_zeros_by_local_median_flag_change, names="value"
+        )
         self.correct_chips_alignment_flag = widgets.Checkbox(
             description="Correct chips alignment", disabled=False, value=True
         )
         display(self.replace_ob_zeros_by_local_median_flag)
 
-        kernel_size_label = widgets.Label(value="Kernel size for local median (odd number))", 
-                                          layout=widgets.Layout(width="300"))
-        self.kernel_size_for_local_median_y = widgets.BoundedIntText(description="y axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        kernel_size_label = widgets.Label(
+            value="Kernel size for local median (odd number))",
+            layout=widgets.Layout(width="300"),
         )
-        self.kernel_size_for_local_median_x = widgets.BoundedIntText(description="x axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        self.kernel_size_for_local_median_y = widgets.BoundedIntText(
+            description="y axis:",
+            value=3,
+            min=1,
+            max=99,
+            step=2,
+            layout=widgets.Layout(width="150px"),
         )
-        self.kernel_size_for_local_median_tof = widgets.BoundedIntText(description="tof axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        self.kernel_size_for_local_median_x = widgets.BoundedIntText(
+            description="x axis:",
+            value=3,
+            min=1,
+            max=99,
+            step=2,
+            layout=widgets.Layout(width="150px"),
         )
-        hori_layout = widgets.HBox([kernel_size_label, 
-                                    self.kernel_size_for_local_median_y, 
-                                    self.kernel_size_for_local_median_x,
-                                    self.kernel_size_for_local_median_tof],
-                                    hori_layout=widgets.Layout(align_items="center",
-                                                               width="100%"))
+        self.kernel_size_for_local_median_tof = widgets.BoundedIntText(
+            description="tof axis:",
+            value=3,
+            min=1,
+            max=99,
+            step=2,
+            layout=widgets.Layout(width="150px"),
+        )
+        hori_layout = widgets.HBox(
+            [
+                kernel_size_label,
+                self.kernel_size_for_local_median_y,
+                self.kernel_size_for_local_median_x,
+                self.kernel_size_for_local_median_tof,
+            ],
+            hori_layout=widgets.Layout(align_items="center", width="100%"),
+        )
         display(hori_layout)
 
-        _label = widgets.Label(value="Maximum number of iterations:", layout=widgets.Layout(width="300px")) 
+        _label = widgets.Label(
+            value="Maximum number of iterations:", layout=widgets.Layout(width="300px")
+        )
         self.maximum_iterations_ui = widgets.BoundedIntText(
             value=10,
             min=1,
@@ -746,28 +906,37 @@ class NormalizationTof:
             step=1,
             layout=widgets.Layout(width="200px"),
         )
-        hori_layout = widgets.HBox([_label, self.maximum_iterations_ui],
-                                   hori_layout=widgets.Layout(align_items="center",
-                                                              width="100%"))
+        hori_layout = widgets.HBox(
+            [_label, self.maximum_iterations_ui],
+            hori_layout=widgets.Layout(align_items="center", width="100%"),
+        )
         display(hori_layout)
 
         display(HTML("<hr>"))
 
-        label = widgets.Label(value="Distance source detector (m)", layout=widgets.Layout(width="200px"))
+        label = widgets.Label(
+            value="Distance source detector (m)", layout=widgets.Layout(width="200px")
+        )
         self.distance_source_detector = widgets.FloatText(
-            value=distance_source_detector_m[self.instrument], disabled=False, layout=widgets.Layout(width="50px")
+            value=distance_source_detector_m[self.instrument],
+            disabled=False,
+            layout=widgets.Layout(width="50px"),
         )
         hori_layout = widgets.HBox([label, self.distance_source_detector])
         display(hori_layout)
 
         if self.instrument == "SNAP":
-            label = widgets.Label(value="Detector offset (us)", layout=widgets.Layout(width="200px"))
-            self.detector_offset_us = widgets.FloatText(value=0.0, disabled=False, layout=widgets.Layout(width="50px"))
+            label = widgets.Label(
+                value="Detector offset (us)", layout=widgets.Layout(width="200px")
+            )
+            self.detector_offset_us = widgets.FloatText(
+                value=0.0, disabled=False, layout=widgets.Layout(width="50px")
+            )
             hori_layout = widgets.HBox([label, self.detector_offset_us])
             display(hori_layout)
 
     def _on_replace_ob_zeros_by_local_median_flag_change(self, change):
-        if change['new']:
+        if change["new"]:
             self.kernel_size_for_local_median_y.disabled = False
             self.kernel_size_for_local_median_x.disabled = False
             self.kernel_size_for_local_median_tof.disabled = False
@@ -781,10 +950,14 @@ class NormalizationTof:
     def what_to_export(self):
         display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))
         self.export_corrected_stack_of_sample_data = widgets.Checkbox(
-            description="Export corrected stack of sample data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected stack of sample data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
         self.export_corrected_stack_of_ob_data = widgets.Checkbox(
-            description="Export corrected stack of ob data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected stack of ob data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
         self.export_corrected_stack_of_normalized_data = widgets.Checkbox(
             description="Export corrected stack of normalized data",
@@ -792,7 +965,9 @@ class NormalizationTof:
             value=True,
             disabled=True,
         )
-        label = widgets.Label(value="Note: Any of the stacks exported will also contain the original spectra file")
+        label = widgets.Label(
+            value="Note: Any of the stacks exported will also contain the original spectra file"
+        )
         vertical_layout = widgets.VBox(
             [
                 self.export_corrected_stack_of_sample_data,
@@ -802,15 +977,23 @@ class NormalizationTof:
             ]
         )
         display(vertical_layout)
-        display(HTML("<span style='font-size: 16px; color:red'>Integrated images</span>"))
+        display(
+            HTML("<span style='font-size: 16px; color:red'>Integrated images</span>")
+        )
         self.export_corrected_integrated_sample_data = widgets.Checkbox(
-            description="Export corrected integrated sample data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected integrated sample data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
         self.export_corrected_integrated_ob_data = widgets.Checkbox(
-            description="Export corrected integrated ob data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected integrated ob data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
         self.export_corrected_integrated_normalized_data = widgets.Checkbox(
-            description="Export corrected integrated normalized data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected integrated normalized data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
         vertical_layout = widgets.VBox(
             [
@@ -831,7 +1014,11 @@ class NormalizationTof:
 
     def sample_folder_selected(self, folder_selected):
         self.sample_folder = folder_selected
-        display(HTML(f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"))
+        display(
+            HTML(
+                f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"
+            )
+        )
 
     # def sample_run_numbers_selected(self, runs_selected):
     #     self.sample_run_numbers = runs_selected
@@ -854,33 +1041,52 @@ class NormalizationTof:
 
     def ob_folder_selected(self, folder_selected):
         self.ob_folder = folder_selected
-        display(HTML(f"Open beam folder selected: <span style='color:blue'>{folder_selected}</span>"))
+        display(
+            HTML(
+                f"Open beam folder selected: <span style='color:blue'>{folder_selected}</span>"
+            )
+        )
 
     def dc_folder_selected(self, folder_selected):
         self.dc_folder = folder_selected
-        display(HTML(f"Dark current folder selected: <span style='color:blue'>{folder_selected}</span>"))
+        display(
+            HTML(
+                f"Dark current folder selected: <span style='color:blue'>{folder_selected}</span>"
+            )
+        )
 
     def save_ob_run_numbers_selected(self, folder_selected):
         self.ob_run_numbers_selected = folder_selected
-     
+
     def save_dc_run_numbers_selected(self, folder_selected):
         self.dc_run_numbers_selected = folder_selected
-        
+
     def output_folder_selected(self, folder_selected):
         self.output_folder = folder_selected
         display(HTML("Output folder selected:"))
         if os.path.exists(folder_selected):
-            display(HTML(f"<span style='color:green'>{folder_selected} - FOUND!</span>"))
+            display(
+                HTML(f"<span style='color:green'>{folder_selected} - FOUND!</span>")
+            )
             notebook_logging.info(f"Output folder selected: {folder_selected} - FOUND")
         else:
-            display(HTML(f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"))
-            notebook_logging.info(f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!")
+            display(
+                HTML(
+                    f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"
+                )
+            )
+            notebook_logging.info(
+                f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!"
+            )
 
-    def select_folder(self, instruction="Select a folder",
-                       next_function=None, 
-                       start_dir=None, 
-                       multiple=False,
-                       newdir_toolbar_button=False):
+    def select_folder(
+        self,
+        instruction="Select a folder",
+        next_function=None,
+        start_dir=None,
+        multiple=False,
+        newdir_toolbar_button=False,
+    ):
         # go straight to autoreduce/mcp folder
         if start_dir is None:
             start_dir = self.autoreduce_dir
@@ -954,9 +1160,11 @@ class NormalizationTof:
             shutter_counts_flag=self.shutter_counts_flag.value,
             # replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
             replace_ob_zeros_by_local_median_flag=self.replace_ob_zeros_by_local_median_flag.value,
-            kernel_size_for_local_median=(self.kernel_size_for_local_median_y.value,
-                                          self.kernel_size_for_local_median_x.value,
-                                          self.kernel_size_for_local_median_tof.value),
+            kernel_size_for_local_median=(
+                self.kernel_size_for_local_median_y.value,
+                self.kernel_size_for_local_median_x.value,
+                self.kernel_size_for_local_median_tof.value,
+            ),
             max_iterations=self.maximum_iterations_ui.value,
             correct_chips_alignment_flag=self.correct_chips_alignment_flag.value,
             correct_chips_alignment_config=correct_chips_alignment_config,

@@ -83,7 +83,14 @@ class Panel:
     df_panel = None
     top_object = None
 
-    def __init__(self, prev_button=False, next_button=True, state="sample", working_dir="", top_object=None):
+    def __init__(
+        self,
+        prev_button=False,
+        next_button=True,
+        state="sample",
+        working_dir="",
+        top_object=None,
+    ):
         self.prev_button = prev_button
         self.next_button = next_button
         self.state = state
@@ -124,7 +131,10 @@ class Panel:
         title_ui = widgets.HBox(
             [
                 widgets.Label("Instructions:", layout=widgets.Layout(width="20%")),
-                widgets.Label("Select Samples Images and click NEXT", layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Select Samples Images and click NEXT",
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
 
@@ -134,7 +144,9 @@ class Panel:
                 widgets.Label("None", layout=widgets.Layout(width="50%")),
             ]
         )
-        self.title = title_ui.children[1]  # "Select [Samples/OB/DF] Images [and click NEXT]
+        self.title = title_ui.children[
+            1
+        ]  # "Select [Samples/OB/DF] Images [and click NEXT]
         self.label = label_ui.children[1]  # number of samples selected
 
         self.top_panel = widgets.VBox(children=[title_ui, label_ui], layout=self.layout)
@@ -158,7 +170,9 @@ class Panel:
             self.prev_button_ui.on_click(self.prev_button_clicked)
             list_ui.append(self.prev_button_ui)
 
-        self.current_state_label_ui = widgets.Label("         ", layout=widgets.Layout(width="70%"))
+        self.current_state_label_ui = widgets.Label(
+            "         ", layout=widgets.Layout(width="70%")
+        )
         list_ui.append(self.current_state_label_ui)
 
         if self.next_button:
@@ -194,7 +208,9 @@ class Panel:
 
 
 class WizardPanel:
-    label_layout = Layout(border="1px lighgray solide", height="35px", padding="8px", width="300px")
+    label_layout = Layout(
+        border="1px lighgray solide", height="35px", padding="8px", width="300px"
+    )
     sample_panel = None
 
     def __init__(self, sample_panel=None):
@@ -210,9 +226,14 @@ class SampleSelectionPanel(Panel):
     files = None
     o_norm = None
 
-    def __init__(self, prev_button=False, next_button=True, working_dir="", top_object=None):
+    def __init__(
+        self, prev_button=False, next_button=True, working_dir="", top_object=None
+    ):
         super(SampleSelectionPanel, self).__init__(
-            prev_button=prev_button, next_button=next_button, working_dir=working_dir, top_object=top_object
+            prev_button=prev_button,
+            next_button=next_button,
+            working_dir=working_dir,
+            top_object=top_object,
         )
 
     def next_button_clicked(self, event):
@@ -230,13 +251,17 @@ class OBSelectionPanel(Panel):
 
     def next_button_clicked(self, event):
         self.remove()
-        _panel = DFSelectionPanel(working_dir=self.working_dir, top_object=self.top_object)
+        _panel = DFSelectionPanel(
+            working_dir=self.working_dir, top_object=self.top_object
+        )
         _panel.init_ui(files=self.files)
         _panel.show()
 
     def prev_button_clicked(self, event):
         self.remove()
-        _panel = SampleSelectionPanel(working_dir=self.working_dir, top_object=self.top_object)
+        _panel = SampleSelectionPanel(
+            working_dir=self.working_dir, top_object=self.top_object
+        )
         _panel.init_ui(files=self.files)
         _panel.show()
 
@@ -245,18 +270,26 @@ class DFSelectionPanel(Panel):
     def __init__(self, working_dir="", top_object=None):
         self.working_dir = working_dir
         super(DFSelectionPanel, self).__init__(
-            prev_button=True, next_button=True, state="df", working_dir=working_dir, top_object=top_object
+            prev_button=True,
+            next_button=True,
+            state="df",
+            working_dir=working_dir,
+            top_object=top_object,
         )
 
     def prev_button_clicked(self, event):
         self.remove()
-        _panel = OBSelectionPanel(working_dir=self.working_dir, top_object=self.top_object)
+        _panel = OBSelectionPanel(
+            working_dir=self.working_dir, top_object=self.top_object
+        )
         _panel.init_ui(files=self.files)
         _panel.show()
 
     def next_button_clicked(self, event):
         self.remove()
-        o_norm_handler = NormalizationHandler(files=self.files, working_dir=self.working_dir)
+        o_norm_handler = NormalizationHandler(
+            files=self.files, working_dir=self.working_dir
+        )
         o_norm_handler.load_data()
         self.top_object.o_norm_handler = o_norm_handler
         self.top_object.o_norm = o_norm_handler.o_norm
@@ -324,9 +357,15 @@ class NormalizationHandler:
         self.hbox = widgets.HBox(
             [
                 widgets.Button(
-                    description=f"Jump to {ipts} Shared Folder", button_style="success", layout=button_layout
+                    description=f"Jump to {ipts} Shared Folder",
+                    button_style="success",
+                    layout=button_layout,
                 ),
-                widgets.Button(description="Jump to My Home Folder", button_style="success", layout=button_layout),
+                widgets.Button(
+                    description="Jump to My Home Folder",
+                    button_style="success",
+                    layout=button_layout,
+                ),
             ]
         )
         go_to_shared_button_ui = self.hbox.children[0]
@@ -352,8 +391,12 @@ class NormalizationHandler:
         self.output_folder_ui.show()
 
     def export(self, rois={}):
-        base_folder = os.path.basename(os.path.dirname(self.list_file_names[0])) + "_normalized"
-        output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected, base_folder))
+        base_folder = (
+            os.path.basename(os.path.dirname(self.list_file_names[0])) + "_normalized"
+        )
+        output_folder = os.path.abspath(
+            os.path.join(self.output_folder_ui.selected, base_folder)
+        )
         utilities.make_dir(dir=output_folder)
         self.normalized(rois=rois, output_folder=output_folder)
 

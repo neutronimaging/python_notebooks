@@ -29,7 +29,11 @@ class ExtractEvenlySpacedFiles:
         self.folder_widget.show()
 
     def retrieve_list_of_files(self, folder_selected):
-        [self.list_files, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=folder_selected)
+        [self.list_files, _] = (
+            file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+                folder=folder_selected
+            )
+        )
         self.folder_of_files_to_extract = folder_selected
 
         sorting_algorithm = self.sorting_ui.value
@@ -43,8 +47,12 @@ class ExtractEvenlySpacedFiles:
             self.list_files = list_files[index_sorted]
 
         self.list_of_files_to_extract = self.list_files
-        self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
-        self.basename_list_of_files_that_will_be_extracted = [os.path.basename(_file) for _file in self.list_files]
+        self.basename_list_files = [
+            os.path.basename(_file) for _file in self.list_files
+        ]
+        self.basename_list_of_files_that_will_be_extracted = [
+            os.path.basename(_file) for _file in self.list_files
+        ]
         self.number_of_files = len(self.list_files)
         display(
             HTML(
@@ -55,7 +63,9 @@ class ExtractEvenlySpacedFiles:
         )
 
     def sorting_method(self):
-        self.sorting_ui = widgets.RadioButtons(options=["Time", "File Name"], value="File Name")
+        self.sorting_ui = widgets.RadioButtons(
+            options=["Time", "File Name"], value="File Name"
+        )
         display(self.sorting_ui)
 
     def how_to_extract(self):
@@ -66,7 +76,9 @@ class ExtractEvenlySpacedFiles:
             [
                 widgets.Label("Extract 1 over ", layout=widgets.Layout(width="100px")),
                 widgets.Dropdown(
-                    options=np.arange(1, self.number_of_files), value=2, layout=widgets.Layout(width="50px")
+                    options=np.arange(1, self.number_of_files),
+                    value=2,
+                    layout=widgets.Layout(width="50px"),
                 ),
                 widgets.Label("files", layout=widgets.Layout(width="60px")),
             ]
@@ -77,7 +89,8 @@ class ExtractEvenlySpacedFiles:
         hori_layout_2 = widgets.HBox(
             [
                 widgets.Label(
-                    self.extract_message.format(o_get.number_of_files_to_extract()), layout=widgets.Layout(width="40%")
+                    self.extract_message.format(o_get.number_of_files_to_extract()),
+                    layout=widgets.Layout(width="40%"),
                 )
             ]
         )
@@ -86,8 +99,13 @@ class ExtractEvenlySpacedFiles:
         # list of files that will be extracted
         hori_layout_3 = widgets.HBox(
             [
-                widgets.Label("List of files extracted", layout=widgets.Layout(width="20%")),
-                widgets.Select(options=self.basename_list_files, layout=widgets.Layout(width="80%", height="400px")),
+                widgets.Label(
+                    "List of files extracted", layout=widgets.Layout(width="20%")
+                ),
+                widgets.Select(
+                    options=self.basename_list_files,
+                    layout=widgets.Layout(width="80%", height="400px"),
+                ),
             ]
         )
         self.list_of_files_that_will_be_extracted_ui = hori_layout_3.children[1]
@@ -103,7 +121,9 @@ class ExtractEvenlySpacedFiles:
     def update_extracting_value(self, _):
         o_get = Get(parent=self)
         nbr_files_extracted = o_get.number_of_files_to_extract()
-        self.extracting_label_ui.value = self.extract_message.format(nbr_files_extracted)
+        self.extracting_label_ui.value = self.extract_message.format(
+            nbr_files_extracted
+        )
 
         list_of_files_that_will_be_extracted = o_get.list_of_files_to_extract()
         self.list_of_files_to_extract = list_of_files_that_will_be_extracted
@@ -111,8 +131,12 @@ class ExtractEvenlySpacedFiles:
         basename_list_of_files_that_will_be_extracted = [
             os.path.basename(_file) for _file in list_of_files_that_will_be_extracted
         ]
-        self.list_of_files_that_will_be_extracted_ui.options = basename_list_of_files_that_will_be_extracted
-        self.basename_list_of_files_that_will_be_extracted = basename_list_of_files_that_will_be_extracted
+        self.list_of_files_that_will_be_extracted_ui.options = (
+            basename_list_of_files_that_will_be_extracted
+        )
+        self.basename_list_of_files_that_will_be_extracted = (
+            basename_list_of_files_that_will_be_extracted
+        )
 
     def renaming_checkbox_changed(self, value):
         if value["new"]:
@@ -125,19 +149,27 @@ class ExtractEvenlySpacedFiles:
     def prefix_changed(self, new_value):
         o_get = Get(parent=self)
         new_prefix = new_value["new"]
-        self.renamed_basename_list_of_files = o_get.renamed_basename_list_of_files(prefix=new_prefix)
+        self.renamed_basename_list_of_files = o_get.renamed_basename_list_of_files(
+            prefix=new_prefix
+        )
         self.new_file_name_ui.options = self.renamed_basename_list_of_files
 
     def renamed_files(self):
         o_get = Get(parent=self)
-        self.basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
+        self.basename_list_of_files_that_will_be_extracted = (
+            self.basename_list_of_files_that_will_be_extracted
+        )
         question_widget = widgets.Checkbox(value=True, description="Rename files?")
         question_widget.observe(self.renaming_checkbox_changed, names="value")
         self.renaming_files_widget = question_widget
 
-        self.prefix_file_name = widgets.Text(value="", placeholder="Type prefix here", description="Prefix:")
+        self.prefix_file_name = widgets.Text(
+            value="", placeholder="Type prefix here", description="Prefix:"
+        )
         self.prefix_file_name.observe(self.prefix_changed, names="value")
-        self.renamed_basename_list_of_files = o_get.renamed_basename_list_of_files(prefix=self.prefix_file_name.value)
+        self.renamed_basename_list_of_files = o_get.renamed_basename_list_of_files(
+            prefix=self.prefix_file_name.value
+        )
 
         self.left_vertical_layout = widgets.VBox(
             [
@@ -153,14 +185,19 @@ class ExtractEvenlySpacedFiles:
             [
                 widgets.Label("After renaming", layout=widgets.Layout(width="100%")),
                 widgets.Select(
-                    options=self.renamed_basename_list_of_files, layout=widgets.Layout(width="90%", height="400px")
+                    options=self.renamed_basename_list_of_files,
+                    layout=widgets.Layout(width="90%", height="400px"),
                 ),
             ],
             layout=widgets.Layout(width="40%"),
         )
         self.new_file_name_ui = self.right_vertical_layout.children[1]
-        horizontal_layout = widgets.HBox([self.left_vertical_layout, self.right_vertical_layout])
-        full_vertical_layout = widgets.VBox([question_widget, self.prefix_file_name, horizontal_layout])
+        horizontal_layout = widgets.HBox(
+            [self.left_vertical_layout, self.right_vertical_layout]
+        )
+        full_vertical_layout = widgets.VBox(
+            [question_widget, self.prefix_file_name, horizontal_layout]
+        )
         display(full_vertical_layout)
 
     def select_output_folder(self):
@@ -179,15 +216,22 @@ class ExtractEvenlySpacedFiles:
         list_of_files_to_extract = self.list_of_files_to_extract
         full_path_to_file = os.path.dirname(list_of_files_to_extract[0])
         name_of_parent_folder = os.path.basename(full_path_to_file)
-        basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
+        basename_list_of_files_that_will_be_extracted = (
+            self.basename_list_of_files_that_will_be_extracted
+        )
         fullname_list_of_files_that_will_be_extracted = [
-            os.path.join(full_path_to_file, _file) for _file in basename_list_of_files_that_will_be_extracted
+            os.path.join(full_path_to_file, _file)
+            for _file in basename_list_of_files_that_will_be_extracted
         ]
 
         extracting_value = self.extracting_ui.value
 
-        new_folder = name_of_parent_folder + f"_extracted_1_every_{extracting_value}_files"
-        full_output_folder_name = os.path.abspath(os.path.join(output_folder, new_folder))
+        new_folder = (
+            name_of_parent_folder + f"_extracted_1_every_{extracting_value}_files"
+        )
+        full_output_folder_name = os.path.abspath(
+            os.path.join(output_folder, new_folder)
+        )
 
         file_handler.make_or_reset_folder(full_output_folder_name)
         if self.renaming_files_widget.value:
@@ -227,7 +271,8 @@ class ExtractEvenlySpacedFiles:
                 )
             )
             file_handler.copy_files_to_folder(
-                list_files=fullname_list_of_files_that_will_be_extracted, output_folder=full_output_folder_name
+                list_files=fullname_list_of_files_that_will_be_extracted,
+                output_folder=full_output_folder_name,
             )
             display(
                 HTML(

@@ -103,7 +103,9 @@ class Timepix3FromEventToHistoHdf5:
         vbox = widgets.VBox(
             [
                 widgets.Label("Metadata"),
-                widgets.Textarea(value=metadata, disabled=True, layout=widgets.Layout(height="200px")),
+                widgets.Textarea(
+                    value=metadata, disabled=True, layout=widgets.Layout(height="200px")
+                ),
             ]
         )
         display(vbox)
@@ -111,14 +113,18 @@ class Timepix3FromEventToHistoHdf5:
     def define_detector(self):
         self.width_ui = widgets.IntText(value=1024, description="Width")
         self.height_ui = widgets.IntText(value=1024, description="Height")
-        vbox = widgets.VBox([widgets.Label("MCP detector size:"), self.height_ui, self.width_ui])
+        vbox = widgets.VBox(
+            [widgets.Label("MCP detector size:"), self.height_ui, self.width_ui]
+        )
         display(vbox)
 
     def select_binning_parameter(self):
         self.nbr_bin_ui = widgets.IntText(value=1000, description="Nbr of bins:")
         display(self.nbr_bin_ui)
 
-        self.range_to_use = widgets.IntSlider(value=50, max=100, min=1, description="% to use")
+        self.range_to_use = widgets.IntSlider(
+            value=50, max=100, min=1, description="% to use"
+        )
         display(self.range_to_use)
 
     def bins(self):
@@ -227,15 +233,21 @@ class Timepix3FromEventToHistoHdf5:
         input_nexus_filename = os.path.basename(self.input_nexus_file_name)
         export_id = widgets.HBox(
             [
-                widgets.Label("Output file name:", layout=widgets.Layout(width="150px")),
-                widgets.Text(value=input_nexus_filename, layout=widgets.Layout(width="300px")),
+                widgets.Label(
+                    "Output file name:", layout=widgets.Layout(width="150px")
+                ),
+                widgets.Text(
+                    value=input_nexus_filename, layout=widgets.Layout(width="300px")
+                ),
             ]
         )
         display(export_id)
         self.output_file_name_id = export_id.children[1]
 
     def select_output_location(self):
-        o_output_folder = FileFolderBrowser(working_dir=self.working_dir, next_function=self.export_h5)
+        o_output_folder = FileFolderBrowser(
+            working_dir=self.working_dir, next_function=self.export_h5
+        )
         o_output_folder.select_output_folder(instruction="Select output folder ...")
 
     def export_h5(self, output_folder):
@@ -260,10 +272,16 @@ class Timepix3FromEventToHistoHdf5:
             f.create_dataset("entry/histo/number_of_bins", data=self.nbr_bins)
             f.create_dataset("entry/histo/tof_ns", data=self.bins_tof)
             f.create_group("entry/infos")
-            f.create_dataset("entry/infos/input_nexus_filename", data=self.input_nexus_file_name)
+            f.create_dataset(
+                "entry/infos/input_nexus_filename", data=self.input_nexus_file_name
+            )
 
         display(HTML("Writing HDF5 file .... Done!"))
         display(
-            HTML('<span style="font-size: 15px; color:blue">hdf5 file created:' + full_output_filename + "!</span>")
+            HTML(
+                '<span style="font-size: 15px; color:blue">hdf5 file created:'
+                + full_output_filename
+                + "!</span>"
+            )
         )
         logging.info(f"hdf5 file created: {full_output_filename}")
