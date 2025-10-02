@@ -14,6 +14,7 @@ import pandas as pd
 from IPython.display import HTML, display
 from PIL import Image
 from skimage.io import imread
+from scipy.ndimage import median_filter
 
 # from enum import Enum
 # from scipy.constants import h, c, electron_volt, m_n
@@ -51,6 +52,7 @@ class PLOT_SIZE:
 class DataType:
     sample = "sample"
     ob = "ob"
+    dc = "dc"
     unknown = "unknown"
 
 
@@ -266,6 +268,10 @@ def normalization_with_list_of_full_path(
         max_iterations=max_iterations,
     )
     logging.info(f"{ob_data_combined.shape = }")
+    logging.info(f"number of NaN in ob_data_combined data: {np.sum(np.isnan(ob_data_combined))}")
+    logging.info(f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}")
+    logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
+
     if verbose:
         display(HTML(f"{ob_data_combined.shape = }"))
 
@@ -336,6 +342,7 @@ def normalization_with_list_of_full_path(
 
     # normalize the sample data
     for _sample_run_number in sample_master_dict.keys():
+        logging.info("**********************************")
         logging.info(f"normalization of run {_sample_run_number}")
         if verbose:
             display(HTML(f"Normalization of run {_sample_run_number}"))
@@ -348,7 +355,9 @@ def normalization_with_list_of_full_path(
         logging.info(" **** Statistics of sample data *****")
         number_of_zeros = np.sum(_sample_data == 0)
         logging.info(f"\t sample data shape: {data_shape}")
+        logging.info(f"\t data type of _sample_data: {_sample_data.dtype}")
         logging.info(f"\t Number of zeros in sample data: {number_of_zeros}")
+        logging.info(f"\t Number of nan in sample data: {np.sum(np.isnan(_sample_data))}")
         logging.info(
             f"\t Percentage of zeros in sample data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%"
         )
@@ -394,9 +403,19 @@ def normalization_with_list_of_full_path(
             )
 
         if dc_data_combined is not None:
+            logging.info(f"normalization with DC subtraction")
             _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined))
         else:
-            _normalized_data = np.divide(_sample_data, ob_data_combined)
+            logging.info(f"normalization without DC subtraction")
+            # _normalized_data = np.array([], dtype=np.float32)
+            # for _sample, _ob in zip(_sample_data, ob_data_combined):
+
+            #     _sample_data_normalized = np.divide(_sample, _ob, out=np.zeros_like(_sample), where=_ob!=0)
+            #     _sample_data_normalized[_ob == 0] = 0
+
+            #     _normalized_data = np.append(_normalized_data, _sample_data_normalized)
+            _normalized_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
+            _normalized_data[ob_data_combined == 0] = 0
 
         # for _sample, _ob in zip(_sample_data, ob_data_combined):
         #     _normalized_data[index] = np.divide(_sample, _ob)
@@ -407,21 +426,27 @@ def normalization_with_list_of_full_path(
         # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
         logging.info(f"{normalized_data[_sample_run_number].shape = }")
         logging.info(f"{normalized_data[_sample_run_number].dtype = }")
+        logging.info(f"number of NaN in normalized data: {np.sum(np.isnan(normalized_data[_sample_run_number]))}")
+        logging.info(f"number of inf in normalized data: {np.sum(np.isinf(normalized_data[_sample_run_number]))}")
 
         detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
         time_spectra = sample_master_dict[_sample_run_number][MasterDictKeys.list_spectra]
 
         if time_spectra is None:
+            logging.info("Time spectra is None, cannot convert to lambda or energy arrays")
             lambda_array = None
             energy_array = None
         
         else:
 
+            logging.info(f"We have a time_spectra!")
+            logging.info(f"time spectra shape: {time_spectra.shape}")
+            
             if detector_delay_us is None:
                 detector_delay_us = 0.0
                 logging.info(f"detector delay is None, setting it to {detector_delay_us} us")
 
-            logging.info(f"time spectra shape: {time_spectra.shape}")
+            logging.info(f"we have a detector delay of {detector_delay_us} us")
 
             lambda_array = convert_array_from_time_to_lambda(
                 time_array=time_spectra,
@@ -433,6 +458,7 @@ def normalization_with_list_of_full_path(
                 lambda_unit=DistanceUnitOptions.angstrom,
             )
             logging.info(f"Lambda array shape: {lambda_array.shape}")
+            logging.info(f"{lambda_array = }")
 
             energy_array = convert_array_from_time_to_energy(
                 time_array=time_spectra,
@@ -444,27 +470,34 @@ def normalization_with_list_of_full_path(
                 energy_unit=EnergyUnitOptions.eV,
             )
             logging.info(f"Energy array shape: {energy_array.shape}")
+            logging.info(f"{energy_array = }")
 
+        logging.info(f"Preview: {preview = }")
         if preview:
+            
             # display preview of normalized data
             fig, axs1 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
             sample_data_integrated = np.nanmean(_sample_data, axis=0)
             im0 = axs1[0].imshow(sample_data_integrated, cmap="gray")
             plt.colorbar(im0, ax=axs1[0])
-            axs1[0].set_title(f"Sample data: {_sample_run_number} | detector delay: {detector_delay_us:.2f} us")
+
+            display(HTML(f"<h3>Preview of run {_sample_run_number}</h3>"))
+            display(HTML(f"detector delay: {detector_delay_us:.2f} us"))
+
+            axs1[0].set_title(f"Integrated Sample data")
 
             sample_integrated1 = np.nansum(_sample_data, axis=1)
             sample_integrated = np.nansum(sample_integrated1, axis=1)
             axs1[1].plot(sample_integrated, 'o')
             axs1[1].set_xlabel("File image index")
             axs1[1].set_ylabel("mean of full image")
-            plt.tight_layout
+            plt.tight_layout()
 
             fig, axs2 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
             ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
             im1 = axs2[0].imshow(ob_data_integrated, cmap="gray")
             plt.colorbar(im1, ax=axs2[0])
-            axs2[0].set_title("OB combinded data ")
+            axs2[0].set_title("OB integrated data ")
 
             ob_integrated1 = np.nansum(ob_data_combined, axis=1)
             ob_integrated = np.nansum(ob_integrated1, axis=1)
@@ -477,7 +510,7 @@ def normalization_with_list_of_full_path(
             normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
             im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
             plt.colorbar(im2, ax=axs3[0])
-            axs3[0].set_title(f"Normalized data {_sample_run_number}")
+            axs3[0].set_title(f"Integrated Normalized data")
 
             profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
             profile = np.nanmean(profile_step1, axis=1)
@@ -664,7 +697,14 @@ def isolate_run_number_from_full_path(run_number_full_path: str) -> str:
 
 def isolate_run_number(run_number_full_path: str) -> int:
     run_number = os.path.basename(run_number_full_path)
-    run_number = run_number.split("_")[1]
+    # fixme needs to treat old data set and new data set
+    # retrieve run number behind the string _Run_ in the file name
+    split_1 = run_number.split("Run_")
+    if len(split_1) == 2:
+        run_number = split_1[1]
+    else:
+        split_2 = split_1[1].split("_")
+        run_number = split_2[0]
     return int(run_number)
 
 
@@ -981,8 +1021,9 @@ def combine_dc_images(dc_master_dict: dict) -> np.ndarray:
     """
     logging.info("Combining all dark current images")
     full_dc_data = []
+    logging.info(f"dc_master_dict = {dc_master_dict}")
 
-    if dc_master_dict is None:
+    if not dc_master_dict:
         return None
 
     for _dc_run_number in dc_master_dict.keys():

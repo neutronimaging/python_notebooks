@@ -740,9 +740,9 @@ class NormalizationTof:
 
         _label = widgets.Label(value="Maximum number of iterations:", layout=widgets.Layout(width="300px")) 
         self.maximum_iterations_ui = widgets.BoundedIntText(
-            value=10,
+            value=2,
             min=1,
-            max=20,
+            max=10,
             step=1,
             layout=widgets.Layout(width="200px"),
         )
