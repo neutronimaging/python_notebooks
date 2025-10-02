@@ -404,23 +404,16 @@ def normalization_with_list_of_full_path(
 
         if dc_data_combined is not None:
             logging.info(f"normalization with DC subtraction")
-            _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined))
+            _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined), 
+                                         out=np.zeros_like(_sample_data), 
+                                         where=(ob_data_combined - dc_data_combined)!=0)
         else:
             logging.info(f"normalization without DC subtraction")
-            # _normalized_data = np.array([], dtype=np.float32)
-            # for _sample, _ob in zip(_sample_data, ob_data_combined):
-
-            #     _sample_data_normalized = np.divide(_sample, _ob, out=np.zeros_like(_sample), where=_ob!=0)
-            #     _sample_data_normalized[_ob == 0] = 0
-
-            #     _normalized_data = np.append(_normalized_data, _sample_data_normalized)
-            _normalized_data = np.divide(_sample_data, ob_data_combined, out=np.zeros_like(_sample_data), where=ob_data_combined!=0)
-            _normalized_data[ob_data_combined == 0] = 0
-
-        # for _sample, _ob in zip(_sample_data, ob_data_combined):
-        #     _normalized_data[index] = np.divide(_sample, _ob)
-        #     index += 1
-
+            _normalized_data = np.divide(_sample_data, ob_data_combined, 
+                                         out=np.zeros_like(_sample_data), 
+                                         where=ob_data_combined!=0)
+        
+        _normalized_data[ob_data_combined == 0] = 0
         normalized_data[_sample_run_number] = _normalized_data
 
         # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
@@ -505,6 +498,20 @@ def normalization_with_list_of_full_path(
             axs2[1].set_xlabel("File image index")
             axs2[1].set_ylabel("mean of full image")
             plt.tight_layout()
+
+            if dc_data_combined is not None:
+                fig, axs_dc = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                dc_data_integrated = np.nanmean(dc_data_combined, axis=0)
+                im_dc = axs_dc[0].imshow(dc_data_integrated, cmap="gray")
+                plt.colorbar(im_dc, ax=axs_dc[0])
+                axs_dc[0].set_title("DC integrated data ")
+
+                dc_integrated1 = np.nansum(dc_data_combined, axis=1)
+                dc_integrated = np.nansum(dc_integrated1, axis=1)
+                axs_dc[1].plot(dc_integrated, 'o')
+                axs_dc[1].set_xlabel("File image index")
+                axs_dc[1].set_ylabel("mean of full image")
+                plt.tight_layout()
 
             fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
             normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)

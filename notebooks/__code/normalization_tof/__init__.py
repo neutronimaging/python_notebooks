@@ -33,7 +33,7 @@ raw_dir = {
 autoreduce_dir = {
     "VENUS": {
         DetectorType.tpx1_legacy: ["/SNS/VENUS/", "shared/autoreduce/mcp/images/"],
-        DetectorType.tpx1: ["/SNS/VENUS/", "shared/autoreduce"],
+        DetectorType.tpx1: ["/SNS/VENUS/", "shared/autoreduce/images/tpx1/"],
         DetectorType.tpx3: ["/SNS/VENUS/", "images/tpx3/"],
     },
     "SNAP": {

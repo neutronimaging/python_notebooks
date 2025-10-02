@@ -222,11 +222,11 @@ class NormalizationTof:
             # retrieve the path from the NeXus file
             file_path = self.retrieve_file_path_from_nexus(run_number)
             if self.detector_type == DetectorType.tpx1:
-                file_path = Path(self.autoreduce_dir) / file_path
+                file_path = Path(self.autoreduce_dir).parent.parent / file_path
             elif self.detector_type == DetectorType.tpx3:
                 file_path = Path(self.raw_dir) / file_path
             if file_path is None:
-                raise ValueError(f"No NeXus file found for run number {run_number}")
+                raise ValueError(f"No full path file found for run number {run_number}")
             return str(file_path)
 
         else:
@@ -623,12 +623,12 @@ class NormalizationTof:
 
     def retrieve_nexus_file_path(self):
         """
-        Retrieve the NeXus file paths for sample and OB runs.
+        Retrieve the NeXus file paths for sample, OB and DC.
         
         This function assumes that the NeXus files are named in a specific format"""
 
         all_nexus_files_found = True
-        notebook_logging.info("Retrieving NeXus file paths for sample and OB runs...")
+        notebook_logging.info("Retrieving NeXus file paths for sample, OB and DC runs...")
 
         notebook_logging.info("\tworking with sample runs:")
         for full_path in self.dict_sample.keys():
@@ -667,6 +667,25 @@ class NormalizationTof:
                 notebook_logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
                 all_nexus_files_found = False
                 self.dict_ob[full_path]["nexus"] = None
+
+        notebook_logging.info("\tworking with dc runs:")
+        for full_path in self.dict_dc.keys():
+            if self.detector_type == DetectorType.tpx1_legacy:
+                run_number = os.path.basename(full_path).split("_")[1]
+            elif self.detector_type in [DetectorType.tpx1, DetectorType.tpx3]:
+                file_name_split = os.path.basename(full_path).split("_")
+                run_number = file_name_split[2]
+
+            nexus_full_path = os.path.join(
+                self.nexus_folder, f"{self.instrument.upper()}_{run_number}.nxs.h5"
+            )
+            if os.path.exists(nexus_full_path):
+                notebook_logging.info(f"\tNeXus file found: {nexus_full_path}")
+                self.dict_dc[full_path]["nexus"] = nexus_full_path
+            else:
+                notebook_logging.warning(f"\tNeXus file NOT found: {nexus_full_path}")
+                all_nexus_files_found = False
+                self.dict_dc[full_path]["nexus"] = None
 
         notebook_logging.info("Done retrieving NeXus file paths.")
 
@@ -899,8 +918,8 @@ class NormalizationTof:
 
     # calling main code
     def run_normalization_with_list_of_runs(self, preview=False):
-        sample_run_numbers = self.sample_run_numbers
-        ob_run_numbers = self.ob_run_numbers
+        # sample_run_numbers = self.sample_run_numbers
+        # ob_run_numbers = self.ob_run_numbers
         output_folder = self.output_folder
         export_mode = {
             "sample_stack": self.export_corrected_stack_of_sample_data.value,
@@ -931,11 +950,13 @@ class NormalizationTof:
             }
 
         dc_dict = {}
-        for _full_path in self.dict_dc.keys():
-            dc_dict[os.path.basename(_full_path)] = {
-                "full_path": _full_path,
-                "nexus": self.dict_dc[_full_path]["nexus"],
-            }
+        if self.dict_dc:
+            logging.info("Dark current runs provided")
+            for _full_path in self.dict_dc.keys():
+                dc_dict[os.path.basename(_full_path)] = {
+                    "full_path": _full_path,
+                    "nexus": self.dict_dc[_full_path]["nexus"],
+                }
 
         if self.correct_chips_alignment_flag.value:
             if self.detector_type in [DetectorType.tpx1_legacy, DetectorType.tpx1]:
