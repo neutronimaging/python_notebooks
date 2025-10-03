@@ -710,6 +710,10 @@ class NormalizationTof:
                                                    value=_value,
                                                    disabled=_disabled)
         
+        self.monitor_counts_flag = widgets.Checkbox(description="Monitor counts", 
+                                                   value=False,
+                                                   disabled=_disabled)
+
         self.shutter_counts_flag = widgets.Checkbox(
             description="Shutter counts", value=not tpx3_disabled_flag, disabled=tpx3_disabled_flag
         )
@@ -720,6 +724,7 @@ class NormalizationTof:
         vertical_layout = widgets.VBox(
             [
                 self.proton_charge_flag,
+                self.monitor_counts_flag,
                 self.shutter_counts_flag,
                 self.correct_chips_alignment_flag,
             ]
@@ -728,9 +733,10 @@ class NormalizationTof:
 
         display(HTML("<hr>"))
 
-        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace OB zeros by local median (will take much more time!)", 
+        display(HTML("<span style='font-size: 16px; color:red'>Handling OB zeros - <i>May take much more time!</i></span>"))
+        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace zeros by local median", 
                                                                       value=False,
-                                                                      layout=widgets.Layout(width="400px"))
+                                                                      layout=widgets.Layout(width="500px"))
         self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
                                                            names='value')
         self.correct_chips_alignment_flag = widgets.Checkbox(
@@ -738,7 +744,7 @@ class NormalizationTof:
         )
         display(self.replace_ob_zeros_by_local_median_flag)
 
-        kernel_size_label = widgets.Label(value="Kernel size for local median (odd number))", 
+        kernel_size_label = widgets.Label(value="Kernel size for local median (odd number):", 
                                           layout=widgets.Layout(width="300"))
         self.kernel_size_for_local_median_y = widgets.BoundedIntText(description="y axis:",
             value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
@@ -747,7 +753,7 @@ class NormalizationTof:
             value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
         )
         self.kernel_size_for_local_median_tof = widgets.BoundedIntText(description="tof axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+            value=1, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
         )
         hori_layout = widgets.HBox([kernel_size_label, 
                                     self.kernel_size_for_local_median_y, 
@@ -763,7 +769,7 @@ class NormalizationTof:
             min=1,
             max=10,
             step=1,
-            layout=widgets.Layout(width="200px"),
+            layout=widgets.Layout(width="50px"),
         )
         hori_layout = widgets.HBox([_label, self.maximum_iterations_ui],
                                    hori_layout=widgets.Layout(align_items="center",
@@ -972,6 +978,7 @@ class NormalizationTof:
             dc_dict=dc_dict,
             output_folder=output_folder,
             proton_charge_flag=self.proton_charge_flag.value,
+            monitor_counts_flag=self.monitor_counts_flag.value,
             shutter_counts_flag=self.shutter_counts_flag.value,
             # replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
             replace_ob_zeros_by_local_median_flag=self.replace_ob_zeros_by_local_median_flag.value,

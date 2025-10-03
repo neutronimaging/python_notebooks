@@ -59,6 +59,7 @@ class DataType:
 class MasterDictKeys:
     frame_number = "frame_number"
     proton_charge = "proton_charge"
+    monitor_counts = "monitor_counts"
     matching_ob = "matching_ob"
     list_tif = "list_tif"
     data = "data"
@@ -72,6 +73,7 @@ class MasterDictKeys:
 
 class StatusMetadata:
     all_shutter_counts_found = True
+    all_monitor_counts_found = True
     all_spectra_found = True
     all_proton_charge_found = True
 
@@ -144,6 +146,7 @@ def normalization_with_list_of_full_path(
     output_folder: str = "./",
     verbose: bool = False,
     proton_charge_flag=True,
+    monitor_counts_flag=False,
     shutter_counts_flag=True,
     replace_ob_zeros_by_nan_flag=False,
     replace_ob_zeros_by_local_median_flag=False,
@@ -175,6 +178,7 @@ def normalization_with_list_of_full_path(
                      output_folder (str): folder to save the output data
         verbose (bool): if True, display additional information
         proton_charge_flag (bool): if True, normalize by proton charge
+        monitor_counts_flag (bool): if True, normalize by monitor counts
         shutter_counts_flag (bool): if True, normalize by shutter counts
         replace_ob_zeros_by_nan_flag (bool): if True, replace OB zeros by NaN
         replace_ob_zeros_by_local_median_flag (bool): if True, replace OB zeros by local median
@@ -250,6 +254,13 @@ def normalization_with_list_of_full_path(
     else:
         normalized_by_proton_charge = False
 
+    if monitor_counts_flag:
+        normalized_by_monitor_counts = (
+            sample_status_metadata.all_monitor_counts_found and ob_status_metadata.all_monitor_counts_found
+        )
+    else:
+        normalized_by_monitor_counts = False
+
     if shutter_counts_flag:
         normalized_by_shutter_counts = (
             sample_status_metadata.all_shutter_counts_found and ob_status_metadata.all_shutter_counts_found
@@ -261,6 +272,7 @@ def normalization_with_list_of_full_path(
     ob_data_combined = combine_ob_images(
         ob_master_dict,
         use_proton_charge=normalized_by_proton_charge,
+        use_monitor_counts=normalized_by_monitor_counts,
         use_shutter_counts=normalized_by_shutter_counts,
         replace_ob_zeros_by_nan=replace_ob_zeros_by_nan_flag,
         replace_ob_zeros_by_local_median=replace_ob_zeros_by_local_median_flag,
@@ -375,6 +387,14 @@ def normalization_with_list_of_full_path(
             _sample_data = _sample_data / proton_charge
             logging.info(f"\t\tafter division: {_sample_data.dtype = }")
 
+        if normalized_by_monitor_counts:
+            logging.info("\t -> Normalized by monitor counts")
+            monitor_counts = sample_master_dict[_sample_run_number][MasterDictKeys.monitor_counts]
+            logging.info(f"\t\t monitor counts: {monitor_counts}")
+            logging.info(f"\t\t{type(monitor_counts) = }")
+            _sample_data = _sample_data / monitor_counts
+            logging.info(f"{_sample_data.shape = }")
+
         if normalized_by_shutter_counts:
             list_shutter_values_for_each_image = produce_list_shutter_for_each_image(
                 list_time_spectra=ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra],
@@ -476,7 +496,7 @@ def normalization_with_list_of_full_path(
 
             display(HTML(f"<h3>Preview of run {_sample_run_number}</h3>"))
             display(HTML(f"detector delay: {detector_delay_us:.2f} us"))
-
+            
             axs1[0].set_title(f"Integrated Sample data")
 
             sample_integrated1 = np.nansum(_sample_data, axis=1)
@@ -815,6 +835,27 @@ def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
     return status_all_proton_charge_found
 
 
+def update_dict_with_monitor_counts(master_dict: dict) -> bool:
+    """update the master dict with monitor counts from nexus file"""
+    status_all_monitor_counts_found = True
+    for _run_number in master_dict.keys():
+        _nexus_path = master_dict[_run_number][MasterDictKeys.nexus_path]
+        if _nexus_path is None or not os.path.exists(_nexus_path):
+            logging.info(f"Nexus file not found for run {_run_number}!")
+            master_dict[_run_number][MasterDictKeys.monitor_counts] = None
+            status_all_monitor_counts_found = False
+            continue
+
+        try:
+            with h5py.File(_nexus_path, "r") as hdf5_data:
+                monitor_counts = hdf5_data["entry"]["monitor1"]["total_counts"][0]
+        except KeyError:
+            monitor_counts = None
+            status_all_monitor_counts_found = False
+        master_dict[_run_number][MasterDictKeys.monitor_counts] = np.float32(monitor_counts)
+    return status_all_monitor_counts_found
+
+
 def update_dict_with_list_of_images(master_dict: dict) -> dict:
     """update the master dict with list of images"""
     for _run_number in master_dict.keys():
@@ -882,6 +923,12 @@ def create_master_dict(
         if not all_spectra_found:
             status_metadata.all_spectra_found = False
         logging.info(f"{master_dict = }")
+
+    logging.info("updating with monitor counts!")
+    all_monitor_counts_found = update_dict_with_monitor_counts(master_dict)
+    if not all_monitor_counts_found:
+        status_metadata.all_monitor_counts_found = False
+    logging.info(f"{master_dict = }")
 
     logging.info("updating with proton charge!")
     all_proton_charge_found = update_dict_with_proton_charge(master_dict)
@@ -1050,6 +1097,7 @@ def combine_dc_images(dc_master_dict: dict) -> np.ndarray:
 def combine_ob_images(
     ob_master_dict: dict,
     use_proton_charge: bool = False,
+    use_monitor_counts: bool = False,
     use_shutter_counts: bool = False,
     replace_ob_zeros_by_nan: bool = False,
     replace_ob_zeros_by_local_median: bool = False,
@@ -1064,6 +1112,8 @@ def combine_ob_images(
         master dict of ob run numbers
     use_proton_charge : bool
         whether to correct by proton charge
+    use_monitor_counts : bool
+        whether to correct by monitor counts
     use_shutter_counts : bool
         whether to correct by shutter counts
     replace_ob_zeros_by_nan : bool
@@ -1084,6 +1134,7 @@ def combine_ob_images(
 
     logging.info("Combining all open beam images")
     logging.info(f"\tcorrecting by proton charge: {use_proton_charge}")
+    logging.info(f"\tcorrecting by monitor counts: {use_monitor_counts}")
     logging.info(f"\tshutter counts: {use_shutter_counts}")
     logging.info(f"\treplace ob zeros by nan: {replace_ob_zeros_by_nan}")
     logging.info(f"\treplace ob zeros by local median: {replace_ob_zeros_by_local_median}")
@@ -1117,6 +1168,14 @@ def combine_ob_images(
             logging.info(f"\t\tbefore division: {proton_charge.dtype = }")
             ob_data = ob_data / proton_charge
             logging.info(f"\t\tafter division: {ob_data.dtype = }")
+            logging.info(f"{ob_data.shape = }")
+
+        if use_monitor_counts:
+            logging.info("\t -> Normalized by monitor counts")
+            monitor_counts = ob_master_dict[_ob_run_number][MasterDictKeys.monitor_counts]
+            logging.info(f"\t\t monitor counts: {monitor_counts}")
+            logging.info(f"\t\t{type(monitor_counts) = }")
+            ob_data = ob_data / monitor_counts
             logging.info(f"{ob_data.shape = }")
 
         if use_shutter_counts:
