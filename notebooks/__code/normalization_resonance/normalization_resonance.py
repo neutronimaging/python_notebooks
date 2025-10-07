@@ -196,9 +196,8 @@ class NormalizationResonance(NormalizationTof):
         vertical_layout = widgets.VBox(
             [
                 self.proton_charge_flag,
-                self.monitor_counts_flag,
+                # self.monitor_counts_flag,
                 self.shutter_counts_flag,
-                self.correct_chips_alignment_flag,
             ]
         )
         display(vertical_layout)
@@ -211,43 +210,7 @@ class NormalizationResonance(NormalizationTof):
                                                                       layout=widgets.Layout(width="500px"))
         self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
                                                            names='value')
-        self.correct_chips_alignment_flag = widgets.Checkbox(
-            description="Correct chips alignment", disabled=False, value=True
-        )
-        display(self.replace_ob_zeros_by_local_median_flag)
-
-        kernel_size_label = widgets.Label(value="Kernel size for local median (odd number):", 
-                                          layout=widgets.Layout(width="300"))
-        self.kernel_size_for_local_median_y = widgets.BoundedIntText(description="y axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
-        )
-        self.kernel_size_for_local_median_x = widgets.BoundedIntText(description="x axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
-        )
-        self.kernel_size_for_local_median_tof = widgets.BoundedIntText(description="tof axis:",
-            value=1, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
-        )
-        hori_layout = widgets.HBox([kernel_size_label, 
-                                    self.kernel_size_for_local_median_y, 
-                                    self.kernel_size_for_local_median_x,
-                                    self.kernel_size_for_local_median_tof],
-                                    hori_layout=widgets.Layout(align_items="center",
-                                                               width="100%"))
-        display(hori_layout)
-
-        _label = widgets.Label(value="Maximum number of iterations:", layout=widgets.Layout(width="300px")) 
-        self.maximum_iterations_ui = widgets.BoundedIntText(
-            value=2,
-            min=1,
-            max=10,
-            step=1,
-            layout=widgets.Layout(width="50px"),
-        )
-        hori_layout = widgets.HBox([_label, self.maximum_iterations_ui],
-                                   hori_layout=widgets.Layout(align_items="center",
-                                                              width="100%"))
-        display(hori_layout)
-
+      
         display(HTML("<hr>"))
 
         label = widgets.Label(value="Distance source detector (m)", layout=widgets.Layout(width="200px"))
