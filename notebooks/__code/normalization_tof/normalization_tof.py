@@ -25,17 +25,17 @@ from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
     retrieve_list_of_tif,
 )
 
-LOG_PATH = "/SNS/VENUS/shared/log/"
-file_name, ext = os.path.splitext(os.path.basename(__file__))
-user_name = os.getlogin()  # add user name to the log file name
-log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-notebook_logging.basicConfig(
-    filename=log_file_name,
-    filemode="w",
-    format="[%(levelname)s] - %(asctime)s - %(message)s",
-    level=notebook_logging.INFO,
-)
-notebook_logging.info(f"*** Starting a new script {file_name} ***")
+# LOG_PATH = "/SNS/VENUS/shared/log/"
+# file_name, ext = os.path.splitext(os.path.basename(__file__))
+# user_name = os.getlogin()  # add user name to the log file name
+# log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+# notebook_logging.basicConfig(
+#     filename=log_file_name,
+#     filemode="w",
+#     format="[%(levelname)s] - %(asctime)s - %(message)s",
+#     level=notebook_logging.INFO,
+# )
+# notebook_logging.info(f"*** Starting a new script {file_name} ***")
 
 
 class NormalizationTof:
@@ -78,7 +78,26 @@ class NormalizationTof:
     # )
     # notebook_logging.info(f"*** Starting a new script {file_name} ***")
 
+    def initialize(self):
+        LOG_PATH = "/SNS/VENUS/shared/log/"
+        file_name, ext = os.path.splitext(os.path.basename(__file__))
+        user_name = os.getlogin()  # add user name to the log file name
+        log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+        notebook_logging.basicConfig(
+            filename=log_file_name,
+            filemode="w",
+            format="[%(levelname)s] - %(asctime)s - %(message)s",
+            level=notebook_logging.INFO,
+        )
+        notebook_logging.info(f"*** Starting a new script {file_name} ***")
+
+    # def __new__(cls, *args, **kwargs):
+    #     logging.info(f"Creating instance of {cls.__name__}")
+
     def __init__(self, working_dir=None, debug=False):
+
+        self.initialize()
+
         if debug:
             self.working_dir = DEBUG_DATA.working_dir
             self.output_dir = DEBUG_DATA.output_folder
