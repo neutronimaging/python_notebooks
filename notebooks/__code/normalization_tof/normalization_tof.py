@@ -241,6 +241,7 @@ class NormalizationTof:
             # retrieve the path from the NeXus file
             file_path = self.retrieve_file_path_from_nexus(run_number)
             if self.detector_type == DetectorType.tpx1:
+                logging.info(f"{self.autoreduce_dir}")
                 file_path = Path(self.autoreduce_dir).parent.parent / file_path
             elif self.detector_type == DetectorType.tpx3:
                 file_path = Path(self.raw_dir) / file_path
@@ -288,9 +289,15 @@ class NormalizationTof:
 
             list_of_sample_full_path = []
             for _run in list_of_runs:
-                _full_path = self.extract_full_path(run_number=_run)
-                list_of_sample_full_path.append(_full_path)
+                try:
+                    _full_path = self.extract_full_path(run_number=_run)
+                    list_of_sample_full_path.append(_full_path)
+                except TypeError as e:
+                    notebook_logging.error(f"Error extracting full path for run number {_run}: {e}")
+                    display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
+                    continue
 
+            logging.info(f"\t{list_of_sample_full_path = }")
             for _file_full_path in list_of_sample_full_path:
                 if os.path.exists(_file_full_path):
                     notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND")
@@ -397,8 +404,13 @@ class NormalizationTof:
 
             list_of_ob_full_path = []
             for _run in list_of_runs:
-                _full_path = self.extract_full_path(run_number=_run)
-                list_of_ob_full_path.append(_full_path)
+                try:
+                    _full_path = self.extract_full_path(run_number=_run)
+                    list_of_ob_full_path.append(_full_path)
+                except TypeError as e:
+                    notebook_logging.error(f"Error extracting full path for run number {_run}: {e}")
+                    display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
+                    continue
 
             for _file_full_path in list_of_ob_full_path:
                 if os.path.exists(_file_full_path):
@@ -716,8 +728,15 @@ class NormalizationTof:
 
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
-        label = widgets.Label(value="What to take into account for normalization?")
-        display(label)
+        self.combine_sample_runs_flag = widgets.Checkbox(
+            description="Combine sample runs (all sample will produce one normalization output)", value=False, disabled=False
+        )
+        if len(self.dict_sample) > 1:
+            display(HTML("<span style='font-size: 16px; color:red'>How to treat the sample runs</span>"))
+            display(self.combine_sample_runs_flag)
+            display(HTML("<hr>"))
+
+        display(HTML("<span style='font-size: 16px; color:red'>What to take into account for the normalization</span>"))
 
         if all_nexus_found:
             _value = True
@@ -1013,6 +1032,8 @@ class NormalizationTof:
             preview=preview,
             distance_source_detector_m=self.distance_source_detector.value,
             export_mode=export_mode,
+            combine_samples=self.combine_sample_runs_flag.value,
         )
+
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))

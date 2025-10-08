@@ -141,6 +141,7 @@ def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
 
 def normalization_with_list_of_full_path(
     sample_dict: dict = None,
+    combine_samples: bool = False,
     ob_dict: dict = None,
     dc_dict: dict = None,
     output_folder: str = "./",
@@ -177,6 +178,7 @@ def normalization_with_list_of_full_path(
 
                      output_folder (str): folder to save the output data
         verbose (bool): if True, display additional information
+        combine_samples (bool): if True, combine sample runs
         proton_charge_flag (bool): if True, normalize by proton charge
         monitor_counts_flag (bool): if True, normalize by monitor counts
         shutter_counts_flag (bool): if True, normalize by shutter counts
@@ -354,6 +356,7 @@ def normalization_with_list_of_full_path(
 
     # normalize the sample data
     for _sample_run_number in sample_master_dict.keys():
+        
         logging.info("**********************************")
         logging.info(f"normalization of run {_sample_run_number}")
         if verbose:
@@ -487,81 +490,16 @@ def normalization_with_list_of_full_path(
 
         logging.info(f"Preview: {preview = }")
         if preview:
-            
-            # display preview of normalized data
-            fig, axs1 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-            sample_data_integrated = np.nanmean(_sample_data, axis=0)
-            im0 = axs1[0].imshow(sample_data_integrated, cmap="gray")
-            plt.colorbar(im0, ax=axs1[0])
-
-            display(HTML(f"<h3>Preview of run {_sample_run_number}</h3>"))
-            display(HTML(f"detector delay: {detector_delay_us:.2f} us"))
-            
-            axs1[0].set_title(f"Integrated Sample data")
-
-            sample_integrated1 = np.nansum(_sample_data, axis=1)
-            sample_integrated = np.nansum(sample_integrated1, axis=1)
-            axs1[1].plot(sample_integrated, 'o')
-            axs1[1].set_xlabel("File image index")
-            axs1[1].set_ylabel("mean of full image")
-            plt.tight_layout()
-
-            fig, axs2 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-            ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
-            im1 = axs2[0].imshow(ob_data_integrated, cmap="gray")
-            plt.colorbar(im1, ax=axs2[0])
-            axs2[0].set_title("OB integrated data ")
-
-            ob_integrated1 = np.nansum(ob_data_combined, axis=1)
-            ob_integrated = np.nansum(ob_integrated1, axis=1)
-            axs2[1].plot(ob_integrated, 'o')
-            axs2[1].set_xlabel("File image index")
-            axs2[1].set_ylabel("mean of full image")
-            plt.tight_layout()
-
-            if dc_data_combined is not None:
-                fig, axs_dc = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-                dc_data_integrated = np.nanmean(dc_data_combined, axis=0)
-                im_dc = axs_dc[0].imshow(dc_data_integrated, cmap="gray")
-                plt.colorbar(im_dc, ax=axs_dc[0])
-                axs_dc[0].set_title("DC integrated data ")
-
-                dc_integrated1 = np.nansum(dc_data_combined, axis=1)
-                dc_integrated = np.nansum(dc_integrated1, axis=1)
-                axs_dc[1].plot(dc_integrated, 'o')
-                axs_dc[1].set_xlabel("File image index")
-                axs_dc[1].set_ylabel("mean of full image")
-                plt.tight_layout()
-
-            fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-            normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
-            im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
-            plt.colorbar(im2, ax=axs3[0])
-            axs3[0].set_title(f"Integrated Normalized data")
-
-            profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
-            profile = np.nanmean(profile_step1, axis=1)
-            axs3[1].plot(profile, 'o')
-            axs3[1].set_xlabel("File image index")
-            axs3[1].set_ylabel("mean of full image")
-            plt.tight_layout()
-
-            if lambda_array is not None:
-                fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-                logging.info(f"{np.shape(profile) = }")
-
-                axs4[0].plot(lambda_array, profile, "*")
-                axs4[0].set_xlabel("Lambda (A)")
-                axs4[0].set_ylabel("mean of full image")
-
-                axs4[1].plot(energy_array, profile, "*")
-                axs4[1].set_xlabel("Energy (eV)")
-                axs4[1].set_ylabel("mean of full image")
-                axs4[1].set_xscale("log")
-                plt.tight_layout()
-
-            plt.show()
-
+            preview_normalized_data(_sample_data, 
+                                    ob_data_combined, 
+                                    dc_data_combined, 
+                                    normalized_data, 
+                                    lambda_array,
+                                    energy_array, 
+                                    detector_delay_us, 
+                                    _sample_run_number,
+                                    combine_samples)
+             
         if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
             # make up new output folder name
 
@@ -604,9 +542,132 @@ def normalization_with_list_of_full_path(
                         output_folder=output_stack_folder,
                     )
 
+    if combine_samples:
+
+        # combine all normalized data
+        array_of_normalized_data = []
+        for _key in normalized_data.keys():
+            array_of_normalized_data.append(normalized_data[_key])
+
+        combined_normalized_data = np.nanmean(np.array(array_of_normalized_data), axis=0)
+
+        # if preview, display the combined normalized data
+        if preview:
+            
+            fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+            normalized_data_integrated = np.nanmean(combined_normalized_data, axis=0)
+            im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
+            plt.colorbar(im2, ax=axs3[0])
+            axs3[0].set_title(f"Integrated combined Normalized data")
+
+            profile_step1 = np.nanmean(combined_normalized_data, axis=1)
+            profile = np.nanmean(profile_step1, axis=1)
+            axs3[1].plot(profile, 'o')
+            axs3[1].set_xlabel("File image index")
+            axs3[1].set_ylabel("mean of full image")
+            plt.tight_layout()
+
+            if lambda_array is not None:
+                fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                logging.info(f"{np.shape(profile) = }")
+
+                axs4[0].plot(lambda_array, profile, "*")
+                axs4[0].set_xlabel("Lambda (A)")
+                axs4[0].set_ylabel("mean of full image")
+
+                axs4[1].plot(energy_array, profile, "*")
+                axs4[1].set_xlabel("Energy (eV)")
+                axs4[1].set_ylabel("mean of full image")
+                axs4[1].set_xscale("log")
+                plt.tight_layout()
+
     logging.info("Normalization and export is done!")
     if verbose:
         display(HTML("Normalization and export is done!"))
+
+
+def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined, 
+                            normalized_data, 
+                            lambda_array, energy_array, 
+                            detector_delay_us, _sample_run_number,
+                            combine_samples=False):
+   
+    """preview normalized data"""
+
+    # display preview of normalized data
+    fig, axs1 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+    sample_data_integrated = np.nanmean(_sample_data, axis=0)
+    im0 = axs1[0].imshow(sample_data_integrated, cmap="gray")
+    plt.colorbar(im0, ax=axs1[0])
+
+    display(HTML(f"<h3>Preview of run {_sample_run_number}</h3>"))
+    display(HTML(f"detector delay: {detector_delay_us:.2f} us"))
+    
+    axs1[0].set_title(f"Integrated Sample data")
+
+    sample_integrated1 = np.nansum(_sample_data, axis=1)
+    sample_integrated = np.nansum(sample_integrated1, axis=1)
+    axs1[1].plot(sample_integrated, 'o')
+    axs1[1].set_xlabel("File image index")
+    axs1[1].set_ylabel("mean of full image")
+    plt.tight_layout()
+
+    fig, axs2 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+    ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
+    im1 = axs2[0].imshow(ob_data_integrated, cmap="gray")
+    plt.colorbar(im1, ax=axs2[0])
+    axs2[0].set_title("OB integrated data ")
+
+    ob_integrated1 = np.nansum(ob_data_combined, axis=1)
+    ob_integrated = np.nansum(ob_integrated1, axis=1)
+    axs2[1].plot(ob_integrated, 'o')
+    axs2[1].set_xlabel("File image index")
+    axs2[1].set_ylabel("mean of full image")
+    plt.tight_layout()
+
+    if dc_data_combined is not None:
+        fig, axs_dc = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+        dc_data_integrated = np.nanmean(dc_data_combined, axis=0)
+        im_dc = axs_dc[0].imshow(dc_data_integrated, cmap="gray")
+        plt.colorbar(im_dc, ax=axs_dc[0])
+        axs_dc[0].set_title("DC integrated data ")
+
+        dc_integrated1 = np.nansum(dc_data_combined, axis=1)
+        dc_integrated = np.nansum(dc_integrated1, axis=1)
+        axs_dc[1].plot(dc_integrated, 'o')
+        axs_dc[1].set_xlabel("File image index")
+        axs_dc[1].set_ylabel("mean of full image")
+        plt.tight_layout()
+
+    if not combine_samples:
+        fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+        normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
+        im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
+        plt.colorbar(im2, ax=axs3[0])
+        axs3[0].set_title(f"Integrated Normalized data")
+
+        profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
+        profile = np.nanmean(profile_step1, axis=1)
+        axs3[1].plot(profile, 'o')
+        axs3[1].set_xlabel("File image index")
+        axs3[1].set_ylabel("mean of full image")
+        plt.tight_layout()
+
+        if lambda_array is not None:
+            fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+            logging.info(f"{np.shape(profile) = }")
+
+            axs4[0].plot(lambda_array, profile, "*")
+            axs4[0].set_xlabel("Lambda (A)")
+            axs4[0].set_ylabel("mean of full image")
+
+            axs4[1].plot(energy_array, profile, "*")
+            axs4[1].set_xlabel("Energy (eV)")
+            axs4[1].set_ylabel("mean of full image")
+            axs4[1].set_xscale("log")
+            plt.tight_layout()
+
+    plt.show()
 
 
 def get_detector_offset_from_nexus(nexus_path: str) -> float:
