@@ -65,8 +65,6 @@ class Timepix3ImageStatistics:
         self.locate_dead_pixels()
         self.locate_high_pixels()
 
-
-
     def load_data(self):
         list_tiff = self.list_of_tiff_files
         self.data = np.array([np.array(Image.open(f)) for f in list_tiff])
@@ -213,6 +211,9 @@ class Timepix3ImageStatistics:
         default_threshold = 0.1 * np.max(self.integrated_image) # 10% of max value
 
         def display_high_pixels(threshold):
+
+            fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
+
             im1 = axs[0, 1].imshow(self.chip1, cmap='viridis', origin='lower')
             high_pixels1 = np.where(self.chip1 >= threshold)
             display(HTML(f"Number of high pixels in chip1 (>= {threshold}): {len(high_pixels1[0])}"))
@@ -225,7 +226,6 @@ class Timepix3ImageStatistics:
 
             high_pixels2 = np.where(self.chip2 >= threshold)
             display(HTML(f"Number of high pixels in chip2 (>= {threshold}): {len(high_pixels2[0])}"))
-            fig, axs = plt.subplots(2, 2, figsize=(10, 8))
             im2 = axs[0, 0].imshow(self.chip2, cmap='viridis', origin='lower')
             axs[0, 0].scatter(high_pixels2[1], high_pixels2[0], color='r', s=1)
             axs[0, 0].set_title(f'High Pixels (>= {threshold})')
@@ -262,7 +262,8 @@ class Timepix3ImageStatistics:
                                    threshold=widgets.IntSlider(min=0,
                                                                max=default_threshold,
                                                                value=np.max(self.integrated_image),
-        ) 
+                                   ),
+                                   )
         display(display_plot)
 
 
