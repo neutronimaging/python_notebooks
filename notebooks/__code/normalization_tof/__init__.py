@@ -17,6 +17,17 @@ class DataType:
     ob = "ob"
     dc = "dc"
 
+class Roi:
+
+    def __init__(self, left=None, top=None, width=None, height=None):
+        self.left = left
+        self.top = top
+        self.width = width
+        self.height = height
+
+    def __repr__(self):
+        return f"Roi(left={self.left}, top={self.top}, width={self.width}, height={self.height})"
+
 
 class DetectorType:
     tpx1_legacy = "tpx1 - old naming convention (until July 2025)"

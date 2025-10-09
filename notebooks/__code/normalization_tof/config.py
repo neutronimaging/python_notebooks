@@ -1,11 +1,11 @@
 class DEBUG_DATA:
-    ipts = "IPTS-35407"
+    ipts = "IPTS-35742"
     working_dir = f"/SNS/VENUS/{ipts}"
     autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
     output_folder = f"{working_dir}/shared/processed_data/jean"
-    sample_runs_selected = ["Run_13083"]
-    ob_runs_selected = ["Run_13082"]
-    dc_runs_selected = ["Run_13081"]
+    sample_runs_selected = ["Run_13419", "Run_13420"]
+    ob_runs_selected = ["Run_13421"]
+    dc_runs_selected = [""]
 
 
 timepix1_config = {

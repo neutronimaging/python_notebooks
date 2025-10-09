@@ -13,6 +13,7 @@ from IPython.display import HTML, display
 from ipywidgets import interactive
 from PIL import Image
 
+from __code.normalization_tof import Roi
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
 from __code.normalization_tof import DataType
@@ -70,18 +71,9 @@ class NormalizationTof:
     dict_ob_data = None
     dict_dc_data = None
 
-    # LOG_PATH = "/SNS/VENUS/shared/log/"
-    # file_name, ext = os.path.splitext(os.path.basename(__file__))
-    # user_name = os.getlogin()  # add user name to the log file name
-    # log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-    # print(f"Log file name: {log_file_name}")
-    # notebook_logging.basicConfig(
-    #     filename=log_file_name,
-    #     filemode="w",
-    #     format="[%(levelname)s] - %(asctime)s - %(message)s",
-    #     level=notebook_logging.INFO,
-    # )
-    # notebook_logging.info(f"*** Starting a new script {file_name} ***")
+    roi = None
+
+    default_roi = Roi(left=50, top=50, width=200, height=200)
 
     def initialize(self):
         LOG_PATH = "/SNS/VENUS/shared/log/"
@@ -764,6 +756,11 @@ class NormalizationTof:
 
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
+        display(HTML("<span style='font-size: 16px; color:red'>Normalization of full spectrum of ROI</span>"))
+        self.full_spectrum_roi_flag = widgets.Checkbox(description="Work on full spectrum of ROI", value=True)
+        display(self.full_spectrum_roi_flag)
+        display(HTML("<hr>"))
+
         self.combine_sample_runs_flag = widgets.Checkbox(
             description="Combine sample runs (all sample will produce one normalization output)", 
             value=False, 
@@ -868,6 +865,58 @@ class NormalizationTof:
             hori_layout = widgets.HBox([label, self.detector_offset_us])
             display(hori_layout)
 
+    def select_roi(self):
+
+        logging.info(f"Selecting ROI for full spectrum normalization...")
+
+        # load first sample and display integrated image to select ROI
+        if not self.dict_sample:
+            display(HTML("<span style='color:red'>No sample runs selected!</span>"))
+            return
+
+        dict_sample = self.dict_sample
+        first_sample_run = list(dict_sample.keys())[0]
+        notebook_logging.info(f"Loading first sample run: {first_sample_run}")
+        list_tiff = retrieve_list_of_tif(first_sample_run)
+        notebook_logging.info(f"\tNumber of TIFF files found: {len(list_tiff)}")
+
+        # load the data
+        integrated_data = load_data_using_multithreading(list_tiff, combine_tof=True)
+        default_left = self.default_roi.left
+        default_top = self.default_roi.top
+        default_width = self.default_roi.width
+        default_height = self.default_roi.height
+
+        self.roi = Roi(left=default_left, top=default_top,
+                       width=default_width, height=default_height)
+        
+        def roi_selection(vmin=0, vmax=np.max(integrated_data), left=0, top=0, width=50, height=50):
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
+            rect = patches.Rectangle((left, top), width, height, linewidth=1, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+            ax.set_title(f"Select ROI for full spectrum normalization")
+            plt.show()
+            logging.info(f"Selected ROI - left: {left}, top: {top}, width: {width}, height: {height}")
+            self.roi = Roi(left=left, top=top, width=width, height=height)
+
+        interactive_plot = interactive(
+            roi_selection,
+            vmin=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=0, description="vmin"),
+            vmax=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=int(np.max(integrated_data)), description="vmax"),
+            left=widgets.IntSlider(min=0, max=integrated_data.shape[1]-1, step=1, value=default_left, description="left"),
+            top=widgets.IntSlider(min=0, max=integrated_data.shape[0]-1, step=1, value=default_top, description="top"),
+            width=widgets.IntSlider(min=1, max=integrated_data.shape[1], step=1, value=default_width, description="width"),
+            height=widgets.IntSlider(min=1, max=integrated_data.shape[0], step=1, value=default_height, description="height"),
+        )
+        display(interactive_plot)
+
+    def post_settings(self):
+        if self.full_spectrum_roi_flag.value:
+            self.select_roi()
+        else:
+            display(HTML("<span style='color:blue'>Info: You are good to go, nothing to do here!</span>"))
+
     def _on_replace_ob_zeros_by_local_median_flag_change(self, change):
         if change['new']:
             self.kernel_size_for_local_median_y.disabled = False
@@ -901,13 +950,13 @@ class NormalizationTof:
             value=True,
             disabled=not combined_flag,
         )
-        if self.combine_sample_runs_flag.value:
-            self.export_corrected_stack_of_combined_normalized_data = widgets.Checkbox(
-                description="Export corrected stack of combined normalized data",
-                layout=widgets.Layout(width="100%"),
-                value=True,
-                disabled=True,
-            )
+
+        self.export_corrected_stack_of_combined_normalized_data = widgets.Checkbox(
+            description="Export corrected stack of combined normalized data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
+            disabled=True,
+        )
 
         list_widget_to_display =  [
                 self.export_corrected_stack_of_sample_data,
@@ -935,13 +984,12 @@ class NormalizationTof:
             description="Export corrected integrated each sample run normalized data", layout=widgets.Layout(width="100%"), value=False
         )
 
-        if self.combine_sample_runs_flag.value:
-            self.export_corrected_integrated_combined_normalized_data = widgets.Checkbox(
-                description="Export corrected integrated combined normalized data",
-                layout=widgets.Layout(width="100%"),
-                value=False,
-                disabled=False,
-            )
+        self.export_corrected_integrated_combined_normalized_data = widgets.Checkbox(
+            description="Export corrected integrated combined normalized data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
+            disabled=False,
+        )
 
         list_widget_to_display =  [
                 self.export_corrected_integrated_sample_data,
@@ -1037,6 +1085,9 @@ class NormalizationTof:
         # sample_run_numbers = self.sample_run_numbers
         # ob_run_numbers = self.ob_run_numbers
         output_folder = self.output_folder
+
+
+
         export_mode = {
             "sample_stack": self.export_corrected_stack_of_sample_data.value,
             "ob_stack": self.export_corrected_stack_of_ob_data.value,
@@ -1107,6 +1158,7 @@ class NormalizationTof:
             distance_source_detector_m=self.distance_source_detector.value,
             export_mode=export_mode,
             combine_samples=self.combine_sample_runs_flag.value,
+            roi=self.roi,
         )
 
         display(HTML("<span style='color:blue'>Normalization completed</span>"))

@@ -169,7 +169,7 @@ def normalization_with_list_of_full_path(
     correct_chips_alignment_flag: bool = True,
     correct_chips_alignment_config: dict = None,
     export_mode: dict = None,
-) -> NormalizedData:
+    roi = None) -> NormalizedData:
     """normalize the sample data with ob data using proton charge and shutter counts
     Args:
         sample_dict (dict): dictionary with sample run numbers and their data
@@ -237,6 +237,7 @@ def normalization_with_list_of_full_path(
     logging.info(f"{export_corrected_integrated_sample_data = }")
     logging.info(f"{export_corrected_integrated_ob_data = }")
     logging.info(f"{export_corrected_integrated_normalized_data = }")
+    logging.info(f"{roi =}")
     logging.info(f"{export_x_axis = }")
 
     sample_master_dict, sample_status_metadata = create_master_dict(
@@ -301,6 +302,21 @@ def normalization_with_list_of_full_path(
     logging.info(f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}")
     logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
 
+    logging.info(f"Calculating the ob_data_combined for spectrum normalization")
+    if roi is not None:
+        logging.info(f"\t{roi =}")
+        x0 = roi.left
+        y0 = roi.top
+        width = roi.width
+        height = roi.height
+        ob_data_combined_for_spectrum = [np.sum(np.sum(_data, axis=0), axis=0) for _data in ob_data_combined]
+        logging.info(f"\t{np.shape(ob_data_combined_for_spectrum) = }")
+        logging.info(f"\t{np.shape(ob_data_combined) = }")
+
+    else:
+        logging.info(f"\tno roi provided! Skipping the normalization of spectrum.")
+        ob_data_combined_for_spectrum = None
+
     if verbose:
         display(HTML(f"{ob_data_combined.shape = }"))
 
@@ -341,6 +357,15 @@ def normalization_with_list_of_full_path(
     # combine all ob images
     dc_data_combined = combine_dc_images(dc_master_dict)
     
+    if (dc_data_combined is not None) and (roi is not None):
+        dc_data_combined_for_spectrum = [np.sum(np.sum(_data, axis=0), axis=0) for _data in dc_data_combined]
+        logging.info(f"\t{np.shape(dc_data_combined) = }")
+        logging.info(f"\t{np.shape(dc_data_combined_for_spectrum) = }")
+
+    else:
+        logging.info(f"\tno roi provided! Skipping the normalization of spectrum.")
+        dc_data_combined_for_spectrum = None
+
     # load sample images
     for _sample_run_number in sample_master_dict.keys():
         logging.info(f"loading sample# {_sample_run_number} ... ")
@@ -368,6 +393,7 @@ def normalization_with_list_of_full_path(
             display(HTML("Chips alignment corrected!"))
 
     normalized_data = {}
+    spectrum_normalized_data = {}
 
     # normalize the sample data
     for _sample_run_number in sample_master_dict.keys():
@@ -451,8 +477,28 @@ def normalization_with_list_of_full_path(
                                          out=np.zeros_like(_sample_data), 
                                          where=ob_data_combined!=0)
         
+        if roi is not None:
+            x0 = roi.left
+            y0 = roi.top
+            width = roi.width
+            height = roi.height
+
+            _sample_data_combined_for_spectrum = [np.sum(np.sum(_data[y0: y0+height, x0: x0+width], axis=0), axis=0) for _data in _sample_data]
+
+            if dc_data_combined is not None:
+                _spectrum_normalized_data = np.divide(np.subtract(_sample_data_combined_for_spectrum, dc_data_combined_for_spectrum), 
+                                                       np.subtract(ob_data_combined_for_spectrum, dc_data_combined_for_spectrum), 
+                                                       out=np.zeros_like(_sample_data_combined_for_spectrum), 
+                                                       where=(ob_data_combined_for_spectrum - dc_data_combined_for_spectrum)!=0)
+            else:
+                _spectrum_normalized_data = np.divide(_sample_data_combined_for_spectrum, ob_data_combined_for_spectrum, 
+                                                       out=np.zeros_like(_sample_data_combined_for_spectrum), 
+                                                       where=ob_data_combined_for_spectrum!=0)
+            logging.info(f"{np.shape(_spectrum_normalized_data) = }")
+
         _normalized_data[ob_data_combined == 0] = 0
         normalized_data[_sample_run_number] = _normalized_data
+        spectrum_normalized_data[_sample_run_number] = _spectrum_normalized_data
 
         # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
         logging.info(f"{normalized_data[_sample_run_number].shape = }")
@@ -518,7 +564,9 @@ def normalization_with_list_of_full_path(
                                     energy_array, 
                                     detector_delay_us, 
                                     _sample_run_number,
-                                    combine_samples)
+                                    combine_samples,
+                                    _spectrum_normalized_data,
+                                    )
              
         if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
             # make up new output folder name
@@ -572,6 +620,7 @@ def normalization_with_list_of_full_path(
             array_of_normalized_data.append(normalized_data[_key])
 
         combined_normalized_data = np.nanmean(np.array(array_of_normalized_data), axis=0)
+        combined_spectrum_normalized_data = np.nanmean(np.array(list(spectrum_normalized_data.values())), axis=0)
         dict_to_return.data['combined'] = combined_normalized_data
 
         # if preview, display the combined normalized data
@@ -585,24 +634,45 @@ def normalization_with_list_of_full_path(
 
             profile_step1 = np.nanmean(combined_normalized_data, axis=1)
             profile = np.nanmean(profile_step1, axis=1)
-            axs3[1].plot(profile, 'o')
+            axs3[1].plot(profile, 'o', label="pixel by pixel normalization")
             axs3[1].set_xlabel("File image index")
             axs3[1].set_ylabel("mean of full image")
+            axs3[1].legend()
+
             plt.tight_layout()
 
             if lambda_array is not None:
+
                 fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                 logging.info(f"{np.shape(profile) = }")
 
-                axs4[0].plot(lambda_array, profile, "*")
+                axs4[0].plot(lambda_array, profile, "*", label="pixel by pixel normalization")
+                axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[0].set_xlabel("Lambda (A)")
                 axs4[0].set_ylabel("mean of full image")
 
-                axs4[1].plot(energy_array, profile, "*")
+                axs4[1].plot(energy_array, profile, "*", label="pixel by pixel normalization")
+                axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[1].set_xlabel("Energy (eV)")
                 axs4[1].set_ylabel("mean of full image")
                 axs4[1].set_xscale("log")
+
                 plt.tight_layout()
+
+                if combined_spectrum_normalized_data is not None:
+                    fig, axs5 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                    logging.info(f"{np.shape(profile) = }")
+
+                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", label="spectrum normalization")
+                    axs5[0].set_xlabel("Lambda (A)")
+                    axs5[0].set_ylabel("mean of full image")
+
+                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*", label="spectrum normalization")
+                    axs5[1].set_xlabel("Energy (eV)")
+                    axs5[1].set_ylabel("mean of full image")
+                    axs5[1].set_xscale("log")
+
+                    plt.tight_layout()
 
         if export_corrected_integrated_combined_normalized_data or export_corrected_stack_of_combined_normalized_data:
             # make up new output folder name
@@ -669,7 +739,8 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
                             normalized_data, 
                             lambda_array, energy_array, 
                             detector_delay_us, _sample_run_number,
-                            combine_samples=False):
+                            combine_samples=False,
+                            _spectrum_normalized_data=None):
    
     """preview normalized data"""
 
@@ -727,33 +798,56 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
 
         profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
         profile = np.nanmean(profile_step1, axis=1)
-        axs3[1].plot(profile, 'o')
+        
+        axs3[1].plot(profile, 'o', label="pixel by pixel normalization")
         axs3[1].set_xlabel("File image index")
         axs3[1].set_ylabel("mean of full image")
+        axs3[1].legend()
         plt.tight_layout()
 
         if lambda_array is not None:
             fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
             logging.info(f"{np.shape(profile) = }")
 
-            axs4[0].plot(lambda_array, profile, "*")
+            axs4[0].plot(lambda_array, profile, "*", label="pixel by pixel normalization")
             axs4[0].set_xlabel("Lambda (A)")
             axs4[0].set_ylabel("mean of full image")
+            axs4[0].legend()
 
-            axs4[1].plot(energy_array, profile, "*")
+            axs4[1].plot(energy_array, profile, "*", label="pixel by pixel normalization")
             axs4[1].set_xlabel("Energy (eV)")
             axs4[1].set_ylabel("mean of full image")
             axs4[1].set_xscale("log")
+            axs4[1].legend()
+
             plt.tight_layout()
 
-    plt.show()
+            if _spectrum_normalized_data is not None:
 
+                fig, axs6 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                logging.info(f"{np.shape(profile) = }")
+
+                axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", label="spectrum normalization")
+                axs6[0].set_xlabel("Lambda (A)")
+                axs6[0].set_ylabel("mean of full image")
+                axs6[0].legend()
+
+                axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", label="spectrum normalization")
+                axs6[1].set_xlabel("Energy (eV)")
+                axs6[1].set_ylabel("mean of full image")
+                axs6[1].set_xscale("log")
+                axs6[1].legend()
+
+                plt.tight_layout()
+
+    plt.show()
 
 def get_detector_offset_from_nexus(nexus_path: str) -> float:
     """get the detector offset from the nexus file"""
     with h5py.File(nexus_path, "r") as hdf5_data:
         try:
             detector_offset_micros = hdf5_data["entry"]["DASlogs"]["BL10:Det:TH:DSPT1:TIDelay"]["value"][0]
+            # detector_offset_micros = hdf5_data["entry"]["DASlogs"]["BL10:Det:DSP1:Trig2:Delay"]["value"][0]
         except KeyError:
             detector_offset_micros = None
     return detector_offset_micros
