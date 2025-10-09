@@ -1,6 +1,7 @@
 import glob
 import logging
 import logging as notebook_logging
+from multiprocessing.util import debug
 import os
 from pathlib import Path
 import numpy as np
@@ -98,6 +99,8 @@ class NormalizationTof:
         if debug:
             self.working_dir = DEBUG_DATA.working_dir
             self.output_dir = DEBUG_DATA.output_folder
+            self.default_roi = Roi(left=DEBUG_DATA.roi[0], top=DEBUG_DATA.roi[2], 
+                          width=DEBUG_DATA.roi[2], height=DEBUG_DATA.roi[3])
         else:
             self.working_dir = working_dir
             self.output_dir = os.path.join(self.working_dir, "shared")
@@ -891,7 +894,7 @@ class NormalizationTof:
                        width=default_width, height=default_height)
         
         def roi_selection(vmin=0, vmax=np.max(integrated_data), left=0, top=0, width=50, height=50):
-            fig, ax = plt.subplots(figsize=(10, 6))
+            fig, ax = plt.subplots(figsize=(10, 10))
             ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
             rect = patches.Rectangle((left, top), width, height, linewidth=1, edgecolor='r', facecolor='none')
             ax.add_patch(rect)
@@ -1085,8 +1088,6 @@ class NormalizationTof:
         # sample_run_numbers = self.sample_run_numbers
         # ob_run_numbers = self.ob_run_numbers
         output_folder = self.output_folder
-
-
 
         export_mode = {
             "sample_stack": self.export_corrected_stack_of_sample_data.value,

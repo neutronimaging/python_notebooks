@@ -3,9 +3,11 @@ class DEBUG_DATA:
     working_dir = f"/SNS/VENUS/{ipts}"
     autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
     output_folder = f"{working_dir}/shared/processed_data/jean"
-    sample_runs_selected = ["Run_13419", "Run_13420"]
-    ob_runs_selected = ["Run_13421"]
+    sample_runs_selected = ["Run_13422"]
+    ob_runs_selected = ["Run_13423"]
     dc_runs_selected = [""]
+    roi = [235, 252, 138, 349]
+
 
 
 timepix1_config = {

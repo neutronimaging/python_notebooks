@@ -20,6 +20,8 @@ from scipy.ndimage import median_filter
 # from scipy.constants import h, c, electron_volt, m_n
 # from timepix_geometry_correction.correct import TimepixGeometryCorrection
 
+MARKERSIZE = 2
+
 class NormalizedData:
     data= {}
     lambda_array= None
@@ -566,6 +568,7 @@ def normalization_with_list_of_full_path(
                                     _sample_run_number,
                                     combine_samples,
                                     _spectrum_normalized_data,
+                                    roi,
                                     )
              
         if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
@@ -634,7 +637,7 @@ def normalization_with_list_of_full_path(
 
             profile_step1 = np.nanmean(combined_normalized_data, axis=1)
             profile = np.nanmean(profile_step1, axis=1)
-            axs3[1].plot(profile, 'o', label="pixel by pixel normalization")
+            axs3[1].plot(profile, 'o', markersize=MARKERSIZE, label="pixel by pixel normalization")
             axs3[1].set_xlabel("File image index")
             axs3[1].set_ylabel("mean of full image")
             axs3[1].legend()
@@ -646,12 +649,12 @@ def normalization_with_list_of_full_path(
                 fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                 logging.info(f"{np.shape(profile) = }")
 
-                axs4[0].plot(lambda_array, profile, "*", label="pixel by pixel normalization")
+                axs4[0].plot(lambda_array, profile, "*", markersize=MARKERSIZE, label="pixel by pixel normalization")
                 axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[0].set_xlabel("Lambda (A)")
                 axs4[0].set_ylabel("mean of full image")
 
-                axs4[1].plot(energy_array, profile, "*", label="pixel by pixel normalization")
+                axs4[1].plot(energy_array, profile, "*", markersize=MARKERSIZE, label="pixel by pixel normalization")
                 axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[1].set_xlabel("Energy (eV)")
                 axs4[1].set_ylabel("mean of full image")
@@ -663,11 +666,11 @@ def normalization_with_list_of_full_path(
                     fig, axs5 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                     logging.info(f"{np.shape(profile) = }")
 
-                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", label="spectrum normalization")
+                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
                     axs5[0].set_xlabel("Lambda (A)")
                     axs5[0].set_ylabel("mean of full image")
 
-                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*", label="spectrum normalization")
+                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
                     axs5[1].set_xlabel("Energy (eV)")
                     axs5[1].set_ylabel("mean of full image")
                     axs5[1].set_xscale("log")
@@ -740,7 +743,8 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
                             lambda_array, energy_array, 
                             detector_delay_us, _sample_run_number,
                             combine_samples=False,
-                            _spectrum_normalized_data=None):
+                            _spectrum_normalized_data=None,
+                            roi=None):
    
     """preview normalized data"""
 
@@ -796,6 +800,13 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
         plt.colorbar(im2, ax=axs3[0])
         axs3[0].set_title(f"Integrated Normalized data")
 
+        if roi is not None:
+            x0 = roi.left
+            y0 = roi.top
+            width = roi.width
+            height = roi.height
+            axs3[0].add_patch(plt.Rectangle((x0, y0), width, height, fill=False, color="red", lw=2))
+
         profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
         profile = np.nanmean(profile_step1, axis=1)
         
@@ -827,12 +838,12 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
                 fig, axs6 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                 logging.info(f"{np.shape(profile) = }")
 
-                axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", label="spectrum normalization")
+                axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
                 axs6[0].set_xlabel("Lambda (A)")
                 axs6[0].set_ylabel("mean of full image")
                 axs6[0].legend()
 
-                axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", label="spectrum normalization")
+                axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
                 axs6[1].set_xlabel("Energy (eV)")
                 axs6[1].set_ylabel("mean of full image")
                 axs6[1].set_xscale("log")
