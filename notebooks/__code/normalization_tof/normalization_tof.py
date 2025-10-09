@@ -905,12 +905,12 @@ class NormalizationTof:
 
         interactive_plot = interactive(
             roi_selection,
-            vmin=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=0, description="vmin"),
-            vmax=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=int(np.max(integrated_data)), description="vmax"),
-            left=widgets.IntSlider(min=0, max=integrated_data.shape[1]-1, step=1, value=default_left, description="left"),
-            top=widgets.IntSlider(min=0, max=integrated_data.shape[0]-1, step=1, value=default_top, description="top"),
-            width=widgets.IntSlider(min=1, max=integrated_data.shape[1], step=1, value=default_width, description="width"),
-            height=widgets.IntSlider(min=1, max=integrated_data.shape[0], step=1, value=default_height, description="height"),
+            vmin=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=0, description="vmin", layout=widgets.Layout(width="400px")),
+            vmax=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=int(np.max(integrated_data)), description="vmax", layout=widgets.Layout(width="400px")),
+            left=widgets.IntSlider(min=0, max=integrated_data.shape[1]-1, step=1, value=default_left, description="left", layout=widgets.Layout(width="400px")),
+            top=widgets.IntSlider(min=0, max=integrated_data.shape[0]-1, step=1, value=default_top, description="top", layout=widgets.Layout(width="400px")),
+            width=widgets.IntSlider(min=1, max=integrated_data.shape[1], step=1, value=default_width, description="width", layout=widgets.Layout(width="400px")),
+            height=widgets.IntSlider(min=1, max=integrated_data.shape[0], step=1, value=default_height, description="height", layout=widgets.Layout(width="400px")),
         )
         display(interactive_plot)
 
@@ -918,6 +918,7 @@ class NormalizationTof:
         if self.full_spectrum_roi_flag.value:
             self.select_roi()
         else:
+            self.roi = None
             display(HTML("<span style='color:blue'>Info: You are good to go, nothing to do here!</span>"))
 
     def _on_replace_ob_zeros_by_local_median_flag_change(self, change):
@@ -944,7 +945,10 @@ class NormalizationTof:
             description="Export corrected stack of sample data", layout=widgets.Layout(width="100%"), value=False
         )
         self.export_corrected_stack_of_ob_data = widgets.Checkbox(
-            description="Export corrected stack of ob data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected stack of ob data", 
+            layout=widgets.Layout(width="100%"), 
+            value=False,
+            disabled=True,
         )
 
         self.export_corrected_stack_of_normalized_data = widgets.Checkbox(
@@ -978,13 +982,20 @@ class NormalizationTof:
         display(vertical_layout)
         display(HTML("<span style='font-size: 16px; color:red'>Integrated images</span>"))
         self.export_corrected_integrated_sample_data = widgets.Checkbox(
-            description="Export corrected integrated sample data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected integrated sample data", 
+            layout=widgets.Layout(width="100%"), 
+            value=False
         )
         self.export_corrected_integrated_ob_data = widgets.Checkbox(
-            description="Export corrected integrated ob data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected integrated ob data", 
+            layout=widgets.Layout(width="100%"), 
+            value=False,
+            disabled=True,
         )
         self.export_corrected_integrated_normalized_data = widgets.Checkbox(
-            description="Export corrected integrated each sample run normalized data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected integrated each sample run normalized data", 
+            layout=widgets.Layout(width="100%"), 
+            value=False
         )
 
         self.export_corrected_integrated_combined_normalized_data = widgets.Checkbox(
@@ -1161,9 +1172,9 @@ class NormalizationTof:
             combine_samples=self.combine_sample_runs_flag.value,
             roi=self.roi,
         )
-
+        
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
-        display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
+        # display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
 
     def profile_of_roi(self):
         normalized_data = self.normalized_dict.data

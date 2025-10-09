@@ -479,6 +479,7 @@ def normalization_with_list_of_full_path(
                                          out=np.zeros_like(_sample_data), 
                                          where=ob_data_combined!=0)
         
+        _spectrum_normalized_data = None
         if roi is not None:
             x0 = roi.left
             y0 = roi.top
@@ -497,10 +498,10 @@ def normalization_with_list_of_full_path(
                                                        out=np.zeros_like(_sample_data_combined_for_spectrum), 
                                                        where=ob_data_combined_for_spectrum!=0)
             logging.info(f"{np.shape(_spectrum_normalized_data) = }")
+            spectrum_normalized_data[_sample_run_number] = _spectrum_normalized_data
 
         _normalized_data[ob_data_combined == 0] = 0
         normalized_data[_sample_run_number] = _normalized_data
-        spectrum_normalized_data[_sample_run_number] = _spectrum_normalized_data
 
         # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
         logging.info(f"{normalized_data[_sample_run_number].shape = }")
@@ -584,6 +585,33 @@ def normalization_with_list_of_full_path(
             full_output_folder = os.path.abspath(full_output_folder)
             os.makedirs(full_output_folder, exist_ok=True)
 
+            if roi is not None:
+                logging.info(f"\t -> exporting the spectrum normalization")
+                logging.info(f"{roi =}")
+                x0 = roi.left
+                y0 = roi.top
+                width = roi.width
+                height = roi.height
+                full_file_name = os.path.join(full_output_folder, "spectrum_normalization_profile.txt")
+                pd_dataframe = pd.DataFrame({
+                    "file_index": np.arange(len(lambda_array)),
+                    "lambda (Angstroms)": lambda_array,
+                    "energy (eV)": energy_array,
+                    "spectrum normalization": _spectrum_normalized_data
+                })
+                pd_dataframe.attrs['roi [left, top, width, height]'] = f"{x0}, {y0}, {width}, {height}"
+                               
+                with open(full_file_name, 'w') as f:
+                    # Write metadata as comments
+                    for key, value in pd_dataframe.attrs.items():
+                        f.write(f"# {key}: {value}\n")
+                    
+                    # Write the DataFrame
+                    pd_dataframe.to_csv(f, index=False)              
+                
+                pd_dataframe.to_csv(full_file_name, index=False, sep=",")
+                logging.info(f"\t -> Exporting the spectrum normalization profile to {full_file_name}")
+
             if export_corrected_integrated_normalized_data:
                 # making up the integrated sample data
                 sample_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
@@ -639,7 +667,7 @@ def normalization_with_list_of_full_path(
             profile = np.nanmean(profile_step1, axis=1)
             axs3[1].plot(profile, 'o', markersize=MARKERSIZE, label="pixel by pixel normalization")
             axs3[1].set_xlabel("File image index")
-            axs3[1].set_ylabel("mean of full image")
+            axs3[1].set_ylabel("Transmission (a.u.)")
             axs3[1].legend()
 
             plt.tight_layout()
@@ -657,7 +685,7 @@ def normalization_with_list_of_full_path(
                 axs4[1].plot(energy_array, profile, "*", markersize=MARKERSIZE, label="pixel by pixel normalization")
                 axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[1].set_xlabel("Energy (eV)")
-                axs4[1].set_ylabel("mean of full image")
+                axs4[1].set_ylabel("Transmission (a.u.)")
                 axs4[1].set_xscale("log")
 
                 plt.tight_layout()
@@ -672,7 +700,7 @@ def normalization_with_list_of_full_path(
 
                     axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
                     axs5[1].set_xlabel("Energy (eV)")
-                    axs5[1].set_ylabel("mean of full image")
+                    axs5[1].set_ylabel("Transmission (a.u.)")
                     axs5[1].set_xscale("log")
 
                     plt.tight_layout()
@@ -763,7 +791,7 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
     sample_integrated = np.nansum(sample_integrated1, axis=1)
     axs1[1].plot(sample_integrated, 'o')
     axs1[1].set_xlabel("File image index")
-    axs1[1].set_ylabel("mean of full image")
+    axs1[1].set_ylabel("Transmission (a.u.)")
     plt.tight_layout()
 
     fig, axs2 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
@@ -776,7 +804,7 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
     ob_integrated = np.nansum(ob_integrated1, axis=1)
     axs2[1].plot(ob_integrated, 'o')
     axs2[1].set_xlabel("File image index")
-    axs2[1].set_ylabel("mean of full image")
+    axs2[1].set_ylabel("Transmission (a.u.)")
     plt.tight_layout()
 
     if dc_data_combined is not None:
@@ -790,7 +818,7 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
         dc_integrated = np.nansum(dc_integrated1, axis=1)
         axs_dc[1].plot(dc_integrated, 'o')
         axs_dc[1].set_xlabel("File image index")
-        axs_dc[1].set_ylabel("mean of full image")
+        axs_dc[1].set_ylabel("Transmission (a.u.)")
         plt.tight_layout()
 
     if not combine_samples:
@@ -812,7 +840,7 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
         
         axs3[1].plot(profile, 'o', label="pixel by pixel normalization")
         axs3[1].set_xlabel("File image index")
-        axs3[1].set_ylabel("mean of full image")
+        axs3[1].set_ylabel("Transmission (a.u.)")
         axs3[1].legend()
         plt.tight_layout()
 
@@ -822,12 +850,12 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
 
             axs4[0].plot(lambda_array, profile, "*", label="pixel by pixel normalization")
             axs4[0].set_xlabel("Lambda (A)")
-            axs4[0].set_ylabel("mean of full image")
+            axs4[0].set_ylabel("Transmission (a.u.)")
             axs4[0].legend()
 
             axs4[1].plot(energy_array, profile, "*", label="pixel by pixel normalization")
             axs4[1].set_xlabel("Energy (eV)")
-            axs4[1].set_ylabel("mean of full image")
+            axs4[1].set_ylabel("Transmission (a.u.)")
             axs4[1].set_xscale("log")
             axs4[1].legend()
 
@@ -840,12 +868,12 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
 
                 axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
                 axs6[0].set_xlabel("Lambda (A)")
-                axs6[0].set_ylabel("mean of full image")
+                axs6[0].set_ylabel("Transmission (a.u.)")
                 axs6[0].legend()
 
                 axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
                 axs6[1].set_xlabel("Energy (eV)")
-                axs6[1].set_ylabel("mean of full image")
+                axs6[1].set_ylabel("Transmission (a.u.)")
                 axs6[1].set_xscale("log")
                 axs6[1].legend()
 
