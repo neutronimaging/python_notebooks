@@ -12,6 +12,12 @@ distance_source_detector_m = {
 }
 
 
+class DataType:
+    sample = "sample"
+    ob = "ob"
+    dc = "dc"
+
+
 class DetectorType:
     tpx1_legacy = "tpx1 - old naming convention (until July 2025)"
     tpx1 = "tpx1 - new naming convention (from August 2025)"

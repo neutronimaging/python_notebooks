@@ -20,6 +20,13 @@ from scipy.ndimage import median_filter
 # from scipy.constants import h, c, electron_volt, m_n
 # from timepix_geometry_correction.correct import TimepixGeometryCorrection
 
+class NormalizedData:
+    data= {}
+    lambda_array= None
+    tof_array= None
+    energy_array= None
+
+
 from __code.normalization_tof.units import (
     DistanceUnitOptions,
     EnergyUnitOptions,
@@ -58,6 +65,7 @@ class DataType:
 
 class MasterDictKeys:
     frame_number = "frame_number"
+    run_number = "run_number"
     proton_charge = "proton_charge"
     monitor_counts = "monitor_counts"
     matching_ob = "matching_ob"
@@ -161,7 +169,7 @@ def normalization_with_list_of_full_path(
     correct_chips_alignment_flag: bool = True,
     correct_chips_alignment_config: dict = None,
     export_mode: dict = None,
-) -> None | np.ndarray:
+) -> NormalizedData:
     """normalize the sample data with ob data using proton charge and shutter counts
     Args:
         sample_dict (dict): dictionary with sample run numbers and their data
@@ -194,8 +202,12 @@ def normalization_with_list_of_full_path(
         correct_chips_alignment_flag (bool): if True, correct chips alignment
         correct_chips_alignment_config (dict): configuration for chips alignment correction
         export_mode (dict): dictionary with export options
+    Returns:
+        normalized_data | np.ndarray: normalized data
 
     """
+
+    dict_to_return = NormalizedData()
 
     # list sample and ob run numbers
     logging.info(f"{sample_dict.keys() = }")
@@ -211,9 +223,12 @@ def normalization_with_list_of_full_path(
     export_corrected_stack_of_sample_data = export_mode.get("sample_stack", False)
     export_corrected_stack_of_ob_data = export_mode.get("ob_stack", False)
     export_corrected_stack_of_normalized_data = export_mode.get("normalized_stack", False)
+    export_corrected_stack_of_combined_normalized_data = export_mode.get("combined_normalized_stack", False)
     export_corrected_integrated_sample_data = export_mode.get("sample_integrated", False)
     export_corrected_integrated_ob_data = export_mode.get("ob_integrated", False)
     export_corrected_integrated_normalized_data = export_mode.get("normalized_integrated", False)
+    export_corrected_integrated_combined_normalized_data = export_mode.get("combined_normalized_integrated", False)
+
     export_x_axis = export_mode.get("x_axis", True)
 
     logging.info(f"{export_corrected_stack_of_sample_data = }")
@@ -448,6 +463,8 @@ def normalization_with_list_of_full_path(
         detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
         time_spectra = sample_master_dict[_sample_run_number][MasterDictKeys.list_spectra]
 
+        dict_to_return.tof_array = time_spectra
+
         if time_spectra is None:
             logging.info("Time spectra is None, cannot convert to lambda or energy arrays")
             lambda_array = None
@@ -488,6 +505,9 @@ def normalization_with_list_of_full_path(
             logging.info(f"Energy array shape: {energy_array.shape}")
             logging.info(f"{energy_array = }")
 
+        dict_to_return.lambda_array = lambda_array
+        dict_to_return.energy_array = energy_array
+
         logging.info(f"Preview: {preview = }")
         if preview:
             preview_normalized_data(_sample_data, 
@@ -502,6 +522,8 @@ def normalization_with_list_of_full_path(
              
         if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
             # make up new output folder name
+
+            logging.info("Exporting normalized data ...")
 
             list_ob_runs = list(ob_master_dict.keys())
             str_ob_runs = "_".join([str(_ob_run_number) for _ob_run_number in list_ob_runs])
@@ -550,6 +572,7 @@ def normalization_with_list_of_full_path(
             array_of_normalized_data.append(normalized_data[_key])
 
         combined_normalized_data = np.nanmean(np.array(array_of_normalized_data), axis=0)
+        dict_to_return.data['combined'] = combined_normalized_data
 
         # if preview, display the combined normalized data
         if preview:
@@ -581,9 +604,65 @@ def normalization_with_list_of_full_path(
                 axs4[1].set_xscale("log")
                 plt.tight_layout()
 
+        if export_corrected_integrated_combined_normalized_data or export_corrected_stack_of_combined_normalized_data:
+            # make up new output folder name
+
+            list_sample_runs = list(sample_master_dict.keys())
+            _sample_str = ""
+            for _run in list_sample_runs:
+                _sample_str += f"{sample_master_dict[_run]['run_number']}_"
+
+            _ob_str = ""
+            for _run in list_ob_runs:
+                _ob_str += f"{ob_master_dict[_run]['run_number']}_"
+
+            full_output_folder = os.path.join(
+                output_folder, f"combined_normalized_samples_{_sample_str}_obs_{_ob_str}"
+            )  # issue for WEI here !
+            full_output_folder = os.path.abspath(full_output_folder)
+            os.makedirs(full_output_folder, exist_ok=True)
+
+            if export_corrected_integrated_combined_normalized_data:
+                # making up the integrated sample data
+                data_integrated = np.nanmean(combined_normalized_data, axis=0)
+                full_file_name = os.path.join(full_output_folder, "integrated.tif")
+                logging.info(f"\t -> Exporting integrated combined normalized data to {full_file_name} ...")
+                make_tiff(data=data_integrated, filename=full_file_name)
+                logging.info(f"\t -> Exporting integrated combined normalized data to {full_file_name} is done!")
+
+            if export_corrected_stack_of_combined_normalized_data:
+                output_stack_folder = os.path.join(full_output_folder, "stack")
+                logging.info(f"\tmaking folder {output_stack_folder}")
+                os.makedirs(output_stack_folder, exist_ok=True)
+
+                for _index, _data in enumerate(combined_normalized_data):
+                    _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
+                    make_tiff(data=_data, filename=_output_file)
+                logging.info(f"\t -> Exporting combined normalized data to {output_stack_folder} is done!")
+                print(f"Exported combined normalized tif images are in: {output_stack_folder}!")
+                
+                # copy one of the spectra file to the output folder
+                spectra_file = sample_master_dict[list_sample_runs[0]][MasterDictKeys.spectra_file_name]
+
+                if spectra_file and Path(spectra_file).exists():
+                    logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+                    shutil.copy(spectra_file, output_stack_folder)
+
+                    # create x-axis file
+                    create_x_axis_file(
+                        lambda_array=lambda_array,
+                        energy_array=energy_array,
+                        output_folder=output_stack_folder,
+                    )
+
+    else:
+        dict_to_return.data = normalized_data
+
     logging.info("Normalization and export is done!")
     if verbose:
         display(HTML("Normalization and export is done!"))
+
+    return dict_to_return
 
 
 def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined, 
@@ -679,6 +758,15 @@ def get_detector_offset_from_nexus(nexus_path: str) -> float:
             detector_offset_micros = None
     return detector_offset_micros
 
+
+def get_run_number_from_nexus(nexus_path: str) -> int:
+    """get the run number from the nexus file"""
+    with h5py.File(nexus_path, "r") as hdf5_data:
+        try:
+            run_number = hdf5_data["entry"]["entry_identifier"][:][0].decode("utf8")
+        except KeyError:
+            run_number = None
+    return run_number
 
 def export_sample_images(
     output_folder,
@@ -802,6 +890,7 @@ def init_master_dict(data_dictionary: dict) -> dict:
     for _base_name in data_dictionary.keys():
         master_dict[_base_name] = {
             MasterDictKeys.nexus_path: data_dictionary[_base_name]["nexus"],
+            MasterDictKeys.run_number: None,
             MasterDictKeys.frame_number: None,
             MasterDictKeys.data_path: data_dictionary[_base_name]["full_path"],
             MasterDictKeys.proton_charge: None,
@@ -948,6 +1037,9 @@ def update_with_nexus_metadata(master_dict: dict) -> dict:
             continue
         detector_offset_us = get_detector_offset_from_nexus(nexus_path)
         master_dict[run_number][MasterDictKeys.detector_delay_us] = detector_offset_us
+
+        _run_number = get_run_number_from_nexus(nexus_path)
+        master_dict[run_number][MasterDictKeys.run_number] = _run_number
 
 
 def update_dict_with_data_full_path(data_root_path: str, master_dict: dict) -> dict:

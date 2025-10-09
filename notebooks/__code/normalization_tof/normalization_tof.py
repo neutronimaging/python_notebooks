@@ -7,12 +7,15 @@ import numpy as np
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
 from IPython.display import HTML, display
 from ipywidgets import interactive
 from PIL import Image
 
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
+from __code.normalization_tof import DataType
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
@@ -43,6 +46,8 @@ class NormalizationTof:
     sample_run_numbers = None
     sample_run_numbers_selected = None
     
+    check_nbr_tiff = {DataType.sample: [], DataType.ob: [], DataType.dc: []}
+
     ob_folder = None
     ob_run_numbers = None
     ob_run_numbers_selected = None
@@ -135,18 +140,21 @@ class NormalizationTof:
     def reset_sample_dicts(self):
         self.dict_sample = {}
         self.dict_short_name_full_path["sample"] = {}
+        self.check_nbr_tiff[DataType.sample] = []
 
     def reset_ob_dicts(self):
         self.dict_short_name_full_path["ob"] = {}
         self.dict_ob = {}
         self.dict_ob_runs = None
         self.dict_ob_data = None
+        self.check_nbr_tiff[DataType.ob] = []
 
     def reset_dc_dicts(self):
         self.dict_short_name_full_path["dc"] = {}
         self.dict_dc = {}
         self.dict_dc_runs = None
         self.dict_dc_data = None
+        self.check_nbr_tiff[DataType.dc] = []
 
     def setup_default_paths(self):
         notebook_logging.info("Setting up default paths...")
@@ -304,6 +312,7 @@ class NormalizationTof:
                     is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
+                        self.check_nbr_tiff[DataType.sample].append(nbr_tiff)
                         notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_sample[_file_full_path] = {}
@@ -330,6 +339,7 @@ class NormalizationTof:
                     is_valid_run, report_dict = self.check_folder_is_valid(_run)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
+                        self.check_nbr_tiff[DataType.sample].append(nbr_tiff)
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_sample[_run] = {}
@@ -342,6 +352,10 @@ class NormalizationTof:
                     notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
             
             self.sample_run_numbers_selected = None
+
+        if len(set(self.check_nbr_tiff[DataType.sample])) > 1:
+            display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected sample runs: {self.check_nbr_tiff[DataType.sample]}</span>"))
+            notebook_logging.info(f"WARNING:Different number of TIFF files found in selected sample runs: {self.check_nbr_tiff[DataType.sample]}")
 
     def select_ob_folder(self):
         self.select_folder(instruction="Browse ob top folder", next_function=self.ob_folder_selected)
@@ -418,6 +432,7 @@ class NormalizationTof:
                     is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
+                        self.check_nbr_tiff[DataType.ob].append(nbr_tiff)
                         notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_ob[_file_full_path] = {}
@@ -443,6 +458,7 @@ class NormalizationTof:
                     is_valid_run, report_dict = self.check_folder_is_valid(_run)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
+                        self.check_nbr_tiff[DataType.ob].append(nbr_tiff)
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_short_name_full_path["ob"][os.path.basename(_run)] = _run
@@ -454,6 +470,15 @@ class NormalizationTof:
                     display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
                     notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
             self.ob_run_numbers_selected = None
+
+        if len(set(self.check_nbr_tiff[DataType.ob])) > 1:
+            display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}</span>"))
+            notebook_logging.info(f"WARNING: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}")
+
+        else:
+            if self.check_nbr_tiff[DataType.ob][0] != self.check_nbr_tiff[DataType.sample][0]:
+                display(HTML(f"<span style='color:red'>Not valid OB runs found (different number of OB and sample TIFF files)!</span>"))
+                notebook_logging.info("WARNING: Not valid OB runs found!")
 
     def select_dc_run_numbers(self):
         self.select_folder(instruction="Browse dc top folder", next_function=self.dc_folder_selected)
@@ -519,6 +544,7 @@ class NormalizationTof:
                     is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
+                        self.check_nbr_tiff[DataType.dc].append(nbr_tiff)
                         notebook_logging.info(f"\tDC run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_dc[_file_full_path] = {}
@@ -544,6 +570,7 @@ class NormalizationTof:
                     is_valid_run, report_dict = self.check_folder_is_valid(_run)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
+                        self.check_nbr_tiff[DataType.dc].append(nbr_tiff)
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_short_name_full_path["dc"][os.path.basename(_run)] = _run
@@ -555,6 +582,15 @@ class NormalizationTof:
                     display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
                     notebook_logging.info(f"\tDC run number {_run} - NOT FOUND!")
             self.dc_run_numbers_selected = None
+
+        if len(set(self.check_nbr_tiff[DataType.dc])) > 1:
+            display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected DC runs: {self.check_nbr_tiff[DataType.dc]}</span>"))
+            notebook_logging.info(f"WARNING: Different number of TIFF files found in selected DC runs: {self.check_nbr_tiff[DataType.dc]}")
+
+        else:
+            if self.check_nbr_tiff[DataType.dc][0] != self.check_nbr_tiff[DataType.sample][0]:
+                display(HTML(f"<span style='color:red'>No valid DC runs found (different number of DC and sample TIFF files)</span>"))
+                notebook_logging.info("WARNING: No valid DC runs found!")
 
     def _load_and_get_integrated_ob(self, full_path):
         """
@@ -729,7 +765,10 @@ class NormalizationTof:
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
         self.combine_sample_runs_flag = widgets.Checkbox(
-            description="Combine sample runs (all sample will produce one normalization output)", value=False, disabled=False
+            description="Combine sample runs (all sample will produce one normalization output)", 
+            value=False, 
+            disabled=False,
+            layout=widgets.Layout(width="600px"),
         )
         if len(self.dict_sample) > 1:
             display(HTML("<span style='font-size: 16px; color:red'>How to treat the sample runs</span>"))
@@ -842,6 +881,12 @@ class NormalizationTof:
             self.maximum_iterations_ui.disabled = True
 
     def what_to_export(self):
+        
+        if self.combine_sample_runs_flag.value:
+            combined_flag = True
+        else:
+            combined_flag = False
+        
         display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))
         self.export_corrected_stack_of_sample_data = widgets.Checkbox(
             description="Export corrected stack of sample data", layout=widgets.Layout(width="100%"), value=False
@@ -849,21 +894,35 @@ class NormalizationTof:
         self.export_corrected_stack_of_ob_data = widgets.Checkbox(
             description="Export corrected stack of ob data", layout=widgets.Layout(width="100%"), value=False
         )
+
         self.export_corrected_stack_of_normalized_data = widgets.Checkbox(
-            description="Export corrected stack of normalized data",
+            description="Export corrected stack of each sample run normalized data",
             layout=widgets.Layout(width="100%"),
             value=True,
-            disabled=True,
+            disabled=not combined_flag,
         )
-        label = widgets.Label(value="Note: Any of the stacks exported will also contain the original spectra file")
-        vertical_layout = widgets.VBox(
-            [
+        if self.combine_sample_runs_flag.value:
+            self.export_corrected_stack_of_combined_normalized_data = widgets.Checkbox(
+                description="Export corrected stack of combined normalized data",
+                layout=widgets.Layout(width="100%"),
+                value=True,
+                disabled=True,
+            )
+
+        list_widget_to_display =  [
                 self.export_corrected_stack_of_sample_data,
                 self.export_corrected_stack_of_ob_data,
                 self.export_corrected_stack_of_normalized_data,
-                label,
-            ]
+        ]
+        if self.combine_sample_runs_flag.value:
+            list_widget_to_display.append(self.export_corrected_stack_of_combined_normalized_data)
+        label = widgets.Label(value="Note: Any of the stacks exported will also contain the original spectra file")
+        list_widget_to_display.append(label)
+
+        vertical_layout = widgets.VBox(
+            list_widget_to_display
         )
+
         display(vertical_layout)
         display(HTML("<span style='font-size: 16px; color:red'>Integrated images</span>"))
         self.export_corrected_integrated_sample_data = widgets.Checkbox(
@@ -873,14 +932,27 @@ class NormalizationTof:
             description="Export corrected integrated ob data", layout=widgets.Layout(width="100%"), value=False
         )
         self.export_corrected_integrated_normalized_data = widgets.Checkbox(
-            description="Export corrected integrated normalized data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected integrated each sample run normalized data", layout=widgets.Layout(width="100%"), value=False
         )
-        vertical_layout = widgets.VBox(
-            [
+
+        if self.combine_sample_runs_flag.value:
+            self.export_corrected_integrated_combined_normalized_data = widgets.Checkbox(
+                description="Export corrected integrated combined normalized data",
+                layout=widgets.Layout(width="100%"),
+                value=False,
+                disabled=False,
+            )
+
+        list_widget_to_display =  [
                 self.export_corrected_integrated_sample_data,
                 self.export_corrected_integrated_ob_data,
                 self.export_corrected_integrated_normalized_data,
-            ]
+        ]
+        if self.combine_sample_runs_flag.value:
+            list_widget_to_display.append(self.export_corrected_integrated_combined_normalized_data)
+
+        vertical_layout = widgets.VBox(
+            list_widget_to_display,
         )
 
         display(vertical_layout)
@@ -969,9 +1041,11 @@ class NormalizationTof:
             "sample_stack": self.export_corrected_stack_of_sample_data.value,
             "ob_stack": self.export_corrected_stack_of_ob_data.value,
             "normalized_stack": self.export_corrected_stack_of_normalized_data.value,
+            "combined_normalized_stack": self.export_corrected_stack_of_combined_normalized_data.value,
             "sample_integrated": self.export_corrected_integrated_sample_data.value,
             "ob_integrated": self.export_corrected_integrated_ob_data.value,
             "normalized_integrated": self.export_corrected_integrated_normalized_data.value,
+            "combined_normalized_integrated": self.export_corrected_integrated_combined_normalized_data.value,
             "x_axis": True,  # always export x axis
         }
 
@@ -1010,7 +1084,7 @@ class NormalizationTof:
             else:
                 correct_chips_alignment_config = None
 
-        normalization_with_list_of_full_path(
+        self.normalized_dict = normalization_with_list_of_full_path(
             sample_dict=sample_dict,
             ob_dict=ob_dict,
             dc_dict=dc_dict,
@@ -1037,3 +1111,46 @@ class NormalizationTof:
 
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
+
+    def profile_of_roi(self):
+        normalized_data = self.normalized_dict.data
+
+        lambda_array = self.normalized_dict.lambda_array
+        energy_array = self.normalized_dict.energy_array
+        tof_array = self.normalized_dict.tof_array
+
+        def plot_normalized_profile_of_roi(index, left=0, top=0, width=50, height=50):
+
+            _normalized_data = normalized_data[index]
+            _integrated = np.nanmean(_normalized_data, axis=0)
+            _profile = np.nanmean(_normalized_data[:, top : top + height, left : left + width], axis=0)
+            fig, axs = plt.subplots(ncols=2, nrows=2,figsize=(10, 6))
+            im = axs[0,0].imshow(_integrated, cmap="viridis")
+            axs[0,0].add_patch(
+                patches.Rectangle(
+                    (left, top),
+                    width,
+                    height,
+                    linewidth=1,
+                    edgecolor="r",
+                    facecolor="none",
+                )
+            )
+
+            axs[0,0].set_title(f"Integrated normalized data - {index}")
+            fig.colorbar(im, ax=axs[0,0], orientation="vertical", label="Intensity")
+            axs[1,0].plot(lambda_array, _profile)
+            axs[1,0].set_title(f"Profile of ROI - {index}")
+            axs[1,0].set_xlabel("lambda_array")
+            axs[1,0].set_ylabel("Intensity (a.u.)")
+
+        _plot_normalized = interactive(widgets.Dropdown(options=list(normalized_data.keys()), 
+                                                       description="Sample run:",
+                                                       layout=widgets.Layout(width="300px")),
+                                      left=widgets.BoundedIntText(value=0, min=0, max=512, step=1, description="left:", layout=widgets.Layout(width="200px")),
+                                      top=widgets.BoundedIntText(value=0, min=0, max=512, step=1, description="top:", layout=widgets.Layout(width="200px")),
+                                      width=widgets.BoundedIntText(value=50, min=1, max=512, step=1, description="width:", layout=widgets.Layout(width="200px")),
+                                      height=widgets.BoundedIntText(value=50, min=1, max=512, step=1, description="height:", layout=widgets.Layout(width="200px")),
+                                      function=widgets.Dropdown(options=["mean", "median"], description="Function:", layout=widgets.Layout(width="200px")),
+        )
+        display(_plot_normalized)
