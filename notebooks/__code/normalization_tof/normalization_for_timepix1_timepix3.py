@@ -149,6 +149,23 @@ def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
     # return data_corrected
     return data
 
+
+def load_images(master_dict=None, verbose=False):
+
+    for _ob_run_number in master_dict.keys():
+        logging.info(f"loading ob# {_ob_run_number} ... ")
+        if verbose:
+            display(HTML(f"Loading ob# {_ob_run_number} ..."))
+        master_dict[_ob_run_number][MasterDictKeys.data] = load_data_using_multithreading(
+            master_dict[_ob_run_number][MasterDictKeys.list_tif], combine_tof=False
+        )
+        logging.info(f"ob# {_ob_run_number} loaded!")
+        logging.info(f"{master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
+        if verbose:
+            display(HTML(f"ob# {_ob_run_number} loaded!"))
+            display(HTML(f"{master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
+
+
 def normalization_with_list_of_full_path(
     sample_dict: dict = None,
     combine_samples: bool = False,
@@ -173,6 +190,7 @@ def normalization_with_list_of_full_path(
     export_mode: dict = None,
     roi = None) -> NormalizedData:
     """normalize the sample data with ob data using proton charge and shutter counts
+    
     Args:
         sample_dict (dict): dictionary with sample run numbers and their data
             {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
@@ -204,9 +222,9 @@ def normalization_with_list_of_full_path(
         correct_chips_alignment_flag (bool): if True, correct chips alignment
         correct_chips_alignment_config (dict): configuration for chips alignment correction
         export_mode (dict): dictionary with export options
+    
     Returns:
         normalized_data | np.ndarray: normalized data
-
     """
 
     dict_to_return = NormalizedData()
@@ -254,18 +272,20 @@ def normalization_with_list_of_full_path(
     )
 
     # load ob images
-    for _ob_run_number in ob_master_dict.keys():
-        logging.info(f"loading ob# {_ob_run_number} ... ")
-        if verbose:
-            display(HTML(f"Loading ob# {_ob_run_number} ..."))
-        ob_master_dict[_ob_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-            ob_master_dict[_ob_run_number][MasterDictKeys.list_tif], combine_tof=False
-        )
-        logging.info(f"ob# {_ob_run_number} loaded!")
-        logging.info(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
-        if verbose:
-            display(HTML(f"ob# {_ob_run_number} loaded!"))
-            display(HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
+    load_images(master_dict=ob_master_dict, verbose=verbose)
+
+    # for _ob_run_number in ob_master_dict.keys():
+    #     logging.info(f"loading ob# {_ob_run_number} ... ")
+    #     if verbose:
+    #         display(HTML(f"Loading ob# {_ob_run_number} ..."))
+    #     ob_master_dict[_ob_run_number][MasterDictKeys.data] = load_data_using_multithreading(
+    #         ob_master_dict[_ob_run_number][MasterDictKeys.list_tif], combine_tof=False
+    #     )
+    #     logging.info(f"ob# {_ob_run_number} loaded!")
+    #     logging.info(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
+    #     if verbose:
+    #         display(HTML(f"ob# {_ob_run_number} loaded!"))
+    #         display(HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
 
     if proton_charge_flag:
         normalized_by_proton_charge = (
@@ -332,6 +352,7 @@ def normalization_with_list_of_full_path(
                 display(HTML("Chips alignment corrected!"))
 
     # export ob data if requested
+    first_ob_run_number = list(ob_master_dict.keys())[0]
     if export_corrected_stack_of_ob_data or export_corrected_integrated_ob_data:
         export_ob_images(
             ob_master_dict.keys(),
@@ -339,7 +360,7 @@ def normalization_with_list_of_full_path(
             export_corrected_stack_of_ob_data,
             export_corrected_integrated_ob_data,
             ob_data_combined,
-            spectra_file_name=ob_master_dict[_ob_run_number][MasterDictKeys.spectra_file_name],
+            spectra_file_name=ob_master_dict[first_ob_run_number][MasterDictKeys.spectra_file_name],
         )
 
     # load dc images
@@ -443,7 +464,7 @@ def normalization_with_list_of_full_path(
 
         if normalized_by_shutter_counts:
             list_shutter_values_for_each_image = produce_list_shutter_for_each_image(
-                list_time_spectra=ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra],
+                list_time_spectra=ob_master_dict[first_ob_run_number][MasterDictKeys.list_spectra],
                 list_shutter_counts=sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts],
             )
 

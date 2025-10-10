@@ -30,18 +30,6 @@ from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
     retrieve_list_of_tif,
 )
 
-# LOG_PATH = "/SNS/VENUS/shared/log/"
-# file_name, ext = os.path.splitext(os.path.basename(__file__))
-# user_name = os.getlogin()  # add user name to the log file name
-# log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-# notebook_logging.basicConfig(
-#     filename=log_file_name,
-#     filemode="w",
-#     format="[%(levelname)s] - %(asctime)s - %(message)s",
-#     level=notebook_logging.INFO,
-# )
-# notebook_logging.info(f"*** Starting a new script {file_name} ***")
-
 
 class NormalizationTof:
     sample_folder = None
@@ -166,13 +154,6 @@ class NormalizationTof:
         # self.select_folder(instruction="Select sample top folder", next_function=self.sample_folder_selected)
 
     def select_sample_run_numbers(self):
-        # if self.sample_run_numbers_widget.value.strip() != "":
-        #     sample_run_numbers = self.sample_run_numbers_widget.value.split(',')
-        #     list_sample_run_numbers = [f"Run_{_run.strip()}" for _run in sample_run_numbers]
-        #     list_sample_runs_full_path = [os.path.join(self.autoreduce_dir, _sample) for _sample in list_sample_run_numbers]
-        #     self.sample_run_numbers_selected(list_sample_runs_full_path)
-        # else:
-
         self.setup_default_paths()
 
         if self.debug:
@@ -356,12 +337,6 @@ class NormalizationTof:
         self.select_folder(instruction="Browse ob top folder", next_function=self.ob_folder_selected)
 
     def select_ob_run_numbers(self):
-        # if self.ob_run_numbers_widget.value.strip() != "":
-        #     ob_run_numbers = self.ob_run_numbers_widget.value.split(',')
-        #     list_ob_run_numbers = [f"Run_{_run.strip()}" for _run in ob_run_numbers]
-        #     list_ob_runs_full_path = [os.path.join(self.autoreduce_dir, _ob) for _ob in list_ob_run_numbers]
-        #     self.ob_run_numbers_selected(list_ob_runs_full_path)
-        # else:
 
         if self.debug:
             ob_runs = DEBUG_DATA.ob_runs_selected
@@ -1029,25 +1004,6 @@ class NormalizationTof:
     def sample_folder_selected(self, folder_selected):
         self.sample_folder = folder_selected
         display(HTML(f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"))
-
-    # def sample_run_numbers_selected(self, runs_selected):
-    #     self.sample_run_numbers = runs_selected
-    #     display(HTML(f"Sample run numbers selected:"))
-    #     notebook_logging.info(f"Sample run numbers selected: {runs_selected}")
-    #     for _run in runs_selected:
-    #         if os.path.exists(_run):
-    #             notebook_logging.info(f"\tSample run number {_run} - FOUND")
-    #             # check here that the folder is not empty (contains tiff)
-    #             is_valid_run, report_dict = self.check_folder_is_valid(_run)
-    #             if is_valid_run:
-    #                 nbr_tiff = report_dict['nbr_tiff']
-    #                 display(HTML(f"<span style='color:green'>{_run}</span>"))
-    #                 notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-    #             else:
-    #                 display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
-    #         else:
-    #             display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span>"))
-    #             notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
 
     def ob_folder_selected(self, folder_selected):
         self.ob_folder = folder_selected
