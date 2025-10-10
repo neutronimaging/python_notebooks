@@ -87,7 +87,7 @@ class NormalizationTof:
         if debug:
             self.working_dir = DEBUG_DATA.working_dir
             self.output_dir = DEBUG_DATA.output_folder
-            self.default_roi = Roi(left=DEBUG_DATA.roi[0], top=DEBUG_DATA.roi[2], 
+            self.default_roi = Roi(left=DEBUG_DATA.roi[0], top=DEBUG_DATA.roi[1], 
                           width=DEBUG_DATA.roi[2], height=DEBUG_DATA.roi[3])
         else:
             self.working_dir = working_dir
@@ -652,12 +652,15 @@ class NormalizationTof:
             display(_display)
 
     def select_output_folder(self):
-        self.select_folder(
-            instruction="Select output folder", 
-            start_dir=self.working_dir, 
-            next_function=self.output_folder_selected,
-            newdir_toolbar_button=True,
-        )
+        if self.debug:
+            self.output_folder_selected(DEBUG_DATA.output_folder)
+        else:
+            self.select_folder(
+                instruction="Select output folder", 
+                start_dir=self.working_dir, 
+                next_function=self.output_folder_selected,
+                newdir_toolbar_button=True,
+            )
 
     def retrieve_nexus_file_path(self):
         """

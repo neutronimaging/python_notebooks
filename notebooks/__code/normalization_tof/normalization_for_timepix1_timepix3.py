@@ -191,19 +191,109 @@ def correct_chips_alignment(data_combined=None, correct_chips_alignment_config=N
 
 
 def correct_all_samples_chips_alignment(sample_master_dict=None, correct_chips_alignment_config=None, verbose=False):
-
-    logging.info("Correcting chips alignment ...")
-    if verbose:
-        display(HTML("Correcting chips alignment ..."))
     for _sample_run_number in sample_master_dict.keys():
         sample_master_dict[_sample_run_number][MasterDictKeys.data] = correct_chips_alignment(
             sample_master_dict[_sample_run_number][MasterDictKeys.data], 
             correct_chips_alignment_config,
             verbose=verbose
         )
-    logging.info("Chips alignment corrected!")
-    if verbose:
-        display(HTML("Chips alignment corrected!"))
+
+
+def normalize_by_proton_charge(master_dict=None, run_number=None, data=None):
+    if master_dict is not None and run_number is not None:
+        logging.info("\t -> Normalized by proton charge")
+        proton_charge = master_dict[run_number][MasterDictKeys.proton_charge]
+        logging.info(f"\t\t proton charge: {proton_charge} C")
+        logging.info(f"\t\t{type(proton_charge) = }")
+        logging.info(f"\t\tbefore division: {data.dtype = }")
+        data = data / proton_charge
+        logging.info(f"\t\tafter division: {data.dtype = }")
+        return data
+
+
+def normalize_by_monitor_counts(master_dict=None, run_number=None, data=None):
+    logging.info("\t -> Normalized by monitor counts")
+    monitor_counts = master_dict[run_number][MasterDictKeys.monitor_counts]
+    logging.info(f"\t\t monitor counts: {monitor_counts}")
+    logging.info(f"\t\t{type(monitor_counts) = }")
+    data = data / monitor_counts
+    logging.info(f"{data.shape = }")
+    return data
+
+
+def normalization_by_shutter_counts(sample_master_dict=None,
+                _sample_run_number=None,
+                _sample_data=None,
+                ob_master_dict=None,
+                first_ob_run_number=None,
+            ):
+    """
+    Normalize sample data by shutter counts for each image.
+    
+    This function normalizes sample data by dividing each image by its corresponding
+    shutter count value. The shutter count values are determined by mapping the time
+    spectra from the open beam data to the shutter counts recorded for the sample.
+    Images with zero shutter counts are replaced with NaN values to avoid division
+    by zero errors.
+    
+    Parameters
+    ----------
+    sample_master_dict : dict, optional
+        Master dictionary containing sample run data and metadata including shutter counts.
+        Expected to have structure: {run_number: {MasterDictKeys.shutter_counts: list, ...}}
+    _sample_run_number : str or int, optional
+        The run number key to access the specific sample data in sample_master_dict
+    _sample_data : numpy.ndarray, optional
+        3D array of sample image data with shape (n_images, height, width)
+    ob_master_dict : dict, optional
+        Master dictionary containing open beam run data and metadata including time spectra.
+        Expected to have structure: {run_number: {MasterDictKeys.list_spectra: list, ...}}
+    first_ob_run_number : str or int, optional
+        The run number key to access the time spectra from the first open beam run
+        
+    Returns
+    -------
+    numpy.ndarray
+        Normalized sample data array with same shape as input _sample_data.
+        Images corresponding to zero shutter counts are set to NaN.
+        
+    Notes
+    -----
+    The normalization process involves:
+    1. Extracting time spectra from the open beam data
+    2. Extracting shutter counts from the sample data
+    3. Mapping shutter count values to each image based on time spectra
+    4. Dividing each sample image by its corresponding shutter count
+    5. Setting images with zero shutter counts to NaN
+    
+    This function is typically used in neutron imaging data processing where
+    shutter counts represent the exposure time or beam intensity for each image.
+    
+    Examples
+    --------
+    >>> normalized_data = normalization_by_shutter_counts(
+    ...     sample_master_dict=sample_dict,
+    ...     _sample_run_number="Run_12345",
+    ...     _sample_data=sample_images,
+    ...     ob_master_dict=ob_dict,
+    ...     first_ob_run_number="Run_12340"
+    ... )
+    """
+        
+    list_shutter_values_for_each_image = produce_list_shutter_for_each_image(
+        list_time_spectra=ob_master_dict[first_ob_run_number][MasterDictKeys.list_spectra],
+        list_shutter_counts=sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts],
+    )
+
+    sample_data = []
+    for _sample, _shutter_value in zip(_sample_data, list_shutter_values_for_each_image, strict=False):
+        if _shutter_value != 0:
+            sample_data.append(_sample / _shutter_value)
+        else:
+            sample_data.append(np.nan)
+    _sample_data = np.array(sample_data)
+
+    return _sample_data
 
 
 def normalization_with_list_of_full_path(
@@ -312,7 +402,7 @@ def normalization_with_list_of_full_path(
     )
 
     # load ob images
-    load_images(master_dict=ob_master_dict, verbose=verbose)
+    load_images(master_dict=ob_master_dict, data_type=DataType.ob, verbose=verbose)
    
     if proton_charge_flag:
         normalized_by_proton_charge = (
@@ -426,41 +516,32 @@ def normalization_with_list_of_full_path(
         logging.info(f"\t data type of _sample_data: {_sample_data.dtype}")
         logging.info(f"\t Number of zeros in sample data: {number_of_zeros}")
         logging.info(f"\t Number of nan in sample data: {np.sum(np.isnan(_sample_data))}")
-        logging.info(
-            f"\t Percentage of zeros in sample data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%"
-        )
+        logging.info(f"\t Percentage of zeros in sample data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%")
         logging.info(f"\t Mean of sample data: {np.mean(_sample_data)}")
         logging.info(f"\t maximum of sample data: {np.max(_sample_data)}")
         logging.info(f"\t minimum of sample data: {np.min(_sample_data)}")
         logging.info("**********************************")
 
         if normalized_by_proton_charge:
-            logging.info("\t -> Normalized by proton charge")
-            proton_charge = sample_master_dict[_sample_run_number][MasterDictKeys.proton_charge]
-            logging.info(f"\t\t proton charge: {proton_charge} C")
-            logging.info(f"\t\t{type(proton_charge) = }")
-            logging.info(f"\t\tbefore division: {_sample_data.dtype = }")
-            _sample_data = _sample_data / proton_charge
-            logging.info(f"\t\tafter division: {_sample_data.dtype = }")
+            if verbose:
+                display(HTML(f"Normalizing by proton charge"))
+            _sample_data = normalize_by_proton_charge(sample_master_dict, _sample_run_number, _sample_data)
 
         if normalized_by_monitor_counts:
-            logging.info("\t -> Normalized by monitor counts")
-            monitor_counts = sample_master_dict[_sample_run_number][MasterDictKeys.monitor_counts]
-            logging.info(f"\t\t monitor counts: {monitor_counts}")
-            logging.info(f"\t\t{type(monitor_counts) = }")
-            _sample_data = _sample_data / monitor_counts
-            logging.info(f"{_sample_data.shape = }")
+            if verbose:
+                display(HTML(f"Normalizing by monitor counts"))
+            _sample_data = normalize_by_monitor_counts(sample_master_dict, _sample_run_number, _sample_data)
 
         if normalized_by_shutter_counts:
-            list_shutter_values_for_each_image = produce_list_shutter_for_each_image(
-                list_time_spectra=ob_master_dict[first_ob_run_number][MasterDictKeys.list_spectra],
-                list_shutter_counts=sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts],
+            if verbose:
+                display(HTML(f"Normalizing by shutter counts"))
+            _sample_data = normalization_by_shutter_counts(
+                sample_master_dict,
+                _sample_run_number,
+                _sample_data,
+                ob_master_dict,
+                first_ob_run_number,
             )
-
-            sample_data = []
-            for _sample, _shutter_value in zip(_sample_data, list_shutter_values_for_each_image, strict=False):
-                sample_data.append(_sample / _shutter_value)
-            _sample_data = np.array(sample_data)
 
         logging.info(f"{_sample_data.shape = }")
         logging.info(f"{_sample_data.dtype = }")
@@ -673,9 +754,17 @@ def normalization_with_list_of_full_path(
             plt.colorbar(im2, ax=axs3[0])
             axs3[0].set_title(f"Integrated combined Normalized data")
 
-            profile_step1 = np.nanmean(combined_normalized_data, axis=1)
-            profile = np.nanmean(profile_step1, axis=1)
-            axs3[1].plot(profile, 'o', markersize=MARKERSIZE, label="pixel by pixel normalization")
+            if roi is not None:
+                profile_step1 = np.nanmean(combined_normalized_data[:, roi.top:roi.top+roi.height, roi.left:roi.left+roi.width], axis=1)
+                profile = np.nanmean(profile_step1, axis=1)
+                _label = "pixel by pixel normalization profile of ROI"
+
+            else:
+                _label = "pixel by pixel normalization profile of full image"
+                profile_step1 = np.nanmean(combined_normalized_data, axis=1)
+                profile = np.nanmean(profile_step1, axis=1)
+        
+            axs3[1].plot(profile, 'o', markersize=MARKERSIZE, label=_label)
             axs3[1].set_xlabel("File image index")
             axs3[1].set_ylabel("Transmission (a.u.)")
             axs3[1].legend()
@@ -687,12 +776,12 @@ def normalization_with_list_of_full_path(
                 fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                 logging.info(f"{np.shape(profile) = }")
 
-                axs4[0].plot(lambda_array, profile, "*", markersize=MARKERSIZE, label="pixel by pixel normalization")
+                axs4[0].plot(lambda_array, profile, "*", markersize=MARKERSIZE, label=_label)
                 axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[0].set_xlabel("Lambda (A)")
                 axs4[0].set_ylabel("mean of full image")
 
-                axs4[1].plot(energy_array, profile, "*", markersize=MARKERSIZE, label="pixel by pixel normalization")
+                axs4[1].plot(energy_array, profile, "*", markersize=MARKERSIZE, label=_label)
                 axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[1].set_xlabel("Energy (eV)")
                 axs4[1].set_ylabel("Transmission (a.u.)")
@@ -704,11 +793,11 @@ def normalization_with_list_of_full_path(
                     fig, axs5 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                     logging.info(f"{np.shape(profile) = }")
 
-                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
+                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization of ROI")
                     axs5[0].set_xlabel("Lambda (A)")
                     axs5[0].set_ylabel("mean of full image")
 
-                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
+                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization of ROI")
                     axs5[1].set_xlabel("Energy (eV)")
                     axs5[1].set_ylabel("Transmission (a.u.)")
                     axs5[1].set_xscale("log")
@@ -845,10 +934,16 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
             height = roi.height
             axs3[0].add_patch(plt.Rectangle((x0, y0), width, height, fill=False, color="red", lw=2))
 
-        profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
-        profile = np.nanmean(profile_step1, axis=1)
-        
-        axs3[1].plot(profile, 'o', label="pixel by pixel normalization")
+            profile_step1 = np.nanmean(normalized_data[_sample_run_number][:, y0:y0+height, x0:x0+width], axis=1)
+            profile = np.nanmean(profile_step1, axis=1)
+            _label = "pixel by pixel normalization profile of ROI"
+
+        else:
+            profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
+            profile = np.nanmean(profile_step1, axis=1)
+            _label = "pixel by pixel normalization profile of full image"
+
+        axs3[1].plot(profile, 'o', label=_label)
         axs3[1].set_xlabel("File image index")
         axs3[1].set_ylabel("Transmission (a.u.)")
         axs3[1].legend()
@@ -858,12 +953,12 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
             fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
             logging.info(f"{np.shape(profile) = }")
 
-            axs4[0].plot(lambda_array, profile, "*", label="pixel by pixel normalization")
+            axs4[0].plot(lambda_array, profile, "*", label=_label)
             axs4[0].set_xlabel("Lambda (A)")
             axs4[0].set_ylabel("Transmission (a.u.)")
             axs4[0].legend()
 
-            axs4[1].plot(energy_array, profile, "*", label="pixel by pixel normalization")
+            axs4[1].plot(energy_array, profile, "*", label=_label)
             axs4[1].set_xlabel("Energy (eV)")
             axs4[1].set_ylabel("Transmission (a.u.)")
             axs4[1].set_xscale("log")
@@ -876,12 +971,12 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
                 fig, axs6 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                 logging.info(f"{np.shape(profile) = }")
 
-                axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
+                axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label=_label)
                 axs6[0].set_xlabel("Lambda (A)")
                 axs6[0].set_ylabel("Transmission (a.u.)")
                 axs6[0].legend()
 
-                axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization")
+                axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label=_label)
                 axs6[1].set_xlabel("Energy (eV)")
                 axs6[1].set_ylabel("Transmission (a.u.)")
                 axs6[1].set_xscale("log")
