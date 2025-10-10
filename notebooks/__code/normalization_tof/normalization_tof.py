@@ -879,14 +879,15 @@ class NormalizationTof:
             logging.info(f"Selected ROI - left: {left}, top: {top}, width: {width}, height: {height}")
             self.roi = Roi(left=left, top=top, width=width, height=height)
 
+        widgets_width = "800px"
         interactive_plot = interactive(
             roi_selection,
-            vmin=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=0, description="vmin", layout=widgets.Layout(width="400px")),
-            vmax=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=int(np.max(integrated_data)), description="vmax", layout=widgets.Layout(width="400px")),
-            left=widgets.IntSlider(min=0, max=integrated_data.shape[1]-1, step=1, value=default_left, description="left", layout=widgets.Layout(width="400px")),
-            top=widgets.IntSlider(min=0, max=integrated_data.shape[0]-1, step=1, value=default_top, description="top", layout=widgets.Layout(width="400px")),
-            width=widgets.IntSlider(min=1, max=integrated_data.shape[1], step=1, value=default_width, description="width", layout=widgets.Layout(width="400px")),
-            height=widgets.IntSlider(min=1, max=integrated_data.shape[0], step=1, value=default_height, description="height", layout=widgets.Layout(width="400px")),
+            vmin=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=0, description="vmin", layout=widgets.Layout(width=widgets_width)),
+            vmax=widgets.IntSlider(min=0, max=int(np.max(integrated_data)), step=1, value=int(np.max(integrated_data)), description="vmax", layout=widgets.Layout(width=widgets_width)),
+            left=widgets.IntSlider(min=0, max=integrated_data.shape[1]-1, step=1, value=default_left, description="left", layout=widgets.Layout(width=widgets_width)),
+            top=widgets.IntSlider(min=0, max=integrated_data.shape[0]-1, step=1, value=default_top, description="top", layout=widgets.Layout(width=widgets_width)),
+            width=widgets.IntSlider(min=1, max=integrated_data.shape[1], step=1, value=default_width, description="width", layout=widgets.Layout(width=widgets_width)),
+            height=widgets.IntSlider(min=1, max=integrated_data.shape[0], step=1, value=default_height, description="height", layout=widgets.Layout(width=widgets_width)),
         )
         display(interactive_plot)
 

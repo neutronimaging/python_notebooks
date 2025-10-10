@@ -165,7 +165,7 @@ def  calculate_ob_data_combined_used_by_spectrum_normalization(roi=None, ob_data
     return ob_data_combined_for_spectrum
 
 
-def correct_chips_alignment(ob_data_combined=None, correct_chips_alignment_config=None, verbose=False):
+def correct_chips_alignment(data_combined=None, correct_chips_alignment_config=None, verbose=False):
     """
     correct the chips position (fill the gaps between the chips) using the dedicated library
     timepix_geometry_correction (https://github.com/ornlneutronimaging/timepix_geometry_correction)
@@ -180,14 +180,30 @@ def correct_chips_alignment(ob_data_combined=None, correct_chips_alignment_confi
     if verbose:
         display(HTML("Correcting chips alignment ..."))
 
-    # do the math here
+    # do the math here on the data_combined
 
     logging.info("Chips alignment corrected!")
     
     if verbose:
         display(HTML("Chips alignment corrected!"))
-    
-    return ob_data_combined
+  
+    return data_combined
+
+
+def correct_all_samples_chips_alignment(sample_master_dict=None, correct_chips_alignment_config=None, verbose=False):
+
+    logging.info("Correcting chips alignment ...")
+    if verbose:
+        display(HTML("Correcting chips alignment ..."))
+    for _sample_run_number in sample_master_dict.keys():
+        sample_master_dict[_sample_run_number][MasterDictKeys.data] = correct_chips_alignment(
+            sample_master_dict[_sample_run_number][MasterDictKeys.data], 
+            correct_chips_alignment_config,
+            verbose=verbose
+        )
+    logging.info("Chips alignment corrected!")
+    if verbose:
+        display(HTML("Chips alignment corrected!"))
 
 
 def normalization_with_list_of_full_path(
@@ -335,7 +351,8 @@ def normalization_with_list_of_full_path(
     logging.info(f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}")
     logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
 
-    ob_data_combined = correct_chips_alignment(ob_data_combined, correct_chips_alignment_config) if correct_chips_alignment_flag else ob_data_combined
+    if correct_chips_alignment_flag:
+        correct_chips_alignment(ob_data_combined, correct_chips_alignment_config, verbose=verbose)
 
     ob_data_combined_for_spectrum = calculate_ob_data_combined_used_by_spectrum_normalization(roi=roi,
                                                                                  ob_data_combined=ob_data_combined,
@@ -370,7 +387,9 @@ def normalization_with_list_of_full_path(
 
     # combine all ob images
     dc_data_combined = combine_dc_images(dc_master_dict)
-    
+    if correct_chips_alignment_flag:
+        dc_data_combined = correct_chips_alignment(dc_data_combined, correct_chips_alignment_config, verbose=verbose)
+
     if (dc_data_combined is not None) and (roi is not None):
         dc_data_combined_for_spectrum = [np.sum(np.sum(_data, axis=0), axis=0) for _data in dc_data_combined]
         logging.info(f"\t{np.shape(dc_data_combined) = }")
@@ -381,30 +400,9 @@ def normalization_with_list_of_full_path(
         dc_data_combined_for_spectrum = None
 
     # load sample images
-    for _sample_run_number in sample_master_dict.keys():
-        logging.info(f"loading sample# {_sample_run_number} ... ")
-        if verbose:
-            display(HTML(f"Loading sample# {_sample_run_number} ..."))
-        sample_master_dict[_sample_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-            sample_master_dict[_sample_run_number][MasterDictKeys.list_tif], combine_tof=False
-        )
-        logging.info(f"sample# {_sample_run_number} loaded!")
-        logging.info(f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }")
-        if verbose:
-            display(HTML(f"sample# {_sample_run_number} loaded!"))
-            display(HTML(f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }"))
-
+    load_images(master_dict=sample_master_dict, data_type=DataType.sample, verbose=verbose)
     if correct_chips_alignment_flag:
-        logging.info("Correcting chips alignment ...")
-        if verbose:
-            display(HTML("Correcting chips alignment ..."))
-        for _sample_run_number in sample_master_dict.keys():
-            sample_master_dict[_sample_run_number][MasterDictKeys.data] = correct_chips_alignment(
-                sample_master_dict[_sample_run_number][MasterDictKeys.data], correct_chips_alignment_config
-            )
-        logging.info("Chips alignment corrected!")
-        if verbose:
-            display(HTML("Chips alignment corrected!"))
+        correct_all_samples_chips_alignment(sample_master_dict, correct_chips_alignment_config, verbose=verbose)
 
     normalized_data = {}
     spectrum_normalized_data = {}
