@@ -126,7 +126,46 @@ def create_x_axis_file(
     logging.info(f"X axis file created: {x_axis_file_name}")
 
 
-def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
+def load_images(master_dict=None, data_type=DataType.sample, verbose=False):
+
+    for _run_number in master_dict.keys():
+        logging.info(f"loading {data_type}# {_run_number} ... ")
+        if verbose:
+            display(HTML(f"Loading {data_type}# {_run_number} ..."))
+        master_dict[_run_number][MasterDictKeys.data] = load_data_using_multithreading(
+            master_dict[_run_number][MasterDictKeys.list_tif], combine_tof=False
+        )
+        logging.info(f"{data_type}# {_run_number} loaded!")
+        logging.info(f"{master_dict[_run_number][MasterDictKeys.data].shape = }")
+        if verbose:
+            display(HTML(f"{data_type}# {_run_number} loaded!"))
+            display(HTML(f"{master_dict[_run_number][MasterDictKeys.data].shape = }"))
+
+
+def  calculate_ob_data_combined_used_by_spectrum_normalization(roi=None, ob_data_combined=None, verbose=False):
+
+    logging.info(f"Calculating the ob_data_combined for spectrum normalization")
+    if roi is not None:
+        logging.info(f"\t{roi =}")
+        x0 = roi.left
+        y0 = roi.top
+        width = roi.width
+        height = roi.height
+        ob_data_combined_for_spectrum = [np.sum(np.sum(_data[y0:y0 + height, x0:x0 + width], axis=0), axis=0) for _data in ob_data_combined]
+        logging.info(f"\t{np.shape(ob_data_combined_for_spectrum) = }")
+        logging.info(f"\t{np.shape(ob_data_combined) = }")
+
+    else:
+        logging.info(f"\tno roi provided! Skipping the normalization of spectrum.")
+        ob_data_combined_for_spectrum = None
+
+    if verbose:
+        display(HTML(f"{ob_data_combined.shape = }"))
+
+    return ob_data_combined_for_spectrum
+
+
+def correct_chips_alignment(ob_data_combined=None, correct_chips_alignment_config=None, verbose=False):
     """
     correct the chips position (fill the gaps between the chips) using the dedicated library
     timepix_geometry_correction (https://github.com/ornlneutronimaging/timepix_geometry_correction)
@@ -137,33 +176,18 @@ def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
     Returns:
         np.ndarray: corrected data array
     """
-    # logging.info("Correcting chips alignment ...")
-    # for _index, _data in enumerate(data):
-    #     o_corrector = TimepixGeometryCorrection(raw_image=_data, config=config)
+    logging.info("Correcting chips alignment ...")
+    if verbose:
+        display(HTML("Correcting chips alignment ..."))
 
-    #     data_corrected = o_corrector.correct()
-    #     data[_index] = data_corrected
+    # do the math here
 
-    # logging.info(f"\t{np.shape(data_corrected) = }")
-    # logging.info("Chips alignment corrected!")
-    # return data_corrected
-    return data
-
-
-def load_images(master_dict=None, verbose=False):
-
-    for _ob_run_number in master_dict.keys():
-        logging.info(f"loading ob# {_ob_run_number} ... ")
-        if verbose:
-            display(HTML(f"Loading ob# {_ob_run_number} ..."))
-        master_dict[_ob_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-            master_dict[_ob_run_number][MasterDictKeys.list_tif], combine_tof=False
-        )
-        logging.info(f"ob# {_ob_run_number} loaded!")
-        logging.info(f"{master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
-        if verbose:
-            display(HTML(f"ob# {_ob_run_number} loaded!"))
-            display(HTML(f"{master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
+    logging.info("Chips alignment corrected!")
+    
+    if verbose:
+        display(HTML("Chips alignment corrected!"))
+    
+    return ob_data_combined
 
 
 def normalization_with_list_of_full_path(
@@ -273,20 +297,7 @@ def normalization_with_list_of_full_path(
 
     # load ob images
     load_images(master_dict=ob_master_dict, verbose=verbose)
-
-    # for _ob_run_number in ob_master_dict.keys():
-    #     logging.info(f"loading ob# {_ob_run_number} ... ")
-    #     if verbose:
-    #         display(HTML(f"Loading ob# {_ob_run_number} ..."))
-    #     ob_master_dict[_ob_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-    #         ob_master_dict[_ob_run_number][MasterDictKeys.list_tif], combine_tof=False
-    #     )
-    #     logging.info(f"ob# {_ob_run_number} loaded!")
-    #     logging.info(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
-    #     if verbose:
-    #         display(HTML(f"ob# {_ob_run_number} loaded!"))
-    #         display(HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
-
+   
     if proton_charge_flag:
         normalized_by_proton_charge = (
             sample_status_metadata.all_proton_charge_found and ob_status_metadata.all_proton_charge_found
@@ -324,32 +335,11 @@ def normalization_with_list_of_full_path(
     logging.info(f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}")
     logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
 
-    logging.info(f"Calculating the ob_data_combined for spectrum normalization")
-    if roi is not None:
-        logging.info(f"\t{roi =}")
-        x0 = roi.left
-        y0 = roi.top
-        width = roi.width
-        height = roi.height
-        ob_data_combined_for_spectrum = [np.sum(np.sum(_data, axis=0), axis=0) for _data in ob_data_combined]
-        logging.info(f"\t{np.shape(ob_data_combined_for_spectrum) = }")
-        logging.info(f"\t{np.shape(ob_data_combined) = }")
+    ob_data_combined = correct_chips_alignment(ob_data_combined, correct_chips_alignment_config) if correct_chips_alignment_flag else ob_data_combined
 
-    else:
-        logging.info(f"\tno roi provided! Skipping the normalization of spectrum.")
-        ob_data_combined_for_spectrum = None
-
-    if verbose:
-        display(HTML(f"{ob_data_combined.shape = }"))
-
-    if correct_chips_alignment_flag:
-        logging.info("Correcting chips alignment ...")
-        if verbose:
-            display(HTML("Correcting chips alignment ..."))
-            ob_data_combined = correct_chips_alignment(ob_data_combined, correct_chips_alignment_config)
-            logging.info("Chips alignment corrected!")
-            if verbose:
-                display(HTML("Chips alignment corrected!"))
+    ob_data_combined_for_spectrum = calculate_ob_data_combined_used_by_spectrum_normalization(roi=roi,
+                                                                                 ob_data_combined=ob_data_combined,
+                                                                                 verbose=verbose)
 
     # export ob data if requested
     first_ob_run_number = list(ob_master_dict.keys())[0]
@@ -364,18 +354,19 @@ def normalization_with_list_of_full_path(
         )
 
     # load dc images
-    for _dc_run_number in dc_master_dict.keys():
-        logging.info(f"loading dc# {_dc_run_number} ... ")
-        if verbose:
-            display(HTML(f"Loading dc# {_dc_run_number} ..."))
-        dc_master_dict[_dc_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-            dc_master_dict[_dc_run_number][MasterDictKeys.list_tif], combine_tof=False
-        )
-        logging.info(f"dc# {_dc_run_number} loaded!")
-        logging.info(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }")
-        if verbose:
-            display(HTML(f"dc# {_dc_run_number} loaded!"))
-            display(HTML(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }"))
+    dc_master_dict = load_images(master_dict=dc_master_dict, data_type=DataType.dc, verbose=verbose)
+    # for _dc_run_number in dc_master_dict.keys():
+    #     logging.info(f"loading dc# {_dc_run_number} ... ")
+    #     if verbose:
+    #         display(HTML(f"Loading dc# {_dc_run_number} ..."))
+    #     dc_master_dict[_dc_run_number][MasterDictKeys.data] = load_data_using_multithreading(
+    #         dc_master_dict[_dc_run_number][MasterDictKeys.list_tif], combine_tof=False
+    #     )
+    #     logging.info(f"dc# {_dc_run_number} loaded!")
+    #     logging.info(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }")
+    #     if verbose:
+    #         display(HTML(f"dc# {_dc_run_number} loaded!"))
+    #         display(HTML(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }"))
 
     # combine all ob images
     dc_data_combined = combine_dc_images(dc_master_dict)

@@ -457,13 +457,14 @@ class NormalizationTof:
 
         if self.debug:
             dc_runs = DEBUG_DATA.dc_runs_selected
-            dc_run_numbers_list = []
-            for _run in dc_runs:
-                _, number = _run.split("_")
-                dc_run_numbers_list.append(number)
-            str_dc_run_numbers = ", ".join(dc_run_numbers_list)
-
-            output_folder = DEBUG_DATA.output_folder
+            if dc_runs:
+                dc_run_numbers_list = []
+                for _run in dc_runs:
+                    _, number = _run.split("_")
+                    dc_run_numbers_list.append(number)
+                str_dc_run_numbers = ", ".join(dc_run_numbers_list)
+            else:
+                str_dc_run_numbers = ""
 
         else:
             str_dc_run_numbers = ""
