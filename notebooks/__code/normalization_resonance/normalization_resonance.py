@@ -195,12 +195,14 @@ class NormalizationResonance(NormalizationTof):
         logging.info(f"\tob_folders: {ob_folders}")
         logging.info(f"\roi: {roi}")
 
-        # transmission = normalization_with_pleaides(list_sample_folders=self.sample_folder,
-        #                             list_ob_folders=self.ob_folder,
-        #                             nexus_path=nexus_path,
-        #                             facility=Facility.ornl,
-        #                             combine_mode=self.combine_mode_widget.value,
-        #                             roi=self.roi,
-        #                             pc_uncertainty=0.005,
-        #                             output_folder=self.output_folder,)
+        transmission = normalization_with_pleaides(list_sample_folders=self.sample_folder,
+                                    list_ob_folders=self.ob_folder,
+                                    nexus_path=nexus_path,
+                                    facility=Facility.ornl,
+                                    combine_mode=self.combine_mode_widget.value,
+                                    roi=self.roi,
+                                    pc_uncertainty=0.005,
+                                    output_folder=self.output_folder,)
     
+        logging.info("Done with normalization.")
+        display(HTML("<span style='font-size: 16px; color:red'>Done with normalization.</span>"))
