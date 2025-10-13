@@ -947,7 +947,7 @@ class NormalizationTof:
 
         list_widget_to_display =  [
                 self.export_corrected_stack_of_sample_data,
-                self.export_corrected_stack_of_ob_data,
+                # self.export_corrected_stack_of_ob_data,
                 self.export_corrected_stack_of_normalized_data,
         ]
         if self.combine_sample_runs_flag.value:
@@ -987,7 +987,7 @@ class NormalizationTof:
 
         list_widget_to_display =  [
                 self.export_corrected_integrated_sample_data,
-                self.export_corrected_integrated_ob_data,
+                # self.export_corrected_integrated_ob_data,
                 self.export_corrected_integrated_normalized_data,
         ]
         if self.combine_sample_runs_flag.value:

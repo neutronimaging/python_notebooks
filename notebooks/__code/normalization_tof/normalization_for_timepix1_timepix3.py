@@ -296,6 +296,187 @@ def normalization_by_shutter_counts(sample_master_dict=None,
     return _sample_data
 
 
+def  perform_normalization(_sample_data=None, ob_data_combined=None, dc_data_combined=None):
+    if dc_data_combined is not None:
+        logging.info(f"normalization with DC subtraction")
+        _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined), 
+                                        out=np.zeros_like(_sample_data), 
+                                        where=(ob_data_combined - dc_data_combined)!=0)
+    else:
+        logging.info(f"normalization without DC subtraction")
+        _normalized_data = np.divide(_sample_data, ob_data_combined, 
+                                        out=np.zeros_like(_sample_data), 
+                                         where=ob_data_combined!=0)
+
+    _normalized_data[ob_data_combined == 0] = 0
+    
+    return _normalized_data
+
+
+def perform_spectrum_normalization(roi=None, sample_data=None, ob_data_combined_for_spectrum=None, dc_data_combined=None, dc_data_combined_for_spectrum=None):
+    _spectrum_normalized_data = None
+    if roi is not None:
+        x0 = roi.left
+        y0 = roi.top
+        width = roi.width
+        height = roi.height
+
+        _sample_data_combined_for_spectrum = [np.sum(np.sum(_data[y0: y0+height, x0: x0+width], axis=0), axis=0) for _data in sample_data]
+
+        if dc_data_combined is not None:
+            _spectrum_normalized_data = np.divide(np.subtract(_sample_data_combined_for_spectrum, dc_data_combined_for_spectrum), 
+                                                    np.subtract(ob_data_combined_for_spectrum, dc_data_combined_for_spectrum), 
+                                                    out=np.zeros_like(_sample_data_combined_for_spectrum), 
+                                                    where=(ob_data_combined_for_spectrum - dc_data_combined_for_spectrum)!=0)
+        else:
+            _spectrum_normalized_data = np.divide(_sample_data_combined_for_spectrum, ob_data_combined_for_spectrum, 
+                                                    out=np.zeros_like(_sample_data_combined_for_spectrum), 
+                                                    where=ob_data_combined_for_spectrum!=0)
+        logging.info(f"{np.shape(_spectrum_normalized_data) = }")
+    return _spectrum_normalized_data
+
+
+def export_normalized_data(ob_master_dict=None, 
+                sample_master_dict=None, 
+                _sample_run_number=None,
+                normalized_data=None, 
+                _spectrum_normalized_data=None,
+                lambda_array=None, 
+                energy_array=None, 
+                output_folder="./", 
+                export_corrected_stack_of_normalized_data=False,
+                export_corrected_integrated_normalized_data=False,
+                roi=None):
+
+    logging.info("Exporting normalized data ...")
+
+    list_ob_runs = list(ob_master_dict.keys())
+    str_ob_runs = "_".join([str(_ob_run_number) for _ob_run_number in list_ob_runs])
+    full_output_folder = os.path.join(
+        output_folder, f"normalized_sample_{_sample_run_number}_obs_{str_ob_runs}"
+    )  # issue for WEI here !
+    full_output_folder = os.path.abspath(full_output_folder)
+    os.makedirs(full_output_folder, exist_ok=True)
+
+    if roi is not None:
+        logging.info(f"\t -> exporting the spectrum normalization")
+        logging.info(f"{roi =}")
+        x0 = roi.left
+        y0 = roi.top
+        width = roi.width
+        height = roi.height
+        full_file_name = os.path.join(full_output_folder, "spectrum_normalization_profile.txt")
+        pd_dataframe = pd.DataFrame({
+            "file_index": np.arange(len(lambda_array)),
+            "lambda (Angstroms)": lambda_array,
+            "energy (eV)": energy_array,
+            "spectrum normalization": _spectrum_normalized_data
+        })
+        pd_dataframe.attrs['roi [left, top, width, height]'] = f"{x0}, {y0}, {width}, {height}"
+                        
+        with open(full_file_name, 'w') as f:
+            # Write metadata as comments
+            for key, value in pd_dataframe.attrs.items():
+                f.write(f"# {key}: {value}\n")
+            
+            # Write the DataFrame
+            pd_dataframe.to_csv(f, index=False)              
+        
+        pd_dataframe.to_csv(full_file_name, index=False, sep=",")
+        logging.info(f"\t -> Exporting the spectrum normalization profile to {full_file_name}")
+
+    if export_corrected_integrated_normalized_data:
+        # making up the integrated sample data
+        sample_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
+        full_file_name = os.path.join(full_output_folder, "integrated.tif")
+        logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} ...")
+        make_tiff(data=sample_data_integrated, filename=full_file_name)
+        logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} is done!")
+
+    if export_corrected_stack_of_normalized_data:
+        output_stack_folder = os.path.join(full_output_folder, "stack")
+        logging.info(f"\tmaking folder {output_stack_folder}")
+        os.makedirs(output_stack_folder, exist_ok=True)
+
+        for _index, _data in enumerate(normalized_data[_sample_run_number]):
+            _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
+            make_tiff(data=_data, filename=_output_file)
+        logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
+        print(f"Exported normalized tif images are in: {output_stack_folder}!")
+        spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
+
+        if spectra_file and Path(spectra_file).exists():
+            logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+            shutil.copy(spectra_file, output_stack_folder)
+
+            # create x-axis file
+            create_x_axis_file(
+                lambda_array=lambda_array,
+                energy_array=energy_array,
+                output_folder=output_stack_folder,
+            )
+
+
+def  export_corrected_normalized_data(sample_master_dict=None,
+                                      ob_master_dict=None,
+                                       combined_normalized_data=None,
+                                       export_corrected_integrated_combined_normalized_data=False,
+                                       export_corrected_stack_of_combined_normalized_data=False,
+                                       lambda_array=None,
+                                       energy_array=None,
+                                       output_folder="./",
+):
+
+    list_sample_runs = list(sample_master_dict.keys())
+    _sample_str = ""
+    for _run in list_sample_runs:
+        _sample_str += f"{sample_master_dict[_run]['run_number']}_"
+
+    _ob_str = ""
+    list_ob_runs = list(ob_master_dict.keys())
+    for _run in list_ob_runs:
+        _ob_str += f"{ob_master_dict[_run]['run_number']}_"
+
+    full_output_folder = os.path.join(
+        output_folder, f"combined_normalized_samples_{_sample_str}_obs_{_ob_str}"
+    )  # issue for WEI here !
+    full_output_folder = os.path.abspath(full_output_folder)
+    os.makedirs(full_output_folder, exist_ok=True)
+
+    if export_corrected_integrated_combined_normalized_data:
+        # making up the integrated sample data
+        data_integrated = np.nanmean(combined_normalized_data, axis=0)
+        full_file_name = os.path.join(full_output_folder, "integrated.tif")
+        logging.info(f"\t -> Exporting integrated combined normalized data to {full_file_name} ...")
+        make_tiff(data=data_integrated, filename=full_file_name)
+        logging.info(f"\t -> Exporting integrated combined normalized data to {full_file_name} is done!")
+
+    if export_corrected_stack_of_combined_normalized_data:
+        output_stack_folder = os.path.join(full_output_folder, "stack")
+        logging.info(f"\tmaking folder {output_stack_folder}")
+        os.makedirs(output_stack_folder, exist_ok=True)
+
+        for _index, _data in enumerate(combined_normalized_data):
+            _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
+            make_tiff(data=_data, filename=_output_file)
+        logging.info(f"\t -> Exporting combined normalized data to {output_stack_folder} is done!")
+        print(f"Exported combined normalized tif images are in: {output_stack_folder}!")
+        
+        # copy one of the spectra file to the output folder
+        spectra_file = sample_master_dict[list_sample_runs[0]][MasterDictKeys.spectra_file_name]
+
+        if spectra_file and Path(spectra_file).exists():
+            logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+            shutil.copy(spectra_file, output_stack_folder)
+
+            # create x-axis file
+            create_x_axis_file(
+                lambda_array=lambda_array,
+                energy_array=energy_array,
+                output_folder=output_stack_folder,
+            )
+
+
 def normalization_with_list_of_full_path(
     sample_dict: dict = None,
     combine_samples: bool = False,
@@ -559,40 +740,15 @@ def normalization_with_list_of_full_path(
                 spectra_file_name=sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name],
             )
 
-        if dc_data_combined is not None:
-            logging.info(f"normalization with DC subtraction")
-            _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined), 
-                                         out=np.zeros_like(_sample_data), 
-                                         where=(ob_data_combined - dc_data_combined)!=0)
-        else:
-            logging.info(f"normalization without DC subtraction")
-            _normalized_data = np.divide(_sample_data, ob_data_combined, 
-                                         out=np.zeros_like(_sample_data), 
-                                         where=ob_data_combined!=0)
-        
-        _spectrum_normalized_data = None
-        if roi is not None:
-            x0 = roi.left
-            y0 = roi.top
-            width = roi.width
-            height = roi.height
-
-            _sample_data_combined_for_spectrum = [np.sum(np.sum(_data[y0: y0+height, x0: x0+width], axis=0), axis=0) for _data in _sample_data]
-
-            if dc_data_combined is not None:
-                _spectrum_normalized_data = np.divide(np.subtract(_sample_data_combined_for_spectrum, dc_data_combined_for_spectrum), 
-                                                       np.subtract(ob_data_combined_for_spectrum, dc_data_combined_for_spectrum), 
-                                                       out=np.zeros_like(_sample_data_combined_for_spectrum), 
-                                                       where=(ob_data_combined_for_spectrum - dc_data_combined_for_spectrum)!=0)
-            else:
-                _spectrum_normalized_data = np.divide(_sample_data_combined_for_spectrum, ob_data_combined_for_spectrum, 
-                                                       out=np.zeros_like(_sample_data_combined_for_spectrum), 
-                                                       where=ob_data_combined_for_spectrum!=0)
-            logging.info(f"{np.shape(_spectrum_normalized_data) = }")
-            spectrum_normalized_data[_sample_run_number] = _spectrum_normalized_data
-
-        _normalized_data[ob_data_combined == 0] = 0
+        _normalized_data = perform_normalization(_sample_data, ob_data_combined, dc_data_combined)
         normalized_data[_sample_run_number] = _normalized_data
+
+        _spectrum_normalized_data = perform_spectrum_normalization(roi=roi, 
+                                                                   sample_data=_sample_data, 
+                                                                   ob_data_combined_for_spectrum=ob_data_combined_for_spectrum, 
+                                                                   dc_data_combined=dc_data_combined,
+                                                                   dc_data_combined_for_spectrum=dc_data_combined_for_spectrum)
+        spectrum_normalized_data[_sample_run_number] = _spectrum_normalized_data
 
         # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
         logging.info(f"{normalized_data[_sample_run_number].shape = }")
@@ -664,76 +820,19 @@ def normalization_with_list_of_full_path(
                                     )
              
         if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
-            # make up new output folder name
 
-            logging.info("Exporting normalized data ...")
-
-            list_ob_runs = list(ob_master_dict.keys())
-            str_ob_runs = "_".join([str(_ob_run_number) for _ob_run_number in list_ob_runs])
-            full_output_folder = os.path.join(
-                output_folder, f"normalized_sample_{_sample_run_number}_obs_{str_ob_runs}"
-            )  # issue for WEI here !
-            full_output_folder = os.path.abspath(full_output_folder)
-            os.makedirs(full_output_folder, exist_ok=True)
-
-            if roi is not None:
-                logging.info(f"\t -> exporting the spectrum normalization")
-                logging.info(f"{roi =}")
-                x0 = roi.left
-                y0 = roi.top
-                width = roi.width
-                height = roi.height
-                full_file_name = os.path.join(full_output_folder, "spectrum_normalization_profile.txt")
-                pd_dataframe = pd.DataFrame({
-                    "file_index": np.arange(len(lambda_array)),
-                    "lambda (Angstroms)": lambda_array,
-                    "energy (eV)": energy_array,
-                    "spectrum normalization": _spectrum_normalized_data
-                })
-                pd_dataframe.attrs['roi [left, top, width, height]'] = f"{x0}, {y0}, {width}, {height}"
-                               
-                with open(full_file_name, 'w') as f:
-                    # Write metadata as comments
-                    for key, value in pd_dataframe.attrs.items():
-                        f.write(f"# {key}: {value}\n")
-                    
-                    # Write the DataFrame
-                    pd_dataframe.to_csv(f, index=False)              
-                
-                pd_dataframe.to_csv(full_file_name, index=False, sep=",")
-                logging.info(f"\t -> Exporting the spectrum normalization profile to {full_file_name}")
-
-            if export_corrected_integrated_normalized_data:
-                # making up the integrated sample data
-                sample_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
-                full_file_name = os.path.join(full_output_folder, "integrated.tif")
-                logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} ...")
-                make_tiff(data=sample_data_integrated, filename=full_file_name)
-                logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} is done!")
-
-            if export_corrected_stack_of_normalized_data:
-                output_stack_folder = os.path.join(full_output_folder, "stack")
-                logging.info(f"\tmaking folder {output_stack_folder}")
-                os.makedirs(output_stack_folder, exist_ok=True)
-
-                for _index, _data in enumerate(normalized_data[_sample_run_number]):
-                    _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
-                    make_tiff(data=_data, filename=_output_file)
-                logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
-                print(f"Exported normalized tif images are in: {output_stack_folder}!")
-                spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
-
-                if spectra_file and Path(spectra_file).exists():
-                    logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
-                    shutil.copy(spectra_file, output_stack_folder)
-
-                    # create x-axis file
-                    create_x_axis_file(
-                        lambda_array=lambda_array,
-                        energy_array=energy_array,
-                        output_folder=output_stack_folder,
-                    )
-
+            export_normalized_data(ob_master_dict=ob_master_dict, 
+                sample_master_dict=sample_master_dict, 
+                _sample_run_number=_sample_run_number,
+                normalized_data=normalized_data, 
+                _spectrum_normalized_data=_spectrum_normalized_data,
+                lambda_array=lambda_array, 
+                energy_array=energy_array, 
+                output_folder=output_folder, 
+                export_corrected_stack_of_normalized_data=export_corrected_stack_of_normalized_data,
+                export_corrected_integrated_normalized_data=export_corrected_integrated_normalized_data,
+                roi=roi)
+          
     if combine_samples:
 
         # combine all normalized data
@@ -754,13 +853,11 @@ def normalization_with_list_of_full_path(
             plt.colorbar(im2, ax=axs3[0])
             axs3[0].set_title(f"Integrated combined Normalized data")
 
+            _label = "pixel by pixel normalization profile of full image"
             if roi is not None:
                 profile_step1 = np.nanmean(combined_normalized_data[:, roi.top:roi.top+roi.height, roi.left:roi.left+roi.width], axis=1)
                 profile = np.nanmean(profile_step1, axis=1)
-                _label = "pixel by pixel normalization profile of ROI"
-
             else:
-                _label = "pixel by pixel normalization profile of full image"
                 profile_step1 = np.nanmean(combined_normalized_data, axis=1)
                 profile = np.nanmean(profile_step1, axis=1)
         
@@ -777,15 +874,17 @@ def normalization_with_list_of_full_path(
                 logging.info(f"{np.shape(profile) = }")
 
                 axs4[0].plot(lambda_array, profile, "*", markersize=MARKERSIZE, label=_label)
-                axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
+                #axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[0].set_xlabel("Lambda (A)")
                 axs4[0].set_ylabel("mean of full image")
+                axs4[0].legend()
 
                 axs4[1].plot(energy_array, profile, "*", markersize=MARKERSIZE, label=_label)
-                axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
+                #axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[1].set_xlabel("Energy (eV)")
                 axs4[1].set_ylabel("Transmission (a.u.)")
                 axs4[1].set_xscale("log")
+                axs4[1].legend()
 
                 plt.tight_layout()
 
@@ -793,68 +892,34 @@ def normalization_with_list_of_full_path(
                     fig, axs5 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                     logging.info(f"{np.shape(profile) = }")
 
-                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization of ROI")
+                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", 
+                                 markersize=MARKERSIZE, 
+                                 label="spectrum normalization of ROI")
                     axs5[0].set_xlabel("Lambda (A)")
                     axs5[0].set_ylabel("mean of full image")
+                    axs5[0].legend()
 
-                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*", markersize=MARKERSIZE, label="spectrum normalization of ROI")
+                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*",
+                                  markersize=MARKERSIZE, 
+                                  label="spectrum normalization of ROI")
                     axs5[1].set_xlabel("Energy (eV)")
                     axs5[1].set_ylabel("Transmission (a.u.)")
                     axs5[1].set_xscale("log")
+                    axs5[1].legend()
 
                     plt.tight_layout()
 
         if export_corrected_integrated_combined_normalized_data or export_corrected_stack_of_combined_normalized_data:
-            # make up new output folder name
 
-            list_sample_runs = list(sample_master_dict.keys())
-            _sample_str = ""
-            for _run in list_sample_runs:
-                _sample_str += f"{sample_master_dict[_run]['run_number']}_"
-
-            _ob_str = ""
-            for _run in list_ob_runs:
-                _ob_str += f"{ob_master_dict[_run]['run_number']}_"
-
-            full_output_folder = os.path.join(
-                output_folder, f"combined_normalized_samples_{_sample_str}_obs_{_ob_str}"
-            )  # issue for WEI here !
-            full_output_folder = os.path.abspath(full_output_folder)
-            os.makedirs(full_output_folder, exist_ok=True)
-
-            if export_corrected_integrated_combined_normalized_data:
-                # making up the integrated sample data
-                data_integrated = np.nanmean(combined_normalized_data, axis=0)
-                full_file_name = os.path.join(full_output_folder, "integrated.tif")
-                logging.info(f"\t -> Exporting integrated combined normalized data to {full_file_name} ...")
-                make_tiff(data=data_integrated, filename=full_file_name)
-                logging.info(f"\t -> Exporting integrated combined normalized data to {full_file_name} is done!")
-
-            if export_corrected_stack_of_combined_normalized_data:
-                output_stack_folder = os.path.join(full_output_folder, "stack")
-                logging.info(f"\tmaking folder {output_stack_folder}")
-                os.makedirs(output_stack_folder, exist_ok=True)
-
-                for _index, _data in enumerate(combined_normalized_data):
-                    _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
-                    make_tiff(data=_data, filename=_output_file)
-                logging.info(f"\t -> Exporting combined normalized data to {output_stack_folder} is done!")
-                print(f"Exported combined normalized tif images are in: {output_stack_folder}!")
-                
-                # copy one of the spectra file to the output folder
-                spectra_file = sample_master_dict[list_sample_runs[0]][MasterDictKeys.spectra_file_name]
-
-                if spectra_file and Path(spectra_file).exists():
-                    logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
-                    shutil.copy(spectra_file, output_stack_folder)
-
-                    # create x-axis file
-                    create_x_axis_file(
-                        lambda_array=lambda_array,
-                        energy_array=energy_array,
-                        output_folder=output_stack_folder,
-                    )
-
+            export_corrected_normalized_data(sample_master_dict=sample_master_dict,
+                                      ob_master_dict=ob_master_dict,
+                                       combined_normalized_data=combined_normalized_data,
+                                       export_corrected_integrated_combined_normalized_data=export_corrected_integrated_combined_normalized_data,
+                                       export_corrected_stack_of_combined_normalized_data=export_corrected_stack_of_combined_normalized_data,
+                                       lambda_array=lambda_array,
+                                       energy_array=energy_array,
+                                       output_folder=output_folder)
+            
     else:
         dict_to_return.data = normalized_data
 
@@ -971,12 +1036,16 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
                 fig, axs6 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
                 logging.info(f"{np.shape(profile) = }")
 
-                axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label=_label)
+                axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", 
+                             markersize=MARKERSIZE, 
+                             label="spectrum normalization of ROI")
                 axs6[0].set_xlabel("Lambda (A)")
                 axs6[0].set_ylabel("Transmission (a.u.)")
                 axs6[0].legend()
 
-                axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", markersize=MARKERSIZE, label=_label)
+                axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", 
+                             markersize=MARKERSIZE, 
+                             label="spectrum normalization of ROI")
                 axs6[1].set_xlabel("Energy (eV)")
                 axs6[1].set_ylabel("Transmission (a.u.)")
                 axs6[1].set_xscale("log")
