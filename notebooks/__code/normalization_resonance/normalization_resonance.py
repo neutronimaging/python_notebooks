@@ -194,15 +194,100 @@ class NormalizationResonance(NormalizationTof):
         logging.info(f"\tsample_folders: {sample_folders}")
         logging.info(f"\tob_folders: {ob_folders}")
         logging.info(f"\roi: {roi}")
+        logging.info(f"\tnexus_path: {nexus_full_path}")
 
-        transmission = normalization_with_pleaides(list_sample_folders=self.sample_folder,
-                                    list_ob_folders=self.ob_folder,
-                                    nexus_path=nexus_path,
-                                    facility=Facility.ornl,
+        self.transmission = normalization_with_pleaides(list_sample_folders=sample_folders,
+                                    list_obs_folders=ob_folders,
+                                    nexus_path=nexus_full_path,
+                                    facility=facility,
                                     combine_mode=self.combine_mode_widget.value,
-                                    roi=self.roi,
+                                    roi=roi,
                                     pc_uncertainty=0.005,
                                     output_folder=self.output_folder,)
     
         logging.info("Done with normalization.")
         display(HTML("<span style='font-size: 16px; color:red'>Done with normalization.</span>"))
+
+        self.display_normalization_results()
+
+    def display_normalization_results(self):
+        transmission = self.transmission
+        logging.info("Displaying normalization results ...")
+        logging.info(f"\tNumber of transmission objects: {len(transmission)}")
+
+        sample_folders = list(self.dict_sample.keys())
+
+        default_xmin = 0
+        default_xmax = len(transmission[0].energy)-1
+
+        def plot_transmission(_index, xmin, xmax):
+
+            _transmission = transmission[_index]
+
+            if self.combine_mode_widget.value:
+                title = "Combined Transmission"
+            else:
+                title = f"Transmission Spectrum - {os.path.basename(sample_folders[_index])}"
+
+            fig, ax = plt.subplots(1, 1, figsize=(15, 6))
+            fig.suptitle(title)
+
+            x_axis = _transmission.energy[::-1]
+            y_axis = _transmission.transmission[::-1]
+            y_error = _transmission.uncertainty[::-1]
+
+            ax.errorbar(x_axis[xmin:xmax], y_axis[xmin:xmax], yerr=y_error[xmin:xmax], fmt="-o", markersize=2, label="Transmission")
+            ax.set_xlabel("Energy (eV)")
+            ax.set_ylabel("Transmission")
+            ax.set_title("Normalized Transmission Spectrum")
+            plt.show()
+
+            display(HTML(f"<b>Metadata</b>:"))
+
+            n_dead_pixels = _transmission.metadata['n_dead_pixels']
+            n_valid_pixels = _transmission.metadata['n_valid_pixels']
+            sample_proton_charge = _transmission.metadata['sample_proton_charge']
+            ob_proton_charge = _transmission.metadata['ob_proton_charge']
+            pc_uncertainty_sample = _transmission.metadata['pc_uncertainty_sample']
+            pc_uncertainty_ob = _transmission.metadata['pc_uncertainty_ob']
+            method_used = _transmission.metadata['method']
+            sample_folder = _transmission.metadata['sample_folder']
+            ob_folders = _transmission.metadata['ob_folders']
+
+            display(HTML(f"""<table>
+                <tr><th>Parameter</th><th style="text-align: left">Value</th></tr>
+                <tr><td>Number of Dead Pixels</td><td style="text-align: left">{n_dead_pixels}</td></tr>
+                <tr><td>Number of Valid Pixels</td><td style="text-align: left">{n_valid_pixels}</td></tr>
+                <tr><td>Sample Proton Charge</td><td style="text-align: left">{sample_proton_charge} +/- {pc_uncertainty_sample}</td></tr>
+                <tr><td>OB Proton Charge</td><td style="text-align: left">{ob_proton_charge} +/- {pc_uncertainty_ob}</td></tr>
+                <tr><td>Method Used</td><td style="text-align: left">{method_used}</td></tr>
+                <tr><td>Sample Folder</td><td style="text-align: left">{sample_folder}</td></tr>
+                <tr><td>OB Folders</td><td style="text-align: left">{ob_folders}</td></tr>
+                <tr><td>Output Folder</td><td style="text-align: left">{self.output_folder}</td></tr>
+                <tr><td>ROI Selected</td><td style="text-align: left">{self.roi}</td></tr>
+            </table>"""))
+
+        display_plot_transmisison = interactive(
+            plot_transmission,
+            _index=widgets.IntSlider(
+                value=0,
+                min=0,
+                max=len(transmission) - 1,
+                step=1,
+                description="File index:",
+                continuous_update=False,
+                disabled=True if len(transmission) == 1 else False, 
+                layout=widgets.Layout(width="600px"),
+            ),
+            xmin=widgets.IntSlider(value=default_xmin, 
+                                   min=0, 
+                                   max=default_xmax, 
+                                   description="E min:", 
+                                   layout=widgets.Layout(width="600px")),
+            xmax=widgets.IntSlider(value=default_xmax, 
+                                   min=0, 
+                                   max=default_xmax, 
+                                   description="E max:", 
+                                   layout=widgets.Layout(width="600px")),
+        )
+        display(display_plot_transmisison)
