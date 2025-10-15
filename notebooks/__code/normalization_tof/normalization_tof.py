@@ -148,6 +148,9 @@ class NormalizationTof:
             / str(self.ipts)
             / Path(autoreduce_dir[self.instrument][self.detector_type][1])
         )
+        self.sample_dir = Path(self.autoreduce_dir) / "raw" / "radiography"
+        self.ob_dir = Path(self.autoreduce_dir) / "ob"
+
         notebook_logging.info(f"\tAutoreduce dir: {self.autoreduce_dir}")
         notebook_logging.info(f"\tDetector type: {self.detector_type}")
         notebook_logging.info(f"\tRaw dir: {self.raw_dir}")
@@ -189,6 +192,7 @@ class NormalizationTof:
             instruction="Browse sample runs to normalize",
             next_function=self.save_sample_run_numbers_selected,
             multiple=True,
+            start_dir=self.sample_dir,
             newdir_toolbar_button=False,
         )
 
@@ -369,7 +373,7 @@ class NormalizationTof:
         self.select_folder(
             instruction="Browse ob run number folders",
             next_function=self.save_ob_run_numbers_selected,
-            start_dir=self.ob_folder,
+            start_dir=self.ob_dir,
             multiple=True,
         )
 
