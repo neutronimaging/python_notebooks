@@ -661,7 +661,7 @@ class NormalizationTof:
         else:
             self.select_folder(
                 instruction="Select output folder", 
-                start_dir=self.working_dir, 
+                start_dir=self.output_dir, 
                 next_function=self.output_folder_selected,
                 newdir_toolbar_button=True,
             )
@@ -737,6 +737,12 @@ class NormalizationTof:
         return all_nexus_files_found
 
     def settings(self):
+
+        # check here that the user selected a folder for output
+        if self.output_folder is None:
+            display(HTML("<span style='color:red; font-size: 16px;'>You forgot to select an output folder!</span>"))
+            return
+
         all_nexus_found = self.retrieve_nexus_file_path()
         notebook_logging.info(f"All NeXus files found: {all_nexus_found}")
 

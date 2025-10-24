@@ -89,7 +89,8 @@ class StatusMetadata:
 
 
 def _worker(fl):
-    return (imread(fl).astype(LOAD_DTYPE)).swapaxes(0, 1)
+    # return (imread(fl).astype(LOAD_DTYPE)).swapaxes(0, 1)
+    return (imread(fl).astype(np.float32))
 
 
 def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = False) -> np.ndarray:
