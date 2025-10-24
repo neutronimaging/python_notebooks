@@ -790,7 +790,7 @@ class NormalizationTof:
         vertical_layout = widgets.VBox(
             [
                 self.proton_charge_flag,
-                self.monitor_counts_flag,
+                # self.monitor_counts_flag,
                 self.shutter_counts_flag,
                 self.correct_chips_alignment_flag,
             ]
