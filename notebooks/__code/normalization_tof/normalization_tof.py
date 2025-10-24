@@ -780,8 +780,13 @@ class NormalizationTof:
                                                    value=False,
                                                    disabled=_disabled)
 
+        
+        ## FIXME
+        shutter_counts_value = False
+        # shutter_counts_value = not tpx3_disabled_flag
+        
         self.shutter_counts_flag = widgets.Checkbox(
-            description="Shutter counts", value=not tpx3_disabled_flag, disabled=tpx3_disabled_flag
+            description="Shutter counts", value=shutter_counts_value, disabled=tpx3_disabled_flag
         )
         self.correct_chips_alignment_flag = widgets.Checkbox(
             description="Correct chips alignment", disabled=False, value=True
@@ -791,7 +796,7 @@ class NormalizationTof:
             [
                 self.proton_charge_flag,
                 # self.monitor_counts_flag,
-                self.shutter_counts_flag,
+                # self.shutter_counts_flag,
                 self.correct_chips_alignment_flag,
             ]
         )
