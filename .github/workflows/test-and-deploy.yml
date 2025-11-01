@@ -65,7 +65,7 @@ jobs:
             EXTRAARGS="NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }}"
 
       - name: Annotate commit
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           body: |
             GitLab pipeline with NOTEBOOK_COLLECTION_NAME=${{ steps.notebook_collection.outputs.name }} submitted for commit ${{ steps.trigger.outputs.web_url }}
