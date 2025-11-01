@@ -55,7 +55,9 @@ class VenusDisplayNexusTpx3:
         # Use the output widget context to capture all output
         with self.output:
             with h5py.File(nexus_full_path, "r") as hdf5_data:
-                event_time_offset_original = hdf5_data["entry"]["bank100_events"]["event_time_offset"][:]
+                event_time_offset_original = hdf5_data["entry"]["bank100_events"][
+                    "event_time_offset"
+                ][:]
                 event_id_original = hdf5_data["entry"]["bank100_events"]["event_id"][:]
 
             offset_value = 1000000  # Offset value
@@ -64,7 +66,9 @@ class VenusDisplayNexusTpx3:
             event_id = event_id_original
 
             hist, bin_edges = np.histogram(
-                event_time_offset_original, bins=self.bin_size.value, range=(0, self.max_time.value)
+                event_time_offset_original,
+                bins=self.bin_size.value,
+                range=(0, self.max_time.value),
             )
 
             # First plot - histogram

@@ -15,7 +15,9 @@ except ImportError:
 from ImagingReso import _utilities
 from neutronbraggedge.experiment_handler import *
 
-from __code.ui_resonance_imaging_experiment_vs_theory import Ui_MainWindow as UiMainWindow
+from __code.ui_resonance_imaging_experiment_vs_theory import (
+    Ui_MainWindow as UiMainWindow,
+)
 
 
 class ImageWindow(QMainWindow):
@@ -142,7 +144,9 @@ class ImageWindow(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
 
         # default ROI
-        self.ui.roi = pg.ROI([0, 0], [20, 20], pen=(62, 13, 244), scaleSnap=True)  # blue
+        self.ui.roi = pg.ROI(
+            [0, 0], [20, 20], pen=(62, 13, 244), scaleSnap=True
+        )  # blue
         self.ui.roi.addScaleHandle([1, 1], [0, 0])
         self.ui.image_view.addItem(self.ui.roi)
         self.ui.roi.sigRegionChanged.connect(self.roi_changed)
@@ -158,7 +162,9 @@ class ImageWindow(QMainWindow):
         self.ui.widget.setLayout(vertical_layout)
 
     def roi_changed(self):
-        region = self.ui.roi.getArraySlice(self.integrated_stack, self.ui.image_view.imageItem)
+        region = self.ui.roi.getArraySlice(
+            self.integrated_stack, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop - 1
         y0 = region[0][1].start
@@ -212,7 +218,9 @@ class ImageWindow(QMainWindow):
             x_axis_selected = "file_index"
             b_enable_only_file_index_button = True
 
-        self.set_radio_buttons_status(b_enable_only_file_index_button=b_enable_only_file_index_button)
+        self.set_radio_buttons_status(
+            b_enable_only_file_index_button=b_enable_only_file_index_button
+        )
         self.b_enable_only_file_index_button = b_enable_only_file_index_button
 
         self.update_x_axis()
@@ -287,7 +295,9 @@ class ImageWindow(QMainWindow):
 
     def time_spectra_file_browse_button_clicked(self):
         spectra_file = QFileDialog.getOpenFileName(
-            caption="Select Time Spectra", directory=self.working_folder, filter="txt (*_Spectra.txt);;All (*.*)"
+            caption="Select Time Spectra",
+            directory=self.working_folder,
+            filter="txt (*_Spectra.txt);;All (*.*)",
         )
         if spectra_file:
             self.ui.time_spectra_file.setText(os.path.basename(spectra_file))
@@ -307,7 +317,9 @@ class ImageWindow(QMainWindow):
                 list_things_to_plot.append(_layer + " -> " + _element)
                 list_isotopes = stack[_layer][_element]["isotopes"]["list"]
                 for _isotope in list_isotopes:
-                    list_things_to_plot.append(_layer + " -> " + _element + " -> " + _isotope)
+                    list_things_to_plot.append(
+                        _layer + " -> " + _element + " -> " + _isotope
+                    )
 
         self.ui.list_to_plot_widget.addItems(list_things_to_plot)
 
@@ -339,21 +351,31 @@ class ImageWindow(QMainWindow):
                 transmission = self.o_reso.stack_signal[_layer]["transmission"]
                 x_axis_ev = self.o_reso.stack_signal[_layer]["energy_eV"]
             elif _isotope == "":
-                transmission = self.o_reso.stack_signal[_layer][_element]["transmission"]
+                transmission = self.o_reso.stack_signal[_layer][_element][
+                    "transmission"
+                ]
                 x_axis_ev = self.o_reso.stack_signal[_layer][_element]["energy_eV"]
             else:
-                transmission = self.o_reso.stack_signal[_layer][_element][_isotope]["transmission"]
-                x_axis_ev = self.o_reso.stack_signal[_layer][_element][_isotope]["energy_eV"]
+                transmission = self.o_reso.stack_signal[_layer][_element][_isotope][
+                    "transmission"
+                ]
+                x_axis_ev = self.o_reso.stack_signal[_layer][_element][_isotope][
+                    "energy_eV"
+                ]
 
             _elements_to_plot[_text] = {}
             _elements_to_plot[_text]["y_axis"] = transmission
 
             x_axis = []
             if x_axis_selected == "lambda":
-                x_axis = _utilities.convert_x_axis(array=x_axis_ev, from_units="ev", to_units="angstroms")
+                x_axis = _utilities.convert_x_axis(
+                    array=x_axis_ev, from_units="ev", to_units="angstroms"
+                )
             elif x_axis_selected == "tof":
                 detector_offset = float(self.ui.detector_offset_value.text())
-                distance_source_detector = float(self.ui.distance_source_detector_value.text())
+                distance_source_detector = float(
+                    self.ui.distance_source_detector_value.text()
+                )
                 x_axis = _utilities.convert_x_axis(
                     array=x_axis_ev,
                     from_units="ev",

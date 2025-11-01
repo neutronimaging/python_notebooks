@@ -11,7 +11,9 @@ class EventHandler:
         self.parent = parent
 
     def algorithm_changed(self):
-        high_intensity_status = self.parent.ui.fix_high_intensity_counts_checkBox.isChecked()
+        high_intensity_status = (
+            self.parent.ui.fix_high_intensity_counts_checkBox.isChecked()
+        )
         self.parent.ui.median_thresholding_frame.setEnabled(high_intensity_status)
         self.reset_table_infos()
         self.table_selection_changed()
@@ -28,13 +30,18 @@ class EventHandler:
         row_selected = o_table.get_row_selected()
         short_file_name = self.parent.list_short_file_name[row_selected]
         if self.parent.data.get(short_file_name, None) is None:
-            self.parent.data[short_file_name] = {"raw": self.load_raw_data(row=row_selected), "filtered": None}
+            self.parent.data[short_file_name] = {
+                "raw": self.load_raw_data(row=row_selected),
+                "filtered": None,
+            }
 
         if self.parent.image_size is None:
             [height, width] = np.shape(self.parent.data[short_file_name]["raw"])
             self.parent.image_size = [height, width]
 
-        filtered_data = self.calculate_filtered_data(raw_data=self.parent.data[short_file_name]["raw"])
+        filtered_data = self.calculate_filtered_data(
+            raw_data=self.parent.data[short_file_name]["raw"]
+        )
 
         o_display = Display(parent=self.parent)
         self.parent.data[short_file_name]["filtered"] = filtered_data
@@ -63,18 +70,34 @@ class EventHandler:
         high_counts_stats = o_algo.get_high_counts_stats()
 
         o_table.insert_item(
-            row=row_selected, column=1, editable=False, value=high_counts_stats["number"], format_str="{:d}"
+            row=row_selected,
+            column=1,
+            editable=False,
+            value=high_counts_stats["number"],
+            format_str="{:d}",
         )
         o_table.insert_item(
-            row=row_selected, column=2, editable=False, value=high_counts_stats["percentage"], format_str="{:.2f}"
+            row=row_selected,
+            column=2,
+            editable=False,
+            value=high_counts_stats["percentage"],
+            format_str="{:.2f}",
         )
 
         dead_pixels_stats = o_algo.get_dead_pixels_stats()
         o_table.insert_item(
-            row=row_selected, column=3, editable=False, value=dead_pixels_stats["number"], format_str="{:d}"
+            row=row_selected,
+            column=3,
+            editable=False,
+            value=dead_pixels_stats["number"],
+            format_str="{:d}",
         )
         o_table.insert_item(
-            row=row_selected, column=4, editable=False, value=dead_pixels_stats["percentage"], format_str="{:.2f}"
+            row=row_selected,
+            column=4,
+            editable=False,
+            value=dead_pixels_stats["percentage"],
+            format_str="{:.2f}",
         )
 
         return o_algo.get_processed_data()

@@ -24,7 +24,11 @@ class Statistics:
 
     def update_statistics(self):
         logging.info("Updating statistics ...")
-        show_status_message(parent=self.parent, message="Updating statistics ...", status=StatusMessageStatus.working)
+        show_status_message(
+            parent=self.parent,
+            message="Updating statistics ...",
+            status=StatusMessageStatus.working,
+        )
         QGuiApplication.processEvents()
 
         list_data = self.parent.list_data
@@ -45,7 +49,10 @@ class Statistics:
 
         logging.info("Statistics plot done!")
         show_status_message(
-            parent=self.parent, message="Updated statistics!", status=StatusMessageStatus.ready, duration_s=5
+            parent=self.parent,
+            message="Updated statistics!",
+            status=StatusMessageStatus.ready,
+            duration_s=5,
         )
         QGuiApplication.processEvents()
 
@@ -69,9 +76,13 @@ class Statistics:
     def init_plot_statistics_threshold(self):
         max_value = self.parent.max_statistics_error_value
 
-        self.parent.threshold_line = pg.InfiniteLine(pos=max_value, angle=0, label="Max threshold", movable=True)
+        self.parent.threshold_line = pg.InfiniteLine(
+            pos=max_value, angle=0, label="Max threshold", movable=True
+        )
         self.parent.ui.statistics_plot.addItem(self.parent.threshold_line)
-        self.parent.threshold_line.sigPositionChanged.connect(self.parent.statistics_max_threshold_moved)
+        self.parent.threshold_line.sigPositionChanged.connect(
+            self.parent.statistics_max_threshold_moved
+        )
 
     def statistics_max_threshold_moved(self):
         self.parent.max_statistics_error_value = self.parent.threshold_line.value()
@@ -82,9 +93,13 @@ class Statistics:
         max_statistics_error_value = self.parent.max_statistics_error_value
 
         # find where the err is above the threshold
-        err_above_threshold = [i for i, x in enumerate(list_err) if x > max_statistics_error_value]
+        err_above_threshold = [
+            i for i, x in enumerate(list_err) if x > max_statistics_error_value
+        ]
 
-        logging.info(f"index of files with errors above threshold: {err_above_threshold}")
+        logging.info(
+            f"index of files with errors above threshold: {err_above_threshold}"
+        )
 
         for _row in np.arange(len(list_err)):
             _item = self.parent.ui.list_of_files_listWidget.item(_row)

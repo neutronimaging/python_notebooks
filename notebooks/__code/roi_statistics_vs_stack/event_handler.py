@@ -10,7 +10,9 @@ class EventHandler:
         self.parent = parent
 
     def recalculate_table(self):
-        region = self.parent.ui.roi.getArraySlice(self.parent.live_image, self.parent.ui.image_view.imageItem)
+        region = self.parent.ui.roi.getArraySlice(
+            self.parent.live_image, self.parent.ui.image_view.imageItem
+        )
 
         x0 = region[0][0].start
         x1 = region[0][0].stop - 1
@@ -62,10 +64,24 @@ class EventHandler:
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         for _row in data_dict.keys():
             _entry = data_dict[_row]
-            o_table.insert_item(row=_row, column=StatisticsColumnIndex.min, value=_entry["min"], editable=False)
-            o_table.insert_item(row=_row, column=StatisticsColumnIndex.max, value=_entry["max"], editable=False)
             o_table.insert_item(
-                row=_row, column=StatisticsColumnIndex.mean, value=_entry["mean"], format_str="{:0.2f}", editable=False
+                row=_row,
+                column=StatisticsColumnIndex.min,
+                value=_entry["min"],
+                editable=False,
+            )
+            o_table.insert_item(
+                row=_row,
+                column=StatisticsColumnIndex.max,
+                value=_entry["max"],
+                editable=False,
+            )
+            o_table.insert_item(
+                row=_row,
+                column=StatisticsColumnIndex.mean,
+                value=_entry["mean"],
+                format_str="{:0.2f}",
+                editable=False,
             )
             o_table.insert_item(
                 row=_row,
@@ -75,7 +91,11 @@ class EventHandler:
                 editable=False,
             )
             o_table.insert_item(
-                row=_row, column=StatisticsColumnIndex.std, value=_entry["std"], format_str="{:0.2f}", editable=False
+                row=_row,
+                column=StatisticsColumnIndex.std,
+                value=_entry["std"],
+                format_str="{:0.2f}",
+                editable=False,
             )
 
     def reset_table_plot(self):

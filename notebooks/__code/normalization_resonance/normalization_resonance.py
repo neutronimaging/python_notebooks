@@ -1,42 +1,29 @@
-import glob
 import logging
 import logging as notebook_logging
 import os
-from pathlib import Path
-import numpy as np
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 from IPython.display import HTML, display
 from ipywidgets import interactive
-from PIL import Image
 
-from pleiades.processing.normalization import normalization as normalization_with_pleaides
+from pleiades.processing.normalization import (
+    normalization as normalization_with_pleaides,
+)
 from pleiades.processing import Roi as PleiadesRoi
 from pleiades.processing import Facility
 
-from __code._utilities.list import extract_list_of_runs_from_string
-from __code._utilities.nexus import extract_file_path_from_nexus
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.normalization_tof.normalization_tof import NormalizationTof
-from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
-from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
-from __code.normalization_tof.config import DEBUG_DATA, timepix1_config, timepix3_config
-from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
-    load_data_using_multithreading,
-    # normalization,
-    normalization_with_list_of_full_path,
-    retrieve_list_of_tif,
-)
+from __code.normalization_tof import DetectorType
 
 
 class NormalizationResonance(NormalizationTof):
-    
     sample_folder = None
     sample_run_numbers = None
     sample_run_numbers_selected = None
-    
+
     ob_folder = None
     ob_run_numbers = None
     ob_run_numbers_selected = None
@@ -46,7 +33,7 @@ class NormalizationResonance(NormalizationTof):
     dc_run_numbers_selected = None
 
     output_folder = None
-    
+
     # {'full_path_data': {'data': None, 'nexus': None}}
     dict_sample = {}
     dict_ob = {}
@@ -75,11 +62,13 @@ class NormalizationResonance(NormalizationTof):
     def retrieve_nexus_file_path(self):
         """
         Retrieve the NeXus file paths for sample, OB and DC.
-        
+
         This function assumes that the NeXus files are named in a specific format"""
 
         all_nexus_files_found = True
-        notebook_logging.info("Retrieving NeXus file paths for sample, OB and DC runs...")
+        notebook_logging.info(
+            "Retrieving NeXus file paths for sample, OB and DC runs..."
+        )
 
         notebook_logging.info("\tworking with sample runs:")
         for full_path in self.dict_sample.keys():
@@ -143,7 +132,6 @@ class NormalizationResonance(NormalizationTof):
         return all_nexus_files_found
 
     def settings(self):
-
         self.select_roi_widget = widgets.Checkbox(
             description="Select ROI on the detector",
             value=True,
@@ -169,20 +157,22 @@ class NormalizationResonance(NormalizationTof):
                 self.select_roi_widget,
                 self.combine_mode_widget,
             ],
-            layout=widgets.Layout(padding="10px", 
-                                  border="solid 1px",
-                                  width="620px"),
+            layout=widgets.Layout(padding="10px", border="solid 1px", width="620px"),
         )
         display(verti_layout)
 
     def normalization(self):
-        display(HTML("<span style='font-size: 16px; color:red'>Running normalization ...</span>"))
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:red'>Running normalization ...</span>"
+            )
+        )
 
         sample_folders = list(self.dict_sample.keys())
         ob_folders = list(self.dict_ob.keys())
         facility = Facility.ornl
         nexus_full_path = os.path.join(self.nexus_folder)
-            
+
         if self.roi:
             left = self.roi.left
             top = self.roi.top
@@ -190,23 +180,29 @@ class NormalizationResonance(NormalizationTof):
             height = self.roi.height
             roi = PleiadesRoi(x1=left, y1=top, width=width, height=height)
 
-        logging.info(f"normalization:")
+        logging.info("normalization:")
         logging.info(f"\tsample_folders: {sample_folders}")
         logging.info(f"\tob_folders: {ob_folders}")
         logging.info(f"\roi: {roi}")
         logging.info(f"\tnexus_path: {nexus_full_path}")
 
-        self.transmission = normalization_with_pleaides(list_sample_folders=sample_folders,
-                                    list_obs_folders=ob_folders,
-                                    nexus_path=nexus_full_path,
-                                    facility=facility,
-                                    combine_mode=self.combine_mode_widget.value,
-                                    roi=roi,
-                                    pc_uncertainty=0.005,
-                                    output_folder=self.output_folder,)
-    
+        self.transmission = normalization_with_pleaides(
+            list_sample_folders=sample_folders,
+            list_obs_folders=ob_folders,
+            nexus_path=nexus_full_path,
+            facility=facility,
+            combine_mode=self.combine_mode_widget.value,
+            roi=roi,
+            pc_uncertainty=0.005,
+            output_folder=self.output_folder,
+        )
+
         logging.info("Done with normalization.")
-        display(HTML("<span style='font-size: 16px; color:red'>Done with normalization.</span>"))
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:red'>Done with normalization.</span>"
+            )
+        )
 
         self.display_normalization_results()
 
@@ -218,10 +214,9 @@ class NormalizationResonance(NormalizationTof):
         sample_folders = list(self.dict_sample.keys())
 
         default_xmin = 0
-        default_xmax = len(transmission[0].energy)-1
+        default_xmax = len(transmission[0].energy) - 1
 
         def plot_transmission(_index, xmin, xmax):
-
             _transmission = transmission[_index]
 
             if self.combine_mode_widget.value:
@@ -236,25 +231,33 @@ class NormalizationResonance(NormalizationTof):
             y_axis = _transmission.transmission[::-1]
             y_error = _transmission.uncertainty[::-1]
 
-            ax.errorbar(x_axis[xmin:xmax], y_axis[xmin:xmax], yerr=y_error[xmin:xmax], fmt="-o", markersize=2, label="Transmission")
+            ax.errorbar(
+                x_axis[xmin:xmax],
+                y_axis[xmin:xmax],
+                yerr=y_error[xmin:xmax],
+                fmt="-o",
+                markersize=2,
+                label="Transmission",
+            )
             ax.set_xlabel("Energy (eV)")
             ax.set_ylabel("Transmission")
             ax.set_title("Normalized Transmission Spectrum")
             plt.show()
 
-            display(HTML(f"<b>Metadata</b>:"))
+            display(HTML("<b>Metadata</b>:"))
 
-            n_dead_pixels = _transmission.metadata['n_dead_pixels']
-            n_valid_pixels = _transmission.metadata['n_valid_pixels']
-            sample_proton_charge = _transmission.metadata['sample_proton_charge']
-            ob_proton_charge = _transmission.metadata['ob_proton_charge']
-            pc_uncertainty_sample = _transmission.metadata['pc_uncertainty_sample']
-            pc_uncertainty_ob = _transmission.metadata['pc_uncertainty_ob']
-            method_used = _transmission.metadata['method']
-            sample_folder = _transmission.metadata['sample_folder']
-            ob_folders = _transmission.metadata['ob_folders']
+            n_dead_pixels = _transmission.metadata["n_dead_pixels"]
+            n_valid_pixels = _transmission.metadata["n_valid_pixels"]
+            sample_proton_charge = _transmission.metadata["sample_proton_charge"]
+            ob_proton_charge = _transmission.metadata["ob_proton_charge"]
+            pc_uncertainty_sample = _transmission.metadata["pc_uncertainty_sample"]
+            pc_uncertainty_ob = _transmission.metadata["pc_uncertainty_ob"]
+            method_used = _transmission.metadata["method"]
+            sample_folder = _transmission.metadata["sample_folder"]
+            ob_folders = _transmission.metadata["ob_folders"]
 
-            display(HTML(f"""<table>
+            display(
+                HTML(f"""<table>
                 <tr><th>Parameter</th><th style="text-align: left">Value</th></tr>
                 <tr><td>Number of Dead Pixels</td><td style="text-align: left">{n_dead_pixels}</td></tr>
                 <tr><td>Number of Valid Pixels</td><td style="text-align: left">{n_valid_pixels}</td></tr>
@@ -265,7 +268,8 @@ class NormalizationResonance(NormalizationTof):
                 <tr><td>OB Folders</td><td style="text-align: left">{ob_folders}</td></tr>
                 <tr><td>Output Folder</td><td style="text-align: left">{self.output_folder}</td></tr>
                 <tr><td>ROI Selected</td><td style="text-align: left">{self.roi}</td></tr>
-            </table>"""))
+            </table>""")
+            )
 
         display_plot_transmisison = interactive(
             plot_transmission,
@@ -276,18 +280,22 @@ class NormalizationResonance(NormalizationTof):
                 step=1,
                 description="File index:",
                 continuous_update=False,
-                disabled=True if len(transmission) == 1 else False, 
+                disabled=True if len(transmission) == 1 else False,
                 layout=widgets.Layout(width="600px"),
             ),
-            xmin=widgets.IntSlider(value=default_xmin, 
-                                   min=0, 
-                                   max=default_xmax, 
-                                   description="E min:", 
-                                   layout=widgets.Layout(width="600px")),
-            xmax=widgets.IntSlider(value=default_xmax, 
-                                   min=0, 
-                                   max=default_xmax, 
-                                   description="E max:", 
-                                   layout=widgets.Layout(width="600px")),
+            xmin=widgets.IntSlider(
+                value=default_xmin,
+                min=0,
+                max=default_xmax,
+                description="E min:",
+                layout=widgets.Layout(width="600px"),
+            ),
+            xmax=widgets.IntSlider(
+                value=default_xmax,
+                min=0,
+                max=default_xmax,
+                description="E max:",
+                layout=widgets.Layout(width="600px"),
+            ),
         )
         display(display_plot_transmisison)

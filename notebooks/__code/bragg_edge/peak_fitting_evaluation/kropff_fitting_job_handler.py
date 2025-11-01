@@ -4,7 +4,11 @@ import numpy as np
 from lmfit import Model, Parameter
 
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
-from __code.bragg_edge.fitting_functions import kropff_bragg_peak_tof, kropff_high_lambda, kropff_low_lambda
+from __code.bragg_edge.fitting_functions import (
+    kropff_bragg_peak_tof,
+    kropff_high_lambda,
+    kropff_low_lambda,
+)
 
 
 class KropffFittingJobHandler:
@@ -21,7 +25,10 @@ class KropffFittingJobHandler:
         :param kropff_tooldbox: 'high', 'low', 'bragg_peak'
         """
         if kropff_tooldbox == "bragg_peak":
-            fitting_range = [self.parent.kropff_fitting_range["low"][0], self.parent.kropff_fitting_range["high"][1]]
+            fitting_range = [
+                self.parent.kropff_fitting_range["low"][0],
+                self.parent.kropff_fitting_range["high"][1],
+            ]
         else:
             fitting_range = self.parent.kropff_fitting_range[kropff_tooldbox]
         # fitting_range = self.parent.kropff_fitting_range[kropff_tooldbox]
@@ -36,7 +43,9 @@ class KropffFittingJobHandler:
         for _key in self.parent.fitting_input_dictionary["rois"].keys():
             _yaxis = self.parent.fitting_input_dictionary["rois"][_key]["profile"]
             full_fitting_yaxis = _yaxis[left_xaxis_index:right_xaxis_index]
-            list_yaxis_to_fit.append(full_fitting_yaxis[fitting_range[0] : fitting_range[1] + 1])
+            list_yaxis_to_fit.append(
+                full_fitting_yaxis[fitting_range[0] : fitting_range[1] + 1]
+            )
         self.list_yaxis_to_fit = list_yaxis_to_fit
 
     def run_kropff_high_lambda(self, update_table_ui=False):
@@ -66,10 +75,14 @@ class KropffFittingJobHandler:
                 "yaxis_fitted": yaxis_fitted,
             }
 
-            self.parent.fitting_input_dictionary["rois"][_index]["fitting"]["kropff"]["high"] = deepcopy(result_dict)
+            self.parent.fitting_input_dictionary["rois"][_index]["fitting"]["kropff"][
+                "high"
+            ] = deepcopy(result_dict)
 
             if update_table_ui:
-                o_gui.update_kropff_high_lambda_table_ui(row=_index, a0=a0, b0=b0, a0_error=a0_error, b0_error=b0_error)
+                o_gui.update_kropff_high_lambda_table_ui(
+                    row=_index, a0=a0, b0=b0, a0_error=a0_error, b0_error=b0_error
+                )
 
     def run_kropff_low_lambda(self, update_table_ui=False):
         gmodel = Model(kropff_low_lambda, missing="drop", independent_vars=["lda"])
@@ -81,7 +94,9 @@ class KropffFittingJobHandler:
         bhkl_init = float(str(self.parent.kropff_low_lda_bhkl_init.text()))
 
         for _row, yaxis in enumerate(self.list_yaxis_to_fit):
-            _entry = self.parent.fitting_input_dictionary["rois"][_row]["fitting"]["kropff"]["high"]
+            _entry = self.parent.fitting_input_dictionary["rois"][_row]["fitting"][
+                "kropff"
+            ]["high"]
             a0 = float(_entry["a0"])
             b0 = float(_entry["b0"])
 
@@ -111,15 +126,23 @@ class KropffFittingJobHandler:
                 "yaxis_fitted": yaxis_fitted,
             }
 
-            self.parent.fitting_input_dictionary["rois"][_row]["fitting"]["kropff"]["low"] = deepcopy(result_dict)
+            self.parent.fitting_input_dictionary["rois"][_row]["fitting"]["kropff"][
+                "low"
+            ] = deepcopy(result_dict)
 
             if update_table_ui:
                 o_gui.update_kropff_low_lambda_table_ui(
-                    row=_row, ahkl=ahkl, bhkl=bhkl, ahkl_error=ahkl_error, bhkl_error=bhkl_error
+                    row=_row,
+                    ahkl=ahkl,
+                    bhkl=bhkl,
+                    ahkl_error=ahkl_error,
+                    bhkl_error=bhkl_error,
                 )
 
     def run_bragg_peak(self, update_table_ui=False, list_row_to_fit=None):
-        gmodel = Model(kropff_bragg_peak_tof, nan_policy="propagate", independent_vars=["lda"])
+        gmodel = Model(
+            kropff_bragg_peak_tof, nan_policy="propagate", independent_vars=["lda"]
+        )
 
         lda = self.xaxis_to_fit
         o_gui = GuiUtility(parent=self.parent)
@@ -133,11 +156,15 @@ class KropffFittingJobHandler:
                 if _row not in list_row_to_fit:
                     continue
 
-            _entry_high = self.parent.fitting_input_dictionary["rois"][_row]["fitting"]["kropff"]["high"]
+            _entry_high = self.parent.fitting_input_dictionary["rois"][_row]["fitting"][
+                "kropff"
+            ]["high"]
             a0 = float(_entry_high["a0"])
             b0 = float(_entry_high["b0"])
 
-            _entry_low = self.parent.fitting_input_dictionary["rois"][_row]["fitting"]["kropff"]["low"]
+            _entry_low = self.parent.fitting_input_dictionary["rois"][_row]["fitting"][
+                "kropff"
+            ]["low"]
             ahkl = float(_entry_low["ahkl"])
             bhkl = float(_entry_low["bhkl"])
 
@@ -162,7 +189,9 @@ class KropffFittingJobHandler:
             tau = _result.params["tau"].value
             tau_error = _result.params["tau"].stderr
 
-            yaxis_fitted = kropff_bragg_peak_tof(self.xaxis_to_fit, a0, b0, ahkl, bhkl, ldahkl, sigma, tau)
+            yaxis_fitted = kropff_bragg_peak_tof(
+                self.xaxis_to_fit, a0, b0, ahkl, bhkl, ldahkl, sigma, tau
+            )
 
             result_dict = {
                 "ldahkl": ldahkl,
@@ -175,9 +204,9 @@ class KropffFittingJobHandler:
                 "yaxis_fitted": yaxis_fitted,
             }
 
-            self.parent.fitting_input_dictionary["rois"][_row]["fitting"]["kropff"]["bragg_peak"] = deepcopy(
-                result_dict
-            )
+            self.parent.fitting_input_dictionary["rois"][_row]["fitting"]["kropff"][
+                "bragg_peak"
+            ] = deepcopy(result_dict)
 
             if update_table_ui:
                 o_gui.update_kropff_bragg_edge_table_ui(

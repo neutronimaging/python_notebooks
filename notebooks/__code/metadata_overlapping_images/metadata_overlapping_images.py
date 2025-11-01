@@ -85,7 +85,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_metadata = []
     dict_list_metadata = OrderedDict()  #  {0: '10', 1: 'hfir', ...}
     list_scale_units = ["mm", "\u00b5m", "nm"]
-    list_scale_units = {"string": ["mm", "\u00b5m", "nm"], "html": ["mm", "<span>&#181;m</span>", "nm"]}
+    list_scale_units = {
+        "string": ["mm", "\u00b5m", "nm"],
+        "html": ["mm", "<span>&#181;m</span>", "nm"],
+    }
 
     rgba_color = {
         "white": (255, 255, 255, 255, None),
@@ -103,7 +106,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
         "black": (0, 0, 0),
     }
 
-    html_color = {"white": "#FFF", "red": "#F00", "green": "#0F0", "blue": "#00F", "black": "#000"}
+    html_color = {
+        "white": "#FFF",
+        "red": "#F00",
+        "green": "#0F0",
+        "blue": "#00F",
+        "black": "#000",
+    }
 
     # ui of pop up window that allows to define metadata column value (format it)
     metadata_string_format_ui = None

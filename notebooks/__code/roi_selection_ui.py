@@ -7,7 +7,13 @@ import pyqtgraph as pg
 from IPython.display import HTML, display
 from NeuNorm.normalization import Normalization
 from qtpy import QtGui
-from qtpy.QtWidgets import QMainWindow, QProgressBar, QTableWidgetItem, QTableWidgetSelectionRange, QVBoxLayout
+from qtpy.QtWidgets import (
+    QMainWindow,
+    QProgressBar,
+    QTableWidgetItem,
+    QTableWidgetSelectionRange,
+    QVBoxLayout,
+)
 
 from __code import load_ui
 from __code.config import (
@@ -65,7 +71,9 @@ class Interface(QMainWindow):
                 self.list_of_files = list_of_files
 
             if percentage_of_data_to_use is None:
-                percentage_of_data_to_use = percentage_of_images_to_use_for_roi_selection
+                percentage_of_data_to_use = (
+                    percentage_of_images_to_use_for_roi_selection
+                )
             self.percentage_of_data_to_use = percentage_of_data_to_use
 
         # method called when leaving the application, if any
@@ -73,7 +81,8 @@ class Interface(QMainWindow):
 
         super(QMainWindow, self).__init__(parent)
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), os.path.join("ui", "ui_roi_selection.ui")
+            os.path.dirname(os.path.dirname(__file__)),
+            os.path.join("ui", "ui_roi_selection.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
@@ -134,7 +143,9 @@ class Interface(QMainWindow):
 
     def recap(self):
         """Display nbr of files loaded and size. This can be used to figure why a normalization failed"""
-        [nbr_sample, height_sample, width_sample] = self.__get_recap(self.o_norm.data["sample"]["data"])
+        [nbr_sample, height_sample, width_sample] = self.__get_recap(
+            self.o_norm.data["sample"]["data"]
+        )
         [nbr_ob, height_ob, width_ob] = self.__get_recap(self.o_norm.data["ob"]["data"])
         [nbr_df, height_df, width_df] = self.__get_recap(self.o_norm.data["df"]["data"])
 
@@ -142,7 +153,9 @@ class Interface(QMainWindow):
             '<table><tr><td width="30%"><strong>Type</strong></td><td><strong>Number</strong></td><td>'
             + "<strong>Size (height*width)</strong></td></tr>"
         )
-        html += self.__built_html_table_row_3_columns("sample", nbr_sample, height_sample, width_sample)
+        html += self.__built_html_table_row_3_columns(
+            "sample", nbr_sample, height_sample, width_sample
+        )
         html += self.__built_html_table_row_3_columns("ob", nbr_ob, height_ob, width_ob)
         html += self.__built_html_table_row_3_columns("df", nbr_df, height_df, width_df)
         html += "</table>"
@@ -169,7 +182,9 @@ class Interface(QMainWindow):
             random_list = random.sample(range(0, nbr_files), nbr_files_to_use)
 
             if self.o_norm:
-                list_data_to_use = [self.o_norm.data["sample"]["data"][_index] for _index in random_list]
+                list_data_to_use = [
+                    self.o_norm.data["sample"]["data"][_index] for _index in random_list
+                ]
             else:
                 o_norm = Normalization()
                 list_of_files = np.array(self.list_of_files)
@@ -367,7 +382,9 @@ class Interface(QMainWindow):
             _roi = list_roi[_row]
 
             roi_id = _roi["id"]
-            region = roi_id.getArraySlice(self.integrated_image, self.ui.image_view.imageItem)
+            region = roi_id.getArraySlice(
+                self.integrated_image, self.ui.image_view.imageItem
+            )
 
             x0 = region[0][0].start
             x1 = region[0][0].stop
@@ -441,7 +458,9 @@ class Interface(QMainWindow):
             width_int = np.abs(x0_int - int(_x1))
             height_int = np.abs(y0_int - int(_y1))
 
-            _roi_id = self.init_roi(x0=x0_int, y0=y0_int, width=width_int, height=height_int)
+            _roi_id = self.init_roi(
+                x0=x0_int, y0=y0_int, width=width_int, height=height_int
+            )
             _roi["id"] = _roi_id
             list_roi[_row] = _roi
 

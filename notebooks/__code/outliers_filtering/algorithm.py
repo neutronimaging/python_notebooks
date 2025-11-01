@@ -20,7 +20,9 @@ class Algorithm:
         self.parent = parent
         self.data = copy.deepcopy(data)
         self.processed_data = copy.deepcopy(data)
-        self.total_number_of_pixels = self.parent.image_size[0] * self.parent.image_size[1]
+        self.total_number_of_pixels = (
+            self.parent.image_size[0] * self.parent.image_size[1]
+        )
 
         if self.parent.ui.fix_dead_pixels_checkBox.isChecked():
             self.is_dead_pixel_activated = True
@@ -49,7 +51,9 @@ class Algorithm:
         if mask:
             nbr_pixels = len(mask[0])
             self.dead_pixel_stats["number"] = nbr_pixels
-            self.dead_pixel_stats["percentage"] = (nbr_pixels / self.total_number_of_pixels) * 100
+            self.dead_pixel_stats["percentage"] = (
+                nbr_pixels / self.total_number_of_pixels
+            ) * 100
         self.data[mask] = self.median_data[mask]
 
     def high_counts(self):
@@ -58,7 +62,9 @@ class Algorithm:
         if where_above_threshold:
             nbr_pixels = len(where_above_threshold[0])
             self.high_counts_stats["number"] = nbr_pixels
-            self.high_counts_stats["percentage"] = (nbr_pixels / self.total_number_of_pixels) * 100
+            self.high_counts_stats["percentage"] = (
+                nbr_pixels / self.total_number_of_pixels
+            ) * 100
         self.data[where_above_threshold] = self.median_data[where_above_threshold]
 
     def get_dead_pixels_stats(self):

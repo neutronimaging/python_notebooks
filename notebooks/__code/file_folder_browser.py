@@ -9,7 +9,11 @@ class FileFolderBrowser:
         self.ipts_folder = ipts_folder
 
     def select_images(
-        self, instruction="Select Images ...", multiple_flag=True, filters={"All": "*.*"}, default_filter="All"
+        self,
+        instruction="Select Images ...",
+        multiple_flag=True,
+        filters={"All": "*.*"},
+        default_filter="All",
     ):
         self.list_images_ui = myfileselector.MyFileSelectorPanel(
             instruction=instruction,
@@ -22,7 +26,11 @@ class FileFolderBrowser:
         self.list_images_ui.show()
 
     def select_images_with_search(
-        self, instruction="Select Images ...", multiple_flag=True, filters={"All": "*.*"}, default_filter="All"
+        self,
+        instruction="Select Images ...",
+        multiple_flag=True,
+        filters={"All": "*.*"},
+        default_filter="All",
     ):
         self.list_images_ui = fileselector.FileSelectorPanel(
             instruction=instruction,
@@ -34,7 +42,9 @@ class FileFolderBrowser:
         )
         self.list_images_ui.show()
 
-    def select_input_folder(self, instruction="Select Input Folder ...", multiple_flag=False):
+    def select_input_folder(
+        self, instruction="Select Input Folder ...", multiple_flag=False
+    ):
         self.list_input_folders_ui = myfileselector.MyFileSelectorPanel(
             instruction=instruction,
             start_dir=self.working_dir,
@@ -44,7 +54,9 @@ class FileFolderBrowser:
         )
         self.list_input_folders_ui.show()
 
-    def select_output_folder(self, instruction="Select Output Folder ...", multiple_flag=False):
+    def select_output_folder(
+        self, instruction="Select Output Folder ...", multiple_flag=False
+    ):
         self.list_output_folders_ui = myfileselector.MyFileSelectorPanel(
             instruction=instruction,
             start_dir=self.working_dir,

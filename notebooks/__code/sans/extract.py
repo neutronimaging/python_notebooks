@@ -15,7 +15,10 @@ from __code.nexus_handler import get_list_entries
 from __code.sans.sans_config import biosans_parameters, gpsans_parameters
 
 STARTING_ENTRIES = ["entry", "DASlogs"]
-LIST_SANS_INSTRUMENTS = {"GP-SANS (CG2)": {"unix_name": "CG2"}, "BIO-SANS (CG3)": {"unix_name": "CG3"}}
+LIST_SANS_INSTRUMENTS = {
+    "GP-SANS (CG2)": {"unix_name": "CG2"},
+    "BIO-SANS (CG3)": {"unix_name": "CG3"},
+}
 
 
 class Initializer:
@@ -23,8 +26,13 @@ class Initializer:
         list_instruments = list(LIST_SANS_INSTRUMENTS.keys())
         instrument_ui = widgets.HBox(
             [
-                widgets.Label("Select your instrument", layout=widgets.Layout(width="15%")),
-                widgets.Select(options=list_instruments, layout=widgets.Layout(width="30%", height="50px")),
+                widgets.Label(
+                    "Select your instrument", layout=widgets.Layout(width="15%")
+                ),
+                widgets.Select(
+                    options=list_instruments,
+                    layout=widgets.Layout(width="30%", height="50px"),
+                ),
             ]
         )
         display(instrument_ui)
@@ -78,19 +86,30 @@ class Extract(FileFolderBrowser):
         self.list_nexus = list_nexus
 
         self.list_keys = self.retrieve_left_widget_list_keys()
-        self.list_values = self.retrieve_right_widget_list_keys(left_widget_key_selected=list(self.list_keys)[0])
+        self.list_values = self.retrieve_right_widget_list_keys(
+            left_widget_key_selected=list(self.list_keys)[0]
+        )
 
         # search box
-        search_box = widgets.HBox([widgets.Label("Search:"), widgets.Text("", layout=widgets.Layout(width="30%"))])
+        search_box = widgets.HBox(
+            [
+                widgets.Label("Search:"),
+                widgets.Text("", layout=widgets.Layout(width="30%")),
+            ]
+        )
         # search_text_widget = search_box.children[1]
         # search_text_widget.observe(self.search_text_changed, names='value')
 
         # list of keys
         hori_box = widgets.HBox(
             [
-                widgets.Select(options=self.list_keys, layout=widgets.Layout(width="400px", height=self.widget_height)),
+                widgets.Select(
+                    options=self.list_keys,
+                    layout=widgets.Layout(width="400px", height=self.widget_height),
+                ),
                 widgets.SelectMultiple(
-                    options=self.list_values, layout=widgets.Layout(width="400px", height=self.widget_height)
+                    options=self.list_values,
+                    layout=widgets.Layout(width="400px", height=self.widget_height),
                 ),
             ],
         )
@@ -99,7 +118,11 @@ class Extract(FileFolderBrowser):
         self.left_widget_ui.observe(self.left_widget_changed, names="value")
         self.right_widget_ui.observe(self.right_widget_changed, names="value")
 
-        display(widgets.Label("Command + Click: to select more than 1 element in the right widget"))
+        display(
+            widgets.Label(
+                "Command + Click: to select more than 1 element in the right widget"
+            )
+        )
 
     def left_widget_changed(self, new_value):
         value_selected = new_value["new"]
@@ -170,10 +193,16 @@ class Extract(FileFolderBrowser):
         return new_full_dict
 
     def extract_all_in_one(self, output_folder):
-        display(HTML('<span style="font-size: 20px; color:blue">Work in progress ... </span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Work in progress ... </span>'
+            )
+        )
 
         self.output_folder_ui.shortcut_buttons.close()
-        output_file_name = Extract.create_output_file_name(output_folder=output_folder, nbr_nexus=len(self.list_nexus))
+        output_file_name = Extract.create_output_file_name(
+            output_folder=output_folder, nbr_nexus=len(self.list_nexus)
+        )
         full_list_selected = self.full_list_selected
 
         # get list of path
@@ -194,7 +223,9 @@ class Extract(FileFolderBrowser):
 
             if _index == 0:
                 label_of_columns.append("nexus name")
-            reduction_log_dict = Extract.get_entry_value(nexus_file_name=_nexus, list_entry_path=list_entry_path)
+            reduction_log_dict = Extract.get_entry_value(
+                nexus_file_name=_nexus, list_entry_path=list_entry_path
+            )
             for _key in reduction_log_dict.keys():
                 _value = reduction_log_dict[_key]
                 # print(f"-> _key:{_key}: {_value}")

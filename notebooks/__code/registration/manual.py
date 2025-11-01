@@ -38,7 +38,8 @@ class Manual(QMainWindow):
         super(QMainWindow, self).__init__(parent)
 
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_registration_tool.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_registration_tool.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.parent = parent
@@ -48,45 +49,72 @@ class Manual(QMainWindow):
 
     def initialize_widgets(self):
         _file_path = os.path.dirname(__file__)
-        up_arrow_file = os.path.abspath(os.path.join(_file_path, "../static/up_arrow.png"))
+        up_arrow_file = os.path.abspath(
+            os.path.join(_file_path, "../static/up_arrow.png")
+        )
         self.ui.up_button.setIcon(QIcon(up_arrow_file))
 
-        down_arrow_file = os.path.abspath(os.path.join(_file_path, "../static/down_arrow.png"))
+        down_arrow_file = os.path.abspath(
+            os.path.join(_file_path, "../static/down_arrow.png")
+        )
         self.ui.down_button.setIcon(QIcon(down_arrow_file))
 
-        right_arrow_file = os.path.abspath(os.path.join(_file_path, "../static/right_arrow.png"))
+        right_arrow_file = os.path.abspath(
+            os.path.join(_file_path, "../static/right_arrow.png")
+        )
         self.ui.right_button.setIcon(QIcon(right_arrow_file))
 
-        left_arrow_file = os.path.abspath(os.path.join(_file_path, "../static/left_arrow.png"))
+        left_arrow_file = os.path.abspath(
+            os.path.join(_file_path, "../static/left_arrow.png")
+        )
         self.ui.left_button.setIcon(QIcon(left_arrow_file))
 
-        rotate_left_file = os.path.abspath(os.path.join(_file_path, "../static/rotate_left.png"))
+        rotate_left_file = os.path.abspath(
+            os.path.join(_file_path, "../static/rotate_left.png")
+        )
         self.ui.rotate_left_button.setIcon(QIcon(rotate_left_file))
 
-        rotate_right_file = os.path.abspath(os.path.join(_file_path, "../static/rotate_right.png"))
+        rotate_right_file = os.path.abspath(
+            os.path.join(_file_path, "../static/rotate_right.png")
+        )
         self.ui.rotate_right_button.setIcon(QIcon(rotate_right_file))
 
-        small_rotate_left_file = os.path.abspath(os.path.join(_file_path, "../static/small_rotate_left.png"))
+        small_rotate_left_file = os.path.abspath(
+            os.path.join(_file_path, "../static/small_rotate_left.png")
+        )
         self.ui.small_rotate_left_button.setIcon(QIcon(small_rotate_left_file))
 
-        small_rotate_right_file = os.path.abspath(os.path.join(_file_path, "../static/small_rotate_right.png"))
+        small_rotate_right_file = os.path.abspath(
+            os.path.join(_file_path, "../static/small_rotate_right.png")
+        )
         self.ui.small_rotate_right_button.setIcon(QIcon(small_rotate_right_file))
 
-        self.list_arrow_widgets = [self.ui.up_button, self.ui.down_button, self.ui.left_button, self.ui.right_button]
+        self.list_arrow_widgets = [
+            self.ui.up_button,
+            self.ui.down_button,
+            self.ui.left_button,
+            self.ui.right_button,
+        ]
         self._set_widgets_size(
             widgets=self.list_arrow_widgets,
             width=self.button_size["arrow"]["width"],
             height=self.button_size["arrow"]["height"],
         )
 
-        self.list_rotate_widgets = [self.ui.rotate_left_button, self.ui.rotate_right_button]
+        self.list_rotate_widgets = [
+            self.ui.rotate_left_button,
+            self.ui.rotate_right_button,
+        ]
         self._set_widgets_size(
             widgets=self.list_rotate_widgets,
             width=self.button_size["rotate"]["width"],
             height=self.button_size["rotate"]["height"],
         )
 
-        self.list_small_rotate_widgets = [self.ui.small_rotate_left_button, self.ui.small_rotate_right_button]
+        self.list_small_rotate_widgets = [
+            self.ui.small_rotate_left_button,
+            self.ui.small_rotate_right_button,
+        ]
         self._set_widgets_size(
             widgets=self.list_small_rotate_widgets,
             width=self.button_size["small_rotate"]["width"],

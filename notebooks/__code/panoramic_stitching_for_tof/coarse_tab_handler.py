@@ -25,7 +25,9 @@ class CoarseTabHandler:
                     o_table.insert_empty_column(_col)
                 _widget = QComboBox()
                 _widget.addItems(short_list_folders)
-                _widget.currentIndexChanged.connect(self.parent.coarse_alignment_table_combobox_changed)
+                _widget.currentIndexChanged.connect(
+                    self.parent.coarse_alignment_table_combobox_changed
+                )
                 o_table.insert_widget(row=_row, column=_col, widget=_widget)
 
         column_width = [200 for _ in np.arange(nbr_column)]
@@ -63,8 +65,12 @@ class CoarseTabHandler:
                 panoramic_height = height
 
         # number of empty rows and columns before first file selected
-        nbr_empty_rows = self.get_number_of_empty_rows_from_top(nbr_row=nbr_row, nbr_column=nbr_column)
-        nbr_empty_columns = self.get_number_of_empty_columns_from_left(nbr_row=nbr_row, nbr_column=nbr_column)
+        nbr_empty_rows = self.get_number_of_empty_rows_from_top(
+            nbr_row=nbr_row, nbr_column=nbr_column
+        )
+        nbr_empty_columns = self.get_number_of_empty_columns_from_left(
+            nbr_row=nbr_row, nbr_column=nbr_column
+        )
 
         panoramic_image = np.zeros((panoramic_height, panoramic_width))
         for _row in np.arange(nbr_row):

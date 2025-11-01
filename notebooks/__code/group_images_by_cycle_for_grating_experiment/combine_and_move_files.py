@@ -23,7 +23,10 @@ class CombineAndMoveFiles:
         debug = self.debug
         output_folder = self.output_folder
 
-        output_folder_basename = os.path.basename(self.parent.folder_selected) + "_sorted_for_grating_reconstruction"
+        output_folder_basename = (
+            os.path.basename(self.parent.folder_selected)
+            + "_sorted_for_grating_reconstruction"
+        )
         output_folder = os.path.join(output_folder, output_folder_basename)
         output_folder = os.path.abspath(output_folder)
 
@@ -34,7 +37,9 @@ class CombineAndMoveFiles:
         self.parent.output_folder = output_folder
         make_or_reset_folder(output_folder)
 
-        dictionary_of_groups_old_names = self.parent.make_dictionary_of_groups_old_names()
+        dictionary_of_groups_old_names = (
+            self.parent.make_dictionary_of_groups_old_names()
+        )
         self.parent.dictionary_of_groups_old_names = dictionary_of_groups_old_names
 
         dict_old_files = dictionary_of_groups_old_names
@@ -47,14 +52,24 @@ class CombineAndMoveFiles:
         hbox1 = widgets.HBox(
             [
                 widgets.HTML("Groups", layout=widgets.Layout(width="100px")),
-                widgets.IntProgress(min=0, max=size_outer_loop - 1, value=0, layout=widgets.Layout(width="300px")),
+                widgets.IntProgress(
+                    min=0,
+                    max=size_outer_loop - 1,
+                    value=0,
+                    layout=widgets.Layout(width="300px"),
+                ),
             ]
         )
         outer_progress_ui = hbox1.children[1]
         hbox2 = widgets.HBox(
             [
                 widgets.HTML("Files", layout=widgets.Layout(width="100px")),
-                widgets.IntProgress(min=0, max=size_inner_loop - 1, value=0, layout=widgets.Layout(width="300px")),
+                widgets.IntProgress(
+                    min=0,
+                    max=size_inner_loop - 1,
+                    value=0,
+                    layout=widgets.Layout(width="300px"),
+                ),
             ]
         )
         inner_progress_ui = hbox2.children[1]
@@ -69,14 +84,20 @@ class CombineAndMoveFiles:
             _new_name_list = dict_new_files[_key]
             inner_progress_ui.value = 0
             outer_progress_ui.value = _outer_index
-            for _inner_index, (_old, _new) in enumerate(zip(_old_name_list, _new_name_list, strict=False)):
+            for _inner_index, (_old, _new) in enumerate(
+                zip(_old_name_list, _new_name_list, strict=False)
+            ):
                 new_full_file_name = os.path.join(output_folder, _new)
                 if debug:
                     print(f"old full file name -> {_old}")
                 if debug:
                     print(f"new full file name -> {_new}")
                 if len(_old) > 1:
-                    combine_images(output_folder=output_folder, list_images=_old, new_file_name=_new)
+                    combine_images(
+                        output_folder=output_folder,
+                        list_images=_old,
+                        new_file_name=_new,
+                    )
                 else:
                     shutil.copy(_old[0], new_full_file_name)
                 inner_progress_ui.value = _inner_index

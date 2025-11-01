@@ -45,7 +45,9 @@ class FileNameMetadataTimeStamp:
 
     def select_image_folder(self):
         self.folder_ui = ipywe.fileselector.FileSelectorPanel(
-            instruction="Select Raw Image Folder ...", start_dir=self.working_dir, type="directory"
+            instruction="Select Raw Image Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
         )
         self.folder_ui.show()
 
@@ -78,7 +80,11 @@ class FileNameMetadataTimeStamp:
         metadata_array = metadata_array.set_index("index")
 
         time_stamp_metadata_file_name_merged = pd.merge(
-            file_name_array, metadata_array, left_index=True, right_index=True, how="outer"
+            file_name_array,
+            metadata_array,
+            left_index=True,
+            right_index=True,
+            how="outer",
         )
 
         if self.verbose:
@@ -87,9 +93,15 @@ class FileNameMetadataTimeStamp:
         # extract file name vs temperature
         time_stamp_array = np.array(time_stamp_metadata_file_name_merged.index)
         file_name_array = np.array(
-            time_stamp_metadata_file_name_merged[time_stamp_metadata_file_name_merged.columns[0]]
+            time_stamp_metadata_file_name_merged[
+                time_stamp_metadata_file_name_merged.columns[0]
+            ]
         )
-        metadata_array = np.array(time_stamp_metadata_file_name_merged[time_stamp_metadata_file_name_merged.columns[1]])
+        metadata_array = np.array(
+            time_stamp_metadata_file_name_merged[
+                time_stamp_metadata_file_name_merged.columns[1]
+            ]
+        )
 
         # calculate equivalent metadata for each file
         self.file_name_vs_metadata_array = []  # 'file_name, metadata, time_stamp
@@ -104,7 +116,9 @@ class FileNameMetadataTimeStamp:
 
             if np.isnan(metadata_array[_index]):
                 _metadata = self.__extract_metadata(
-                    index=_index, metadata_array=metadata_array, time_stamp_array=time_stamp_array
+                    index=_index,
+                    metadata_array=metadata_array,
+                    time_stamp_array=time_stamp_array,
                 )
             else:
                 _metadata = metadata_array[_index]
@@ -117,12 +131,18 @@ class FileNameMetadataTimeStamp:
         if self.verbose:
             pprint(self.file_name_vs_metadata_array)
 
-    def __calculate_file_metadata(self, left_meta=-1, right_meta=-1, left_time=-1, right_time=-1, file_time=-1):
-        coeff = (float(right_meta) - float(left_meta)) / (float(right_time) - float(left_time))
+    def __calculate_file_metadata(
+        self, left_meta=-1, right_meta=-1, left_time=-1, right_time=-1, file_time=-1
+    ):
+        coeff = (float(right_meta) - float(left_meta)) / (
+            float(right_time) - float(left_time)
+        )
         part1 = coeff * (float(file_time) - float(left_time))
         return part1 + float(left_meta)
 
-    def __get_first_metadata_and_index_value(self, index=-1, data_array=[], direction="left"):
+    def __get_first_metadata_and_index_value(
+        self, index=-1, data_array=[], direction="left"
+    ):
         if direction == "left":
             coeff = -1
         else:
@@ -146,13 +166,19 @@ class FileNameMetadataTimeStamp:
         file_time = time_stamp_array[index]
 
         file_metadata = self.__calculate_file_metadata(
-            left_meta=left_meta, right_meta=right_meta, left_time=left_time, right_time=right_time, file_time=file_time
+            left_meta=left_meta,
+            right_meta=right_meta,
+            left_time=left_time,
+            right_time=right_time,
+            file_time=file_time,
         )
 
         return file_metadata
 
     def format_metadata_infos(self, header=[]):
-        box = widgets.VBox([widgets.Label("Formatting metadata file .......... IN PROGRESS")])
+        box = widgets.VBox(
+            [widgets.Label("Formatting metadata file .......... IN PROGRESS")]
+        )
         display(box)
         progress_label = box.children[0]
 
@@ -170,7 +196,10 @@ class FileNameMetadataTimeStamp:
         # removing useless columns
         if self.my_system == "mac":
             time_stamp_metadata = df.drop(
-                df.columns[[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18]], axis=1
+                df.columns[
+                    [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+                ],
+                axis=1,
             )
         else:
             time_stamp_metadata = df[["time_stamp", r"OT\ Temp"]]
@@ -203,15 +232,21 @@ class FileNameMetadataTimeStamp:
         progress_label.value = "Formatting metadata file .......... DONE!"
 
     def conv(self, x):
-        return time.mktime(datetime.datetime.strptime(str(x), "%Y-%m-%d %H:%M:%S").timetuple())
+        return time.mktime(
+            datetime.datetime.strptime(str(x), "%Y-%m-%d %H:%M:%S").timetuple()
+        )
 
     def format_image_infos(self):
         self.input_folder = self.folder_ui.selected
 
-        list_files = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=self.input_folder)
+        list_files = file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+            folder=self.input_folder
+        )
         list_files = list_files[0]
 
-        box = widgets.VBox([widgets.Label("Retrieving Time Stamp .......... IN PROGRESS")])
+        box = widgets.VBox(
+            [widgets.Label("Retrieving Time Stamp .......... IN PROGRESS")]
+        )
 
         display(box)
         progress_label = box.children[0]
@@ -225,14 +260,18 @@ class FileNameMetadataTimeStamp:
         progress_label.value = "Retrieving Time Stamp .......... DONE!"
 
         data = list(zip(timestamp_array, list_base_file_name, strict=False))
-        self.time_stamp_vs_file_name = pd.DataFrame(data, columns=["index", "file_name"])
+        self.time_stamp_vs_file_name = pd.DataFrame(
+            data, columns=["index", "file_name"]
+        )
 
         self.timestamp_array = timestamp_array
         self.list_base_file_name = list_base_file_name
 
     def prepare_data_for_export(self):
         self.pandas_format = pd.DataFrame(self.file_name_vs_metadata_array)
-        self.pandas_format.rename(columns={0: "file_name", 1: "Metadata", 2: "time"}, inplace=True)
+        self.pandas_format.rename(
+            columns={0: "file_name", 1: "Metadata", 2: "time"}, inplace=True
+        )
 
     def preview(self):
         self.prepare_data_for_export()
@@ -246,7 +285,10 @@ class FileNameMetadataTimeStamp:
 
     def preview_metadata_vs_file_index(self):
         trace = go.Scatter(
-            x=self.file_index, y=self.metadata_array, mode="markers", name="Metadata Profile vs File Index"
+            x=self.file_index,
+            y=self.metadata_array,
+            mode="markers",
+            name="Metadata Profile vs File Index",
         )
 
         layout = go.Layout(
@@ -266,7 +308,10 @@ class FileNameMetadataTimeStamp:
         time_offset_axis = (self.time_array - self.time_array[0]) / 60
 
         trace = go.Scatter(
-            x=time_offset_axis, y=self.metadata_array, mode="markers", name="Metadata Profile vs Relative Time(s)"
+            x=time_offset_axis,
+            y=self.metadata_array,
+            mode="markers",
+            name="Metadata Profile vs Relative Time(s)",
         )
 
         layout = go.Layout(
@@ -284,14 +329,18 @@ class FileNameMetadataTimeStamp:
 
     def select_export_folder(self):
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(
-            instruction="Select output Folder ...", start_dir=self.working_dir, type="directory"
+            instruction="Select output Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
         )
         self.output_folder_ui.show()
 
     def export(self):
         output_folder = self.output_folder_ui.selected
 
-        [short_metatadata_file_name, _] = os.path.splitext(os.path.basename(self.sample_environment_file))
+        [short_metatadata_file_name, _] = os.path.splitext(
+            os.path.basename(self.sample_environment_file)
+        )
         sample_folder_name = os.path.basename(self.input_folder)
 
         file_name = f"{sample_folder_name}_vs_{short_metatadata_file_name}.txt"
