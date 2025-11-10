@@ -749,6 +749,8 @@ class NormalizationTof:
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
         display(HTML("<span style='font-size: 16px; color:red'>Normalization of full spectrum of ROI</span>"))
+        display(HTML("<span style='font-size: 12px;'>If checked, normalization will be done as follows. For each image, the total counts of the sample withh be divided by the total" \
+        "counts of the same region of the OB. This will produce a profile of this normalization value for each image.</span>"))
         self.full_spectrum_roi_flag = widgets.Checkbox(description="Work on full spectrum of ROI", value=True)
         display(self.full_spectrum_roi_flag)
         display(HTML("<hr>"))
@@ -954,7 +956,7 @@ class NormalizationTof:
         )
 
         self.export_corrected_stack_of_combined_normalized_data = widgets.Checkbox(
-            description="Export corrected stack of combined normalized data",
+            description="Export corrected stack of combined normalized data (integrated sample divided by integrated ob)",
             layout=widgets.Layout(width="100%"),
             value=False,
             disabled=True,
@@ -988,7 +990,7 @@ class NormalizationTof:
             disabled=True,
         )
         self.export_corrected_integrated_normalized_data = widgets.Checkbox(
-            description="Export corrected integrated each sample run normalized data", 
+            description="Export integrated normalized data (integrated sample divide by integrated ob)", 
             layout=widgets.Layout(width="100%"), 
             value=False
         )

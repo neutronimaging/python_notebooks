@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
+from annotated_types import Not
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
@@ -300,6 +301,8 @@ def normalization_by_shutter_counts(sample_master_dict=None,
 
 
 def  perform_normalization(_sample_data=None, ob_data_combined=None, dc_data_combined=None):
+    
+    # working on each image (TOF) independently
     if dc_data_combined is not None:
         logging.info(f"normalization with DC subtraction")
         _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined), 
@@ -313,7 +316,20 @@ def  perform_normalization(_sample_data=None, ob_data_combined=None, dc_data_com
 
     _normalized_data[ob_data_combined == 0] = 0
     
-    return _normalized_data
+    # Integration of sample, dc and ob and then division
+    if dc_data_combined is not None:
+        logging.info(f"normalization with DC subtraction - integrated")
+        _integrated_normalized_data = np.divide(np.subtract(np.sum(_sample_data, axis=0), np.sum(dc_data_combined, axis=0)),    np.subtract(np.sum(ob_data_combined, axis=0), np.sum(dc_data_combined, axis=0)), 
+                                        out=np.zeros_like(np.sum(_sample_data, axis=0)), 
+                                        where=(np.sum(ob_data_combined, axis=0) - np.sum(dc_data_combined, axis=0))!=0)
+    else:
+        logging.info(f"normalization without DC subtraction - integrated")
+        _integrated_normalized_data = np.divide(np.sum(_sample_data, axis=0), np.sum(ob_data_combined, axis=0), 
+                                        out=np.zeros_like(np.sum(_sample_data, axis=0)), 
+                                         where=np.sum(ob_data_combined, axis=0)!=0)
+
+    return {'normalized_data': _normalized_data,
+            'integrated_normalized_data': _integrated_normalized_data}
 
 
 def perform_spectrum_normalization(roi=None, sample_data=None, ob_data_combined_for_spectrum=None, dc_data_combined=None, dc_data_combined_for_spectrum=None):
@@ -343,6 +359,7 @@ def export_normalized_data(ob_master_dict=None,
                 sample_master_dict=None, 
                 _sample_run_number=None,
                 normalized_data=None, 
+                integrated_normalized_data=None,
                 _spectrum_normalized_data=None,
                 lambda_array=None, 
                 energy_array=None, 
@@ -390,10 +407,9 @@ def export_normalized_data(ob_master_dict=None,
 
     if export_corrected_integrated_normalized_data:
         # making up the integrated sample data
-        sample_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
-        full_file_name = os.path.join(full_output_folder, "integrated.tif")
+        full_file_name = os.path.join(full_output_folder, "normalized_integrated.tif")
         logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} ...")
-        make_tiff(data=sample_data_integrated, filename=full_file_name)
+        make_tiff(data=integrated_normalized_data[_sample_run_number], filename=full_file_name)
         logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} is done!")
 
     if export_corrected_stack_of_normalized_data:
@@ -423,6 +439,7 @@ def export_normalized_data(ob_master_dict=None,
 def  export_corrected_normalized_data(sample_master_dict=None,
                                       ob_master_dict=None,
                                        combined_normalized_data=None,
+                                       integrated_normalized_data=None,
                                        export_corrected_integrated_combined_normalized_data=False,
                                        export_corrected_stack_of_combined_normalized_data=False,
                                        lambda_array=None,
@@ -679,6 +696,7 @@ def normalization_with_list_of_full_path(
         correct_all_samples_chips_alignment(sample_master_dict, correct_chips_alignment_config, verbose=verbose)
 
     normalized_data = {}
+    integrated_normalized_data = {}
     spectrum_normalized_data = {}
 
     # normalize the sample data
@@ -743,7 +761,10 @@ def normalization_with_list_of_full_path(
                 spectra_file_name=sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name],
             )
 
-        _normalized_data = perform_normalization(_sample_data, ob_data_combined, dc_data_combined)
+        _normalized_dict = perform_normalization(_sample_data, ob_data_combined, dc_data_combined)
+        _normalized_data = _normalized_dict['normalized_data']
+        _integrated_normalized_data = _normalized_dict['integrated_normalized_data']       
+        integrated_normalized_data[_sample_run_number] = _integrated_normalized_data
         normalized_data[_sample_run_number] = _normalized_data
 
         _spectrum_normalized_data = perform_spectrum_normalization(roi=roi, 
@@ -828,6 +849,7 @@ def normalization_with_list_of_full_path(
                 sample_master_dict=sample_master_dict, 
                 _sample_run_number=_sample_run_number,
                 normalized_data=normalized_data, 
+                integrated_normalized_data=integrated_normalized_data,
                 _spectrum_normalized_data=_spectrum_normalized_data,
                 lambda_array=lambda_array, 
                 energy_array=energy_array, 
@@ -916,6 +938,7 @@ def normalization_with_list_of_full_path(
 
             export_corrected_normalized_data(sample_master_dict=sample_master_dict,
                                       ob_master_dict=ob_master_dict,
+                                      dc_master_dict=dc_master_dict,
                                        combined_normalized_data=combined_normalized_data,
                                        export_corrected_integrated_combined_normalized_data=export_corrected_integrated_combined_normalized_data,
                                        export_corrected_stack_of_combined_normalized_data=export_corrected_stack_of_combined_normalized_data,
