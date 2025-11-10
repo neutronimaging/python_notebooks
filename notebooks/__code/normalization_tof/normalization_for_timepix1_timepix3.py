@@ -1102,7 +1102,8 @@ def export_sample_images(
         logging.info(f"\t -> Exporting sample data to {output_stack_folder} is done!")
         shutil.copy(spectra_file_name, os.path.join(output_stack_folder))
         logging.info(f"\t -> Exporting spectra file {spectra_file_name} to {output_stack_folder} is done!")
-
+        display(HTML(f"Created folder {output_stack_folder} for sample outputs!"))
+    
     if export_corrected_integrated_sample_data:
         # making up the integrated sample data
         sample_data_integrated = np.nanmean(_sample_data, axis=0)
@@ -1110,8 +1111,6 @@ def export_sample_images(
         logging.info(f"\t -> Exporting integrated sample data to {full_file_name} ...")
         make_tiff(data=sample_data_integrated, filename=full_file_name)
         logging.info(f"\t -> Exporting integrated sample data to {full_file_name} is done!")
-
-    display(HTML(f"Created folder {output_stack_folder} for sample outputs!"))
 
 
 def export_ob_images(
