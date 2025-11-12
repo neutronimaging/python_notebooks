@@ -1,0 +1,17 @@
+2025-11-12 08:58:57 | INFO     | pleiades.processing.normalization:normalization:66 - Using ORNL-specific normalization
+2025-11-12 08:58:58 | INFO     | pleiades.processing.normalization_ornl:normalization_ornl:199 - Loading 1 sample folders
+2025-11-12 08:58:58 | INFO     | pleiades.utils.load:load:21 - loading 2786 files with extension .tif
+2025-11-12 08:59:26 | DEBUG    | pleiades.processing.helper_ornl:load_spectra_file:42 - Found spectra file: 20251009_Run_13454_NMC_Pellet_5_000C_2_750AngsMin_0_019_Spectra.txt
+2025-11-12 08:59:26 | WARNING  | pleiades.processing.helper_ornl:find_nexus_file:81 - No NeXus file found for run Run in /SNS/VENUS/IPTS-35742/nexus
+2025-11-12 08:59:26 | INFO     | pleiades.processing.helper_ornl:load_multiple_runs:177 - Loaded 1 runs
+2025-11-12 08:59:26 | INFO     | pleiades.processing.normalization_ornl:normalization_ornl:202 - Loading 1 OB folders
+2025-11-12 08:59:26 | INFO     | pleiades.utils.load:load:21 - loading 2786 files with extension .tif
+2025-11-12 08:59:57 | DEBUG    | pleiades.processing.helper_ornl:load_spectra_file:42 - Found spectra file: 20251009_Run_13449_OB__5_000C_2_750AngsMin_ob_0_014_Spectra.txt
+2025-11-12 08:59:57 | WARNING  | pleiades.processing.helper_ornl:find_nexus_file:81 - No NeXus file found for run Run in /SNS/VENUS/IPTS-35742/nexus
+2025-11-12 08:59:57 | INFO     | pleiades.processing.helper_ornl:load_multiple_runs:177 - Loaded 1 runs
+2025-11-12 08:59:57 | INFO     | pleiades.processing.normalization_ornl:normalization_ornl:210 - Using individual mode
+2025-11-12 08:59:57 | INFO     | pleiades.processing.normalization_ornl:process_individual_mode:123 - Combined 1 OB runs
+2025-11-12 08:59:57 | DEBUG    | pleiades.processing.normalization_ornl:process_individual_mode:128 - Processing sample run 1/1
+2025-11-12 08:59:57 | DEBUG    | pleiades.processing.helper_ornl:detect_persistent_dead_pixels:193 - Found 2/262144 dead pixels (0.0%)
+2025-11-12 08:59:57 | DEBUG    | pleiades.processing.helper_ornl:detect_persistent_dead_pixels:193 - Found 2/262144 dead pixels (0.0%)
+2025-11-12 08:59:58 | INFO     | pleiades.processing.normalization_ornl:normalization_ornl:249 - Saved transmission to /SNS/VENUS/IPTS-35742/shared/processed_data/jean_test/20251009_Run_13454_NMC_Pellet_5_000C_2_750AngsMin_0_transmission.txt

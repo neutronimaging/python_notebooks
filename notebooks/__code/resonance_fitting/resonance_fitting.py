@@ -31,19 +31,9 @@ from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
 )
 
 
-class NormalizationResonance(NormalizationTof):
+class ResonanceFitting(NormalizationTof):
     
-    sample_folder = None
-    sample_run_numbers = None
-    sample_run_numbers_selected = None
-    
-    ob_folder = None
-    ob_run_numbers = None
-    ob_run_numbers_selected = None
-
-    dc_folder = None
-    dc_run_numbers = None
-    dc_run_numbers_selected = None
+    normalized_folder = None
 
     output_folder = None
     
@@ -59,6 +49,35 @@ class NormalizationResonance(NormalizationTof):
     dict_ob_data = None
     dict_dc_data = None
 
+    def __init__(self, working_dir=None, debug=False):
+        self.initialize()
+
+        if debug:
+            self.working_dir = DEBUG_DATA.working_dir
+            self.output_dir = DEBUG_DATA.output_folder
+           
+        else:
+            self.working_dir = working_dir
+            self.output_dir = os.path.join(self.working_dir, "shared")
+
+        self.nexus_folder = os.path.join(self.working_dir, "nexus")
+        self.debug = debug
+        _, _facility, _beamline, ipts = self.working_dir.split("/")
+
+        self.ipts = ipts
+        self.instrument = _beamline.upper()
+
+        # self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
+        # self.shared_dir = str(Path(shared_dir[self.instrument][0]) / str(ipts) / shared_dir[self.instrument][1])
+        self.shared_dir = Path("/") / _facility / self.instrument / str(ipts) / "shared"
+
+        notebook_logging.info(f"Instrument: {self.instrument}")
+        notebook_logging.info(f"Working dir: {self.working_dir}")
+        notebook_logging.info(f"IPTS: {self.ipts}")
+        notebook_logging.info(f"facility: {_facility}")
+        notebook_logging.info(f"nexus folder: {self.nexus_folder}")
+        notebook_logging.info(f"Shared dir: {self.shared_dir}")
+
     def initialize(self):
         LOG_PATH = "/SNS/VENUS/shared/log/"
         file_name, ext = os.path.splitext(os.path.basename(__file__))
@@ -71,6 +90,18 @@ class NormalizationResonance(NormalizationTof):
             level=notebook_logging.INFO,
         )
         notebook_logging.info(f"*** Starting a new script {file_name} ***")
+
+    def select_normalized_data_folder(self):
+         self.select_folder(
+            instruction="Browse for normalized data folder",
+            next_function=self.normalized_data_folder_selected,
+            multiple=False,
+            start_dir=self.working_dir,
+            newdir_toolbar_button=False,
+        )
+
+    def normalized_data_folder_selected(self, folder):
+        logging.info(f"Normalized data folder selected: {folder}")
 
     def retrieve_nexus_file_path(self):
         """
@@ -268,9 +299,6 @@ class NormalizationResonance(NormalizationTof):
                 <tr><td>ROI Selected</td><td style="text-align: left">{self.roi}</td></tr>
             </table>"""))
 
-            file_created = os.path.join(self.output_folder, os.path.basename(sample_folder), "_transmission.txt")
-            display(HTML(f"<span style='font-size: 12px; color:green'>Transmission file created: {file_created}</span>"))
-
         display_plot_transmisison = interactive(
             plot_transmission,
             _index=widgets.IntSlider(
@@ -292,4 +320,3 @@ class NormalizationResonance(NormalizationTof):
 
         )
         display(display_plot_transmisison)
-
