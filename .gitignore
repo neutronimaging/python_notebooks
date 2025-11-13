@@ -21,3 +21,5 @@ dist/*
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+notebooks/pleiades_logs
