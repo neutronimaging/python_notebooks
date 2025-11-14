@@ -1,10 +1,10 @@
 class DEBUG_DATA:
-    ipts = "IPTS-35742"
-    working_dir = f"/SNS/VENUS/{ipts}/shared/"
+    ipts = "IPTS-35423"
+    working_dir = f"/SNS/VENUS/{ipts}"
     autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
     output_folder = f"{working_dir}/shared/processed_data/jean_test"
-    sample_runs_selected = ["Run_13454"]
-    ob_runs_selected = ["Run_13449"]
+    sample_runs_selected = ["Run_14501"]
+    ob_runs_selected = ["Run_14490"]
     dc_runs_selected = []
     roi = [154, 156, 180, 17]
 

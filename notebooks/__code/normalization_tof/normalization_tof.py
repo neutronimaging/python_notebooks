@@ -86,16 +86,18 @@ class NormalizationTof:
 
         if debug:
             self.working_dir = DEBUG_DATA.working_dir
+            self.shared_dir = self.working_dir + "/shared"
             self.output_dir = DEBUG_DATA.output_folder
             self.default_roi = Roi(left=DEBUG_DATA.roi[0], top=DEBUG_DATA.roi[1], 
                           width=DEBUG_DATA.roi[2], height=DEBUG_DATA.roi[3])
         else:
             self.working_dir = working_dir
+            self.shared_dir = os.path.join(self.working_dir, "shared")
             self.output_dir = os.path.join(self.working_dir, "shared")
 
         self.nexus_folder = os.path.join(self.working_dir, "nexus")
         self.debug = debug
-        _, _facility, _beamline, ipts = self.working_dir.split("/")
+        _, _facility, _beamline, ipts, _ = self.shared_dir.split("/")
 
         self.ipts = ipts
         self.instrument = _beamline.upper()
@@ -748,13 +750,23 @@ class NormalizationTof:
 
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
+        # regular normalization
+        display(HTML("<span style='font-size: 16px; color:red'>Normalization pixel by pixel</span>"))
+        display(widgets.Checkbox(description="Normalization of images pixel by pixel", 
+                                 value=True, 
+                                 disabled=True,
+                                 layout=widgets.Layout(width="600px")))
+        display(HTML("<hr>"))
+
+        # normalization of full spectrum of ROI
         display(HTML("<span style='font-size: 16px; color:red'>Normalization of full spectrum of ROI</span>"))
-        display(HTML("<span style='font-size: 12px;'>If checked, normalization will be done as follows. For each image, the total counts of the sample withh be divided by the total" \
-        "counts of the same region of the OB. This will produce a profile of this normalization value for each image.</span>"))
+        display(HTML("<span style='font-size: 12px;'>If checked, normalization will be done as follows. After selecting a region of interest (ROI), for each image, the total counts of that region of the sample will be divided by the total" \
+        " counts of the same region of the OB. This will produce a profile of this normalization value for each image.</span>"))
         self.full_spectrum_roi_flag = widgets.Checkbox(description="Work on full spectrum of ROI", value=True)
         display(self.full_spectrum_roi_flag)
         display(HTML("<hr>"))
 
+        # how to combine sample runs if more than 1 sample provided
         self.combine_sample_runs_flag = widgets.Checkbox(
             description="Combine sample runs (all sample will produce one normalization output)", 
             value=False, 
@@ -766,6 +778,15 @@ class NormalizationTof:
             display(self.combine_sample_runs_flag)
             display(HTML("<hr>"))
 
+        # remove container option
+        display(HTML("<span style='font-size: 16px; color:red'>Remove container</span>"))
+        self.remove_container_flag = widgets.Checkbox(description="Do you want to remove container signal?", 
+                                                      value=True,
+                                                      layout=widgets.Layout(width="600px"))
+        display(self.remove_container_flag)
+        display(HTML("<hr>"))
+
+        # normalization options
         display(HTML("<span style='font-size: 16px; color:red'>What to take into account for the normalization</span>"))
 
         if all_nexus_found:
@@ -791,7 +812,7 @@ class NormalizationTof:
             description="Shutter counts", value=shutter_counts_value, disabled=tpx3_disabled_flag
         )
         self.correct_chips_alignment_flag = widgets.Checkbox(
-            description="Correct chips alignment", disabled=False, value=True
+            description="Correct chips alignment", disabled=True, value=False
         )
 
         vertical_layout = widgets.VBox(
@@ -806,7 +827,13 @@ class NormalizationTof:
 
         display(HTML("<hr>"))
 
-        display(HTML("<span style='font-size: 16px; color:red'>Handling OB zeros - <i>May take much more time!</i></span>"))
+        display(HTML("<span style='font-size: 16px; color:red'>How to handle OB zeros - <i>May take much more time!</i></span>"))
+        
+        display(widgets.Checkbox(description="Ignore zeros in OB during normalization", 
+                                 value=True,
+                                 disabled=True,
+                                 layout=widgets.Layout(width="600px")))
+
         self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace zeros by local median", 
                                                                       value=False,
                                                                       layout=widgets.Layout(width="500px"))

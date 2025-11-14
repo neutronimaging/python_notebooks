@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from IPython.display import HTML, display
 from ipywidgets import interactive
 from PIL import Image
+import periodictable
 
 from pleiades.processing.normalization import normalization as normalization_with_pleaides
 from pleiades.processing import Roi as PleiadesRoi
@@ -165,3 +166,19 @@ class ResonanceFitting(NormalizationTof):
         else:
             logging.error("Conversion failed! The generated .twenty file is not valid.")
             display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Conversion failed! The generated .twenty file is not valid.</span>"))
+
+    def select_isotope_and_abundance(self):
+        list_elements = periodictable.elements
+        dict_elements = {}
+        for _el in list_elements:
+            dict_elements[_el.name.capitalize()] = {'symbol': _el.symbol}
+        list_elements_names = list(dict_elements.keys())
+        list_elements_names.sort()
+
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element:</span>"))
+        list_elements_widget = widgets.Dropdown(
+            options=list_elements_names,
+            description="",
+            disabled=False,
+        )
+        display(list_elements_widget)
