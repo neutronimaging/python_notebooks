@@ -7,6 +7,7 @@ class DEBUG_DATA:
     ob_runs_selected = ["Run_14490"]
     dc_runs_selected = []
     roi = [154, 156, 180, 17]
+    container_roi = [150, 150, 40, 40]
 
 timepix1_config = {
     "chip1": {"xoffset": 1, "yoffset": 1, "description": "top right chip"},

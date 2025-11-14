@@ -299,7 +299,7 @@ def normalization_by_shutter_counts(sample_master_dict=None,
     return _sample_data
 
 
-def  perform_normalization(_sample_data=None, ob_data_combined=None, dc_data_combined=None):
+def perform_normalization(_sample_data=None, ob_data_combined=None, dc_data_combined=None):
     
     # working on each image (TOF) independently
     if dc_data_combined is not None:
@@ -318,7 +318,8 @@ def  perform_normalization(_sample_data=None, ob_data_combined=None, dc_data_com
     # Integration of sample, dc and ob and then division
     if dc_data_combined is not None:
         logging.info(f"normalization with DC subtraction - integrated")
-        _integrated_normalized_data = np.divide(np.subtract(np.sum(_sample_data, axis=0), np.sum(dc_data_combined, axis=0)),    np.subtract(np.sum(ob_data_combined, axis=0), np.sum(dc_data_combined, axis=0)), 
+        _integrated_normalized_data = np.divide(np.subtract(np.sum(_sample_data, axis=0), np.sum(dc_data_combined, axis=0)),    
+                                                np.subtract(np.sum(ob_data_combined, axis=0), np.sum(dc_data_combined, axis=0)), 
                                         out=np.zeros_like(np.sum(_sample_data, axis=0)), 
                                         where=(np.sum(ob_data_combined, axis=0) - np.sum(dc_data_combined, axis=0))!=0)
     else:
@@ -496,6 +497,23 @@ def  export_corrected_normalized_data(sample_master_dict=None,
             )
 
 
+def normalize_by_container_roi(sample_data=None, container_roi=None):
+    x0 = container_roi.left
+    y0 = container_roi.top
+    width = container_roi.width
+    height = container_roi.height
+
+    _normalized_sample = np.empty_like(sample_data)
+    for i, _sample in enumerate(sample_data):
+        _container_value = np.mean(np.mean(_sample[y0:y0 + height, x0:x0 + width], axis=0), axis=0)
+        _log_sample = -np.log(_sample)
+        _log_container_value = -np.log(_container_value)
+        _log_normalized_sample = _log_sample - _log_container_value
+        _normalized_sample[i] = np.exp(- _log_normalized_sample)
+
+    return _normalized_sample
+
+
 def normalization_with_list_of_full_path(
     sample_dict: dict = None,
     combine_samples: bool = False,
@@ -518,7 +536,8 @@ def normalization_with_list_of_full_path(
     correct_chips_alignment_flag: bool = True,
     correct_chips_alignment_config: dict = None,
     export_mode: dict = None,
-    roi = None) -> NormalizedData:
+    roi = None,
+    container_roi = None) -> NormalizedData:
     """normalize the sample data with ob data using proton charge and shutter counts
     
     Args:
@@ -552,7 +571,9 @@ def normalization_with_list_of_full_path(
         correct_chips_alignment_flag (bool): if True, correct chips alignment
         correct_chips_alignment_config (dict): configuration for chips alignment correction
         export_mode (dict): dictionary with export options
-    
+        roi (Roi): region of interest for full spectrum normalization
+        container_roi (Roi): region of interest for container only normalization
+
     Returns:
         normalized_data | np.ndarray: normalized data
     """
@@ -742,6 +763,13 @@ def normalization_with_list_of_full_path(
                 _sample_data,
                 ob_master_dict,
                 first_ob_run_number,
+            )
+
+        if container_roi is not None:
+            logging.info(f"Applying container normalization with roi: {container_roi}")
+            _sample_data = normalize_by_container_roi(
+                sample_data=_sample_data,
+                container_roi=container_roi,
             )
 
         logging.info(f"{_sample_data.shape = }")
