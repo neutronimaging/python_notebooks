@@ -13,7 +13,7 @@ from ipywidgets import interactive
 from PIL import Image
 import periodictable
 import ipysheet
-from ipysheet import sheet, cell, row, column, from_dataframe
+from ipysheet import sheet, cell, row, column, from_dataframe, to_array
 
 from pleiades.processing.normalization import normalization as normalization_with_pleaides
 from pleiades.processing import Roi as PleiadesRoi
@@ -223,8 +223,11 @@ class ResonanceFitting(NormalizationTof):
         df = ipysheet.to_dataframe(self.isotope_sheet)
         logging.info(f"Isotope selection:\n{df}")
 
+        array = to_array(self.isotope_sheet)
+        logging.info(f"Isotope selection as array:\n{array}")
         
-
+        for _index, row in enumerate(array):
+            logging.info(f"at {_index =}, {row[0] = }, {row[1] = }, {row[2] = }")
 
 
 
