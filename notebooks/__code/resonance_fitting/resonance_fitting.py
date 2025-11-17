@@ -171,17 +171,9 @@ class ResonanceFitting(NormalizationTof):
 
     def on_element_change(self, change):
         logging.info(f"Element selected: {change['new']}")
-        element_symbol = self.dict_elements[change['new']]['symbol']
-        dict_isotopes = self.get_dict_isotopes(element_symbol)
         self.isotope_sheet.close()
-        list_isotopes_for_this_element = dict_isotopes.keys()
-        logging.info(f"{list_isotopes_for_this_element}")
-        # list_mass_isotopes = [dict_isotopes[iso]['mass'] for iso in list_isotopes_for_this_element]
-        list_abundance_isotopes = [dict_isotopes[iso]['abundance'] for iso in list_isotopes_for_this_element]
-        df = pd.DataFrame({'Isotope': np.array(list_isotopes_for_this_element), 
-                           'Abundance (%)': np.array(list_abundance_isotopes)})
-        self.isotope_sheet = from_dataframe(df)
-        display(self.isotope_sheet)
+        element_symbol = self.dict_elements[change['new']]['symbol']
+        self.create_and_display_isotope_table(element_symbol=element_symbol)
 
     def get_dict_isotopes(self, element_symbol):
         """
@@ -200,6 +192,43 @@ class ResonanceFitting(NormalizationTof):
         logging.info(f"in get_dict_isotopes: {element_symbol = }, {_dict = }")
         return _dict
 
+    def create_and_display_isotope_table(self, element_symbol):
+
+        dict_isotopes = self.get_dict_isotopes(element_symbol)
+
+        list_isotopes_for_this_element = dict_isotopes.keys()
+        logging.info(f"{list_isotopes_for_this_element}")
+        # list_mass_isotopes = [dict_isotopes[iso]['mass'] for iso in list_isotopes_for_this_element]
+        list_abundance_isotopes = [dict_isotopes[iso]['abundance'] for iso in list_isotopes_for_this_element]
+        
+        # create a boolean array of the same length as list_isotopes_for_this_element
+
+        list_use_it = np.array([False for _ in list_isotopes_for_this_element])
+        for _index, value in enumerate(list_abundance_isotopes):
+            if value > 0:
+                list_use_it[_index] = True
+
+        temp_dict = {'Isotope': np.array(list_isotopes_for_this_element), 
+                       'Abundance (%)': np.array(list_abundance_isotopes),
+                       'use it': list_use_it}
+        
+        df = pd.DataFrame(temp_dict)
+
+        self.isotope_sheet = from_dataframe(df)
+        # self.isotope_sheet.column_width = 50
+        display(self.isotope_sheet)
+
+    def on_validate_isotope_selection(self, b):
+        logging.info("Adding to list of elements/isotopes to consider ...")
+        df = ipysheet.to_dataframe(self.isotope_sheet)
+        logging.info(f"Isotope selection:\n{df}")
+
+        
+
+
+
+
+
     def select_isotope_and_abundance(self):
         list_elements = periodictable.elements
         dict_elements = {}
@@ -209,7 +238,7 @@ class ResonanceFitting(NormalizationTof):
         list_elements_names.sort()
         self.dict_elements = dict_elements
 
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element:</span>"))
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element/isotopes to use:</span>"))
         list_elements_widget = widgets.Dropdown(
             options=list_elements_names,
             description="",
@@ -219,34 +248,22 @@ class ResonanceFitting(NormalizationTof):
         list_elements_widget.observe(self.on_element_change, names='value')
         full_name_of_element = list_elements_widget.value
         element_symbol = dict_elements[full_name_of_element]['symbol']
-        dict_isotopes = self.get_dict_isotopes(element_symbol)
-
-
-        list_isotopes_for_this_element = dict_isotopes.keys()
-        logging.info(f"{list_isotopes_for_this_element}")
-        # list_mass_isotopes = [dict_isotopes[iso]['mass'] for iso in list_isotopes_for_this_element]
-        list_abundance_isotopes = [dict_isotopes[iso]['abundance']*100 for iso in list_isotopes_for_this_element]
-        df = pd.DataFrame({'Isotope': np.array(list_isotopes_for_this_element), 
-                           'Abundance (%)': np.array(list_abundance_isotopes)})
+        self.create_and_display_isotope_table(element_symbol=element_symbol)
         
-        logging.info(f"{df =}")
+        self.validate_isotope_button = widgets.Button(
+            description="Add to list of elements/isotopes to consider",
+            layout=widgets.Layout(width="100%"),
+            disabled=False,
+            button_style="success",  # 'success', 'info', 'warning', 'danger' or ''
+            tooltip="Click to validate isotope selection",
+            icon="plus-circle",  # (FontAwesome names without the `fa-` prefix)
+        )
+        self.validate_isotope_button.on_click(self.on_validate_isotope_selection)
+        display(self.validate_isotope_button)
+
+        display(HTML("<hr>"))
         
-        self.isotope_sheet = from_dataframe(df)
-        self.isotope_sheet.column_width = 50
-        display(self.isotope_sheet)
-
-        # df = pd.DataFrame(columns=['Isotope', 'Abundance (%)'])
-        # df = pd.DataFrame({'Isotope': [iso.mass for iso in list_isotopes], 'Abundance (%)': [iso.abundance*100 for iso in list_isotopes]})
-
-        # self.sheet = ipysheet.sheet(rows=10, columns=2)
-
-
-
-        # self.sheet = ipysheet.sheet(rows=2, columns=2)
-        # cell1 = ipysheet.cell(0, 0, 'Alice')
-        # cell2 = ipysheet.cell(0, 1, 25)
-        # cell3 = ipysheet.cell(1, 0, 'Bob')
-        # cell4 = ipysheet.cell(1, 1, 30)
-
-        # display(self.sheet)
-
+        # empty stylesheet table for now
+        _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
+        self.isotope_to_use_sheet = from_dataframe(_df)
+        display(self.isotope_to_use_sheet)
