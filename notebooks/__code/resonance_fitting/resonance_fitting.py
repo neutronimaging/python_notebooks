@@ -12,6 +12,8 @@ from IPython.display import HTML, display
 from ipywidgets import interactive
 from PIL import Image
 import periodictable
+import ipysheet
+from ipysheet import sheet, cell, row, column, from_dataframe
 
 from pleiades.processing.normalization import normalization as normalization_with_pleaides
 from pleiades.processing import Roi as PleiadesRoi
@@ -167,6 +169,37 @@ class ResonanceFitting(NormalizationTof):
             logging.error("Conversion failed! The generated .twenty file is not valid.")
             display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Conversion failed! The generated .twenty file is not valid.</span>"))
 
+    def on_element_change(self, change):
+        logging.info(f"Element selected: {change['new']}")
+        element_symbol = self.dict_elements[change['new']]['symbol']
+        dict_isotopes = self.get_dict_isotopes(element_symbol)
+        self.isotope_sheet.close()
+        list_isotopes_for_this_element = dict_isotopes.keys()
+        logging.info(f"{list_isotopes_for_this_element}")
+        # list_mass_isotopes = [dict_isotopes[iso]['mass'] for iso in list_isotopes_for_this_element]
+        list_abundance_isotopes = [dict_isotopes[iso]['abundance'] for iso in list_isotopes_for_this_element]
+        df = pd.DataFrame({'Isotope': np.array(list_isotopes_for_this_element), 
+                           'Abundance (%)': np.array(list_abundance_isotopes)})
+        self.isotope_sheet = from_dataframe(df)
+        display(self.isotope_sheet)
+
+    def get_dict_isotopes(self, element_symbol):
+        """
+        Get a dictionary of isotopes and their abundances for a given element.
+        
+        dict = {[isotope_name]: {'abundance': None, 'mass': None}}
+        
+        return dict
+        """
+        # element = periodictable.elements.symbol(element_name)
+        _dict = {}
+        for _el in getattr(periodictable, element_symbol):
+            _dict[str(_el)] = {'abundance': _el.abundance, 
+                          'mass': _el.mass}
+
+        logging.info(f"in get_dict_isotopes: {element_symbol = }, {_dict = }")
+        return _dict
+
     def select_isotope_and_abundance(self):
         list_elements = periodictable.elements
         dict_elements = {}
@@ -174,6 +207,7 @@ class ResonanceFitting(NormalizationTof):
             dict_elements[_el.name.capitalize()] = {'symbol': _el.symbol}
         list_elements_names = list(dict_elements.keys())
         list_elements_names.sort()
+        self.dict_elements = dict_elements
 
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element:</span>"))
         list_elements_widget = widgets.Dropdown(
@@ -182,3 +216,37 @@ class ResonanceFitting(NormalizationTof):
             disabled=False,
         )
         display(list_elements_widget)
+        list_elements_widget.observe(self.on_element_change, names='value')
+        full_name_of_element = list_elements_widget.value
+        element_symbol = dict_elements[full_name_of_element]['symbol']
+        dict_isotopes = self.get_dict_isotopes(element_symbol)
+
+
+        list_isotopes_for_this_element = dict_isotopes.keys()
+        logging.info(f"{list_isotopes_for_this_element}")
+        # list_mass_isotopes = [dict_isotopes[iso]['mass'] for iso in list_isotopes_for_this_element]
+        list_abundance_isotopes = [dict_isotopes[iso]['abundance']*100 for iso in list_isotopes_for_this_element]
+        df = pd.DataFrame({'Isotope': np.array(list_isotopes_for_this_element), 
+                           'Abundance (%)': np.array(list_abundance_isotopes)})
+        
+        logging.info(f"{df =}")
+        
+        self.isotope_sheet = from_dataframe(df)
+        self.isotope_sheet.column_width = 50
+        display(self.isotope_sheet)
+
+        # df = pd.DataFrame(columns=['Isotope', 'Abundance (%)'])
+        # df = pd.DataFrame({'Isotope': [iso.mass for iso in list_isotopes], 'Abundance (%)': [iso.abundance*100 for iso in list_isotopes]})
+
+        # self.sheet = ipysheet.sheet(rows=10, columns=2)
+
+
+
+        # self.sheet = ipysheet.sheet(rows=2, columns=2)
+        # cell1 = ipysheet.cell(0, 0, 'Alice')
+        # cell2 = ipysheet.cell(0, 1, 25)
+        # cell3 = ipysheet.cell(1, 0, 'Bob')
+        # cell4 = ipysheet.cell(1, 1, 30)
+
+        # display(self.sheet)
+

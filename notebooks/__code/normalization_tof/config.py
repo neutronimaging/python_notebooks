@@ -1,5 +1,5 @@
 class DEBUG_DATA:
-    ipts = "IPTS-35423"
+    ipts = "IPTS-35945"
     working_dir = f"/SNS/VENUS/{ipts}"
     autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
     output_folder = f"{working_dir}/shared/processed_data/jean_test"

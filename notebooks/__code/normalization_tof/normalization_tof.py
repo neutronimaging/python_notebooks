@@ -245,7 +245,8 @@ class NormalizationTof:
                 file_path = Path(self.raw_dir) / file_path
             if file_path is None:
                 raise ValueError(f"No full path file found for run number {run_number}")
-            return str(file_path)
+            
+            return file_path
 
         else:
             raise ValueError(f"Unknown detector type: {self.detector_type}")
@@ -625,8 +626,9 @@ class NormalizationTof:
                     )
                 )
                 return
-            fig, ax = plt.subplots(figsize=(10, 6))
+            fig, ax = plt.subplots(figsize=(10, 10))
             im = ax.imshow(integrated_ob, cmap="viridis", aspect="auto")
+            ax.set_aspect("equal")
             ax.set_title(f"Integrated OB run: {list_ob_short_runs[0]}")
             fig.colorbar(im, ax=ax, orientation="vertical", label="Intensity")
             plt.show()
