@@ -307,9 +307,27 @@ class ResonanceFitting(NormalizationTof):
         self._display_tables_and_buttons()
         display(self.isotope_to_use_sheet)
 
+        self._update_total_abundance_of_isotopes_to_use()
+
         # disable button (to make sure only 1 element is added at a time)
         self.validate_isotope_button.disabled = True
         
+    def _update_total_abundance_of_isotopes_to_use(self):
+
+        df_to_use = ipysheet.to_dataframe(self.isotope_to_use_sheet)
+        list_abundances = df_to_use['Abundance (%)'].tolist()
+        list_abundances_float = [float(_value) for _value in list_abundances]
+        total_abundance = sum(list_abundances_float)
+        logging.info(f"Total abundance of isotopes to use: {total_abundance} %")
+
+        #FIXME
+
+
+
+
+
+
+
     def _display_tables_and_buttons(self):
         """display the isotope table. the button to validate the selection as well as the table of isotopes to use
         """
@@ -390,46 +408,70 @@ class ResonanceFitting(NormalizationTof):
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Configuration file created at: {json_path}</span>"))
 
     def _setup_element_manager(self):
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Element Selected: {self.list_elements_widget.value}</span>"))
 
-        # mass number of the element selected
-        _label_left = widgets.HTML("Mass number:")
-        _mass_number = widgets.IntText(value=178, disabled=False)
-        _hori_layout_1 = widgets.HBox([_label_left, _mass_number])
-        display(_hori_layout_1)
+        # from all the elements selected, let's find out the one with the most abundant isotope
+        most_abundant_isotope = max(self.isotope_to_use_sheet.data, key=lambda x: x[1])[0] 
+        logging.info(f"Most abundant isotope selected: {most_abundant_isotope}")
 
-        # density (g/cm^3)
-        _label_left = widgets.HTML("Density (g/cm<sup>3</sup>):")
-        _density = widgets.FloatText(value=13.31, disabled=False)
-        _hori_layout_2 = widgets.HBox([_label_left, _density])
-        display(_hori_layout_2)
 
-        # thickness (mm)
-        _label_left = widgets.HTML("Thickness (mm):")
-        _thickness = widgets.FloatText(value=0.05, disabled=False)
-        _hori_layout_3 = widgets.HBox([_label_left, _thickness])
-        display(_hori_layout_3)
+        # display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Element Selected: <b>{self.list_elements_widget.value}</b></span>"))
 
-        # atomic mass amu
-        _label_left = widgets.HTML("Atomic mass (amu):")
-        _atomic_mass = widgets.FloatText(value=178.49, disabled=False)
-        _hori_layout_4 = widgets.HBox([_label_left, _atomic_mass])
-        display(_hori_layout_4) 
+        # label_width = "160px"
+        # text_width = "50px"
+        # # mass number of the element selected
+        # _label_left = widgets.HTML("<div style='text-align: right'>Mass number:</div>",
+        #                            layout=widgets.Layout(width=label_width))
+        # _mass_number = widgets.IntText(value=178, 
+        #                                disabled=False,
+        #                                layout=widgets.Layout(width=text_width))
+        # _hori_layout_1 = widgets.HBox([_label_left, 
+        #                                _mass_number])
+        # display(_hori_layout_1)
 
-        # abundance (%)
-        _label_left = widgets.HTML("Abundance (%):")
-        _abundance = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
-        _hori_layout_5 = widgets.HBox([_label_left, _abundance])
-        display(_hori_layout_5)
+        # # density (g/cm^3)
+        # _label_left = widgets.HTML("<div style='text-align: right'>Density (g/cm<sup>3</sup>):</div>",
+        #                            layout=widgets.Layout(width=label_width))
+        # _density = widgets.FloatText(value=13.31, 
+        #                              disabled=False,
+        #                              layout=widgets.Layout(width=text_width))
+        # _hori_layout_2 = widgets.HBox([_label_left, _density])
+        # display(_hori_layout_2)
 
-        # energy range (ev)
-        _label_left = widgets.HTML("Energy range (eV):")
-        _energy_range = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
-        _hori_layout_6 = widgets.HBox([_label_left, _energy_range])
-        display(_hori_layout_6)
+        # # thickness (mm)
+        # _label_left = widgets.HTML("<div style='text-align: right'>Thickness (mm):</div>",
+        #                            layout=widgets.Layout(width=label_width))
+        # _thickness = widgets.FloatText(value=0.05, 
+        #                                disabled=False,
+        #                                layout=widgets.Layout(width=text_width))
+        # _hori_layout_3 = widgets.HBox([_label_left, _thickness])
+        # display(_hori_layout_3)
 
-        # temperature (K)
-        _label_left = widgets.HTML("Temperature (K):")
-        _temperature = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
-        _hori_layout_7 = widgets.HBox([_label_left, _temperature])
-        display(_hori_layout_7)
+        # # atomic mass amu
+        # _label_left = widgets.HTML("<div style='text-align: right'>Atomic mass (amu):</div>",
+        #                            layout=widgets.Layout(width=label_width))
+        # _atomic_mass = widgets.FloatText(value=178.49, 
+        #                                  disabled=False,
+        #                                  layout=widgets.Layout(width=text_width))
+        # _hori_layout_4 = widgets.HBox([_label_left, _atomic_mass])
+        # display(_hori_layout_4) 
+
+        # # abundance (%)
+        # _label_left = widgets.HTML("<div style='text-align: right'>Abundance (%):</div>",
+        #                            layout=widgets.Layout(width=label_width))
+        # _abundance = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
+        # _hori_layout_5 = widgets.HBox([_label_left, _abundance])
+        # display(_hori_layout_5)
+
+        # # energy range (ev)
+        # _label_left = widgets.HTML("<div style='text-align: right'>Energy range (eV):</div>",
+        #                            layout=widgets.Layout(width=label_width))
+        # _energy_range = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
+        # _hori_layout_6 = widgets.HBox([_label_left, _energy_range])
+        # display(_hori_layout_6)
+
+        # # temperature (K)
+        # _label_left = widgets.HTML("<div style='text-align: right'>Temperature (K):</div>",
+        #                            layout=widgets.Layout(width=label_width))
+        # _temperature = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
+        # _hori_layout_7 = widgets.HBox([_label_left, _temperature])
+        # display(_hori_layout_7)
