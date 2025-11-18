@@ -6,6 +6,7 @@ class DEBUG_DATA:
     sample_runs_selected = ["Run_13083"]
     ob_runs_selected = ["Run_13082"]
     dc_runs_selected = ["Run_13081"]
+    isotope_element = "Hf"
 
 
 timepix1_config = {

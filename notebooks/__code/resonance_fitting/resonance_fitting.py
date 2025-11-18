@@ -1,5 +1,6 @@
 import glob
 import logging
+from dotenv import load_dotenv
 import logging as notebook_logging
 import os
 from pathlib import Path
@@ -19,6 +20,8 @@ from pleiades.processing.normalization import normalization as normalization_wit
 from pleiades.processing import Roi as PleiadesRoi
 from pleiades.processing import Facility
 from pleiades.sammy.io.data_manager import convert_csv_to_sammy_twenty, validate_sammy_twenty_format
+from pleiades.sammy.io.json_manager import JsonManager
+from pleiades.sammy.io.inp_manager import InpManager
 
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
@@ -30,7 +33,6 @@ from __code.resonance_fitting.config import DEBUG_DATA, timepix1_config, timepix
 from __code.normalization_tof.normalization_tof import NormalizationTof
 from __code.ipywe.fileselector import FileSelectorPanel as FileSelectorPanel
 from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
-from __code.normalization_tof.config import DEBUG_DATA, timepix1_config, timepix3_config
 from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
     load_data_using_multithreading,
     # normalization,
@@ -65,6 +67,8 @@ class ResonanceFitting(NormalizationTof):
         self.files_paths = FilesPaths()
         
         self.initialize_logging()
+
+        load_dotenv(".envrc")
         
         if debug:
             self.folder_paths.working = Path(DEBUG_DATA.working_dir)
@@ -122,21 +126,57 @@ class ResonanceFitting(NormalizationTof):
             filters={"transmission txt": "*_transmission.txt"},
             default_filter="transmission txt",
             multiple=False,
-            next=self.transmitted_text_file_selected,
+            next=self._transmitted_text_file_selected,
         )
         self.file_selector.show()
 
-    def transmitted_text_file_selected(self, file_path):
+    def select_isotope_and_abundance(self):
+        list_elements = periodictable.elements
+        dict_elements = {}
+        for _el in list_elements:
+            dict_elements[_el.name.capitalize()] = {'symbol': _el.symbol}
+        list_elements_names = list(dict_elements.keys())
+        list_elements_names.sort()
+        self.dict_elements = dict_elements
+
+        if self.debug:
+            default_symbol_selected = DEBUG_DATA.isotope_element
+            for _el_name in dict_elements.keys():
+                if dict_elements[_el_name]['symbol'] == default_symbol_selected:
+                    default_element_selected = _el_name
+                    break
+        else:
+            default_symbol_selected = "Hydrogen"
+
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element/isotopes to use:</span>"))
+        self.list_elements_widget = widgets.Dropdown(
+            options=list_elements_names,
+            value=default_element_selected,
+            description="",
+            disabled=False,
+        )
+        display(self.list_elements_widget)
+        self.list_elements_widget.observe(self._on_element_change, names='value')
+        
+        self._display_tables_and_buttons()
+
+        # empty stylesheet table for now
+        _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
+        self.isotope_to_use_sheet = from_dataframe(_df)
+        self.df_to_use = _df
+        display(self.isotope_to_use_sheet)
+
+    def _transmitted_text_file_selected(self, file_path):
         file_path = Path(file_path)
         logging.info(f"Transmitted text file selected: {file_path}")
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Transmission file: {file_path.name} ... selected!</span>"))
 
         self.files_paths.transmission = file_path
        
-        self.stagging_folders_setup(file_path)
-        self.converting_transmission_to_twenty_format()
+        self._stagging_folders_setup(file_path)
+        self._converting_transmission_to_twenty_format()
 
-    def stagging_folders_setup(self, file_path):
+    def _stagging_folders_setup(self, file_path):
 
         # set up various stagging folder for SAMMY
         self.folder_paths.stagging = file_path.parent / "hf_analysis"
@@ -160,7 +200,7 @@ class ResonanceFitting(NormalizationTof):
 
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Stagging folders created!</span>"))
 
-    def converting_transmission_to_twenty_format(self):
+    def _converting_transmission_to_twenty_format(self):
         logging.info("Converting transmission data .txt to .twenty format for SAMMY ...")
         twenty_file = self.folder_paths.output / self.files_paths.transmission.name.replace(".txt", ".twenty")
         convert_csv_to_sammy_twenty(self.files_paths.transmission, twenty_file)
@@ -171,7 +211,7 @@ class ResonanceFitting(NormalizationTof):
             logging.error("Conversion failed! The generated .twenty file is not valid.")
             display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Conversion failed! The generated .twenty file is not valid.</span>"))
 
-    def on_element_change(self, change):
+    def _on_element_change(self, change):
         logging.info(f"Element selected: {change['new']}")
         self.isotope_sheet.close()
         element_symbol = self.dict_elements[change['new']]['symbol']
@@ -186,7 +226,7 @@ class ResonanceFitting(NormalizationTof):
         self.display_tables_and_buttons()
         display(self.isotope_to_use_sheet)
 
-    def get_dict_isotopes(self, element_symbol):
+    def _get_dict_isotopes(self, element_symbol):
         """
         Get a dictionary of isotopes and their abundances for a given element.
         
@@ -203,9 +243,9 @@ class ResonanceFitting(NormalizationTof):
         logging.info(f"in get_dict_isotopes: {element_symbol = }, {_dict = }")
         return _dict
 
-    def create_and_display_isotope_table(self, element_symbol):
+    def _create_and_display_isotope_table(self, element_symbol):
 
-        dict_isotopes = self.get_dict_isotopes(element_symbol)
+        dict_isotopes = self._get_dict_isotopes(element_symbol)
 
         list_isotopes_for_this_element = dict_isotopes.keys()
         logging.info(f"{list_isotopes_for_this_element}")
@@ -264,37 +304,13 @@ class ResonanceFitting(NormalizationTof):
 
         self.isotope_to_use_sheet = from_dataframe(self.df_to_use)
 
-        self.display_tables_and_buttons()
+        self._display_tables_and_buttons()
         display(self.isotope_to_use_sheet)
 
-    def select_isotope_and_abundance(self):
-        list_elements = periodictable.elements
-        dict_elements = {}
-        for _el in list_elements:
-            dict_elements[_el.name.capitalize()] = {'symbol': _el.symbol}
-        list_elements_names = list(dict_elements.keys())
-        list_elements_names.sort()
-        self.dict_elements = dict_elements
-
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element/isotopes to use:</span>"))
-        self.list_elements_widget = widgets.Dropdown(
-            options=list_elements_names,
-            description="",
-            disabled=False,
-        )
-        display(self.list_elements_widget)
-        self.list_elements_widget.observe(self.on_element_change, names='value')
+        # disable button (to make sure only 1 element is added at a time)
+        self.validate_isotope_button.disabled = True
         
-        self.display_tables_and_buttons()
-
-        # empty stylesheet table for now
-        _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
-        self.isotope_to_use_sheet = from_dataframe(_df)
-        self.df_to_use = _df
-        display(self.isotope_to_use_sheet)
-
-        
-    def display_tables_and_buttons(self):
+    def _display_tables_and_buttons(self):
         """display the isotope table. the button to validate the selection as well as the table of isotopes to use
         """
         
@@ -303,7 +319,7 @@ class ResonanceFitting(NormalizationTof):
         full_name_of_element = self.list_elements_widget.value
         element_symbol = dict_elements[full_name_of_element]['symbol']
 
-        self.create_and_display_isotope_table(element_symbol=element_symbol)
+        self._create_and_display_isotope_table(element_symbol=element_symbol)
         
         self.validate_isotope_button = widgets.Button(
             description="Add to list of elements/isotopes to consider",
@@ -316,7 +332,104 @@ class ResonanceFitting(NormalizationTof):
         self.validate_isotope_button.on_click(self.on_validate_isotope_selection)
         display(self.validate_isotope_button)
 
-        # # empty stylesheet table for now
-        # _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
-        # self.isotope_to_use_sheet = from_dataframe(_df)
-        # display(self.isotope_to_use_sheet)
+    def _reformat_list_isotopes(self, list_isotopes):
+        """
+        to go from "155-Hf" to "Hf-155"
+        """
+        list_reformatted = []
+        for _iso in list_isotopes:
+            parts = _iso.split('-')
+            if len(parts) == 2:
+                reformatted = f"{parts[1]}-{parts[0]}"
+                list_reformatted.append(reformatted)
+            else:
+                logging.warning(f"Unexpected isotope format: {_iso}")
+        return list_reformatted
+    
+
+    def define_configuration(self):
+        self._create_json_manager()
+        self._setup_element_manager()
+
+    def _create_json_manager(self):
+        """
+        forceRMoore: this should always be yes when we are using it for fitting number density
+        purgeSpinGropus: this has to be yes to avoid including irrelevant resonance entries, this is the new feature we ask Doro to added to Sammy this past summer
+        fudge: fudge factor, this determines the step size used in fitting, users should not need to worry about it
+        """
+        logging.info("Creating configuration file for resonance fitting ...")
+
+        # retrieve isotopes and abundances to use
+        df_to_use = ipysheet.to_dataframe(self.isotope_to_use_sheet)
+        list_isotopes = df_to_use['Isotope'].tolist()
+        list_isotopes_reformatted = self._reformat_list_isotopes(list_isotopes)
+        list_abundances = df_to_use['Abundance (%)'].tolist()
+        list_abundances_float = [float(_value)*0.01 for _value in list_abundances]
+
+        logging.info(f"\t{list_isotopes = }")
+        logging.info(f"\t{list_isotopes_reformatted =}")
+        logging.info(f"\t{list_abundances = }")
+        logging.info(f"\t{list_abundances_float = }")
+        logging.info(f"\t{self.folder_paths.stagging = }")
+
+        self.json_manager = JsonManager()
+        json_path = self.json_manager.create_json_config(
+            isotopes=list_isotopes_reformatted,
+            abundances=list_abundances_float,
+            working_dir=self.folder_paths.stagging,
+            custom_global_settings={"forceRMoore": "yes",
+                                    "purgeSpinGroups": "yes",
+                                    "fudge": "0.7"}
+        )
+
+        logging.info(f"Configuration file created at: {json_path}")
+        endf_files = [f for f in os.listdir(self.folder_paths.stagging) if f.endswith('.par')]
+        logging.info(f"ENDf files found in working directory: {len(endf_files)} files")
+        for f in sorted(endf_files):
+            logging.info(f"\t- {f}")
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Configuration file created at: {json_path}</span>"))
+
+    def _setup_element_manager(self):
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Element Selected: {self.list_elements_widget.value}</span>"))
+
+        # mass number of the element selected
+        _label_left = widgets.HTML("Mass number:")
+        _mass_number = widgets.IntText(value=178, disabled=False)
+        _hori_layout_1 = widgets.HBox([_label_left, _mass_number])
+        display(_hori_layout_1)
+
+        # density (g/cm^3)
+        _label_left = widgets.HTML("Density (g/cm<sup>3</sup>):")
+        _density = widgets.FloatText(value=13.31, disabled=False)
+        _hori_layout_2 = widgets.HBox([_label_left, _density])
+        display(_hori_layout_2)
+
+        # thickness (mm)
+        _label_left = widgets.HTML("Thickness (mm):")
+        _thickness = widgets.FloatText(value=0.05, disabled=False)
+        _hori_layout_3 = widgets.HBox([_label_left, _thickness])
+        display(_hori_layout_3)
+
+        # atomic mass amu
+        _label_left = widgets.HTML("Atomic mass (amu):")
+        _atomic_mass = widgets.FloatText(value=178.49, disabled=False)
+        _hori_layout_4 = widgets.HBox([_label_left, _atomic_mass])
+        display(_hori_layout_4) 
+
+        # abundance (%)
+        _label_left = widgets.HTML("Abundance (%):")
+        _abundance = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
+        _hori_layout_5 = widgets.HBox([_label_left, _abundance])
+        display(_hori_layout_5)
+
+        # energy range (ev)
+        _label_left = widgets.HTML("Energy range (eV):")
+        _energy_range = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
+        _hori_layout_6 = widgets.HBox([_label_left, _energy_range])
+        display(_hori_layout_6)
+
+        # temperature (K)
+        _label_left = widgets.HTML("Temperature (K):")
+        _temperature = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
+        _hori_layout_7 = widgets.HBox([_label_left, _temperature])
+        display(_hori_layout_7)

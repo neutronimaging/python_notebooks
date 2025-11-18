@@ -31,8 +31,9 @@ inflect = ">=7.5.0,<8"
 pyoncat = ">=2.1,<3"
 numpy = ">=2.3"
 jupyter = ">=1.1.1,<2"
-pleiades-neutron = ">=2.1.4,<3"
+pleiades-neutron = ">=2.1.5,<3"
 ipysheet = ">=0.7.0,<0.8"
+python-dotenv = ">=1.2.1,<2"
 
 [pypi-dependencies]
 bem = ">=1.0.0, <2"
