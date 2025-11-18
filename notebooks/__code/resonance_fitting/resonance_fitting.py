@@ -58,6 +58,8 @@ class FolderPaths:
 
 class ResonanceFitting(NormalizationTof):
 
+    df_to_use = None
+
     def __init__(self, working_dir=None, debug=False):
         self.folder_paths = FolderPaths()
         self.files_paths = FilesPaths()
@@ -175,6 +177,15 @@ class ResonanceFitting(NormalizationTof):
         element_symbol = self.dict_elements[change['new']]['symbol']
         self.create_and_display_isotope_table(element_symbol=element_symbol)
 
+        self.isotope_to_use_sheet.close()
+        self.validate_isotope_button.close()
+        self.isotope_sheet.close()
+
+        self.isotope_to_use_sheet = from_dataframe(self.df_to_use)
+
+        self.display_tables_and_buttons()
+        display(self.isotope_to_use_sheet)
+
     def get_dict_isotopes(self, element_symbol):
         """
         Get a dictionary of isotopes and their abundances for a given element.
@@ -209,8 +220,8 @@ class ResonanceFitting(NormalizationTof):
                 list_use_it[_index] = True
 
         temp_dict = {'Isotope': np.array(list_isotopes_for_this_element), 
-                       'Abundance (%)': np.array(list_abundance_isotopes),
-                       'use it': list_use_it}
+                    'Abundance (%)': np.array(list_abundance_isotopes),
+                    'use it': list_use_it}
         
         df = pd.DataFrame(temp_dict)
 
@@ -229,8 +240,32 @@ class ResonanceFitting(NormalizationTof):
         for _index, row in enumerate(array):
             logging.info(f"at {_index =}, {row[0] = }, {row[1] = }, {row[2] = }")
 
+        # retrieve the content of the isotope_to_use_sheet
+        df_to_use = ipysheet.to_dataframe(self.isotope_to_use_sheet)
+        # remove any row with 'Isotope' = None
+        df_to_use = df_to_use[df_to_use['Isotope'].notna()]
+        logging.info(f"Current isotopes to use:\n{df_to_use}")
 
+        # add it the new isotopes selected with 'use it' = True
+        for _index, row in enumerate(array):
+            logging.info(f"Processing row {_index}: {row}, {row[2] =}")
+            if str(row[2]) == 'True':  # 'use it' is True
+                isotope_name = row[0]
+                abundance = row[1]
+                logging.info(f"Adding isotope: {isotope_name} with abundance: {abundance}")
+                df_to_use = pd.concat([df_to_use, pd.DataFrame({'Isotope': [isotope_name], 'Abundance (%)': [abundance]})], ignore_index=True)
 
+         # remove duplicates
+        self.df_to_use = df_to_use.drop_duplicates(subset='Isotope')
+
+        self.isotope_to_use_sheet.close()
+        self.validate_isotope_button.close()
+        self.isotope_sheet.close()
+
+        self.isotope_to_use_sheet = from_dataframe(self.df_to_use)
+
+        self.display_tables_and_buttons()
+        display(self.isotope_to_use_sheet)
 
     def select_isotope_and_abundance(self):
         list_elements = periodictable.elements
@@ -242,15 +277,32 @@ class ResonanceFitting(NormalizationTof):
         self.dict_elements = dict_elements
 
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element/isotopes to use:</span>"))
-        list_elements_widget = widgets.Dropdown(
+        self.list_elements_widget = widgets.Dropdown(
             options=list_elements_names,
             description="",
             disabled=False,
         )
-        display(list_elements_widget)
-        list_elements_widget.observe(self.on_element_change, names='value')
-        full_name_of_element = list_elements_widget.value
+        display(self.list_elements_widget)
+        self.list_elements_widget.observe(self.on_element_change, names='value')
+        
+        self.display_tables_and_buttons()
+
+        # empty stylesheet table for now
+        _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
+        self.isotope_to_use_sheet = from_dataframe(_df)
+        self.df_to_use = _df
+        display(self.isotope_to_use_sheet)
+
+        
+    def display_tables_and_buttons(self):
+        """display the isotope table. the button to validate the selection as well as the table of isotopes to use
+        """
+        
+        dict_elements = self.dict_elements
+
+        full_name_of_element = self.list_elements_widget.value
         element_symbol = dict_elements[full_name_of_element]['symbol']
+
         self.create_and_display_isotope_table(element_symbol=element_symbol)
         
         self.validate_isotope_button = widgets.Button(
@@ -264,9 +316,7 @@ class ResonanceFitting(NormalizationTof):
         self.validate_isotope_button.on_click(self.on_validate_isotope_selection)
         display(self.validate_isotope_button)
 
-        display(HTML("<hr>"))
-        
-        # empty stylesheet table for now
-        _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
-        self.isotope_to_use_sheet = from_dataframe(_df)
-        display(self.isotope_to_use_sheet)
+        # # empty stylesheet table for now
+        # _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
+        # self.isotope_to_use_sheet = from_dataframe(_df)
+        # display(self.isotope_to_use_sheet)
