@@ -273,6 +273,8 @@ class ResonanceFitting(NormalizationTof):
         display(self.isotope_sheet)
 
     def on_validate_isotope_selection(self, b):
+        """Reached when the user clicks the ADD TO LIST OF ELEMENTS/ISOTOPES TO CONSIDER button"""
+
         logging.info("Adding to list of elements/isotopes to consider ...")
         df = ipysheet.to_dataframe(self.isotope_sheet)
         logging.info(f"Isotope selection:\n{df}")
@@ -426,68 +428,78 @@ class ResonanceFitting(NormalizationTof):
     def _setup_element_manager(self):
 
         # from all the elements selected, let's find out the one with the most abundant isotope
-        most_abundant_isotope = max(self.isotope_to_use_sheet.data, key=lambda x: x[1])[0] 
+        table_array = to_array(self.isotope_to_use_sheet)
+        max_abundance = 0.0
+        for _element, _abundance in table_array:
+            _float_abundance = float(str(_abundance))
+            if _float_abundance > max_abundance:
+                max_abundance = _float_abundance
+                most_abundant_isotope = _element
+           
         logging.info(f"Most abundant isotope selected: {most_abundant_isotope}")
 
+        mass_number_str, element_symbol = most_abundant_isotope.split('-')
+        my_periodic_table_element = getattr(periodictable, element_symbol)
 
-        # display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Element Selected: <b>{self.list_elements_widget.value}</b></span>"))
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Most Abundant Element Selected: <b>{element_symbol}</b></span>"))
 
-        # label_width = "160px"
-        # text_width = "50px"
-        # # mass number of the element selected
-        # _label_left = widgets.HTML("<div style='text-align: right'>Mass number:</div>",
-        #                            layout=widgets.Layout(width=label_width))
-        # _mass_number = widgets.IntText(value=178, 
-        #                                disabled=False,
-        #                                layout=widgets.Layout(width=text_width))
-        # _hori_layout_1 = widgets.HBox([_label_left, 
-        #                                _mass_number])
-        # display(_hori_layout_1)
+        label_width = "160px"
+        text_width = "50px"
+        # mass number of the element selected
+        _label_left = widgets.HTML("<div style='text-align: right'>Mass number:</div>",
+                                   layout=widgets.Layout(width=label_width))
+        _mass_number = widgets.IntText(value=int(mass_number_str), 
+                                       disabled=False,
+                                       layout=widgets.Layout(width=text_width))
+        _hori_layout_1 = widgets.HBox([_label_left, 
+                                       _mass_number])
+        display(_hori_layout_1)
 
-        # # density (g/cm^3)
-        # _label_left = widgets.HTML("<div style='text-align: right'>Density (g/cm<sup>3</sup>):</div>",
-        #                            layout=widgets.Layout(width=label_width))
-        # _density = widgets.FloatText(value=13.31, 
-        #                              disabled=False,
-        #                              layout=widgets.Layout(width=text_width))
-        # _hori_layout_2 = widgets.HBox([_label_left, _density])
-        # display(_hori_layout_2)
+        # density (g/cm^3)
+        
+        _label_left = widgets.HTML("<div style='text-align: right'>Density (g/cm<sup>3</sup>):</div>",
+                                   layout=widgets.Layout(width=label_width))
+        _density = widgets.FloatText(value=my_periodic_table_element.density, 
+                                     disabled=False,
+                                     layout=widgets.Layout(width=text_width))
+        _hori_layout_2 = widgets.HBox([_label_left, _density])
+        display(_hori_layout_2)
 
-        # # thickness (mm)
-        # _label_left = widgets.HTML("<div style='text-align: right'>Thickness (mm):</div>",
-        #                            layout=widgets.Layout(width=label_width))
-        # _thickness = widgets.FloatText(value=0.05, 
-        #                                disabled=False,
-        #                                layout=widgets.Layout(width=text_width))
-        # _hori_layout_3 = widgets.HBox([_label_left, _thickness])
-        # display(_hori_layout_3)
+        # thickness (mm)
+        _label_left = widgets.HTML("<div style='text-align: right'>Thickness (mm):</div>",
+                                   layout=widgets.Layout(width=label_width))
+        _thickness = widgets.FloatText(value=0.05, 
+                                       disabled=False,
+                                       layout=widgets.Layout(width=text_width))
+        _hori_layout_3 = widgets.HBox([_label_left, _thickness])
+        display(_hori_layout_3)
 
-        # # atomic mass amu
-        # _label_left = widgets.HTML("<div style='text-align: right'>Atomic mass (amu):</div>",
-        #                            layout=widgets.Layout(width=label_width))
-        # _atomic_mass = widgets.FloatText(value=178.49, 
-        #                                  disabled=False,
-        #                                  layout=widgets.Layout(width=text_width))
-        # _hori_layout_4 = widgets.HBox([_label_left, _atomic_mass])
-        # display(_hori_layout_4) 
+        # atomic mass amu
+        _label_left = widgets.HTML("<div style='text-align: right'>Atomic mass (amu):</div>",
+                                   layout=widgets.Layout(width=label_width))
+        _atomic_mass = widgets.FloatText(value=my_periodic_table_element.mass, 
+                                         disabled=False,
+                                         layout=widgets.Layout(width=text_width))
+        _hori_layout_4 = widgets.HBox([_label_left, _atomic_mass])
+        display(_hori_layout_4) 
 
-        # # abundance (%)
-        # _label_left = widgets.HTML("<div style='text-align: right'>Abundance (%):</div>",
-        #                            layout=widgets.Layout(width=label_width))
-        # _abundance = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
-        # _hori_layout_5 = widgets.HBox([_label_left, _abundance])
-        # display(_hori_layout_5)
+        # abundance (%)
+        _label_left = widgets.HTML("<div style='text-align: right'>Abundance (%):</div>",
+                                   layout=widgets.Layout(width=label_width))
+        _abundance = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
+        _hori_layout_5 = widgets.HBox([_label_left, _abundance])
+        display(_hori_layout_5)
 
-        # # energy range (ev)
-        # _label_left = widgets.HTML("<div style='text-align: right'>Energy range (eV):</div>",
-        #                            layout=widgets.Layout(width=label_width))
-        # _energy_range = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
-        # _hori_layout_6 = widgets.HBox([_label_left, _energy_range])
-        # display(_hori_layout_6)
+        # energy range (ev)
+        _label_left = widgets.HTML("<div style='text-align: right'>Energy range (eV):</div>",
+                                   layout=widgets.Layout(width=label_width))
+        _energy_range = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
+        _hori_layout_6 = widgets.HBox([_label_left, _energy_range])
+        display(_hori_layout_6)
 
-        # # temperature (K)
-        # _label_left = widgets.HTML("<div style='text-align: right'>Temperature (K):</div>",
-        #                            layout=widgets.Layout(width=label_width))
-        # _temperature = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
-        # _hori_layout_7 = widgets.HBox([_label_left, _temperature])
-        # display(_hori_layout_7)
+        # temperature (K)
+        _label_left = widgets.HTML("<div style='text-align: right'>Temperature (K):</div>",
+                                   layout=widgets.Layout(width=label_width))
+        _temperature = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
+        _hori_layout_7 = widgets.HBox([_label_left, _temperature])
+        display(_hori_layout_7)
