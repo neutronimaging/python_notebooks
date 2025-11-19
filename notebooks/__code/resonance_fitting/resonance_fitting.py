@@ -294,7 +294,7 @@ class ResonanceFitting(NormalizationTof):
             logging.info(f"Processing row {_index}: {row}, {row[2] =}")
             if str(row[2]) == 'True':  # 'use it' is True
                 isotope_name = row[0]
-                abundance = row[1]
+                abundance = f"{float(str(row[1])):.4f}"
                 logging.info(f"Adding isotope: {isotope_name} with abundance: {abundance}")
                 df_to_use = pd.concat([df_to_use, pd.DataFrame({'Isotope': [isotope_name], 'Abundance (%)': [abundance]})], ignore_index=True)
 
