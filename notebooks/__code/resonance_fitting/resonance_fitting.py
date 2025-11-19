@@ -14,7 +14,7 @@ from ipywidgets import interactive
 from PIL import Image
 import periodictable
 import ipysheet
-from ipysheet import sheet, cell, row, column, from_dataframe, to_array
+from ipysheet import sheet, cell, row, column, from_dataframe, to_array, calculation
 
 from pleiades.processing.normalization import normalization as normalization_with_pleaides
 from pleiades.processing import Roi as PleiadesRoi
@@ -61,6 +61,7 @@ class FolderPaths:
 class ResonanceFitting(NormalizationTof):
 
     df_to_use = None
+    horizontal_box = None # total abundance display box
 
     def __init__(self, working_dir=None, debug=False):
         self.folder_paths = FolderPaths()
@@ -306,15 +307,25 @@ class ResonanceFitting(NormalizationTof):
 
         self.isotope_to_use_sheet = from_dataframe(self.df_to_use)
 
+        # listen to all events in this table
+        for cell in self.isotope_to_use_sheet.cells:
+            cell.observe(self._on_isotope_to_use_table_change, names='value')
+
         self._display_tables_and_buttons()
         display(self.isotope_to_use_sheet)
-
+        
         self._update_total_abundance_of_isotopes_to_use()
 
         # disable button (to make sure only 1 element is added at a time)
-        self.validate_isotope_button.disabled = True
-        
+        # self.validate_isotope_button.disabled = True        
+
+    def _on_isotope_to_use_table_change(self, change):
+        self._update_total_abundance_of_isotopes_to_use()
+
     def _update_total_abundance_of_isotopes_to_use(self):
+
+        if self.horizontal_box:
+            self.horizontal_box.close()
 
         df_to_use = ipysheet.to_dataframe(self.isotope_to_use_sheet)
         list_abundances = df_to_use['Abundance (%)'].tolist()
