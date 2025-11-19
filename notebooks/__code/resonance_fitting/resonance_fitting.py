@@ -215,16 +215,18 @@ class ResonanceFitting(NormalizationTof):
         logging.info(f"Element selected: {change['new']}")
         self.isotope_sheet.close()
         element_symbol = self.dict_elements[change['new']]['symbol']
-        self.create_and_display_isotope_table(element_symbol=element_symbol)
+        self._create_and_display_isotope_table(element_symbol=element_symbol)
 
         self.isotope_to_use_sheet.close()
         self.validate_isotope_button.close()
         self.isotope_sheet.close()
+        self.horizontal_box.close()
 
         self.isotope_to_use_sheet = from_dataframe(self.df_to_use)
 
-        self.display_tables_and_buttons()
+        self._display_tables_and_buttons()
         display(self.isotope_to_use_sheet)
+        self._update_total_abundance_of_isotopes_to_use()
 
     def _get_dict_isotopes(self, element_symbol):
         """
@@ -320,13 +322,16 @@ class ResonanceFitting(NormalizationTof):
         total_abundance = sum(list_abundances_float)
         logging.info(f"Total abundance of isotopes to use: {total_abundance} %")
 
-        #FIXME
+        if total_abundance > 100.0:
+            color = "red"
+        else:
+            color = "blue"
 
-
-
-
-
-
+        self.total_abundance_label = widgets.HTML(
+            value=f"<span style='font-size: {FONT_SIZE}px; color:{color}'>Total abundance of isotopes to use: <b>{total_abundance:.2f} %</b></span>"
+        )
+        self.horizontal_box = widgets.HBox([self.total_abundance_label])
+        display(self.horizontal_box)
 
     def _display_tables_and_buttons(self):
         """display the isotope table. the button to validate the selection as well as the table of isotopes to use
