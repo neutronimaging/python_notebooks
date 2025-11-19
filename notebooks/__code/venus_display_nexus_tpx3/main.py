@@ -49,14 +49,20 @@ class VenusDisplayNexusTpx3:
         display(self.output)
 
     def load_data(self, nexus_full_path):
-        # Clear previous output
+        list_banks = [100, 200, 300]
         self.output.clear_output()
+
+        for _bank in list_banks:
+            self._load_data_single_bank(nexus_full_path, bank=_bank)
+            display(HTML("<hr>"))
+
+    def _load_data_single_bank(self, nexus_full_path, bank=100):
 
         # Use the output widget context to capture all output
         with self.output:
             with h5py.File(nexus_full_path, "r") as hdf5_data:
-                event_time_offset_original = hdf5_data["entry"]["bank100_events"]["event_time_offset"][:]
-                event_id_original = hdf5_data["entry"]["bank100_events"]["event_id"][:]
+                event_time_offset_original = hdf5_data["entry"][f"bank{bank}_events"]["event_time_offset"][:]
+                event_id_original = hdf5_data["entry"][f"bank{bank}_events"]["event_id"][:]
 
             offset_value = 1000000  # Offset value
             event_id_original -= offset_value
@@ -72,7 +78,7 @@ class VenusDisplayNexusTpx3:
             ax1.bar(bin_edges[:-1], hist, width=np.diff(bin_edges), edgecolor="black")
             ax1.set_xlabel("Event Time Offset (micros)")
             ax1.set_ylabel("Counts")
-            ax1.set_title("Event Time Offset Histogram")
+            ax1.set_title(f"Event Time Offset Histogram from bank:{bank}")
             plt.tight_layout()
             plt.show()
 
@@ -93,10 +99,10 @@ class VenusDisplayNexusTpx3:
             fig2, ax2 = plt.subplots(figsize=(10, 10))
             im = ax2.imshow(full_image, cmap="viridis", interpolation="nearest")
             plt.colorbar(im, ax=ax2)
-            ax2.set_title(os.path.basename(nexus_full_path))
+            ax2.set_title(f"{os.path.basename(nexus_full_path)} - bank:{bank}")
             plt.tight_layout()
             plt.show()
 
-            display(HTML("Statistics:"))
+            display(HTML(f"Statistics for bank:{bank}:"))
             display(HTML(f"<br>Total Events: {len(event_id)}"))
             display(HTML(f"<br>Unique Pixels Hit: {len(np.unique(event_id))}"))
