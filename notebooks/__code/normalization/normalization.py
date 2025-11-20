@@ -40,6 +40,8 @@ class Normalization:
     ob_runs = []    
     dc_runs = []
 
+    data_array = None
+
     def __init__(self, working_dir="."):
         self.working_dir = working_dir
 
@@ -129,6 +131,9 @@ class Normalization:
         self.o_roi_selection_ui.show()
 
     def normalization_settings(self):
+        if self.data_array is None:
+            self.data_array = self.load_data(data_type="sample")
+
         list_files = ListFiles()
         list_files.sample = self.sample_runs
         list_files.ob = self.ob_runs
