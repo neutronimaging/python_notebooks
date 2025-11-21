@@ -5,6 +5,7 @@ from multiprocessing.util import debug
 import os
 from pathlib import Path
 import numpy as np
+import pandas as pd
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
@@ -727,6 +728,12 @@ class NormalizationTof:
                 display(HTML("<span style='color:orange; font-size:16px'>Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!</span>"))
                 notebook_logging.info("Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!")
 
+                spectra_file_to_use = self.list_spectra_file_found[0]
+                pd_spectra = pd.read_csv(spectra_file_to_use, sep=",", header=0)
+                self.spectra_array = np.array(pd_spectra["shutter_time"].values)
+
+                notebook_logging.info(f"Using spectra file: {spectra_file_to_use} with {len(self.spectra_array)} TOF channels.")
+
             else:
                 display(HTML("<span style='color:red; font-size:16px'>Error: No spectra files were found in the selected runs! We need to create the spectra file.</span>"))
                 notebook_logging.error("Error: No spectra files were found in the selected runs! Manually creating the spectra file needed!")
@@ -772,13 +779,19 @@ class NormalizationTof:
         nbr_files = len(list_tiff)
         tof_bin_size_in_s = tof_bin_size * 1e-9  # convert nS to seconds
         
-        spectra_array = np.arange(0, (nbr_files+1) * tof_bin_size_in_s, tof_bin_size_in_s)
+        spectra_array = np.arange(0, nbr_files * tof_bin_size_in_s, tof_bin_size_in_s)
         self.spectra_array = spectra_array
 
         display(HTML(f"<span style='color:blue; font-size:16px'>Created spectra arrays with TOF bin size: {tof_bin_size} nS!</span>"))
         notebook_logging.info(f"Created spectra arrays with TOF bin size: {tof_bin_size} nS and {len(spectra_array) = } ... Done!")
 
     def select_output_folder(self):
+
+        if (self.spectra_file_found is False) and (self.spectra_array is None):
+            display(HTML("<span style='color:red; font-size:16px'>You need to create the spectra arrays before selecting the output folder!</span>"))
+            notebook_logging.error("You need to create the spectra arrays before selecting the output folder!")
+            return
+
         if self.debug:
             self.output_folder_selected(DEBUG_DATA.output_folder)
         else:
@@ -1291,9 +1304,9 @@ class NormalizationTof:
             self.export_spectra_file = widgets.Checkbox(
                 description="Export spectra file used for normalization", 
                 layout=widgets.Layout(width="100%"), 
-                value=True
+                value=True)
             display(self.export_spectra_file)
-            )
+            
 
     def check_folder_is_valid(self, full_path):
         list_tiff = glob.glob(os.path.join(full_path, "*.tif*"))

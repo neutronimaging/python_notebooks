@@ -519,6 +519,7 @@ def normalization_with_list_of_full_path(
     combine_samples: bool = False,
     ob_dict: dict = None,
     dc_dict: dict = None,
+    spectra_array: np.ndarray = None,
     output_folder: str = "./",
     verbose: bool = False,
     proton_charge_flag=True,
@@ -612,14 +613,23 @@ def normalization_with_list_of_full_path(
     logging.info(f"{export_x_axis = }")
 
     sample_master_dict, sample_status_metadata = create_master_dict(
-        data_dictionary=sample_dict, data_type=DataType.sample, instrument=instrument
+        data_dictionary=sample_dict, 
+        data_type=DataType.sample, 
+        instrument=instrument,
+        spectra_array=spectra_array,
     )
     ob_master_dict, ob_status_metadata = create_master_dict(
-        data_dictionary=ob_dict, data_type=DataType.ob, instrument=instrument
+        data_dictionary=ob_dict, 
+        data_type=DataType.ob, 
+        instrument=instrument,
+        spectra_array=spectra_array,
     )
 
     dc_master_dict, dc_status_metadata = create_master_dict(
-        data_dictionary=dc_dict, data_type=DataType.dc, instrument=instrument
+        data_dictionary=dc_dict, 
+        data_type=DataType.dc, 
+        instrument=instrument,
+        spectra_array=spectra_array,
     )
 
     # load ob images
@@ -1300,27 +1310,36 @@ def update_dict_with_shutter_counts(master_dict: dict) -> tuple[dict, bool]:
                         break
                     list_shutter_counts.append(float(_value))
                 master_dict[run_number][MasterDictKeys.shutter_counts] = list_shutter_counts
+    
     return master_dict, status_all_shutter_counts_found
 
 
-def update_dict_with_spectra_files(master_dict: dict) -> tuple[dict, bool]:
+def update_dict_with_spectra_files(master_dict: dict, spectra_array: np.ndarray = None) -> tuple[dict, bool]:
     """update the master dict with spectra values from spectra file"""
     status_all_spectra_found = True
     for _run_number in master_dict.keys():
-        data_path = master_dict[_run_number][MasterDictKeys.data_path]
-        _list_files = glob.glob(os.path.join(data_path, "*_Spectra.txt"))
-        if len(_list_files) == 0:
-            logging.info(f"Spectra file not found for run {_run_number}!")
-            master_dict[_run_number][MasterDictKeys.list_spectra] = None
-            status_all_spectra_found = False
-            continue
-        else:
-            spectra_file = _list_files[0]
-            master_dict[_run_number][MasterDictKeys.spectra_file_name] = spectra_file
-            pd_spectra = pd.read_csv(spectra_file, sep=",", header=0)
-            shutter_time = pd_spectra["shutter_time"].values
-            master_dict[_run_number][MasterDictKeys.list_spectra] = shutter_time
-    return master_dict, status_all_spectra_found
+
+        if spectra_array is not None:
+            master_dict[_run_number][MasterDictKeys.list_spectra] = spectra_array
+            master_dict[_run_number][MasterDictKeys.spectra_file_name] = "Provided array"
+
+        else: 
+
+            data_path = master_dict[_run_number][MasterDictKeys.data_path]
+            _list_files = glob.glob(os.path.join(data_path, "*_Spectra.txt"))
+            if len(_list_files) == 0:
+                logging.info(f"Spectra file not found for run {_run_number}!")
+                master_dict[_run_number][MasterDictKeys.list_spectra] = None
+                status_all_spectra_found = False
+                continue
+            else:
+                spectra_file = _list_files[0]
+                master_dict[_run_number][MasterDictKeys.spectra_file_name] = spectra_file
+                pd_spectra = pd.read_csv(spectra_file, sep=",", header=0)
+                shutter_time = pd_spectra["shutter_time"].values
+                master_dict[_run_number][MasterDictKeys.list_spectra] = shutter_time
+
+        return master_dict, status_all_spectra_found
 
 
 def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
@@ -1412,8 +1431,13 @@ def create_master_dict(
     data_type: DataType = DataType.sample,
     data_root_path: str = None,
     instrument: str = "VENUS",
+    spectra_array: np.ndarray = None,
 ) -> tuple[dict, StatusMetadata]:
     logging.info(f"Create {data_type} master dict of : {data_dictionary.keys()}")
+
+    if len(list(data_dictionary.keys())) == 0:
+        logging.warning("No run numbers found in data dictionary!")
+        return {}, StatusMetadata()
 
     status_metadata = StatusMetadata()
 
@@ -1431,7 +1455,7 @@ def create_master_dict(
 
     if all_shutter_counts_found:
         logging.info("updating with spectra values!")
-        master_dict, all_spectra_found = update_dict_with_spectra_files(master_dict)
+        master_dict, all_spectra_found = update_dict_with_spectra_files(master_dict, spectra_array=spectra_array)
         if not all_spectra_found:
             status_metadata.all_spectra_found = False
         logging.info(f"{master_dict = }")
