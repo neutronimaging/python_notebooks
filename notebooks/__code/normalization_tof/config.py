@@ -7,7 +7,7 @@ class DEBUG_DATA:
     autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
     output_folder = f"{working_dir}/shared/processed_data/jean_test"
     sample_runs_selected = ["Run_14808"]
-    ob_runs_selected = ["Run_14807"]
+    ob_runs_selected = ["Run_14809"]
     dc_runs_selected = []
     roi = [154, 156, 180, 17]
     container_roi = [150, 150, 40, 40]

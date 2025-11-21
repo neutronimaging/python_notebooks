@@ -39,6 +39,7 @@ class NormalizationTof:
     # if the spectra file is missing, the program will create the spectra array on the fly
     spectra_array = None 
     spectra_file_found = True
+    list_spectra_file_found = []
 
     integrated_data = None
 
@@ -282,11 +283,12 @@ class NormalizationTof:
                     </table>
         """))
 
-    def _is_spectra_file_found(self, full_path):
+    def _is_spectra_file_found_and_list(self, full_path):
         list_files = glob.glob(os.path.join(full_path, "*_spectra.txt"))
         if len(list_files) == 0:
-            return False
-        return os.path.exists(list_files[0])
+            return False, None
+        
+        return os.path.exists(list_files[0]), list_files[0]
 
     def check_sample(self):
         """
@@ -325,8 +327,11 @@ class NormalizationTof:
                         self.dict_sample[_file_full_path] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
                        
-                        if not self._is_spectra_file_found(_file_full_path):
+                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_file_full_path)
+                        if not _is_spectra_file_found:
                             self.spectra_file_found = False
+                        else:
+                            self.list_spectra_file_found.append(spectra_file_name)
                       
                         self.display_infos(input_full_path=_file_full_path,
                                            spectra_file_found=self.spectra_file_found)
@@ -358,8 +363,11 @@ class NormalizationTof:
                         self.dict_sample[_run] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
                                                                  
-                        if not self._is_spectra_file_found(_run):
+                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_run)
+                        if not _is_spectra_file_found:
                             self.spectra_file_found = False
+                        else:
+                            self.list_spectra_file_found.append(spectra_file_name)
                         
                         self.display_infos(input_full_path=_run,
                                            spectra_file_found=self.spectra_file_found)
@@ -449,7 +457,16 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_ob[_file_full_path] = {}
                         self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
-                        self.display_infos(input_full_path=_file_full_path)
+                    
+                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_file_full_path)
+                        if not _is_spectra_file_found:
+                            self.spectra_file_found = False
+                        else:
+                            self.list_spectra_file_found.append(spectra_file_name)
+                      
+                        self.display_infos(input_full_path=_file_full_path,
+                                           spectra_file_found=self.spectra_file_found)
+                    
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
@@ -475,7 +492,16 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_short_name_full_path["ob"][os.path.basename(_run)] = _run
                         self.dict_ob[_run] = {}
-                        self.display_infos(input_full_path=_run)
+
+                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_run)
+                        if not _is_spectra_file_found:
+                            self.spectra_file_found = False
+                        else:
+                            self.list_spectra_file_found.append(spectra_file_name)
+                        
+                        self.display_infos(input_full_path=_run,
+                                           spectra_file_found=self.spectra_file_found)
+               
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
@@ -657,7 +683,7 @@ class NormalizationTof:
             im = ax.imshow(integrated_ob, cmap="viridis", aspect="auto")
             ax.set_aspect("equal")
             ax.set_title(f"Integrated OB run: {list_ob_short_runs[0]}")
-            fig.colorbar(im, ax=ax, orientation="vertical", label="Intensity")
+            fig.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.8)
             plt.show()
 
         else:
@@ -693,6 +719,64 @@ class NormalizationTof:
                 ),
             )
             display(_display)
+
+    def checking_spectra_files(self):
+        if not self.spectra_file_found:
+
+            if len(self.list_spectra_file_found) > 0:
+                display(HTML("<span style='color:orange; font-size:16px'>Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!</span>"))
+                notebook_logging.info("Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!")
+
+            else:
+                display(HTML("<span style='color:red; font-size:16px'>Error: No spectra files were found in the selected runs! We need to create the spectra file.</span>"))
+                notebook_logging.error("Error: No spectra files were found in the selected runs! Manually creating the spectra file needed!")
+                
+                self.manually_create_spectra_array()
+       
+        else:
+            display(HTML("<span style='color:green; font-size:16px'>All selected runs have the spectra file.</span>"))
+            notebook_logging.info("All selected runs have the spectra file.")
+
+    def manually_create_spectra_array(self):
+
+        label = widgets.Label(f"Enter the TOF bins size (in nS)")
+        self.tof_bin_size_widget = widgets.IntText(
+            value=700,
+            min=100,
+            max=10000,
+            layout=widgets.Layout(width="300px"),
+        )
+        display(label)
+        display(self.tof_bin_size_widget)
+
+        self.create_spectra_button = widgets.Button(
+            description="Create spectra arrays",
+            button_style="success",
+            tooltip="Click to create spectra arrays",
+            layout=widgets.Layout(width="300px"),
+        )
+        self.create_spectra_button.on_click(self.create_spectra_arrays_clicked)
+        display(self.create_spectra_button)
+
+    def create_spectra_arrays_clicked(self, b):
+        tof_bin_size = self.tof_bin_size_widget.value
+        notebook_logging.info(f"Creating spectra arrays with TOF bin size: {tof_bin_size} nS")
+
+        # get the number of TOF channels from the first sample run
+        first_sample_run = list(self.dict_sample.keys())[0]
+        list_tiff = retrieve_list_of_tif(first_sample_run)
+        if len(list_tiff) == 0: 
+            display(HTML(f"<span style='color:red'>No TIFF files found in {first_sample_run}!</span>"))
+            notebook_logging.error(f"No TIFF files found in {first_sample_run}!")
+            return
+        nbr_files = len(list_tiff)
+        tof_bin_size_in_s = tof_bin_size * 1e-9  # convert nS to seconds
+        
+        spectra_array = np.arange(0, (nbr_files+1) * tof_bin_size_in_s, tof_bin_size_in_s)
+        self.spectra_array = spectra_array
+
+        display(HTML(f"<span style='color:blue; font-size:16px'>Created spectra arrays with TOF bin size: {tof_bin_size} nS!</span>"))
+        notebook_logging.info(f"Created spectra arrays with TOF bin size: {tof_bin_size} nS and {len(spectra_array) = } ... Done!")
 
     def select_output_folder(self):
         if self.debug:
@@ -818,7 +902,7 @@ class NormalizationTof:
         # remove container option
         display(HTML("<span style='font-size: 16px; color:red'>Remove container</span>"))
         self.remove_container_flag = widgets.Checkbox(description="Do you want to remove container signal?", 
-                                                      value=True,
+                                                      value=False,
                                                       layout=widgets.Layout(width="600px"))
         display(self.remove_container_flag)
         display(HTML("<hr>"))
@@ -1202,6 +1286,15 @@ class NormalizationTof:
 
         display(vertical_layout)
 
+        if not (self.spectra_array is None):
+            display(HTML("<span style='font-size: 16px; color:red'>Others</span>"))
+            self.export_spectra_file = widgets.Checkbox(
+                description="Export spectra file used for normalization", 
+                layout=widgets.Layout(width="100%"), 
+                value=True
+            display(self.export_spectra_file)
+            )
+
     def check_folder_is_valid(self, full_path):
         list_tiff = glob.glob(os.path.join(full_path, "*.tif*"))
         if list_tiff:
@@ -1245,6 +1338,9 @@ class NormalizationTof:
         # go straight to autoreduce/mcp folder
         if start_dir is None:
             start_dir = self.autoreduce_dir
+
+        while not os.path.exists(start_dir):
+            start_dir = os.path.dirname(start_dir)
 
         self.list_input_folders_ui = MyFileSelectorPanel(
             instruction=instruction,
