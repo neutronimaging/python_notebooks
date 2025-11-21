@@ -1114,7 +1114,7 @@ class NormalizationTof:
             display(HTML("<span style='color:red'>No sample runs selected!</span>"))
             return
 
-        display(HTML("<span style='font-size: 16px; color:red'>Select ROI for full spectrum normalization!</span>"))
+        display(HTML("<span style='font-size: 16px; color:blue'>Select ROI for full spectrum normalization!</span>"))
 
         if self.integrated_data is None:
             self.integrated_data = self.get_integrated_data(self.dict_sample)
