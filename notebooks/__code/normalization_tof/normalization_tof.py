@@ -779,7 +779,7 @@ class NormalizationTof:
         nbr_files = len(list_tiff)
         tof_bin_size_in_s = tof_bin_size * 1e-9  # convert nS to seconds
         
-        spectra_array = np.arange(0, nbr_files * tof_bin_size_in_s, tof_bin_size_in_s)
+        spectra_array = np.arange(0.0001e-7, nbr_files * tof_bin_size_in_s, tof_bin_size_in_s) # do not start at 0 to avoid log binning issues in iBeatles
         self.spectra_array = spectra_array
 
         display(HTML(f"<span style='color:blue; font-size:16px'>Created spectra arrays with TOF bin size: {tof_bin_size} nS!</span>"))
