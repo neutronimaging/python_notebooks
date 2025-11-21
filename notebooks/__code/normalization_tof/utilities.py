@@ -1203,26 +1203,24 @@ def export_normalized_data(ob_master_dict=None,
             make_tiff(data=_data, filename=_output_file)
         logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
         print(f"Exported normalized tif images are in: {output_stack_folder}!")
+        
         spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
 
-        if spectra_array is not None:
-            # manually create the file for spectra
-            spectra_file_name = os.path.join(output_stack_folder, "manually_created_spectra.txt")
-            _full_counts_array = np.empty_like(spectra_array)
-            for _index, _data in enumerate(normalized_data[_sample_run_number]):
-                _full_counts_array[_index] = np.nansum(_data)
-            pd_spectra = pd.DataFrame({
-                "shutter_time": spectra_array,
-                "counts": _full_counts_array
-            })
-            pd_spectra.to_csv(spectra_file_name, index=False, sep=",")
-            logging.info(f"\t -> Exporting manually created spectra file to {spectra_file_name} is done!")
+        export_spectra_file(spectra_array=spectra_array,
+                            spectra_file=spectra_file,
+                            output_stack_folder=output_stack_folder,
+                            normalized_data=normalized_data[_sample_run_number])
 
-        else:
+        # if spectra_array is not None:
+        #     manually_create_and_export_spectra_file(spectra_array=spectra_array,
+        #                                             output_folder=output_stack_folder,
+        #                                             normalized_data=normalized_data[_sample_run_number])
 
-            if spectra_file and Path(spectra_file).exists():
-                logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
-                shutil.copy(spectra_file, output_stack_folder)
+        # else:
+
+        #     if spectra_file and Path(spectra_file).exists():
+        #         logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+        #         shutil.copy(spectra_file, output_stack_folder)
 
         # create x-axis file
         create_x_axis_file(
@@ -1230,6 +1228,38 @@ def export_normalized_data(ob_master_dict=None,
             energy_array=energy_array,
             output_folder=output_stack_folder,
         )
+
+
+def manually_create_and_export_spectra_file(spectra_array=None, output_folder=None, normalized_data=None):
+     # manually create the file for spectra
+        spectra_file_name = os.path.join(output_folder, "manually_created_spectra.txt")
+        _full_counts_array = np.empty_like(spectra_array)
+        for _index, _data in enumerate(normalized_data):
+            _full_counts_array[_index] = np.nansum(_data)
+        pd_spectra = pd.DataFrame({
+            "shutter_time": spectra_array,
+            "counts": _full_counts_array
+        })
+        pd_spectra.to_csv(spectra_file_name, index=False, sep=",")
+        logging.info(f"\t -> Exporting manually created spectra file to {spectra_file_name} is done!")
+
+
+def export_spectra_file(spectra_array=None,
+                            spectra_file=None,
+                            output_stack_folder=None,
+                            normalized_data=None):
+
+    if spectra_array is not None:
+        manually_create_and_export_spectra_file(spectra_array=spectra_array,
+                                                output_folder=output_stack_folder,
+                                                normalized_data=normalized_data)
+
+    else:
+
+        if spectra_file and Path(spectra_file).exists():
+            logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+            shutil.copy(spectra_file, output_stack_folder)
+
 
 def  export_corrected_normalized_data(sample_master_dict=None,
                                       ob_master_dict=None,
@@ -1278,27 +1308,18 @@ def  export_corrected_normalized_data(sample_master_dict=None,
         logging.info(f"\t -> Exporting combined normalized data to {output_stack_folder} is done!")
         print(f"Exported combined normalized tif images are in: {output_stack_folder}!")
         
-        # copy one of the spectra file to the output folder
+        export_spectra_file(spectra_array=spectra_array,
+                            spectra_file=spectra_file,
+                            output_stack_folder=output_stack_folder,
+                            normalized_data=combined_normalized_data)
+
+
+        # copy one of the spectra file to the output folder, or the manually defined one
         spectra_file = sample_master_dict[list_sample_runs[0]][MasterDictKeys.spectra_file_name]
-
-        if spectra_array is not None:
-            # manually create the file for spectra
-            spectra_file_name = os.path.join(output_stack_folder, "manually_created_spectra.txt")
-            _full_counts_array = np.empty_like(spectra_array)
-            for _index, _data in enumerate(combined_normalized_data):
-                _full_counts_array[_index] = np.nansum(_data)
-            pd_spectra = pd.DataFrame({
-                "shutter_time": spectra_array,
-                "counts": _full_counts_array
-            })
-            pd_spectra.to_csv(spectra_file_name, index=False, sep=",")
-            logging.info(f"\t -> Exporting manually created spectra file to {spectra_file_name} is done!")
-
-        else:
-
-            if spectra_file and Path(spectra_file).exists():
-                logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
-                shutil.copy(spectra_file, output_stack_folder)
+        export_spectra_file(spectra_array=spectra_array,
+                            spectra_file=spectra_file,
+                            output_stack_folder=output_stack_folder,
+                            normalized_data=combined_normalized_data)
 
         # create x-axis file
         create_x_axis_file(
