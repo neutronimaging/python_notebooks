@@ -40,3 +40,5 @@ autoreduce_dir = {
         DetectorType.tpx1_legacy: ["/SNS/SNAP/", "images/mcp/"],
     },
 }
+
+VENUS_RES_FUNC="/SNS/VENUS/shared/instrument/resonance/_fts_bl10_0p5meV_1keV_25pts.txt"

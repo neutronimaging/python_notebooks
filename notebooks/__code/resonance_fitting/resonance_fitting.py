@@ -23,6 +23,7 @@ from pleiades.sammy.io.data_manager import convert_csv_to_sammy_twenty, validate
 from pleiades.sammy.io.json_manager import JsonManager
 from pleiades.sammy.io.inp_manager import InpManager
 
+from __code.resonance_fitting import VENUS_RES_FUNC
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
 
@@ -441,6 +442,7 @@ class ResonanceFitting(NormalizationTof):
         mass_number_str, element_symbol = most_abundant_isotope.split('-')
         my_periodic_table_element = getattr(periodictable, element_symbol)
 
+        self.most_abundant_element_symbol = element_symbol
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Most Abundant Element Selected: <b>{element_symbol}</b></span>"))
 
         label_width = "160px"
@@ -448,58 +450,91 @@ class ResonanceFitting(NormalizationTof):
         # mass number of the element selected
         _label_left = widgets.HTML("<div style='text-align: right'>Mass number:</div>",
                                    layout=widgets.Layout(width=label_width))
-        _mass_number = widgets.IntText(value=int(mass_number_str), 
+        self.mass_number_widget = widgets.IntText(value=int(mass_number_str), 
                                        disabled=False,
                                        layout=widgets.Layout(width=text_width))
         _hori_layout_1 = widgets.HBox([_label_left, 
-                                       _mass_number])
+                                       self.mass_number_widget])
         display(_hori_layout_1)
 
         # density (g/cm^3)
         
         _label_left = widgets.HTML("<div style='text-align: right'>Density (g/cm<sup>3</sup>):</div>",
                                    layout=widgets.Layout(width=label_width))
-        _density = widgets.FloatText(value=my_periodic_table_element.density, 
+        self.density_widget = widgets.FloatText(value=my_periodic_table_element.density, 
                                      disabled=False,
                                      layout=widgets.Layout(width=text_width))
-        _hori_layout_2 = widgets.HBox([_label_left, _density])
+        _hori_layout_2 = widgets.HBox([_label_left, self.density_widget])
         display(_hori_layout_2)
 
         # thickness (mm)
         _label_left = widgets.HTML("<div style='text-align: right'>Thickness (mm):</div>",
                                    layout=widgets.Layout(width=label_width))
-        _thickness = widgets.FloatText(value=0.05, 
+        self.thickness_widget = widgets.FloatText(value=0.05, 
                                        disabled=False,
                                        layout=widgets.Layout(width=text_width))
-        _hori_layout_3 = widgets.HBox([_label_left, _thickness])
+        _hori_layout_3 = widgets.HBox([_label_left, self.thickness_widget])
         display(_hori_layout_3)
 
         # atomic mass amu
         _label_left = widgets.HTML("<div style='text-align: right'>Atomic mass (amu):</div>",
                                    layout=widgets.Layout(width=label_width))
-        _atomic_mass = widgets.FloatText(value=my_periodic_table_element.mass, 
+        self.atomic_mass_widget = widgets.FloatText(value=my_periodic_table_element.mass, 
                                          disabled=False,
                                          layout=widgets.Layout(width=text_width))
-        _hori_layout_4 = widgets.HBox([_label_left, _atomic_mass])
+        _hori_layout_4 = widgets.HBox([_label_left, self.atomic_mass_widget])
         display(_hori_layout_4) 
 
         # abundance (%)
         _label_left = widgets.HTML("<div style='text-align: right'>Abundance (%):</div>",
                                    layout=widgets.Layout(width=label_width))
-        _abundance = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
-        _hori_layout_5 = widgets.HBox([_label_left, _abundance])
+        self.abundance_widget = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
+        _hori_layout_5 = widgets.HBox([_label_left, self.abundance_widget])
         display(_hori_layout_5)
 
         # energy range (ev)
         _label_left = widgets.HTML("<div style='text-align: right'>Energy range (eV):</div>",
                                    layout=widgets.Layout(width=label_width))
-        _energy_range = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
-        _hori_layout_6 = widgets.HBox([_label_left, _energy_range])
+        self.energy_range_widget = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
+        _hori_layout_6 = widgets.HBox([_label_left, self.energy_range_widget])
         display(_hori_layout_6)
 
         # temperature (K)
         _label_left = widgets.HTML("<div style='text-align: right'>Temperature (K):</div>",
                                    layout=widgets.Layout(width=label_width))
-        _temperature = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
-        _hori_layout_7 = widgets.HBox([_label_left, _temperature])
+        self.temperature_widget = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
+        _hori_layout_7 = widgets.HBox([_label_left, self.temperature_widget])
         display(_hori_layout_7)
+
+    def create_configuration(self):
+        _element = self.most_abundant_element_symbol
+        mass_number = self.mass_number_widget.value
+        density = self.density_widget.value
+        thickness = self.thickness_widget.value
+        atomic_mass = self.atomic_mass_widget.value
+        abundance = self.abundance_widget.value * 0.01  # convert to fraction
+        energy_range = self.energy_range_widget.value
+        min_energy = energy_range[0]
+        max_energy = energy_range[1]
+        temperature = self.temperature_widget.value
+
+        material_props = {
+            'element': _element,
+            'mass_number': mass_number,
+            'density_g_cm3': density,
+            'thickness_mm': thickness,
+            'atomic_mass_amu': atomic_mass,
+            'abundance': abundance,
+            'min_energy': min_energy,
+            'max_energy_ev': max_energy,
+            'temperature_K': temperature}
+        
+        inp_file = self.folder_paths.sammy_working / "hf_fitting.inp"
+        # _title 
+
+        # InpManager.create_multi_isotope_inp(
+        #     inp_file,
+        #     title=_title,
+        #     material_properties=material_props,
+        #     resolution_file_path=VENUS_RES_FUNC,
+        # )

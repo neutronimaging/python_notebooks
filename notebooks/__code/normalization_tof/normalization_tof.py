@@ -36,6 +36,10 @@ class NormalizationTof:
     sample_run_numbers = None
     sample_run_numbers_selected = None
     
+    # if the spectra file is missing, the program will create the spectra array on the fly
+    spectra_array = None 
+    spectra_file_found = True
+
     integrated_data = None
 
     check_nbr_tiff = {DataType.sample: [], DataType.ob: [], DataType.dc: []}
@@ -98,10 +102,13 @@ class NormalizationTof:
                                              top=DEBUG_DATA.container_roi[1],
                                              width=DEBUG_DATA.container_roi[2], 
                                              height=DEBUG_DATA.container_roi[3])
+            self.detector_type = DEBUG_DATA.detector_type
+        
         else:
             self.working_dir = working_dir
             self.shared_dir = os.path.join(self.working_dir, "shared")
             self.output_dir = os.path.join(self.working_dir, "shared")
+            self.detector_type = DetectorType.tpx1
 
         self.nexus_folder = os.path.join(self.working_dir, "nexus")
         self.debug = debug
@@ -124,7 +131,7 @@ class NormalizationTof:
         display(HTML("<span style='color:blue; font-size:16px'>Select detector type</span>"))
         self.detector_type_widget = widgets.Dropdown(
             options=[DetectorType.tpx1_legacy, DetectorType.tpx1, DetectorType.tpx3],
-            value=DetectorType.tpx1,
+            value=self.detector_type,
             layout=widgets.Layout(width="400px"),
             disabled=False,
         )
@@ -251,7 +258,7 @@ class NormalizationTof:
         else:
             raise ValueError(f"Unknown detector type: {self.detector_type}")
 
-    def display_infos(self, input_full_path=None):
+    def display_infos(self, input_full_path=None, spectra_file_found=True):
         if input_full_path is None:
             return
 
@@ -264,14 +271,22 @@ class NormalizationTof:
         shape = data.size  # (width, height)
         dtype = np.array(data).dtype  # e.g. 'I;16' for 16-bit unsigned integer
 
+        spectra_cell_color = "green" if spectra_file_found else "red"
+
         # present result in a table
         display(HTML(f"""
                         <h3>Information for run: {os.path.basename(input_full_path)}</h3>
                     <table border="3px solid black" style="border-collapse:collapse;">
-                        <tr><th>Nbr TIFF</th><th>Images height</th><th>Images width</th><th>Data Type</th></tr>
-                        <tr><td>{nbr_tiff}</td><td>{shape[0]}</td><td>{shape[1]}</td><td>{dtype}</td></tr>
+                        <tr><th>Nbr TIFF</th><th>Images height</th><th>Images width</th><th>Data Type</th><th>Spectra File Found</th></tr>
+                        <tr><td>{nbr_tiff}</td><td>{shape[0]}</td><td>{shape[1]}</td><td>{dtype}</td><td style="color:{spectra_cell_color}">{spectra_file_found}</td></tr>
                     </table>
         """))
+
+    def _is_spectra_file_found(self, full_path):
+        list_files = glob.glob(os.path.join(full_path, "*_spectra.txt"))
+        if len(list_files) == 0:
+            return False
+        return os.path.exists(list_files[0])
 
     def check_sample(self):
         """
@@ -298,6 +313,7 @@ class NormalizationTof:
 
             logging.info(f"\t{list_of_sample_full_path = }")
             for _file_full_path in list_of_sample_full_path:
+               
                 if os.path.exists(_file_full_path):
                     notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND")
                     is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
@@ -308,7 +324,13 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_sample[_file_full_path] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
-                        self.display_infos(input_full_path=_file_full_path)
+                       
+                        if not self._is_spectra_file_found(_file_full_path):
+                            self.spectra_file_found = False
+                      
+                        self.display_infos(input_full_path=_file_full_path,
+                                           spectra_file_found=self.spectra_file_found)
+
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
 
@@ -335,7 +357,12 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_sample[_run] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
-                        self.display_infos(input_full_path=_run)
+                                                                 
+                        if not self._is_spectra_file_found(_run):
+                            self.spectra_file_found = False
+                        
+                        self.display_infos(input_full_path=_run,
+                                           spectra_file_found=self.spectra_file_found)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
@@ -1284,10 +1311,13 @@ class NormalizationTof:
             else:
                 correct_chips_alignment_config = None
 
+        spectra_array = self.spectra_array
+
         self.normalized_dict = normalization_with_list_of_full_path(
             sample_dict=sample_dict,
             ob_dict=ob_dict,
             dc_dict=dc_dict,
+            spectra_array=spectra_array,
             output_folder=output_folder,
             proton_charge_flag=self.proton_charge_flag.value,
             monitor_counts_flag=self.monitor_counts_flag.value,
