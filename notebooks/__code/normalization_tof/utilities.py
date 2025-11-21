@@ -45,6 +45,8 @@ class PLOT_SIZE:
     height = 5
 
 
+SPECTRA_FILE_PREFIX = "Spectra.txt
+
 class DataType:
     sample = "sample"
     ob = "ob"
@@ -382,7 +384,7 @@ def export_sample_images(
 
         if spectra_array is not None:
             # manually create the file for spectra
-            spectra_file_name = os.path.join(output_stack_folder, "manually_created_spectra.txt")
+            spectra_file_name = os.path.join(output_stack_folder, f"manually_created_{SPECTRA_FILE_PREFIX}")
             _full_counts_array = np.empty_like(spectra_array)
             for _index, _data in enumerate(_sample_data):
                 _full_counts_array[_index] = np.nansum(_data)
@@ -454,7 +456,7 @@ def export_ob_images(
         
         if spectra_array is not None:
             # manually create the file for spectra
-            spectra_file_name = os.path.join(output_stack_folder, "manually_created_spectra.txt")
+            spectra_file_name = os.path.join(output_stack_folder, f"manually_created_{SPECTRA_FILE_PREFIX}")
             _full_counts_array = np.empty_like(spectra_array)
             for _index, _data in enumerate(ob_data_combined):
                 _full_counts_array[_index] = np.nansum(_data)
@@ -577,7 +579,7 @@ def update_dict_with_spectra_files(master_dict: dict, spectra_array: np.ndarray 
         else: 
 
             data_path = master_dict[_run_number][MasterDictKeys.data_path]
-            _list_files = glob.glob(os.path.join(data_path, "*_Spectra.txt"))
+            _list_files = glob.glob(os.path.join(data_path, f"*_{SPECTRA_FILE_PREFIX}"))
             
             if len(_list_files) == 0:
                 logging.info(f"Spectra file not found for run {_run_number}!")
@@ -1205,22 +1207,11 @@ def export_normalized_data(ob_master_dict=None,
         print(f"Exported normalized tif images are in: {output_stack_folder}!")
         
         spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
-
         export_spectra_file(spectra_array=spectra_array,
                             spectra_file=spectra_file,
                             output_stack_folder=output_stack_folder,
                             normalized_data=normalized_data[_sample_run_number])
 
-        # if spectra_array is not None:
-        #     manually_create_and_export_spectra_file(spectra_array=spectra_array,
-        #                                             output_folder=output_stack_folder,
-        #                                             normalized_data=normalized_data[_sample_run_number])
-
-        # else:
-
-        #     if spectra_file and Path(spectra_file).exists():
-        #         logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
-        #         shutil.copy(spectra_file, output_stack_folder)
 
         # create x-axis file
         create_x_axis_file(
@@ -1232,7 +1223,7 @@ def export_normalized_data(ob_master_dict=None,
 
 def manually_create_and_export_spectra_file(spectra_array=None, output_folder=None, normalized_data=None):
      # manually create the file for spectra
-        spectra_file_name = os.path.join(output_folder, "manually_created_spectra.txt")
+        spectra_file_name = os.path.join(output_folder, f"manually_created_{SPECTRA_FILE_PREFIX}")
         _full_counts_array = np.empty_like(spectra_array)
         for _index, _data in enumerate(normalized_data):
             _full_counts_array[_index] = np.nansum(_data)
