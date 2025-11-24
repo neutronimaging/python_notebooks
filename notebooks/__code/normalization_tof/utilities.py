@@ -45,7 +45,7 @@ class PLOT_SIZE:
     height = 5
 
 
-SPECTRA_FILE_PREFIX = "Spectra.txt
+SPECTRA_FILE_PREFIX = "Spectra.txt"
 
 class DataType:
     sample = "sample"

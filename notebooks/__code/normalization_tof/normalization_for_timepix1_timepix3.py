@@ -46,14 +46,16 @@ LOAD_DTYPE = np.uint16
 
 PROTON_CHARGE_TOLERANCE = 0.1
 
-file_name, ext = os.path.splitext(os.path.basename(__file__))
-user_name = os.getlogin()  # add user name to the log file name
-log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-logging.basicConfig(filename=log_file_name,
-                    filemode='w',
-                    format='[%(levelname)s] - %(asctime)s - %(message)s',
-                    level=logging.INFO)
-logging.info(f"*** Starting a new script {file_name} ***")
+def initialize_logging():
+    """initialize logging"""
+    file_name, ext = os.path.splitext(os.path.basename(__file__))
+    user_name = os.getlogin()  # add user name to the log file name
+    log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+    logging.basicConfig(filename=log_file_name,
+                        filemode='w',
+                        format='[%(levelname)s] - %(asctime)s - %(message)s',
+                        level=logging.INFO)
+    logging.info(f"*** Starting a new script {file_name} ***")
 
 
 def normalization_with_list_of_full_path(
@@ -120,6 +122,8 @@ def normalization_with_list_of_full_path(
     Returns:
         normalized_data | np.ndarray: normalized data
     """
+
+    initialize_logging()
 
     dict_to_return = NormalizedData()
 
