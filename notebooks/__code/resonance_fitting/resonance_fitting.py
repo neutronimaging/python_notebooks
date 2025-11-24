@@ -29,6 +29,7 @@ from pleiades.sammy.interface import SammyFilesMultiMode
 from __code.resonance_fitting import VENUS_RES_FUNC, SAMMY_EXE_PATH
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
+from __code._utilities.logger import display_dictionary_in_logging
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.resonance_fitting.config import DEBUG_DATA, timepix1_config, timepix3_config
@@ -213,7 +214,8 @@ class ResonanceFitting(NormalizationTof):
         Path(self.folder_paths.sammy_working).mkdir(parents=True, exist_ok=True)
         Path(self.folder_paths.sammy_output).mkdir(parents=True, exist_ok=True)
 
-        notebook_logging.info("Stagging folders setup:")    
+
+        notebook_logging.info("\nStagging folders setup:")    
         notebook_logging.info(f"output folder: {self.folder_paths.output} ... {self.folder_paths.output.is_dir()}   ")
         notebook_logging.info(f"Stagging folder: {self.folder_paths.stagging} ... {self.folder_paths.stagging.is_dir()}")
         notebook_logging.info(f"Spectra folder: {self.folder_paths.spectra} ... {self.folder_paths.spectra.is_dir()}")
@@ -221,6 +223,7 @@ class ResonanceFitting(NormalizationTof):
         notebook_logging.info(f"SAMMY working folder: {self.folder_paths.sammy_working} ... {self.folder_paths.sammy_working.is_dir()}")
         notebook_logging.info(f"SAMMY output folder: {self.folder_paths.sammy_output} ... {self.folder_paths.sammy_output.is_dir()}")
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Stagging folders created!</span>"))
+        notebook_logging.info("")
 
     def _converting_transmission_to_twenty_format(self):
         notebook_logging.info("Converting transmission data .txt to .twenty format for SAMMY ...")
@@ -402,9 +405,8 @@ class ResonanceFitting(NormalizationTof):
             else:
                 notebook_logging.warning(f"Unexpected isotope format: {_iso}")
         return list_reformatted
-    
 
-    def define_configuration(self):
+    def setup_configuration(self):
         self._create_json_manager()
         self._setup_element_manager()
 
@@ -446,6 +448,7 @@ class ResonanceFitting(NormalizationTof):
         for f in sorted(endf_files):
             notebook_logging.info(f"\t- {f}")
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Configuration file created at: {json_path}</span>"))
+        notebook_logging.info("")
 
     def _setup_element_manager(self):
 
@@ -467,7 +470,7 @@ class ResonanceFitting(NormalizationTof):
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Most Abundant Element Selected: <b>{element_symbol}</b></span>"))
 
         label_width = "160px"
-        text_width = "50px"
+        text_width = "80px"
         # mass number of the element selected
         _label_left = widgets.HTML("<div style='text-align: right'>Mass number:</div>",
                                    layout=widgets.Layout(width=label_width))
@@ -541,12 +544,11 @@ class ResonanceFitting(NormalizationTof):
         _hori_layout_8 = widgets.HBox([_label_left, self.title_widget], layout=widgets.Layout(width="100%"))
         display(_hori_layout_8)
 
-    def create_configurations(self):
+    def perform_fitting(self):
         self._create_multi_isotope_inp()
         self._sammy_files_multi_mode()
         self._local_sammy_config()
-
-
+        self._multi_isotope_sammy_execution()
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY input files created in: {self.folder_paths.sammy_working}!</span>") )
 
     def _create_multi_isotope_inp(self):
@@ -571,52 +573,79 @@ class ResonanceFitting(NormalizationTof):
             'thickness_mm': thickness,
             'atomic_mass_amu': atomic_mass,
             'abundance': abundance,
-            'min_energy': min_energy,
-            'max_energy_ev': max_energy,
+            'min_energy_eV': min_energy,
+            'max_energy_eV': max_energy,
             'temperature_K': temperature}
-        notebook_logging.info(f"{material_props = }")
-
-        inp_file = self.folder_paths.sammy_working / "hf_fitting.inp"
-        self.files_paths.inp_file = inp_file
-        notebook_logging.info(f"{inp_file = }")
-
-        notebook_logging.info(f"{title =}")
-        notebook_logging.info(f"{VENUS_RES_FUNC =}")
-
+    
         notebook_logging.info(f"calling InpManager.create_multi_isotope_inp ...")
+        notebook_logging.info(f"material_props:")
+        display_dictionary_in_logging(material_props)
+        inp_file = self.folder_paths.stagging / "hf_fitting.inp"
+        self.files_paths.inp_file = inp_file
+        notebook_logging.info(f"\t{inp_file = }")
+        notebook_logging.info(f"\t{title =}")
+        notebook_logging.info(f"\t{VENUS_RES_FUNC =}")
+
         InpManager.create_multi_isotope_inp(
             inp_file,
             title=title,
             material_properties=material_props,
             resolution_file_path=VENUS_RES_FUNC,
         )
+
         notebook_logging.info(f"SAMMY input file created at: {inp_file}")
+        notebook_logging.info(f"")
 
     def _sammy_files_multi_mode(self):
         notebook_logging.info("Creating SAMMY files for multi-isotope resonance fitting ...")
         transmission_file_path = self.files_paths.transmission.name
-        notebook_logging.info(f"{transmission_file_path = }")
+        notebook_logging.info(f"\t{transmission_file_path = }")
         data_file = self.folder_paths.twenty / f"{transmission_file_path.replace('.txt', '.twenty')}"
-        notebook_logging.info(f"{data_file = }")
+        notebook_logging.info(f"\t{data_file = }")
+        notebook_logging.info(f"\tjson-config: {self.files_paths.json_path = }")
 
         files = SammyFilesMultiMode(
             input_file=self.files_paths.inp_file,
             json_config_file=self.files_paths.json_path,
             data_file=data_file,
-            endf_directory=self.folder_paths.working
+            endf_directory=self.folder_paths.stagging
         )
         self.files_paths.sammy_files_multi_mode = files
+        notebook_logging.info(f"\t{files = }")
         notebook_logging.info("SAMMY files for multi-isotope resonance fitting created.")
+        notebook_logging.info("")
 
     def _local_sammy_config(self):
         notebook_logging.info("Setting up local SAMMY configuration ...")
         sammy_executable = SAMMY_EXE_PATH
         working_directory = self.folder_paths.sammy_working
         output_directory = self.folder_paths.sammy_output
+        notebook_logging.info(f"\t{sammy_executable = }")
+        notebook_logging.info(f"\t{working_directory = }")
+        notebook_logging.info(f"\t{output_directory = }")
 
         config = LocalSammyConfig(sammy_executable=sammy_executable,
                                   working_dir=working_directory,
                                   output_dir=output_directory)
+        notebook_logging.info(f"\t{config = }")
 
-        runner = LocalSammyRunner(config=config)
+        self.runner = LocalSammyRunner(config=config)
         notebook_logging.info("Done running LocalSammyConfig and LocalSammyRunner!")
+        notebook_logging.info("")
+
+    def _multi_isotope_sammy_execution(self):
+        notebook_logging.info("Starting multi-isotope SAMMY resonance fitting execution ...")
+        notebook_logging.info(f"\t{self.files_paths.sammy_files_multi_mode = }")
+        self.runner.prepare_environment(self.files_paths.sammy_files_multi_mode)
+        result = self.runner.execute_sammy(self.files_paths.sammy_files_multi_mode)
+        notebook_logging.info(f"\tresult: {result =}")
+        
+        notebook_logging.info("SAMMY resonance fitting execution completed.")
+        notebook_logging.info(f"Execution status: {result.success}")
+        notebook_logging.info(f"Runtime: {result.runtime_seconds} seconds")
+   
+        if result.error_message:
+            notebook_logging.error(f"Error message: {result.error_message}")
+            display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Error during SAMMY execution: {result.error_message}</span>")  )
+        
+        notebook_logging.info("")
