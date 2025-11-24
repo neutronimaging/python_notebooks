@@ -15,14 +15,18 @@ import periodictable
 import ipysheet
 from ipysheet import sheet, cell, row, column, from_dataframe, to_array, calculation
 
-from pleiades.processing.normalization import normalization as normalization_with_pleaides
-from pleiades.processing import Roi as PleiadesRoi
-from pleiades.processing import Facility
+# from pleiades.processing.normalization import normalization as normalization_with_pleaides
+# from pleiades.processing import Roi as PleiadesRoi
+# from pleiades.processing import Facility
 from pleiades.sammy.io.data_manager import convert_csv_to_sammy_twenty, validate_sammy_twenty_format
 from pleiades.sammy.io.json_manager import JsonManager
 from pleiades.sammy.io.inp_manager import InpManager
+from pleiades.sammy.backends.local import LocalSammyRunner
+from pleiades.sammy.config import LocalSammyConfig
+from pleiades.sammy.interface import SammyFilesMultiMode
 
-from __code.resonance_fitting import VENUS_RES_FUNC
+
+from __code.resonance_fitting import VENUS_RES_FUNC, SAMMY_EXE_PATH
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
 
@@ -45,6 +49,9 @@ FONT_SIZE = 14
 class FilesPaths:
     logging = None
     transmission = None
+    inp_file = None
+    json_path = None
+    sammy_files_multi_mode = None
 
 class FolderPaths:
     working = None
@@ -132,6 +139,20 @@ class ResonanceFitting(NormalizationTof):
         )
         self.file_selector.show()
 
+    def select_output_folder(self):
+        self.folder_selector = FileSelectorPanel(
+            start_dir=str(self.folder_paths.shared),
+            type="directory",
+            instruction="Select output folder",
+            multiple=False,
+            next=self._output_folder_selected,
+        )
+        self.folder_selector.show()
+
+    def _output_folder_selected(self, folder_path):
+        self._stagging_folders_setup(Path(folder_path))
+        self._converting_transmission_to_twenty_format()
+
     def select_isotope_and_abundance(self):
         list_elements = periodictable.elements
         dict_elements = {}
@@ -174,14 +195,12 @@ class ResonanceFitting(NormalizationTof):
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Transmission file: {file_path.name} ... selected!</span>"))
 
         self.files_paths.transmission = file_path
-       
-        self._stagging_folders_setup(file_path)
-        self._converting_transmission_to_twenty_format()
 
     def _stagging_folders_setup(self, file_path):
 
         # set up various stagging folder for SAMMY
-        self.folder_paths.stagging = file_path.parent / "hf_analysis"
+        self.folder_paths.output = Path(file_path)
+        self.folder_paths.stagging = self.folder_paths.output / "hf_analysis"
         self.folder_paths.spectra = self.folder_paths.stagging / "spectra"
         self.folder_paths.twenty = self.folder_paths.stagging / "twenty"
         self.folder_paths.sammy_working = self.folder_paths.stagging / "sammy_working"
@@ -194,6 +213,8 @@ class ResonanceFitting(NormalizationTof):
         Path(self.folder_paths.sammy_working).mkdir(parents=True, exist_ok=True)
         Path(self.folder_paths.sammy_output).mkdir(parents=True, exist_ok=True)
 
+        notebook_logging.info("Stagging folders setup:")    
+        notebook_logging.info(f"output folder: {self.folder_paths.output} ... {self.folder_paths.output.is_dir()}   ")
         notebook_logging.info(f"Stagging folder: {self.folder_paths.stagging} ... {self.folder_paths.stagging.is_dir()}")
         notebook_logging.info(f"Spectra folder: {self.folder_paths.spectra} ... {self.folder_paths.spectra.is_dir()}")
         notebook_logging.info(f"Twenty folder: {self.folder_paths.twenty} ... {self.folder_paths.twenty.is_dir()}")
@@ -203,7 +224,7 @@ class ResonanceFitting(NormalizationTof):
 
     def _converting_transmission_to_twenty_format(self):
         notebook_logging.info("Converting transmission data .txt to .twenty format for SAMMY ...")
-        twenty_file = self.folder_paths.output / self.files_paths.transmission.name.replace(".txt", ".twenty")
+        twenty_file = self.folder_paths.twenty / self.files_paths.transmission.name.replace(".txt", ".twenty")
         convert_csv_to_sammy_twenty(self.files_paths.transmission, twenty_file)
         if validate_sammy_twenty_format(twenty_file):
             notebook_logging.info(f"Conversion successful! Twenty file created at: {twenty_file}")
@@ -417,6 +438,8 @@ class ResonanceFitting(NormalizationTof):
                                     "fudge": "0.7"}
         )
 
+        self.files_paths.json_path = json_path
+
         notebook_logging.info(f"Configuration file created at: {json_path}")
         endf_files = [f for f in os.listdir(self.folder_paths.stagging) if f.endswith('.par')]
         notebook_logging.info(f"ENDf files found in working directory: {len(endf_files)} files")
@@ -520,7 +543,9 @@ class ResonanceFitting(NormalizationTof):
 
     def create_configurations(self):
         self._create_multi_isotope_inp()
-        self._create_sammy_filess_multi_mode()
+        self._sammy_files_multi_mode()
+        self._local_sammy_config()
+
 
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY input files created in: {self.folder_paths.sammy_working}!</span>") )
 
@@ -552,6 +577,7 @@ class ResonanceFitting(NormalizationTof):
         notebook_logging.info(f"{material_props = }")
 
         inp_file = self.folder_paths.sammy_working / "hf_fitting.inp"
+        self.files_paths.inp_file = inp_file
         notebook_logging.info(f"{inp_file = }")
 
         notebook_logging.info(f"{title =}")
@@ -566,6 +592,31 @@ class ResonanceFitting(NormalizationTof):
         )
         notebook_logging.info(f"SAMMY input file created at: {inp_file}")
 
-    def _create_sammy_filess_multi_mode(self):
+    def _sammy_files_multi_mode(self):
         notebook_logging.info("Creating SAMMY files for multi-isotope resonance fitting ...")
-        
+        transmission_file_path = self.files_paths.transmission.name
+        notebook_logging.info(f"{transmission_file_path = }")
+        data_file = self.folder_paths.twenty / f"{transmission_file_path.replace('.txt', '.twenty')}"
+        notebook_logging.info(f"{data_file = }")
+
+        files = SammyFilesMultiMode(
+            input_file=self.files_paths.inp_file,
+            json_config_file=self.files_paths.json_path,
+            data_file=data_file,
+            endf_directory=self.folder_paths.working
+        )
+        self.files_paths.sammy_files_multi_mode = files
+        notebook_logging.info("SAMMY files for multi-isotope resonance fitting created.")
+
+    def _local_sammy_config(self):
+        notebook_logging.info("Setting up local SAMMY configuration ...")
+        sammy_executable = SAMMY_EXE_PATH
+        working_directory = self.folder_paths.sammy_working
+        output_directory = self.folder_paths.sammy_output
+
+        config = LocalSammyConfig(sammy_executable=sammy_executable,
+                                  working_dir=working_directory,
+                                  output_dir=output_directory)
+
+        runner = LocalSammyRunner(config=config)
+        notebook_logging.info("Done running LocalSammyConfig and LocalSammyRunner!")
