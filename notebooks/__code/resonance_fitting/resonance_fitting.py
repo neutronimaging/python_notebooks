@@ -24,7 +24,7 @@ from pleiades.sammy.io.inp_manager import InpManager
 from pleiades.sammy.backends.local import LocalSammyRunner
 from pleiades.sammy.config import LocalSammyConfig
 from pleiades.sammy.interface import SammyFilesMultiMode
-
+from pleiades.sammy.results.manager import ResultsManager
 
 from __code.resonance_fitting import VENUS_RES_FUNC, SAMMY_EXE_PATH
 from __code._utilities.list import extract_list_of_runs_from_string
@@ -648,4 +648,30 @@ class ResonanceFitting(NormalizationTof):
             notebook_logging.error(f"Error message: {result.error_message}")
             display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Error during SAMMY execution: {result.error_message}</span>")  )
         
+        self.runner.collect_outputs(result=result)
+        self.runner.cleanup()
+
+        notebook_logging.info("")
+
+    def results_analysis(self):
+        notebook_logging.info("Starting results analysis ...")
+
+        lpt_file_path = self.folder_paths.sammy_output / "SAMMY.LPT"
+        lst_file_path = self.folder_paths.sammy_output / "SAMMY.LST"
+
+        results_manager = ResultsManager(
+            lpt_file_path=lpt_file_path,
+            lst_file_path=lst_file_path
+        )
+
+        data = results_manager.get_data()
+
+        notebook_logging.info(f"\t energy range: {data.energy.min():.3e} eV to {data.energy.max():.3e} eV")
+        notebook_logging.info(f"\t data points: {len(data.energy)}")
+
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Results summary:</span>"))
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Energy range: <b>{data.energy.min():.3e} eV</b> to <b>{data.energy.max():.3e} eV</span>"))
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Data points: <b>{len(data.energy)}</b></span>"))
+
+        notebook_logging.info("Results analysis completed.")
         notebook_logging.info("")
