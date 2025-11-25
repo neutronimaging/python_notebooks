@@ -673,5 +673,23 @@ class ResonanceFitting(NormalizationTof):
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Energy range: <b>{data.energy.min():.3e} eV</b> to <b>{data.energy.max():.3e} eV</span>"))
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Data points: <b>{len(data.energy)}</b></span>"))
 
+        results_manager.plot_transmission(
+            show_diff = True,
+            plot_uncertainty = True,
+        )
+
+        fig = results_manager.plot_transmission(
+            figsize=(12, 8),
+            title=self.title_widget.value,
+            xscale="log",
+            # yscale="log",
+            data_color="blue",
+            final_color="red",
+            show=False,
+            show_diff=True,
+            plot_uncertainty=True,
+        )
+        plt.show()
+
         notebook_logging.info("Results analysis completed.")
         notebook_logging.info("")
