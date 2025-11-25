@@ -197,6 +197,38 @@ class ResonanceFitting(NormalizationTof):
 
         self.files_paths.transmission = file_path
 
+        self._display_transmitted_data()
+
+    def _display_transmitted_data(self):
+        notebook_logging.info("Displaying transmitted data ...")
+        df = pd.read_csv(self.files_paths.transmission, 
+                         delim_whitespace=True, 
+                         names=['Energy (eV)', 'Transmission', 'Uncertainty'],
+                         index_col=False,
+                         skiprows=1)
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Transmitted data preview:</span>"))
+        display(df.head(10))
+     
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.errorbar(df['Energy (eV)'], 
+                    df['Transmission'], 
+                    yerr=df['Uncertainty'], 
+                    fmt='o', 
+                    markersize=3, 
+                    label=str(self.files_paths.transmission.name), 
+                    color='blue', 
+                    ecolor='lightgray', 
+                    elinewidth=1, 
+                    capsize=2)
+        ax.set_xlabel('Energy (eV)')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        ax.grid(True, which="both", ls="--", lw=0.5)
+        ax.set_ylabel('Transmission')
+        ax.set_title(f'Transmitted Data with Uncertainty')
+        ax.legend()
+        plt.show()
+
     def _stagging_folders_setup(self, file_path):
 
         # set up various stagging folder for SAMMY
@@ -537,7 +569,7 @@ class ResonanceFitting(NormalizationTof):
         _element_name = o_get.full_name_of_element_from_abreviation(self.most_abundant_element_symbol)
         _ipts = self.ipts
         _instrument = self.instrument
-        _title = f"{_element_name} multip-isotope transmission analysis - {_instrument} {_ipts}"
+        _title = f"{_element_name} multi-isotope transmission analysis - {_instrument} {_ipts}"
         self.title_widget = widgets.Text(value=_title, 
                                         disabled=False,
                                         layout=widgets.Layout(width="100%"))
@@ -672,11 +704,6 @@ class ResonanceFitting(NormalizationTof):
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Results summary:</span>"))
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Energy range: <b>{data.energy.min():.3e} eV</b> to <b>{data.energy.max():.3e} eV</span>"))
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Data points: <b>{len(data.energy)}</b></span>"))
-
-        results_manager.plot_transmission(
-            show_diff = True,
-            plot_uncertainty = True,
-        )
 
         fig = results_manager.plot_transmission(
             figsize=(12, 8),
