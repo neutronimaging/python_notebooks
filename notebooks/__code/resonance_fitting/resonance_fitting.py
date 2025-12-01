@@ -1,7 +1,9 @@
 import glob
 from dotenv import load_dotenv
 import logging as notebook_logging
+from logging.handlers import RotatingFileHandler
 import os
+from loguru import logger
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -113,12 +115,25 @@ class ResonanceFitting(NormalizationTof):
         notebook_logging.info(f"Shared dir: {self.folder_paths.shared}")
 
     def initialize_logging(self):
+
+        logger.remove() # Remove default logger
+
         LOG_PATH = "/SNS/VENUS/shared/log/"
         base_file_name = Path(__file__).name
         file_name_without_extension = Path(base_file_name).stem
         user_name = os.getlogin()  # add user name to the log file name
         log_file_name = LOG_PATH / Path(f"{user_name}_{str(file_name_without_extension)}.log")
         self.files_paths.logging = log_file_name
+        
+        # rotating_handler = RotatingFileHandler(log_file_name,
+        #                                        maxBytes=50*1024*1024,  # 50 MB
+        #                                        backupCount=5)
+        # notebook_logging.basicConfig(level=notebook_logging.INFO,
+        #                              filename=log_file_name,)
+        # formatter = notebook_logging.Formatter("[%(levelname)s] - %(asctime)s - %(message)s")
+        # rotating_handler.setFormatter(formatter)
+        # notebook_logging.getLogger().addHandler(rotating_handler)
+
         notebook_logging.basicConfig(
             filename=log_file_name,
             filemode="w",
@@ -149,10 +164,6 @@ class ResonanceFitting(NormalizationTof):
             next=self._output_folder_selected,
         )
         self.folder_selector.show()
-
-    def _output_folder_selected(self, folder_path):
-        self._stagging_folders_setup(Path(folder_path))
-        self._converting_transmission_to_twenty_format()
 
     def select_isotope_and_abundance(self):
         list_elements = periodictable.elements
@@ -189,6 +200,28 @@ class ResonanceFitting(NormalizationTof):
         self.isotope_to_use_sheet = from_dataframe(_df)
         self.df_to_use = _df
         display(self.isotope_to_use_sheet)
+
+    def setup_configuration(self):
+        self._create_json_manager()
+        self._setup_element_manager()
+
+    def perform_fitting(self):
+        self._create_multi_isotope_inp()
+        self._sammy_files_multi_mode()
+        self._local_sammy_config()
+        self._multi_isotope_sammy_execution()
+        
+        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY input files created in: {self.folder_paths.sammy_working}!</span>") )
+
+    def display_results(self):
+        self._results_analysis()
+        self._multi_isotope_fitting_quality_metrics()
+
+    # ---------------- Utilities ----------------------
+
+    def _output_folder_selected(self, folder_path):
+        self._stagging_folders_setup(Path(folder_path))
+        self._converting_transmission_to_twenty_format()
 
     def _transmitted_text_file_selected(self, file_path):
         file_path = Path(file_path)
@@ -438,10 +471,6 @@ class ResonanceFitting(NormalizationTof):
                 notebook_logging.warning(f"Unexpected isotope format: {_iso}")
         return list_reformatted
 
-    def setup_configuration(self):
-        self._create_json_manager()
-        self._setup_element_manager()
-
     def _create_json_manager(self):
         """
         forceRMoore: this should always be yes when we are using it for fitting number density
@@ -576,13 +605,6 @@ class ResonanceFitting(NormalizationTof):
         _hori_layout_8 = widgets.HBox([_label_left, self.title_widget], layout=widgets.Layout(width="100%"))
         display(_hori_layout_8)
 
-    def perform_fitting(self):
-        self._create_multi_isotope_inp()
-        self._sammy_files_multi_mode()
-        self._local_sammy_config()
-        self._multi_isotope_sammy_execution()
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY input files created in: {self.folder_paths.sammy_working}!</span>") )
-
     def _create_multi_isotope_inp(self):
 
         notebook_logging.info("Creating SAMMY input file for resonance fitting ...")
@@ -679,24 +701,28 @@ class ResonanceFitting(NormalizationTof):
         if result.error_message:
             notebook_logging.error(f"Error message: {result.error_message}")
             display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Error during SAMMY execution: {result.error_message}</span>")  )
+        else:
+            display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY execution completed successfully!</span>") )
         
         self.runner.collect_outputs(result=result)
         self.runner.cleanup()
 
         notebook_logging.info("")
 
-    def results_analysis(self):
+    def _results_analysis(self):
         notebook_logging.info("Starting results analysis ...")
 
         lpt_file_path = self.folder_paths.sammy_output / "SAMMY.LPT"
         lst_file_path = self.folder_paths.sammy_output / "SAMMY.LST"
 
-        results_manager = ResultsManager(
+        self.results_manager = ResultsManager(
             lpt_file_path=lpt_file_path,
             lst_file_path=lst_file_path
         )
 
-        data = results_manager.get_data()
+        data = self.results_manager.get_data()
+
+        # self.results_manager
 
         notebook_logging.info(f"\t energy range: {data.energy.min():.3e} eV to {data.energy.max():.3e} eV")
         notebook_logging.info(f"\t data points: {len(data.energy)}")
@@ -705,7 +731,7 @@ class ResonanceFitting(NormalizationTof):
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Energy range: <b>{data.energy.min():.3e} eV</b> to <b>{data.energy.max():.3e} eV</span>"))
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Data points: <b>{len(data.energy)}</b></span>"))
 
-        fig = results_manager.plot_transmission(
+        fig = self.results_manager.plot_transmission(
             figsize=(12, 8),
             title=self.title_widget.value,
             xscale="log",
@@ -720,3 +746,54 @@ class ResonanceFitting(NormalizationTof):
 
         notebook_logging.info("Results analysis completed.")
         notebook_logging.info("")
+
+    def _multi_isotope_fitting_quality_metrics(self):
+        
+        results_manager = self.results_manager
+        
+        if results_manager.run_results.fit_results:
+            print(f"Fit iterations: {len(results_manager.run_results.fit_results)}")
+        
+            for i, fit_result in enumerate(results_manager.run_results.fit_results):
+                print(f"\nIteration {i+1}:")
+                
+                chi_sq = fit_result.get_chi_squared_results()
+                if chi_sq.chi_squared is not None:
+                    print(f"  Chi-squared: {chi_sq.chi_squared:.4f}")
+                    print(f"  Data points: {chi_sq.dof}")
+                    print(f"  Reduced chi-squared: {chi_sq.reduced_chi_squared:.6f}")
+                
+                physics = fit_result.get_physics_data()
+                if hasattr(physics, 'broadening_parameters'):
+                    broadening = physics.broadening_parameters
+                    if hasattr(broadening, 'thick') and broadening.thick is not None:
+                        print(f"  Number density: {broadening.thick:.6e} atoms/barn-cm")
+                        print(f"  Temperature: {broadening.temp:.2f} K")
+                
+                # Multi-isotope abundances
+                nuclear = fit_result.get_nuclear_data()
+                if hasattr(nuclear, 'isotopes') and nuclear.isotopes:
+                    print("\n  Isotopic abundances:")
+                    hf_isotopes = ["Hf-174", "Hf-176", "Hf-177", "Hf-178", "Hf-179", "Hf-180"]
+                    natural_abundances = [0.0016, 0.0526, 0.1860, 0.2728, 0.1362, 0.3508]
+                    
+                    for j, isotope in enumerate(nuclear.isotopes):
+                        if j < len(hf_isotopes) and hasattr(isotope, 'abundance'):
+                            fitted = isotope.abundance
+                            natural = natural_abundances[j]
+                            ratio = fitted / natural if natural > 0 else 0
+                            print(f"    {hf_isotopes[j]}: fitted={fitted:.6f}, natural={natural:.4f}, ratio={ratio:.3f}")
+
+            # Final results
+            if len(results_manager.run_results.fit_results) > 0:
+                final_fit = results_manager.run_results.fit_results[-1]
+                final_chi = final_fit.get_chi_squared_results()
+                final_phys = final_fit.get_physics_data()
+                
+                print("\nFinal multi-isotope fit results:")
+                if final_chi.reduced_chi_squared:
+                    print(f"  Reduced chi-squared: {final_chi.reduced_chi_squared:.6f}")
+                if hasattr(final_phys, 'broadening_parameters'):
+                    if hasattr(final_phys.broadening_parameters, 'thick'):
+                        print(f"  Number density: {final_phys.broadening_parameters.thick:.6e} atoms/barn-cm")      
+                        
