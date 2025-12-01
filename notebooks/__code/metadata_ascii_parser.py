@@ -9,7 +9,11 @@ import pandas as pd
 from IPython.display import HTML, display
 from ipywidgets import widgets
 
-from __code.file_handler import force_file_extension, get_file_extension, make_ascii_file_from_string
+from __code.file_handler import (
+    force_file_extension,
+    get_file_extension,
+    make_ascii_file_from_string,
+)
 from __code.ipywe import fileselector
 
 
@@ -21,7 +25,10 @@ class MetadataAsciiParser:
 
     def select_folder(self, instruction="Select Input Folder ...", next=None):
         self.input_folder_ui = fileselector.FileSelectorPanel(
-            instruction=instruction, start_dir=self.working_dir, type="directory", next=next
+            instruction=instruction,
+            start_dir=self.working_dir,
+            type="directory",
+            next=next,
         )
         self.input_folder_ui.show()
 
@@ -31,7 +38,9 @@ class MetadataAsciiParser:
     def select_metadata_file(self):
         _instruction = "Select Metadata File ..."
         self.metadata_ui = fileselector.FileSelectorPanel(
-            instruction=_instruction, start_dir=self.working_dir, next=self.save_metadata_file
+            instruction=_instruction,
+            start_dir=self.working_dir,
+            next=self.save_metadata_file,
         )
         self.metadata_ui.show()
 
@@ -46,17 +55,25 @@ class Metadata:
         end_of_metadata_after_how_many_lines_from_reference_line=1,
     ):
         self.filename = filename
-        self.reference_line_showing_end_of_metadata = reference_line_showing_end_of_metadata
+        self.reference_line_showing_end_of_metadata = (
+            reference_line_showing_end_of_metadata
+        )
         self.end_of_metadata_after_how_many_lines_from_reference_line = (
             end_of_metadata_after_how_many_lines_from_reference_line
         )
 
     def calculate_nbr_row_metadata(self):
-        file_handler = codecs.open(self.filename, "r", encoding="utf_8", errors="ignore")
+        file_handler = codecs.open(
+            self.filename, "r", encoding="utf_8", errors="ignore"
+        )
 
         for _row_index, _row in enumerate(file_handler.readlines()):
             if self.reference_line_showing_end_of_metadata in _row:
-                self.nbr_row_metadata = _row_index + self.end_of_metadata_after_how_many_lines_from_reference_line + 1
+                self.nbr_row_metadata = (
+                    _row_index
+                    + self.end_of_metadata_after_how_many_lines_from_reference_line
+                    + 1
+                )
 
 
 class TimeInfoColumn:
@@ -99,7 +116,9 @@ class MPTFileParser:
         end_of_metadata_after_how_many_lines_from_reference_line=1,
     ):
         self.filename = filename
-        self.reference_line_showing_end_of_metadata = reference_line_showing_end_of_metadata
+        self.reference_line_showing_end_of_metadata = (
+            reference_line_showing_end_of_metadata
+        )
         self.end_of_metadata_after_how_many_lines_from_reference_line = (
             end_of_metadata_after_how_many_lines_from_reference_line
         )
@@ -115,15 +134,22 @@ class MPTFileParser:
 
     def add_acquisition_started_time_to_timestamp(self):
         str_acquisition_time = self.metadata_dict["Acquisition started on"]["value"]
-        timestamp = time.mktime(datetime.datetime.strptime(str_acquisition_time, "%m/%d/%Y %H:%M:%S").timetuple())
+        timestamp = time.mktime(
+            datetime.datetime.strptime(
+                str_acquisition_time, "%m/%d/%Y %H:%M:%S"
+            ).timetuple()
+        )
         new_column_values = self.o_pd.index.values + timestamp
         self.o_pd = self.o_pd.set_index(new_column_values)
 
         # user friendly time stamp format
         user_format = [
-            datetime.datetime.fromtimestamp(_time).strftime("%m/%d/%Y %H:%M:%S") for _time in self.o_pd.index.values
+            datetime.datetime.fromtimestamp(_time).strftime("%m/%d/%Y %H:%M:%S")
+            for _time in self.o_pd.index.values
         ]
-        self.o_pd["timestamp_user_format"] = pd.Series(user_format, index=self.o_pd.index)
+        self.o_pd["timestamp_user_format"] = pd.Series(
+            user_format, index=self.o_pd.index
+        )
 
     def set_time_info_as_index(self):
         time_info_column = self.time_info_column
@@ -209,11 +235,15 @@ class MPTFileParser:
         for _keys in self.metadata_dict.keys():
             for _line in self.metadata:
                 if _keys in _line:
-                    result = _line.split(self.metadata_dict[_keys]["split1"])  # 1st split
+                    result = _line.split(
+                        self.metadata_dict[_keys]["split1"]
+                    )  # 1st split
                     if not self.metadata_dict[_keys]["split2"]:
                         self.metadata_dict[_keys]["value"] = result[1].strip()
                     else:  # 2nd split
-                        [value, units] = result[1].strip().split(self.metadata_dict[_keys]["split2"])
+                        [value, units] = (
+                            result[1].strip().split(self.metadata_dict[_keys]["split2"])
+                        )
                         self.metadata_dict[_keys]["value"] = value.strip()
                         self.metadata_dict[_keys]["units"] = units.strip()
 
@@ -264,8 +294,12 @@ class MetadataFileParser:
 
     def parse(self):
         if self.meta_type == "mpt":
-            time_info_column = TimeInfoColumn(label=self.time_label, index=self.time_index)
-            o_mpt = MPTFileParser(filename=self.filename, time_info_column=time_info_column)
+            time_info_column = TimeInfoColumn(
+                label=self.time_label, index=self.time_index
+            )
+            o_mpt = MPTFileParser(
+                filename=self.filename, time_info_column=time_info_column
+            )
             self.meta = o_mpt
         else:
             raise NotImplementedError("This file format is not supported!")
@@ -275,7 +309,9 @@ class MetadataFileParser:
             list_columns_names = list(self.box.children[1].value)
 
         if list_columns_names:
-            self.data_to_keep = self.meta.keep_only_columns_of_data_of_interest(list_columns_names=list_columns_names)
+            self.data_to_keep = self.meta.keep_only_columns_of_data_of_interest(
+                list_columns_names=list_columns_names
+            )
         else:
             self.data_to_keep = []
 
@@ -310,7 +346,10 @@ class MetadataFileParser:
                     layout=widgets.Layout(width="30%"),
                 ),
                 widgets.SelectMultiple(
-                    options=list_columns, value=default_value, rows=10, layout=widgets.Layout(width="30%")
+                    options=list_columns,
+                    value=default_value,
+                    rows=10,
+                    layout=widgets.Layout(width="30%"),
                 ),
             ]
         )
@@ -321,7 +360,9 @@ class MetadataFileParser:
             [filename, ext] = os.path.splitext(self.short_filename)
             [_, nbr_columns] = np.shape(self.data_to_keep)
             p = inflect.engine()
-            default_filename = filename + f"_{nbr_columns}" + p.plural("column", nbr_columns)
+            default_filename = (
+                filename + f"_{nbr_columns}" + p.plural("column", nbr_columns)
+            )
 
         self.box2 = widgets.HBox(
             [
@@ -333,7 +374,9 @@ class MetadataFileParser:
         display(self.box2)
 
         o_folder = MetadataAsciiParser(working_dir=self.working_dir)
-        o_folder.select_folder(instruction="Select Output Folder:", next=self.__export_table)
+        o_folder.select_folder(
+            instruction="Select Output Folder:", next=self.__export_table
+        )
 
     def __export_table(self, folder):
         display(
@@ -344,7 +387,11 @@ class MetadataFileParser:
             )
         )
 
-        display(HTML('<span style="font-size: 20px; color:black">Work in progress! ... </span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:black">Work in progress! ... </span>'
+            )
+        )
 
         output_filename = self.box2.children[1].value
         output_filename = force_file_extension(output_filename, ".txt")
@@ -353,11 +400,15 @@ class MetadataFileParser:
 
         # record metadata selected
         metadata_name_selected = np.array(self.box.children[1].value)
-        metadata_name_selected = np.append(metadata_name_selected, "timestamp_user_format")
+        metadata_name_selected = np.append(
+            metadata_name_selected, "timestamp_user_format"
+        )
         data = self.get_data()
         self.data_to_export = data[metadata_name_selected]
 
-        self.export_table(data=self.data_to_export, folder=folder, filename=output_filename)
+        self.export_table(
+            data=self.data_to_export, folder=folder, filename=output_filename
+        )
 
     def export_table(self, data=None, folder="", filename=""):
         full_output_filename = os.path.join(os.path.abspath(folder), filename)
@@ -375,7 +426,11 @@ class MetadataFileParser:
         display(HTML('<span style="font-size: 20px; color:black">Done!</span>'))
 
         display(
-            HTML('<span style="font-size: 20px; color:green">Output file created: ' + full_output_filename + "</span>")
+            HTML(
+                '<span style="font-size: 20px; color:green">Output file created: '
+                + full_output_filename
+                + "</span>"
+            )
         )
 
 

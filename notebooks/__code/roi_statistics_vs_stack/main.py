@@ -16,13 +16,17 @@ from __code.roi_statistics_vs_stack.load import Load
 
 class FileHandler(FileFolderBrowser):
     def __init__(self, working_dir=""):
-        super(FileHandler, self).__init__(working_dir=working_dir, next_function=self.display_status)
+        super(FileHandler, self).__init__(
+            working_dir=working_dir, next_function=self.display_status
+        )
 
     def get_list_of_files(self):
         return self.list_images_ui.selected
 
     def select_folder(self):
-        self.select_input_folder(instruction="Select folder containing images to process ...")
+        self.select_input_folder(
+            instruction="Select folder containing images to process ..."
+        )
 
     def display_status(self, folder):
         o_list = ListMostDominantExtension(working_dir=folder)
@@ -30,7 +34,13 @@ class FileHandler(FileFolderBrowser):
         result = o_list.get_files_of_selected_ext()
         self.list_of_images = result.list_files
         nbr_images = str(len(self.list_of_images))
-        display(HTML('<span style="font-size: 15px; color:blue">You have selected ' + nbr_images + " images </span>"))
+        display(
+            HTML(
+                '<span style="font-size: 15px; color:blue">You have selected '
+                + nbr_images
+                + " images </span>"
+            )
+        )
 
 
 class ImageWindow(QMainWindow):

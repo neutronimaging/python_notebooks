@@ -11,13 +11,18 @@ class DisplayIntegratedStackOfImages:
 
     def select_input_folder(self):
         self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(
-            instruction="Select Input Folder", type="directory", start_dir=self.working_dir, multiple=False
+            instruction="Select Input Folder",
+            type="directory",
+            start_dir=self.working_dir,
+            multiple=False,
         )
         self.input_folder_ui.show()
 
     def __retrieve_files(self):
         input_folder = self.input_folder_ui.selected
-        list_files = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=input_folder)[0]
+        list_files = file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+            folder=input_folder
+        )[0]
         self.list_files = file_handler.remove_file_from_list(
             list_files=list_files, regular_expression=".*_SummedImg.fits"
         )

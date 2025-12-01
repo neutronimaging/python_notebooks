@@ -7,7 +7,9 @@ from qtpy.QtWidgets import QMainWindow
 
 from __code import load_ui
 from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
-from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
+from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import (
+    ExcelTableHandler as TableHandler,
+)
 
 
 class RepeatWidgetChangeDialog(QMainWindow):
@@ -26,11 +28,21 @@ class RepeatWidgetChangeDialog(QMainWindow):
         self.init_widgets()
 
     def init_widgets(self):
-        statis_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
-        self.do_not_repeat_released_file = os.path.join(statis_file_path, "do_not_repeat_button_released.png")
-        self.do_not_repeat_pressed_file = os.path.join(statis_file_path, "do_not_repeat_button_pressed.png")
-        self.repeat_released_file = os.path.join(statis_file_path, "repeat_button_released.png")
-        self.repeat_pressed_file = os.path.join(statis_file_path, "repeat_button_pressed.png")
+        statis_file_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "static"
+        )
+        self.do_not_repeat_released_file = os.path.join(
+            statis_file_path, "do_not_repeat_button_released.png"
+        )
+        self.do_not_repeat_pressed_file = os.path.join(
+            statis_file_path, "do_not_repeat_button_pressed.png"
+        )
+        self.repeat_released_file = os.path.join(
+            statis_file_path, "repeat_button_released.png"
+        )
+        self.repeat_pressed_file = os.path.join(
+            statis_file_path, "repeat_button_pressed.png"
+        )
 
         no_repeat_icon = QIcon(self.do_not_repeat_released_file)
         self.ui.do_not_repeat_pushButton.setIcon(no_repeat_icon)

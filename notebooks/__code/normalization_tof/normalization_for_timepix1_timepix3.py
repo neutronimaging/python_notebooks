@@ -1,21 +1,10 @@
-import argparse
-import glob
 import logging
-import multiprocessing as mp
 import os
-import shutil
-from pathlib import Path
 from typing import Tuple
 
-from annotated_types import Not
-import h5py
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from IPython.display import HTML, display
-from PIL import Image
-from skimage.io import imread
-from scipy.ndimage import median_filter
 
 from __code.normalization_tof.utilities import *
 
@@ -25,11 +14,12 @@ from __code.normalization_tof.utilities import *
 
 MARKERSIZE = 2
 
+
 class NormalizedData:
-    data= {}
-    lambda_array= None
-    tof_array= None
-    energy_array= None
+    data = {}
+    lambda_array = None
+    tof_array = None
+    energy_array = None
 
 
 from __code.normalization_tof.units import (
@@ -46,15 +36,18 @@ LOAD_DTYPE = np.uint16
 
 PROTON_CHARGE_TOLERANCE = 0.1
 
+
 def initialize_logging():
     """initialize logging"""
     file_name, ext = os.path.splitext(os.path.basename(__file__))
     user_name = os.getlogin()  # add user name to the log file name
     log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
-    logging.basicConfig(filename=log_file_name,
-                        filemode='w',
-                        format='[%(levelname)s] - %(asctime)s - %(message)s',
-                        level=logging.INFO)
+    logging.basicConfig(
+        filename=log_file_name,
+        filemode="w",
+        format="[%(levelname)s] - %(asctime)s - %(message)s",
+        level=logging.INFO,
+    )
     logging.info(f"*** Starting a new script {file_name} ***")
 
 
@@ -81,10 +74,11 @@ def normalization_with_list_of_full_path(
     correct_chips_alignment_flag: bool = True,
     correct_chips_alignment_config: dict = None,
     export_mode: dict = None,
-    roi = None,
-    container_roi = None) -> NormalizedData:
+    roi=None,
+    container_roi=None,
+) -> NormalizedData:
     """normalize the sample data with ob data using proton charge and shutter counts
-    
+
     Args:
         sample_dict (dict): dictionary with sample run numbers and their data
             {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
@@ -140,12 +134,22 @@ def normalization_with_list_of_full_path(
 
     export_corrected_stack_of_sample_data = export_mode.get("sample_stack", False)
     export_corrected_stack_of_ob_data = export_mode.get("ob_stack", False)
-    export_corrected_stack_of_normalized_data = export_mode.get("normalized_stack", False)
-    export_corrected_stack_of_combined_normalized_data = export_mode.get("combined_normalized_stack", False)
-    export_corrected_integrated_sample_data = export_mode.get("sample_integrated", False)
+    export_corrected_stack_of_normalized_data = export_mode.get(
+        "normalized_stack", False
+    )
+    export_corrected_stack_of_combined_normalized_data = export_mode.get(
+        "combined_normalized_stack", False
+    )
+    export_corrected_integrated_sample_data = export_mode.get(
+        "sample_integrated", False
+    )
     export_corrected_integrated_ob_data = export_mode.get("ob_integrated", False)
-    export_corrected_integrated_normalized_data = export_mode.get("normalized_integrated", False)
-    export_corrected_integrated_combined_normalized_data = export_mode.get("combined_normalized_integrated", False)
+    export_corrected_integrated_normalized_data = export_mode.get(
+        "normalized_integrated", False
+    )
+    export_corrected_integrated_combined_normalized_data = export_mode.get(
+        "combined_normalized_integrated", False
+    )
 
     export_x_axis = export_mode.get("x_axis", True)
 
@@ -159,45 +163,48 @@ def normalization_with_list_of_full_path(
     logging.info(f"{export_x_axis = }")
 
     sample_master_dict, sample_status_metadata = create_master_dict(
-        data_dictionary=sample_dict, 
-        data_type=DataType.sample, 
+        data_dictionary=sample_dict,
+        data_type=DataType.sample,
         instrument=instrument,
         spectra_array=spectra_array,
     )
     ob_master_dict, ob_status_metadata = create_master_dict(
-        data_dictionary=ob_dict, 
-        data_type=DataType.ob, 
+        data_dictionary=ob_dict,
+        data_type=DataType.ob,
         instrument=instrument,
         spectra_array=spectra_array,
     )
 
     dc_master_dict, dc_status_metadata = create_master_dict(
-        data_dictionary=dc_dict, 
-        data_type=DataType.dc, 
+        data_dictionary=dc_dict,
+        data_type=DataType.dc,
         instrument=instrument,
         spectra_array=spectra_array,
     )
 
     # load ob images
     load_images(master_dict=ob_master_dict, data_type=DataType.ob, verbose=verbose)
-   
+
     if proton_charge_flag:
         normalized_by_proton_charge = (
-            sample_status_metadata.all_proton_charge_found and ob_status_metadata.all_proton_charge_found
+            sample_status_metadata.all_proton_charge_found
+            and ob_status_metadata.all_proton_charge_found
         )
     else:
         normalized_by_proton_charge = False
 
     if monitor_counts_flag:
         normalized_by_monitor_counts = (
-            sample_status_metadata.all_monitor_counts_found and ob_status_metadata.all_monitor_counts_found
+            sample_status_metadata.all_monitor_counts_found
+            and ob_status_metadata.all_monitor_counts_found
         )
     else:
         normalized_by_monitor_counts = False
 
     if shutter_counts_flag:
         normalized_by_shutter_counts = (
-            sample_status_metadata.all_shutter_counts_found and ob_status_metadata.all_shutter_counts_found
+            sample_status_metadata.all_shutter_counts_found
+            and ob_status_metadata.all_shutter_counts_found
         )
     else:
         normalized_by_shutter_counts = False
@@ -214,16 +221,26 @@ def normalization_with_list_of_full_path(
         max_iterations=max_iterations,
     )
     logging.info(f"{ob_data_combined.shape = }")
-    logging.info(f"number of NaN in ob_data_combined data: {np.sum(np.isnan(ob_data_combined))}")
-    logging.info(f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}")
-    logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
+    logging.info(
+        f"number of NaN in ob_data_combined data: {np.sum(np.isnan(ob_data_combined))}"
+    )
+    logging.info(
+        f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}"
+    )
+    logging.info(
+        f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} "
+    )
 
     if correct_chips_alignment_flag:
-        correct_chips_alignment(ob_data_combined, correct_chips_alignment_config, verbose=verbose)
+        correct_chips_alignment(
+            ob_data_combined, correct_chips_alignment_config, verbose=verbose
+        )
 
-    ob_data_combined_for_spectrum = calculate_ob_data_combined_used_by_spectrum_normalization(roi=roi,
-                                                                                 ob_data_combined=ob_data_combined,
-                                                                                 verbose=verbose)
+    ob_data_combined_for_spectrum = (
+        calculate_ob_data_combined_used_by_spectrum_normalization(
+            roi=roi, ob_data_combined=ob_data_combined, verbose=verbose
+        )
+    )
 
     # export ob data if requested
     first_ob_run_number = list(ob_master_dict.keys())[0]
@@ -234,12 +251,16 @@ def normalization_with_list_of_full_path(
             export_corrected_stack_of_ob_data,
             export_corrected_integrated_ob_data,
             ob_data_combined,
-            spectra_file_name=ob_master_dict[first_ob_run_number][MasterDictKeys.spectra_file_name],
+            spectra_file_name=ob_master_dict[first_ob_run_number][
+                MasterDictKeys.spectra_file_name
+            ],
             spectra_array=spectra_array,
         )
 
     # load dc images
-    dc_master_dict = load_images(master_dict=dc_master_dict, data_type=DataType.dc, verbose=verbose)
+    dc_master_dict = load_images(
+        master_dict=dc_master_dict, data_type=DataType.dc, verbose=verbose
+    )
     # for _dc_run_number in dc_master_dict.keys():
     #     logging.info(f"loading dc# {_dc_run_number} ... ")
     #     if verbose:
@@ -256,21 +277,29 @@ def normalization_with_list_of_full_path(
     # combine all ob images
     dc_data_combined = combine_dc_images(dc_master_dict)
     if correct_chips_alignment_flag:
-        dc_data_combined = correct_chips_alignment(dc_data_combined, correct_chips_alignment_config, verbose=verbose)
+        dc_data_combined = correct_chips_alignment(
+            dc_data_combined, correct_chips_alignment_config, verbose=verbose
+        )
 
     if (dc_data_combined is not None) and (roi is not None):
-        dc_data_combined_for_spectrum = [np.sum(np.sum(_data, axis=0), axis=0) for _data in dc_data_combined]
+        dc_data_combined_for_spectrum = [
+            np.sum(np.sum(_data, axis=0), axis=0) for _data in dc_data_combined
+        ]
         logging.info(f"\t{np.shape(dc_data_combined) = }")
         logging.info(f"\t{np.shape(dc_data_combined_for_spectrum) = }")
 
     else:
-        logging.info(f"\tno roi provided! Skipping the normalization of spectrum.")
+        logging.info("\tno roi provided! Skipping the normalization of spectrum.")
         dc_data_combined_for_spectrum = None
 
     # load sample images
-    load_images(master_dict=sample_master_dict, data_type=DataType.sample, verbose=verbose)
+    load_images(
+        master_dict=sample_master_dict, data_type=DataType.sample, verbose=verbose
+    )
     if correct_chips_alignment_flag:
-        correct_all_samples_chips_alignment(sample_master_dict, correct_chips_alignment_config, verbose=verbose)
+        correct_all_samples_chips_alignment(
+            sample_master_dict, correct_chips_alignment_config, verbose=verbose
+        )
 
     normalized_data = {}
     integrated_normalized_data = {}
@@ -278,7 +307,6 @@ def normalization_with_list_of_full_path(
 
     # normalize the sample data
     for _sample_run_number in sample_master_dict.keys():
-        
         logging.info("**********************************")
         logging.info(f"normalization of run {_sample_run_number}")
         if verbose:
@@ -294,8 +322,12 @@ def normalization_with_list_of_full_path(
         logging.info(f"\t sample data shape: {data_shape}")
         logging.info(f"\t data type of _sample_data: {_sample_data.dtype}")
         logging.info(f"\t Number of zeros in sample data: {number_of_zeros}")
-        logging.info(f"\t Number of nan in sample data: {np.sum(np.isnan(_sample_data))}")
-        logging.info(f"\t Percentage of zeros in sample data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%")
+        logging.info(
+            f"\t Number of nan in sample data: {np.sum(np.isnan(_sample_data))}"
+        )
+        logging.info(
+            f"\t Percentage of zeros in sample data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%"
+        )
         logging.info(f"\t Mean of sample data: {np.mean(_sample_data)}")
         logging.info(f"\t maximum of sample data: {np.max(_sample_data)}")
         logging.info(f"\t minimum of sample data: {np.min(_sample_data)}")
@@ -303,17 +335,21 @@ def normalization_with_list_of_full_path(
 
         if normalized_by_proton_charge:
             if verbose:
-                display(HTML(f"Normalizing by proton charge"))
-            _sample_data = normalize_by_proton_charge(sample_master_dict, _sample_run_number, _sample_data)
+                display(HTML("Normalizing by proton charge"))
+            _sample_data = normalize_by_proton_charge(
+                sample_master_dict, _sample_run_number, _sample_data
+            )
 
         if normalized_by_monitor_counts:
             if verbose:
-                display(HTML(f"Normalizing by monitor counts"))
-            _sample_data = normalize_by_monitor_counts(sample_master_dict, _sample_run_number, _sample_data)
+                display(HTML("Normalizing by monitor counts"))
+            _sample_data = normalize_by_monitor_counts(
+                sample_master_dict, _sample_run_number, _sample_data
+            )
 
         if normalized_by_shutter_counts:
             if verbose:
-                display(HTML(f"Normalizing by shutter counts"))
+                display(HTML("Normalizing by shutter counts"))
             _sample_data = normalization_by_shutter_counts(
                 sample_master_dict,
                 _sample_run_number,
@@ -335,54 +371,74 @@ def normalization_with_list_of_full_path(
         logging.info(f"{ob_data_combined.dtype = }")
 
         # export sample data after correction if requested
-        if export_corrected_stack_of_sample_data or export_corrected_integrated_sample_data:
+        if (
+            export_corrected_stack_of_sample_data
+            or export_corrected_integrated_sample_data
+        ):
             export_sample_images(
                 output_folder,
                 export_corrected_stack_of_sample_data,
                 export_corrected_integrated_sample_data,
                 _sample_run_number,
                 _sample_data,
-                spectra_file_name=sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name],
+                spectra_file_name=sample_master_dict[_sample_run_number][
+                    MasterDictKeys.spectra_file_name
+                ],
                 spectra_array=spectra_array,
             )
 
-        _normalized_dict = perform_normalization(_sample_data, ob_data_combined, dc_data_combined)
-        _normalized_data = _normalized_dict['normalized_data']
-        _integrated_normalized_data = _normalized_dict['integrated_normalized_data']       
+        _normalized_dict = perform_normalization(
+            _sample_data, ob_data_combined, dc_data_combined
+        )
+        _normalized_data = _normalized_dict["normalized_data"]
+        _integrated_normalized_data = _normalized_dict["integrated_normalized_data"]
         integrated_normalized_data[_sample_run_number] = _integrated_normalized_data
         normalized_data[_sample_run_number] = _normalized_data
 
-        _spectrum_normalized_data = perform_spectrum_normalization(roi=roi, 
-                                                                   sample_data=_sample_data, 
-                                                                   ob_data_combined_for_spectrum=ob_data_combined_for_spectrum, 
-                                                                   dc_data_combined=dc_data_combined,
-                                                                   dc_data_combined_for_spectrum=dc_data_combined_for_spectrum)
+        _spectrum_normalized_data = perform_spectrum_normalization(
+            roi=roi,
+            sample_data=_sample_data,
+            ob_data_combined_for_spectrum=ob_data_combined_for_spectrum,
+            dc_data_combined=dc_data_combined,
+            dc_data_combined_for_spectrum=dc_data_combined_for_spectrum,
+        )
         spectrum_normalized_data[_sample_run_number] = _spectrum_normalized_data
 
         # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
         logging.info(f"{normalized_data[_sample_run_number].shape = }")
         logging.info(f"{normalized_data[_sample_run_number].dtype = }")
-        logging.info(f"number of NaN in normalized data: {np.sum(np.isnan(normalized_data[_sample_run_number]))}")
-        logging.info(f"number of inf in normalized data: {np.sum(np.isinf(normalized_data[_sample_run_number]))}")
+        logging.info(
+            f"number of NaN in normalized data: {np.sum(np.isnan(normalized_data[_sample_run_number]))}"
+        )
+        logging.info(
+            f"number of inf in normalized data: {np.sum(np.isinf(normalized_data[_sample_run_number]))}"
+        )
 
-        detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
-        time_spectra = sample_master_dict[_sample_run_number][MasterDictKeys.list_spectra]
+        detector_delay_us = sample_master_dict[_sample_run_number][
+            MasterDictKeys.detector_delay_us
+        ]
+        time_spectra = sample_master_dict[_sample_run_number][
+            MasterDictKeys.list_spectra
+        ]
 
         dict_to_return.tof_array = time_spectra
 
         if time_spectra is None:
-            logging.info("Time spectra is None, cannot convert to lambda or energy arrays")
+            logging.info(
+                "Time spectra is None, cannot convert to lambda or energy arrays"
+            )
             lambda_array = None
             energy_array = None
-        
-        else:
 
-            logging.info(f"We have a time_spectra!")
+        else:
+            logging.info("We have a time_spectra!")
             logging.info(f"time spectra shape: {time_spectra.shape}")
-            
+
             if detector_delay_us is None:
                 detector_delay_us = 0.0
-                logging.info(f"detector delay is None, setting it to {detector_delay_us} us")
+                logging.info(
+                    f"detector delay is None, setting it to {detector_delay_us} us"
+                )
 
             logging.info(f"we have a detector delay of {detector_delay_us} us")
 
@@ -415,64 +471,80 @@ def normalization_with_list_of_full_path(
 
         logging.info(f"Preview: {preview = }")
         if preview:
-            preview_normalized_data(_sample_data, 
-                                    ob_data_combined, 
-                                    dc_data_combined, 
-                                    normalized_data, 
-                                    lambda_array,
-                                    energy_array, 
-                                    detector_delay_us, 
-                                    _sample_run_number,
-                                    combine_samples,
-                                    _spectrum_normalized_data,
-                                    roi,
-                                    )
-             
-        if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
+            preview_normalized_data(
+                _sample_data,
+                ob_data_combined,
+                dc_data_combined,
+                normalized_data,
+                lambda_array,
+                energy_array,
+                detector_delay_us,
+                _sample_run_number,
+                combine_samples,
+                _spectrum_normalized_data,
+                roi,
+            )
 
-            export_normalized_data(ob_master_dict=ob_master_dict, 
-                sample_master_dict=sample_master_dict, 
+        if (
+            export_corrected_integrated_normalized_data
+            or export_corrected_stack_of_normalized_data
+        ):
+            export_normalized_data(
+                ob_master_dict=ob_master_dict,
+                sample_master_dict=sample_master_dict,
                 _sample_run_number=_sample_run_number,
-                normalized_data=normalized_data, 
+                normalized_data=normalized_data,
                 integrated_normalized_data=integrated_normalized_data,
                 _spectrum_normalized_data=_spectrum_normalized_data,
-                lambda_array=lambda_array, 
-                energy_array=energy_array, 
-                output_folder=output_folder, 
+                lambda_array=lambda_array,
+                energy_array=energy_array,
+                output_folder=output_folder,
                 export_corrected_stack_of_normalized_data=export_corrected_stack_of_normalized_data,
                 export_corrected_integrated_normalized_data=export_corrected_integrated_normalized_data,
                 roi=roi,
-                spectra_array=spectra_array)
-          
-    if combine_samples:
+                spectra_array=spectra_array,
+            )
 
+    if combine_samples:
         # combine all normalized data
         array_of_normalized_data = []
         for _key in normalized_data.keys():
             array_of_normalized_data.append(normalized_data[_key])
 
-        combined_normalized_data = np.nanmean(np.array(array_of_normalized_data), axis=0)
-        combined_spectrum_normalized_data = np.nanmean(np.array(list(spectrum_normalized_data.values())), axis=0)
-        dict_to_return.data['combined'] = combined_normalized_data
+        combined_normalized_data = np.nanmean(
+            np.array(array_of_normalized_data), axis=0
+        )
+        combined_spectrum_normalized_data = np.nanmean(
+            np.array(list(spectrum_normalized_data.values())), axis=0
+        )
+        dict_to_return.data["combined"] = combined_normalized_data
 
         # if preview, display the combined normalized data
         if preview:
-            
-            fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+            fig, axs3 = plt.subplots(
+                1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+            )
             normalized_data_integrated = np.nanmean(combined_normalized_data, axis=0)
             im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
             plt.colorbar(im2, ax=axs3[0])
-            axs3[0].set_title(f"Integrated combined Normalized data")
+            axs3[0].set_title("Integrated combined Normalized data")
 
             _label = "pixel by pixel normalization profile of full image"
             if roi is not None:
-                profile_step1 = np.nanmean(combined_normalized_data[:, roi.top:roi.top+roi.height, roi.left:roi.left+roi.width], axis=1)
+                profile_step1 = np.nanmean(
+                    combined_normalized_data[
+                        :,
+                        roi.top : roi.top + roi.height,
+                        roi.left : roi.left + roi.width,
+                    ],
+                    axis=1,
+                )
                 profile = np.nanmean(profile_step1, axis=1)
             else:
                 profile_step1 = np.nanmean(combined_normalized_data, axis=1)
                 profile = np.nanmean(profile_step1, axis=1)
-        
-            axs3[1].plot(profile, 'o', markersize=MARKERSIZE, label=_label)
+
+            axs3[1].plot(profile, "o", markersize=MARKERSIZE, label=_label)
             axs3[1].set_xlabel("File image index")
             axs3[1].set_ylabel("Transmission (a.u.)")
             axs3[1].legend()
@@ -480,18 +552,23 @@ def normalization_with_list_of_full_path(
             plt.tight_layout()
 
             if lambda_array is not None:
-
-                fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                fig, axs4 = plt.subplots(
+                    1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+                )
                 logging.info(f"{np.shape(profile) = }")
 
-                axs4[0].plot(lambda_array, profile, "*", markersize=MARKERSIZE, label=_label)
-                #axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
+                axs4[0].plot(
+                    lambda_array, profile, "*", markersize=MARKERSIZE, label=_label
+                )
+                # axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[0].set_xlabel("Lambda (A)")
                 axs4[0].set_ylabel("mean of full image")
                 axs4[0].legend()
 
-                axs4[1].plot(energy_array, profile, "*", markersize=MARKERSIZE, label=_label)
-                #axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
+                axs4[1].plot(
+                    energy_array, profile, "*", markersize=MARKERSIZE, label=_label
+                )
+                # axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
                 axs4[1].set_xlabel("Energy (eV)")
                 axs4[1].set_ylabel("Transmission (a.u.)")
                 axs4[1].set_xscale("log")
@@ -500,19 +577,29 @@ def normalization_with_list_of_full_path(
                 plt.tight_layout()
 
                 if combined_spectrum_normalized_data is not None:
-                    fig, axs5 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                    fig, axs5 = plt.subplots(
+                        1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+                    )
                     logging.info(f"{np.shape(profile) = }")
 
-                    axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", 
-                                 markersize=MARKERSIZE, 
-                                 label="spectrum normalization of ROI")
+                    axs5[0].plot(
+                        lambda_array,
+                        combined_spectrum_normalized_data,
+                        "r*",
+                        markersize=MARKERSIZE,
+                        label="spectrum normalization of ROI",
+                    )
                     axs5[0].set_xlabel("Lambda (A)")
                     axs5[0].set_ylabel("mean of full image")
                     axs5[0].legend()
 
-                    axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*",
-                                  markersize=MARKERSIZE, 
-                                  label="spectrum normalization of ROI")
+                    axs5[1].plot(
+                        energy_array,
+                        combined_spectrum_normalized_data,
+                        "r*",
+                        markersize=MARKERSIZE,
+                        label="spectrum normalization of ROI",
+                    )
                     axs5[1].set_xlabel("Energy (eV)")
                     axs5[1].set_ylabel("Transmission (a.u.)")
                     axs5[1].set_xscale("log")
@@ -520,19 +607,23 @@ def normalization_with_list_of_full_path(
 
                     plt.tight_layout()
 
-        if export_corrected_integrated_combined_normalized_data or export_corrected_stack_of_combined_normalized_data:
+        if (
+            export_corrected_integrated_combined_normalized_data
+            or export_corrected_stack_of_combined_normalized_data
+        ):
+            export_corrected_normalized_data(
+                sample_master_dict=sample_master_dict,
+                ob_master_dict=ob_master_dict,
+                dc_master_dict=dc_master_dict,
+                combined_normalized_data=combined_normalized_data,
+                export_corrected_integrated_combined_normalized_data=export_corrected_integrated_combined_normalized_data,
+                export_corrected_stack_of_combined_normalized_data=export_corrected_stack_of_combined_normalized_data,
+                lambda_array=lambda_array,
+                energy_array=energy_array,
+                output_folder=output_folder,
+                spectra_array=spectra_array,
+            )
 
-            export_corrected_normalized_data(sample_master_dict=sample_master_dict,
-                                      ob_master_dict=ob_master_dict,
-                                      dc_master_dict=dc_master_dict,
-                                       combined_normalized_data=combined_normalized_data,
-                                       export_corrected_integrated_combined_normalized_data=export_corrected_integrated_combined_normalized_data,
-                                       export_corrected_stack_of_combined_normalized_data=export_corrected_stack_of_combined_normalized_data,
-                                       lambda_array=lambda_array,
-                                       energy_array=energy_array,
-                                       output_folder=output_folder, 
-                                       spectra_array=spectra_array)
-            
     else:
         dict_to_return.data = normalized_data
 
@@ -541,4 +632,3 @@ def normalization_with_list_of_full_path(
         display(HTML("Normalization and export is done!"))
 
     return dict_to_return
-

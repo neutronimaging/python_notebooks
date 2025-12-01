@@ -20,7 +20,11 @@ class MyTableWidget(QTableWidget):
         return QTableWidget.focusOutEvent(self, event)
 
     def event(self, event):
-        if self.catch and event.type() == QEvent.KeyRelease and event.key() in self.keys:
+        if (
+            self.catch
+            and event.type() == QEvent.KeyRelease
+            and event.key() in self.keys
+        ):
             self._moveCursor(event.key())
         return QTableWidget.event(self, event)
 

@@ -95,7 +95,9 @@ class Interface(QMainWindow):
         hori_layout.addWidget(self.filtered_value)
 
         # spacer
-        spacerItem = QtGui.QSpacerItem(22520, 40, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        spacerItem = QtGui.QSpacerItem(
+            22520, 40, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding
+        )
         hori_layout.addItem(spacerItem)
 
         # add status bar in main ui
@@ -118,7 +120,9 @@ class Interface(QMainWindow):
         try:
             float_value = float(value)
         except:
-            self.ui.filtering_coefficient_value.setText(str(self.default_filtering_coefficient_value))
+            self.ui.filtering_coefficient_value.setText(
+                str(self.default_filtering_coefficient_value)
+            )
             return self.default_filtering_coefficient_value
 
         if float_value < 0:
@@ -150,7 +154,9 @@ class Interface(QMainWindow):
             self.ui.tableWidget.setItem(_row, 1, _item)
 
             # percentage of pixel corrected
-            _item = QtGui.QTableWidgetItem(f"{nbr_pixel_corrected*100/total_nbr_pixels:.02f}%")
+            _item = QtGui.QTableWidgetItem(
+                f"{nbr_pixel_corrected * 100 / total_nbr_pixels:.02f}%"
+            )
             self.ui.tableWidget.setItem(_row, 2, _item)
 
     def get_number_pixel_gamma_corrected(self, data=[]):
@@ -178,7 +184,9 @@ class Interface(QMainWindow):
             mouse_x = int(mouse_point.x())
             mouse_y = int(mouse_point.y())
 
-            if (mouse_x >= 0 and mouse_x < width) and (mouse_y >= 0 and mouse_y < height):
+            if (mouse_x >= 0 and mouse_x < width) and (
+                mouse_y >= 0 and mouse_y < height
+            ):
                 self.x_value.setText(str(mouse_x))
                 self.y_value.setText(str(mouse_y))
 
@@ -237,7 +245,9 @@ class Interface(QMainWindow):
         self.raw_vLine.setPos([1000, 1000])
         self.raw_hLine.setPos([1000, 1000])
         self.raw_proxy = pg.SignalProxy(
-            self.ui.raw_image_view.view.scene().sigMouseMoved, rateLimit=60, slot=self.mouse_moved_in_raw_image
+            self.ui.raw_image_view.view.scene().sigMouseMoved,
+            rateLimit=60,
+            slot=self.mouse_moved_in_raw_image,
         )
         d1.addWidget(self.ui.raw_image_view)
 
@@ -246,7 +256,9 @@ class Interface(QMainWindow):
         d1h.addWidget(self.ui.raw_histogram_plot)
 
         # filtered image
-        self.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name="filtered_image")
+        self.ui.filtered_image_view = pg.ImageView(
+            view=pg.PlotItem(), name="filtered_image"
+        )
         self.ui.filtered_image_view.ui.roiBtn.hide()
         self.ui.filtered_image_view.ui.menuBtn.hide()
         self.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
@@ -325,14 +337,18 @@ class Interface(QMainWindow):
         self.raw_image_size = np.shape(_image)
 
         if not first_update:
-            _histo_widget.setLevels(self.raw_histogram_level[0], self.raw_histogram_level[1])
+            _histo_widget.setLevels(
+                self.raw_histogram_level[0], self.raw_histogram_level[1]
+            )
 
         # histogram
         self.ui.raw_histogram_plot.clear()
         min = 0
         max = np.max(_image)
         y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.nbr_histo_bins))
-        self.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+        self.ui.raw_histogram_plot.plot(
+            x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150)
+        )
 
     def reset_states(self):
         _state = self.state_of_raw
@@ -375,14 +391,18 @@ class Interface(QMainWindow):
         self.live_filtered_image = _image
 
         if not first_update:
-            _histo_widget.setLevels(self.filtered_histogram_level[0], self.filtered_histogram_level[1])
+            _histo_widget.setLevels(
+                self.filtered_histogram_level[0], self.filtered_histogram_level[1]
+            )
 
         # histogram
         self.ui.filtered_histogram_plot.clear()
         min = 0
         max = np.max(_image)
         y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.nbr_histo_bins))
-        self.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+        self.ui.filtered_histogram_plot.plot(
+            x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150)
+        )
 
     def apply_clicked(self):
         self.close()

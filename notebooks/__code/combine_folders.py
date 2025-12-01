@@ -85,7 +85,8 @@ class CombineFolders:
         else:
             display(
                 HTML(
-                    '<span style="font-size: 20px; color:red">Folders must contain the same number' " of images!</span>"
+                    '<span style="font-size: 20px; color:red">Folders must contain the same number'
+                    " of images!</span>"
                 )
             )
 
@@ -147,7 +148,9 @@ class CombineFolders:
         list_format_to_check = ["tif*", "fits", "txt"]
         full_list_files_dict = {}
         for _format in list_format_to_check:
-            full_list_files_dict[_format] = self.__get_list_files(file_format=_format, folder=folder)["list_files"]
+            full_list_files_dict[_format] = self.__get_list_files(
+                file_format=_format, folder=folder
+            )["list_files"]
         return full_list_files_dict
 
     def check_number_of_files(self, list_folders):
@@ -161,7 +164,9 @@ class CombineFolders:
         nbr_files = {}
         file_format = ""
         for _folder in self.list_folders:
-            _local_list_files_dict = self.__get_list_files(file_format=file_format, folder=_folder)
+            _local_list_files_dict = self.__get_list_files(
+                file_format=file_format, folder=_folder
+            )
 
             _list_files = _local_list_files_dict["list_files"]
             _list_files.sort()
@@ -200,9 +205,19 @@ class CombineFolders:
                     '15px; color:green">' + _format + "</span>"
                 )
             )
-            display(HTML('<span style="font-size: 15px; color:blue"> List of folders selected: </span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:blue"> List of folders selected: </span>'
+                )
+            )
             for _folder in self.list_folders:
-                display(HTML('<span style="font-size: 15px; color:green"> * ' + _folder + "</span>"))
+                display(
+                    HTML(
+                        '<span style="font-size: 15px; color:green"> * '
+                        + _folder
+                        + "</span>"
+                    )
+                )
 
             self.nbr_files_in_each_folder = list(values)[0]
 
@@ -211,11 +226,15 @@ class CombineFolders:
     def how_many_folders(self):
         nbr_folder = len(self.global_list_of_folders_to_combine)
         radio_list_string = [str(_index) for _index in np.arange(2, nbr_folder + 1)]
-        self.bin_size = widgets.RadioButtons(options=radio_list_string, value=radio_list_string[0])
+        self.bin_size = widgets.RadioButtons(
+            options=radio_list_string, value=radio_list_string[0]
+        )
         display(self.bin_size)
 
     def how_to_combine(self):
-        self.combine_method = widgets.RadioButtons(options=["add", "mean", "median"], value="add")
+        self.combine_method = widgets.RadioButtons(
+            options=["add", "mean", "median"], value="add"
+        )
         display(self.combine_method)
 
     def extra_files(self):
@@ -263,7 +282,9 @@ class CombineFolders:
         elif merging_algo == "median":
             algorithm = self.__median
         else:
-            raise NotImplementedError(f"Algorithm {merging_algo} has not been implemented yet!")
+            raise NotImplementedError(
+                f"Algorithm {merging_algo} has not been implemented yet!"
+            )
 
         logging.info(f"-> merging algorithm: {algorithm}")
 
@@ -276,14 +297,18 @@ class CombineFolders:
         self.merginc_dict_debugging = merging_dict
 
         # create final list of files to merge
-        final_dict_of_files_to_merge = self.__create_dict_of_files_to_merge(merging_dict)
+        final_dict_of_files_to_merge = self.__create_dict_of_files_to_merge(
+            merging_dict
+        )
         self.final_dict_of_files_to_merge_debugging = final_dict_of_files_to_merge
 
         final_nbr_folders = len(merging_dict.keys())
         folder_level_ui = widgets.HBox(
             [
                 widgets.Label("Folder Progress:", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=final_nbr_folders, layout=widgets.Layout(width="50%")),
+                widgets.IntProgress(
+                    max=final_nbr_folders, layout=widgets.Layout(width="50%")
+                ),
             ]
         )
         display(folder_level_ui)
@@ -293,17 +318,25 @@ class CombineFolders:
         file_level_ui = widgets.HBox(
             [
                 widgets.Label("File Progress:", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=nbr_files_to_merge, layout=widgets.Layout(width="50%")),
+                widgets.IntProgress(
+                    max=nbr_files_to_merge, layout=widgets.Layout(width="50%")
+                ),
             ]
         )
         display(file_level_ui)
         w2 = file_level_ui.children[1]
 
-        for _index_final_folder, _final_folder in enumerate(final_dict_of_files_to_merge.keys()):
-            file_handler.make_or_reset_folder(os.path.join(output_folder, _final_folder))
+        for _index_final_folder, _final_folder in enumerate(
+            final_dict_of_files_to_merge.keys()
+        ):
+            file_handler.make_or_reset_folder(
+                os.path.join(output_folder, _final_folder)
+            )
 
             list_files_to_merge = final_dict_of_files_to_merge[_final_folder]
-            for _index_files_to_merge, _files_to_merge in enumerate(list_files_to_merge):
+            for _index_files_to_merge, _files_to_merge in enumerate(
+                list_files_to_merge
+            ):
                 _files_to_merge = [_file for _file in _files_to_merge]
                 self.files_to_merge_for_testing = _files_to_merge
                 o_load = Normalization()
@@ -313,7 +346,9 @@ class CombineFolders:
                 self.combined_data_for_testing = combined_data
 
                 _base_name_file = os.path.basename(_files_to_merge[0])
-                output_file_name = os.path.join(output_folder, _final_folder, _base_name_file)
+                output_file_name = os.path.join(
+                    output_folder, _final_folder, _base_name_file
+                )
                 logging.info(f"_final_folder: {_final_folder}")
                 logging.info(f"_base_name_file: {_base_name_file}")
 
@@ -321,7 +356,9 @@ class CombineFolders:
                 w2.value = _index_files_to_merge + 1
 
             if self.keep_extra_files.value == "yes":
-                self.move_extra_files_to_output_folder(output_folder=os.path.join(output_folder, _final_folder))
+                self.move_extra_files_to_output_folder(
+                    output_folder=os.path.join(output_folder, _final_folder)
+                )
 
             w1.value = _index_final_folder + 1
 
@@ -348,7 +385,9 @@ class CombineFolders:
             _tmp_list_files_to_merge = []
             for _folder in _list_folders_to_add:
                 _tmp_list_files_to_merge.append(list_files_dict[_folder])
-            final_dict_of_files_to_merge[_key] = list(zip(*_tmp_list_files_to_merge, strict=False))
+            final_dict_of_files_to_merge[_key] = list(
+                zip(*_tmp_list_files_to_merge, strict=False)
+            )
 
         return final_dict_of_files_to_merge
 

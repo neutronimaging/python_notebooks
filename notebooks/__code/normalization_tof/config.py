@@ -13,6 +13,7 @@ class DEBUG_DATA:
     container_roi = [150, 150, 40, 40]
     detector_type = DetectorType.tpx3  # timepix1 or timepix3
 
+
 timepix1_config = {
     "chip1": {"xoffset": 1, "yoffset": 1, "description": "top right chip"},
     "chip2": {"xoffset": 0, "yoffset": 0, "description": "top left and reference chip"},

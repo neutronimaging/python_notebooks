@@ -28,7 +28,9 @@ if devel:
     def get_js():
         import os
 
-        js = open(os.path.join(os.path.dirname(__file__), "..", "js", "src", "example.js")).read()
+        js = open(
+            os.path.join(os.path.dirname(__file__), "..", "js", "src", "example.js")
+        ).read()
         return js.decode("UTF-8")
 
     def run_js():

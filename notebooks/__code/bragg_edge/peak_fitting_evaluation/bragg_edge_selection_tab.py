@@ -17,7 +17,9 @@ class BraggEdgeSelectionTab:
             return
 
         roi_id = self.parent.roi_id
-        region = roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
+        region = roi_id.getArraySlice(
+            self.parent.final_image, self.parent.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
@@ -54,7 +56,9 @@ class BraggEdgeSelectionTab:
         height_requested = int(str(self.parent.ui.profile_of_bin_size_height.text()))
 
         # retrieve x0, y0, width and height of full selection
-        region = self.parent.roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
+        region = self.parent.roi_id.getArraySlice(
+            self.parent.final_image, self.parent.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         y0 = region[0][1].start
         # [x0, y0] = self.parentselection_x0y0
@@ -121,12 +125,21 @@ class BraggEdgeSelectionTab:
             self.parent.ui.profile.setLabel("left", "Mean transmission")
 
             # vertical line showing peak to fit
-            bragg_edge_range = [x_axis[self.parent.bragg_edge_range[0]], x_axis[self.parent.bragg_edge_range[1]]]
+            bragg_edge_range = [
+                x_axis[self.parent.bragg_edge_range[0]],
+                x_axis[self.parent.bragg_edge_range[1]],
+            ]
 
             self.parent.bragg_edge_range_ui = pg.LinearRegionItem(
-                values=bragg_edge_range, orientation="vertical", brush=None, movable=True, bounds=None
+                values=bragg_edge_range,
+                orientation="vertical",
+                brush=None,
+                movable=True,
+                bounds=None,
             )
-            self.parent.bragg_edge_range_ui.sigRegionChanged.connect(self.parent.bragg_edge_range_changed)
+            self.parent.bragg_edge_range_ui.sigRegionChanged.connect(
+                self.parent.bragg_edge_range_changed
+            )
             self.parent.bragg_edge_range_ui.setZValue(-10)
             self.parent.ui.profile.addItem(self.parent.bragg_edge_range_ui)
 
@@ -135,7 +148,9 @@ class BraggEdgeSelectionTab:
             return
 
         try:
-            region = self.parent.roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
+            region = self.parent.roi_id.getArraySlice(
+                self.parent.final_image, self.parent.ui.image_view.imageItem
+            )
         except TypeError:
             return
 
@@ -149,7 +164,9 @@ class BraggEdgeSelectionTab:
         _pen = QtGui.QPen()
         _pen.setColor(self.parent.roi_settings["color"])
         _pen.setWidthF(self.parent.roi_settings["width"])
-        self.parent.roi_id = pg.ROI([x0, y0], [new_value, new_value], pen=_pen, scaleSnap=True)
+        self.parent.roi_id = pg.ROI(
+            [x0, y0], [new_value, new_value], pen=_pen, scaleSnap=True
+        )
 
         self.parent.ui.image_view.addItem(self.parent.roi_id)
         self.parent.roi_id.sigRegionChanged.connect(self.parent.roi_moved)
@@ -177,7 +194,11 @@ class BraggEdgeSelectionTab:
         self.parent.ui.profile.plot(
             x_axis,
             y_axis,
-            pen=(self.parent.shrinking_roi_rgb[0], self.parent.shrinking_roi_rgb[1], self.parent.shrinking_roi_rgb[2]),
+            pen=(
+                self.parent.shrinking_roi_rgb[0],
+                self.parent.shrinking_roi_rgb[1],
+                self.parent.shrinking_roi_rgb[2],
+            ),
         )
         self.parent.ui.profile.setLabel("bottom", x_axis_label)
         self.parent.ui.profile.setLabel("left", "Mean transmission")
@@ -187,7 +208,11 @@ class BraggEdgeSelectionTab:
         self.parent.ui.profile.plot(
             x_axis,
             y_axis,
-            pen=(self.parent.selection_roi_rgb[0], self.parent.selection_roi_rgb[1], self.parent.selection_roi_rgb[2]),
+            pen=(
+                self.parent.selection_roi_rgb[0],
+                self.parent.selection_roi_rgb[1],
+                self.parent.selection_roi_rgb[2],
+            ),
         )
 
     def profile_of_bin_size_slider_changed(self, new_value):
@@ -236,7 +261,9 @@ class BraggEdgeSelectionTab:
         _pen.setColor(self.parent.shrinking_roi_settings["color"])
         _pen.setWidthF(self.parent.shrinking_roi_settings["width"])
 
-        self.parent.shrinking_roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True, movable=False)
+        self.parent.shrinking_roi_id = pg.ROI(
+            [x0, y0], [width, height], pen=_pen, scaleSnap=True, movable=False
+        )
         self.parent.ui.image_view.addItem(self.parent.shrinking_roi_id)
 
     def update_profile_of_bin_slider_widget(self):
@@ -250,7 +277,9 @@ class BraggEdgeSelectionTab:
                 "height": fitting_input_dictionary["rois"][_key]["height"],
             }
         self.parent.dict_rois_imported = dict_rois_imported
-        self.parent.ui.profile_of_bin_size_slider.setRange(0, len(dict_rois_imported) - 1)
+        self.parent.ui.profile_of_bin_size_slider.setRange(
+            0, len(dict_rois_imported) - 1
+        )
         # self.parent.ui.profile_of_bin_size_slider.setMinimum(0)
         # self.parent.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
         self.parent.ui.profile_of_bin_size_slider.setSingleStep(1)

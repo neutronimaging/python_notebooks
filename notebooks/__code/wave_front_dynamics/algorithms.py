@@ -59,7 +59,11 @@ class Algorithms:
     progress_bar_ui = None  # progress bar ui
 
     def __init__(
-        self, list_data=None, ignore_first_dataset=True, algorithm_selected="sliding_average", progress_bar_ui=None
+        self,
+        list_data=None,
+        ignore_first_dataset=True,
+        algorithm_selected="sliding_average",
+        progress_bar_ui=None,
     ):
         self.list_data = list_data
         self.ignore_first_dataset = ignore_first_dataset

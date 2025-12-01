@@ -18,7 +18,9 @@ from __code.registration.initialization import Initialization
 from __code.registration.manual import ManualLauncher
 from __code.registration.marker_handler import MarkerHandler
 from __code.registration.registration_auto import RegistrationAuto
-from __code.registration.registration_auto_confirmation import RegistrationAutoConfirmationLauncher
+from __code.registration.registration_auto_confirmation import (
+    RegistrationAutoConfirmationLauncher,
+)
 from __code.registration.registration_marker import RegistrationMarkersLauncher
 from __code.registration.registration_profile import RegistrationProfileLauncher
 from __code.registration.table_handler import TableHandler
@@ -85,7 +87,8 @@ class RegistrationUi(QMainWindow):
             )
         )
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_registration.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_registration.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
@@ -100,7 +103,9 @@ class RegistrationUi(QMainWindow):
         self.data_dict_raw = copy.deepcopy(data_dict)
         self.reference_image = self.data_dict["data"][self.reference_image_index]
         self.working_dir = os.path.dirname(self.data_dict["file_name"][0])
-        self.reference_image_short_name = str(os.path.basename(self.data_dict["file_name"][0]))
+        self.reference_image_short_name = str(
+            os.path.basename(self.data_dict["file_name"][0])
+        )
 
         # initialization
         o_init = Initialization(parent=self)
@@ -116,7 +121,11 @@ class RegistrationUi(QMainWindow):
         )  # because by default first row = reference selected
 
     def filter_checkbox_clicked(self):
-        list_ui = [self.ui.filter_column_name_comboBox, self.ui.filter_logic_comboBox, self.ui.filter_value]
+        list_ui = [
+            self.ui.filter_column_name_comboBox,
+            self.ui.filter_logic_comboBox,
+            self.ui.filter_value,
+        ]
         for _ui in list_ui:
             _ui.setEnabled(self.ui.filter_checkBox.isChecked())
 
@@ -230,7 +239,9 @@ class RegistrationUi(QMainWindow):
         self.ui.tableWidget.blockSignals(False)
 
     def help_button_clicked(self):
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/tutorial/notebooks/registration/")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/tutorial/notebooks/registration/"
+        )
 
     def ok_button_clicked(self):
         self.close()
@@ -258,7 +269,11 @@ class RegistrationUi(QMainWindow):
     def selection_all_clicked(self):
         _is_checked = self.ui.selection_all.isChecked()
 
-        list_widgets = [self.ui.top_row_label, self.ui.bottom_row_label, self.ui.opacity_selection_slider]
+        list_widgets = [
+            self.ui.top_row_label,
+            self.ui.bottom_row_label,
+            self.ui.opacity_selection_slider,
+        ]
         for _widget in list_widgets:
             _widget.setEnabled(not _is_checked)
         self.display_image()
@@ -294,7 +309,9 @@ class RegistrationUi(QMainWindow):
         )
 
     def auto_registration_button_clicked(self):
-        o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(parent=self)
+        o_registration_auto_confirmed = RegistrationAutoConfirmationLauncher(
+            parent=self
+        )
 
     def markers_registration_button_clicked(self):
         o_markers_registration = RegistrationMarkersLauncher(parent=self)
@@ -320,7 +337,9 @@ class RegistrationUi(QMainWindow):
 
     def start_auto_registration(self):
         o_auto_register = RegistrationAuto(
-            parent=self, reference_image=self.reference_image, floating_images=self.data_dict["data"]
+            parent=self,
+            reference_image=self.reference_image,
+            floating_images=self.data_dict["data"],
         )
         o_auto_register.auto_align()
 

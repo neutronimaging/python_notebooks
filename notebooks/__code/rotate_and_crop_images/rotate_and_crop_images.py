@@ -69,7 +69,8 @@ class RotateAndCropImages(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
 
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_rotate_and_crop.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_rotate_and_crop.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.init_statusbar()
@@ -150,7 +151,9 @@ class RotateAndCropImages(QMainWindow):
             file_index = self.ui.file_index_slider.value()
 
         if self.data_dict[file_index][DataDictKeys.data] is None:
-            data = RotateAndCropImages.load_data(filename=self.data_dict[file_index][DataDictKeys.filename])
+            data = RotateAndCropImages.load_data(
+                filename=self.data_dict[file_index][DataDictKeys.filename]
+            )
             self.data_dict[file_index][DataDictKeys.data] = data
 
         else:
@@ -222,12 +225,20 @@ class RotateAndCropImages(QMainWindow):
         line_color = (255, 0, 0, 155, 0.2)
         lines = np.array(
             [line_color for n in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
 
         line_view_binning = pg.GraphItem()
         self.ui.image_view.addItem(line_view_binning)
-        line_view_binning.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+        line_view_binning.setData(
+            pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False
+        )
 
         self.line_view_binning = line_view_binning
 
@@ -244,7 +255,9 @@ class RotateAndCropImages(QMainWindow):
         array. If it's already there, just return the array
         """
         if self.data_dict[file_index][DataDictKeys.data] is None:
-            data = RotateAndCropImages.load_data(self.data_dict[file_index][DataDictKeys.filename])
+            data = RotateAndCropImages.load_data(
+                self.data_dict[file_index][DataDictKeys.filename]
+            )
             self.data_dict[file_index][DataDictKeys.data] = data
             return data
         else:
@@ -267,7 +280,9 @@ class RotateAndCropImages(QMainWindow):
     def get_crop_region(self):
         data = self.get_selected_image()
         # data = self.live_data
-        region = self.roi.getArraySlice(np.transpose(data), self.ui.image_view.imageItem)
+        region = self.roi.getArraySlice(
+            np.transpose(data), self.ui.image_view.imageItem
+        )
 
         x0 = region[0][0].start
         x1 = region[0][0].stop - 1
@@ -295,7 +310,9 @@ class RotateAndCropImages(QMainWindow):
                 rotated_data = data[y0:y1, x0:x1]
 
             self.rotated_data_dict[file_index] = {
-                DataDictKeys.filename: self.data_dict[file_index][DataDictKeys.filename],
+                DataDictKeys.filename: self.data_dict[file_index][
+                    DataDictKeys.filename
+                ],
                 DataDictKeys.data: rotated_data,
             }
 
@@ -338,7 +355,10 @@ class Export:
         )
 
         self.output_folder_ui = fileselector.FileSelectorPanel(
-            instruction="Select Output Folder ...", start_dir=self.working_dir, type="directory", next=self.export
+            instruction="Select Output Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
+            next=self.export,
         )
 
         self.output_folder_ui.show()
@@ -369,4 +389,10 @@ class Export:
         w.close()
 
         display(HTML(""))
-        display(HTML('<span style="font-size: 20px; color:blue">Files created in ' + full_output_folder + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Files created in '
+                + full_output_folder
+                + "</span>"
+            )
+        )

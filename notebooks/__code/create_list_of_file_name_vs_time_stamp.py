@@ -20,7 +20,9 @@ class CreateListFileName:
 
     def select_image_folder(self):
         self.folder_ui = fileselector.FileSelectorPanel(
-            instruction="Select Raw Image Folder ...", start_dir=self.working_dir, type="directory"
+            instruction="Select Raw Image Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
         )
         self.folder_ui.show()
 
@@ -32,7 +34,11 @@ class CreateListFileName:
 
     def retrieve_time_stamp(self):
         self.image_folder = self.folder_ui.selected
-        [list_files, ext] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=self.image_folder)
+        [list_files, ext] = (
+            file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+                folder=self.image_folder
+            )
+        )
         self.list_files = list_files
 
         if ext.lower() in [".tiff", ".tif"]:
@@ -44,8 +50,15 @@ class CreateListFileName:
 
         box = widgets.HBox(
             [
-                widgets.Label("Retrieving Time Stamp", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(min=0, max=len(list_files), value=0, layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Retrieving Time Stamp", layout=widgets.Layout(width="20%")
+                ),
+                widgets.IntProgress(
+                    min=0,
+                    max=len(list_files),
+                    value=0,
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
         progress_bar = box.children[1]
@@ -86,25 +99,48 @@ class CreateListFileName:
             ax = plt.subplot(gs[0, 0])
             im = ax.imshow(self.images_array[index], interpolation="nearest")
             plt.title(f"image index {index}")
-            plt.text(text_x, text_y, f"{pre_text} {self.list_time_offset[index]:.2f}{post_text}", fontdict=font)
+            plt.text(
+                text_x,
+                text_y,
+                f"{pre_text} {self.list_time_offset[index]:.2f}{post_text}",
+                fontdict=font,
+            )
             fig.colorbar(im)
             plt.show()
 
-            return {"text_x": text_x, "text_y": text_y, "pre_text": pre_text, "post_text": post_text, "color": color}
+            return {
+                "text_x": text_x,
+                "text_y": text_y,
+                "pre_text": pre_text,
+                "post_text": post_text,
+                "color": color,
+            }
 
         self.preview = interact(
             display_selected_image,
-            index=widgets.IntSlider(min=0, max=len(self.list_files), continuous_update=False),
+            index=widgets.IntSlider(
+                min=0, max=len(self.list_files), continuous_update=False
+            ),
             text_x=widgets.IntSlider(
-                min=0, max=width, value=text_x, description="Text x_offset", continuous_update=False
+                min=0,
+                max=width,
+                value=text_x,
+                description="Text x_offset",
+                continuous_update=False,
             ),
             text_y=widgets.IntSlider(
-                min=0, max=height, value=text_y, description="Text y_offset", continuous_upadte=False
+                min=0,
+                max=height,
+                value=text_y,
+                description="Text y_offset",
+                continuous_upadte=False,
             ),
             pre_text=widgets.Text(value="Time Offset", description="Pre text"),
             post_text=widgets.Text(value="(s)", description="Post text"),
             color=widgets.RadioButtons(
-                options=["red", "blue", "white", "black", "yellow"], value="red", description="Text Color"
+                options=["red", "blue", "white", "black", "yellow"],
+                value="red",
+                description="Text Color",
             ),
         )
 
@@ -138,7 +174,9 @@ class CreateListFileName:
             return
 
         input_folder_basename = os.path.basename(os.path.abspath(self.image_folder))
-        output_file = os.path.abspath(os.path.join(output_folder, input_folder_basename + "_timestamp_infos.txt"))
+        output_file = os.path.abspath(
+            os.path.join(output_folder, input_folder_basename + "_timestamp_infos.txt")
+        )
         if os.path.exists(output_file):
             os.remove(output_file)
 
@@ -156,7 +194,9 @@ class CreateListFileName:
         with open(output_file, "w") as f:
             f.write(text)
 
-        display(HTML("<span>File Created: " + os.path.basename(output_file) + "</span>"))
+        display(
+            HTML("<span>File Created: " + os.path.basename(output_file) + "</span>")
+        )
 
     def select_export_folder(self):
         ipts_folder = self.working_dir

@@ -1,5 +1,12 @@
 import numpy as np
-from qtpy.QtWidgets import QCheckBox, QHBoxLayout, QLabel, QLineEdit, QVBoxLayout, QWidget
+from qtpy.QtWidgets import (
+    QCheckBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 from __code.table_handler import TableHandler
 
@@ -29,14 +36,18 @@ class GuiUtility:
         toolbox_index = toolbox_ui.currentIndex()
         return toolbox_ui.itemText(toolbox_index)
 
-    def update_kropff_high_lambda_table_ui(self, row=0, a0=None, b0=None, a0_error=None, b0_error=None):
+    def update_kropff_high_lambda_table_ui(
+        self, row=0, a0=None, b0=None, a0_error=None, b0_error=None
+    ):
         table_ui = self.parent.ui.high_lda_tableWidget
         table_ui.item(row, 1).setText(self.cell_str_format.format(a0))
         table_ui.item(row, 2).setText(self.cell_str_format.format(b0))
         table_ui.item(row, 3).setText(self.cell_str_format.format(a0_error))
         table_ui.item(row, 4).setText(self.cell_str_format.format(b0_error))
 
-    def update_kropff_low_lambda_table_ui(self, row=0, ahkl=None, bhkl=None, ahkl_error=None, bhkl_error=None):
+    def update_kropff_low_lambda_table_ui(
+        self, row=0, ahkl=None, bhkl=None, ahkl_error=None, bhkl_error=None
+    ):
         table_ui = self.parent.ui.low_lda_tableWidget
         table_ui.item(row, 1).setText(self.cell_str_format.format(ahkl))
         table_ui.item(row, 2).setText(self.cell_str_format.format(bhkl))
@@ -44,7 +55,14 @@ class GuiUtility:
         table_ui.item(row, 4).setText(self.cell_str_format.format(bhkl_error))
 
     def update_kropff_bragg_edge_table_ui(
-        self, row=0, ldahkl=None, ldahkl_error=None, tau=None, tau_error=None, sigma=None, sigma_error=None
+        self,
+        row=0,
+        ldahkl=None,
+        ldahkl_error=None,
+        tau=None,
+        tau_error=None,
+        sigma=None,
+        sigma_error=None,
     ):
         ldahkl_error = np.nan if ldahkl_error is None else ldahkl_error
         tau_error = np.nan if tau_error is None else tau_error
@@ -80,11 +98,17 @@ class GuiUtility:
         """
         list_fit_parameters_radio_button = {
             "high": {
-                "ui": [self.parent.ui.kropff_a0_radioButton, self.parent.ui.kropff_b0_radioButton],
+                "ui": [
+                    self.parent.ui.kropff_a0_radioButton,
+                    self.parent.ui.kropff_b0_radioButton,
+                ],
                 "name": ["a0", "b0"],
             },
             "low": {
-                "ui": [self.parent.ui.kropff_ahkl_radioButton, self.parent.ui.kropff_bhkl_radioButton],
+                "ui": [
+                    self.parent.ui.kropff_ahkl_radioButton,
+                    self.parent.ui.kropff_bhkl_radioButton,
+                ],
                 "name": ["ahkl", "bhkl"],
             },
             "bragg_peak": {
@@ -97,7 +121,9 @@ class GuiUtility:
             },
         }
 
-        for _index, _ui in enumerate(list_fit_parameters_radio_button[fit_region]["ui"]):
+        for _index, _ui in enumerate(
+            list_fit_parameters_radio_button[fit_region]["ui"]
+        ):
             if _ui.isChecked():
                 return list_fit_parameters_radio_button[fit_region]["name"][_index]
 
@@ -132,7 +158,11 @@ class GuiUtility:
         for _row in np.arange(len(list_state)):
             self.parent.ui.march_dollase_user_input_table.insertRow(_row)
 
-            row_height = march_dollase_row_height[0] if _row == 0 else march_dollase_row_height["other"]
+            row_height = (
+                march_dollase_row_height[0]
+                if _row == 0
+                else march_dollase_row_height["other"]
+            )
             table_ui.setRowHeight(_row, row_height)
 
             for _col in np.arange(nbr_column):
@@ -144,7 +174,9 @@ class GuiUtility:
                 _checkbox = QCheckBox()
                 _checkbox.setChecked(_state_col)
                 _checkbox.stateChanged.connect(
-                    lambda state=0, row=_row, column=_col: self.parent.march_dollase_table_state_changed(
+                    lambda state=0,
+                    row=_row,
+                    column=_col: self.parent.march_dollase_table_state_changed(
                         state=state, row=row, column=column
                     )
                 )
@@ -161,7 +193,9 @@ class GuiUtility:
                     if (_col == 1) or (_col == 2):
                         _input = QLineEdit()
                         _input.returnPressed.connect(
-                            lambda column=_col: self.parent.march_dollase_table_init_value_changed(column=column)
+                            lambda column=_col: self.parent.march_dollase_table_init_value_changed(
+                                column=column
+                            )
                         )
                         _input.setText(str(initial_parameters[parameter_key]))
                         verti_layout.addWidget(_input)
@@ -170,7 +204,9 @@ class GuiUtility:
                     elif _col == 0:
                         _label = QLabel()
                         try:
-                            str_format = f"{float(initial_parameters[parameter_key]):0.6f}"
+                            str_format = (
+                                f"{float(initial_parameters[parameter_key]):0.6f}"
+                            )
                         except ValueError:
                             str_format = initial_parameters[parameter_key]
 

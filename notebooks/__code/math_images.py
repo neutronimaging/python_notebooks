@@ -17,18 +17,24 @@ class MathImages:
 
     def select_files(self):
         self.files_list_widget = fileselector.FileSelectorPanel(
-            instruction="select images to operate on", start_dir=self.working_dir, multiple=True
+            instruction="select images to operate on",
+            start_dir=self.working_dir,
+            multiple=True,
         )
         self.files_list_widget.show()
 
     def select_target_image(self):
         self.target_file = fileselector.FileSelectorPanel(
-            instruction="select images to use in operation", start_dir=self.working_dir, multiple=False
+            instruction="select images to use in operation",
+            start_dir=self.working_dir,
+            multiple=False,
         )
         self.target_file.show()
 
     def which_math(self):
-        self.math_method = widgets.RadioButtons(options=["substract", "add"], value="substract")
+        self.math_method = widgets.RadioButtons(
+            options=["substract", "add"], value="substract"
+        )
         display(self.math_method)
 
     def recap(self):
