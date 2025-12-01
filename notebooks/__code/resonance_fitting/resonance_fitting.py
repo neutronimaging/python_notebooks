@@ -181,7 +181,7 @@ class ResonanceFitting(NormalizationTof):
                     default_element_selected = _el_name
                     break
         else:
-            default_symbol_selected = "Hydrogen"
+            default_element_selected = "Hydrogen"
 
         display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element/isotopes to use:</span>"))
         self.list_elements_widget = widgets.Dropdown(
@@ -310,7 +310,7 @@ class ResonanceFitting(NormalizationTof):
         self.isotope_to_use_sheet.close()
         self.validate_isotope_button.close()
         self.isotope_sheet.close()
-        self.horizontal_box.close()
+        # self.horizontal_box.close()
 
         self.isotope_to_use_sheet = from_dataframe(self.df_to_use)
 
@@ -460,9 +460,14 @@ class ResonanceFitting(NormalizationTof):
     def _reformat_list_isotopes(self, list_isotopes):
         """
         to go from "155-Hf" to "Hf-155"
+        or skip it when it's not in that format
         """
         list_reformatted = []
         for _iso in list_isotopes:
+            if '-' not in _iso:
+                list_reformatted.append(_iso)
+                continue
+            
             parts = _iso.split('-')
             if len(parts) == 2:
                 reformatted = f"{parts[1]}-{parts[0]}"
