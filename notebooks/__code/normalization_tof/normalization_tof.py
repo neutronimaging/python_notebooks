@@ -285,7 +285,7 @@ class NormalizationTof:
         """))
 
     def _is_spectra_file_found_and_list(self, full_path):
-        list_files = glob.glob(os.path.join(full_path, "*_spectra.txt"))
+        list_files = glob.glob(os.path.join(full_path, "*_Spectra.txt"))
         if len(list_files) == 0:
             return False, None
         
