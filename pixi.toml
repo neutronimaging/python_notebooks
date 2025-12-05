@@ -34,6 +34,7 @@ jupyter = ">=1.1.1,<2"
 pleiades-neutron = ">=2.1.5,<3"
 ipysheet = ">=0.7.0,<0.8"
 python-dotenv = ">=1.2.1,<2"
+openssl = ">=3.6.0,<4"
 
 [pypi-dependencies]
 bem = ">=1.0.0, <2"
