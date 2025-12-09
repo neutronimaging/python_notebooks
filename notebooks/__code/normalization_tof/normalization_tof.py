@@ -872,6 +872,15 @@ class NormalizationTof:
 
         return all_nexus_files_found
 
+    def _on_remove_container_flag_change(self, change):
+        if change['new']:
+           # enable the widgets
+            disable_widgets = False
+        else:
+            # disable the widgets
+            disable_widgets = True
+        self.remove_container_options_flag.disabled = disable_widgets
+
     def settings(self):
 
         # check here that the user selected a folder for output
@@ -917,7 +926,27 @@ class NormalizationTof:
         self.remove_container_flag = widgets.Checkbox(description="Do you want to remove container signal?", 
                                                       value=False,
                                                       layout=widgets.Layout(width="600px"))
+        self.remove_container_flag.observe(self._on_remove_container_flag_change, names='value')
         display(self.remove_container_flag)
+
+        white_space = widgets.Label("\t\t",
+                                    layout=widgets.Layout(width="150px"))
+        self.remove_container_options_flag = widgets.RadioButtons(
+            options=[
+                "Select a ROI of the sample containing only the container signal",
+                "Use previously saved ROI containing only the container signal",
+            ],
+            description="",
+            disabled=True,
+            layout=widgets.Layout(width="500px"),
+        )
+        
+        hori_layout = widgets.HBox([white_space, 
+                                    self.remove_container_options_flag],
+                                  layout=widgets.Layout(align_items="center",
+                                                         width="100%"))
+        display(hori_layout)
+
         display(HTML("<hr>"))
 
         # normalization options
