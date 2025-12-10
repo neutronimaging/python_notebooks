@@ -4,6 +4,7 @@ import logging as notebook_logging
 from multiprocessing.util import debug
 import os
 from pathlib import Path
+from arrow import get
 import numpy as np
 import pandas as pd
 
@@ -19,6 +20,8 @@ from __code.normalization_tof import Roi
 from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
 from __code.normalization_tof import DataType
+from __code._utilities.time import get_current_time_in_special_file_name_format
+from __code._utilities.json import save_json
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
@@ -73,6 +76,8 @@ class NormalizationTof:
 
     default_roi = Roi(left=50, top=50, width=200, height=200)
     default_container_roi = Roi(left=150, top=150, width=40, height=40)
+    we_need_to_automatically_save_the_container_roi = False
+    rect_container = None
 
     def initialize(self):
         LOG_PATH = "/SNS/VENUS/shared/log/"
@@ -138,6 +143,8 @@ class NormalizationTof:
             disabled=False,
         )
         display(self.detector_type_widget)
+        
+        
 
     def reset_sample_dicts(self):
         self.dict_sample = {}
@@ -1063,6 +1070,17 @@ class NormalizationTof:
         integrated_data = load_data_using_multithreading(list_tiff, combine_tof=True)
         return integrated_data
 
+    def select_container_from_file(self):
+        # select container ROI from a previously saved file
+        self.roi_container_file = MyFileSelectorPanel(
+            instruction="Select ROI container file",
+            start_dir=self.output_dir,
+            filters={"ROI container files": ["*_roi_container.json"]},
+            type='file',
+            multiple=False,
+        )
+        self.roi_container_file.show()
+
     def select_container(self):
 
        # load first sample and display integrated image to select ROI
@@ -1071,68 +1089,81 @@ class NormalizationTof:
             return
 
         display(HTML("<span style='font-size: 16px; color:red'>Select ROI containing only the container!</span>"))
+        logging.info(f"Selecting ROI containing only the container...")
 
         if self.integrated_data is None:
             self.integrated_data = self.get_integrated_data(self.dict_sample)
 
         integrated_data = self.integrated_data
 
-        default_left = self.default_roi.left
-        default_top = self.default_roi.top
-        default_width = self.default_roi.width
-        default_height = self.default_roi.height
+        default_left: int = self.default_roi.left
+        default_top: int = self.default_roi.top
+        default_width: int = self.default_roi.width
+        default_height: int = self.default_roi.height
 
-        def container_roi_selection(vmin=0, vmax=np.max(integrated_data), left=0, top=0, width=50, height=50):
-            fig, ax = plt.subplots(figsize=(10, 10))
-            ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
-            rect = patches.Rectangle((left, top), width, height, linewidth=1, edgecolor='r', facecolor='none')
-            ax.add_patch(rect)
-            ax.set_title(f"Select ROI containing only the container")
+        vmin = 0
+        vmax = int(np.max(integrated_data))
+        self.vrange_container = [vmin, vmax]
+               
+        self.fig_container, self.ax_container = plt.subplots(figsize=(10, 10), nrows=1, ncols=1, num="Container ROI Selection")
+        im = self.ax_container.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
+        self.cbar = plt.colorbar(im, ax=self.ax_container, orientation="vertical", label="Intensity", shrink=0.5)
+        
+        # self.rect_container = patches.Rectangle((default_left, default_top), default_width, default_height, linewidth=1, edgecolor='r', facecolor='none')
+        # self.ax_container.add_patch(self.rect_container)
+        # self.ax_container.set_title(f"Select ROI containing only the container")
+    
+        def container_roi_selection(vrange, left_right, top_bottom):
+            
+
+            if self.vrange_container != vrange:
+                self.vrange_container = vrange
+                self.cbar.remove()
+            self.ax_container.clear()
+            
+            im = self.ax_container.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vrange[0], vmax=vrange[1])
+            self.cbar = plt.colorbar(im, ax=self.ax_container, orientation="vertical", label="Intensity", shrink=0.5)
             plt.show()
-            logging.info(f"Selected ROI - left: {left}, top: {top}, width: {width}, height: {height}")
-            self.container_roi = Roi(left=left, top=top, width=width, height=height)
+            
+            self.fig_container.canvas.draw_idle()
+            # # # else:
+                
+            logging.info("Updating rectangle ...")
+            if self.rect_container:
+                self.rect_container.remove()
+        
+            self.rect_container = patches.Rectangle((left_right[0], top_bottom[0]), left_right[1]-left_right[0], top_bottom[1]-top_bottom[0], linewidth=1, edgecolor='r', facecolor='none')
+            self.ax_container.add_patch(self.rect_container)
+            self.ax_container.set_title(f"Select ROI containing only the container")
+            
+            # plt.tight_layout()
+                
+            # # logging.info(f"Selected ROI - left: {left_right[0]}, top: {top_bottom[0]}, width: {left_right[1]-left_right[0]}, height: {top_bottom[1]-top_bottom[0]}")
+            # self.container_roi = Roi(left=left_right[0], top=top_bottom[0], width=left_right[1]-left_right[0], height=top_bottom[1]-top_bottom[0])
 
         widgets_width = "800px"
-        interactive_plot = interactive(
+        self.interactive_plot = interactive(
             container_roi_selection,
-            vmin=widgets.IntSlider(min=0, 
-                                max=int(np.max(integrated_data)), 
-                                step=1, 
-                                value=0, 
-                                description="vmin", 
-                                layout=widgets.Layout(width=widgets_width)),
-            vmax=widgets.IntSlider(min=0, 
-                                max=int(np.max(integrated_data)), 
-                                step=1, 
-                                value=int(np.max(integrated_data)), 
-                                description="vmax", 
-                                layout=widgets.Layout(width=widgets_width)),
-            left=widgets.IntSlider(min=0, 
+            vrange = widgets.IntRangeSlider(min=0, 
+                                            max=int(np.max(integrated_data)), 
+                                            step=1, 
+                                            value=[0, int(np.max(integrated_data))], 
+                                            description="vrange", 
+                                            layout=widgets.Layout(width=widgets_width)),
+            left_right = widgets.IntRangeSlider(min=0, 
                                 max=integrated_data.shape[1]-1, 
                                 step=1, 
-                                value=default_left, 
-                                description="left", 
+                                value=[default_left, default_left+default_width],
+                                description="left_right",
                                 layout=widgets.Layout(width=widgets_width)),
-            top=widgets.IntSlider(min=0, 
-                                max=integrated_data.shape[0]-1, 
-                                step=1, 
-                                value=default_top, 
-                                description="top", 
-                                layout=widgets.Layout(width=widgets_width)),
-            width=widgets.IntSlider(min=1, 
-                                    max=integrated_data.shape[1], 
-                                    step=1, 
-                                    value=default_width, 
-                                    description="width", 
-                                    layout=widgets.Layout(width=widgets_width)),
-            height=widgets.IntSlider(min=1, 
-                                    max=integrated_data.shape[0], 
-                                    step=1, 
-                                    value=default_height, 
-                                    description="height", 
-                                    layout=widgets.Layout(width=widgets_width)),
+            top_bottom = widgets.IntRangeSlider(min=0,
+                                               max=integrated_data.shape[0]-1,
+                                               step=1,
+                                               value=[default_top, default_top+default_height],
+                                               description="top_bottom",
+                                               layout=widgets.Layout(width=widgets_width)),
         )
-        display(interactive_plot)
+        display(self.interactive_plot)
 
     def select_roi(self):
 
@@ -1158,7 +1189,16 @@ class NormalizationTof:
         self.roi = Roi(left=default_left, top=default_top,
                        width=default_width, height=default_height)
         
-        def roi_selection(vmin=0, vmax=np.max(integrated_data), left=0, top=0, width=50, height=50):
+        def roi_selection(vrange, left_right, top_bottom):
+            
+            left, right = left_right
+            width = right - left
+            
+            top, bottom = top_bottom
+            height = bottom - top
+            
+            vmin, vmax = vrange
+            
             fig, ax = plt.subplots(figsize=(10, 10))
             ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
             rect = patches.Rectangle((left, top), width, height, linewidth=1, edgecolor='r', facecolor='none')
@@ -1171,43 +1211,26 @@ class NormalizationTof:
         widgets_width = "800px"
         interactive_plot = interactive(
             roi_selection,
-            vmin=widgets.IntSlider(min=0, 
-                                   max=int(np.max(integrated_data)), 
-                                   step=1, 
-                                   value=0, 
-                                   description="vmin", 
-                                   layout=widgets.Layout(width=widgets_width)),
-            vmax=widgets.IntSlider(min=0, 
-                                   max=int(np.max(integrated_data)), 
-                                   step=1, 
-                                   value=int(np.max(integrated_data)), 
-                                   description="vmax", 
-                                   layout=widgets.Layout(width=widgets_width)),
-            left=widgets.IntSlider(min=0, 
-                                   max=integrated_data.shape[1]-1, 
-                                   step=1, 
-                                   value=default_left, 
-                                   description="left", 
-                                   layout=widgets.Layout(width=widgets_width)),
-            top=widgets.IntSlider(min=0, 
-                                  max=integrated_data.shape[0]-1, 
-                                  step=1, 
-                                  value=default_top, 
-                                  description="top", 
-                                  layout=widgets.Layout(width=widgets_width)),
-            width=widgets.IntSlider(min=1, 
-                                    max=integrated_data.shape[1], 
-                                    step=1, 
-                                    value=default_width, 
-                                    description="width", 
-                                    layout=widgets.Layout(width=widgets_width)),
-            height=widgets.IntSlider(min=1, 
-                                     max=integrated_data.shape[0], 
-                                     step=1, 
-                                     value=default_height, 
-                                     description="height", 
-                                     layout=widgets.Layout(width=widgets_width)),
+            vrange = widgets.IntRangeSlider(min=0, 
+                                            max=int(np.max(integrated_data)), 
+                                            step=1, 
+                                            value=[0, int(np.max(integrated_data))], 
+                                            description="vrange", 
+                                            layout=widgets.Layout(width=widgets_width)),
+            left_right=widgets.IntRangeSlider(min=0, 
+                                              max=integrated_data.shape[1]-1, 
+                                              step=1, 
+                                              value=[default_left, default_left+default_width],
+                                              description="left_right",
+                                              layout=widgets.Layout(width=widgets_width)),
+            top_bottom=widgets.IntRangeSlider(min=0,
+                                              max=integrated_data.shape[0]-1,
+                                              step=1,
+                                              value=[default_top, default_top+default_height],
+                                              description="top_bottom",
+                                              layout=widgets.Layout(width=widgets_width)),
         )
+            
         display(interactive_plot)
 
     def post_settings(self):
@@ -1222,7 +1245,13 @@ class NormalizationTof:
             if self.full_spectrum_roi_flag.value:
                 display(HTML("<hr>")) # to improve readability
 
-            self.select_container()
+            if self.remove_container_options_flag.value == "Use previously saved ROI containing only the container signal":
+                self.select_container_from_file()
+            
+            else:
+                self.select_container()
+                self.we_need_to_automatically_save_the_container_roi = True
+            
             at_least_one_option = True
 
         if not at_least_one_option:
@@ -1328,15 +1357,23 @@ class NormalizationTof:
 
         display(vertical_layout)
 
-        if not (self.spectra_array is None):
+        if not (self.spectra_array is None) or (self.we_need_to_automatically_save_the_container_roi):
             display(HTML("<span style='font-size: 16px; color:red'>Others</span>"))
+            
+        if self.spectra_array is None:
             self.export_spectra_file = widgets.Checkbox(
                 description="Export spectra file used for normalization", 
                 layout=widgets.Layout(width="100%"), 
                 value=True)
             display(self.export_spectra_file)
             
-
+        if self.we_need_to_automatically_save_the_container_roi:
+            self.export_container_roi = widgets.Checkbox(
+                description="Export container ROI file used for normalization", 
+                layout=widgets.Layout(width="100%"), 
+                value=True)
+            display(self.export_container_roi)
+            
     def check_folder_is_valid(self, full_path):
         list_tiff = glob.glob(os.path.join(full_path, "*.tif*"))
         if list_tiff:
@@ -1481,7 +1518,20 @@ class NormalizationTof:
         
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         # display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
-
+        
+        # if we created a container roi and chose to save it, do it now
+        current_date = get_current_time_in_special_file_name_format()
+        if self.we_need_to_automatically_save_the_container_roi and self.export_container_roi.value:
+            container_roi_file = Path(output_folder) / Path(f"{current_date}_roi_container.json")
+            container_roi_dict = {'left': self.container_roi.left,
+                                  'top': self.container_roi.top,
+                                  'width': self.container_roi.width,
+                                  'height': self.container_roi.height}
+            
+            save_json(container_roi_file, container_roi_dict)
+            logging.info(f"Container ROI saved to file: {container_roi_file}")
+            display(HTML(f"<span style='color:blue'>Container ROI saved to file: {container_roi_file}</span>"))
+        
     def profile_of_roi(self):
         normalized_data = self.normalized_dict.data
 
@@ -1524,3 +1574,14 @@ class NormalizationTof:
                                       function=widgets.Dropdown(options=["mean", "median"], description="Function:", layout=widgets.Layout(width="200px")),
         )
         display(_plot_normalized)
+
+    @classmethod
+    def legend(cls) -> None:
+        display(HTML("<hr style='height:2px'/>"))
+        display(HTML("<h2>Legend</h2>"))
+        display(HTML("<ul>"
+                     "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data preparation and reconstruction.</li>"
+                     "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data preparation and reconstruction.</li>"
+                     "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your reconstruction.</li>"
+                     "</ul>"))
+        display(HTML("<hr style='height:2px'/>"))
