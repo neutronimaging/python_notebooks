@@ -21,7 +21,7 @@ from __code._utilities.list import extract_list_of_runs_from_string
 from __code._utilities.nexus import extract_file_path_from_nexus
 from __code.normalization_tof import DataType
 from __code._utilities.time import get_current_time_in_special_file_name_format
-from __code._utilities.json import save_json
+from __code._utilities.json import save_json, load_json
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
@@ -1078,8 +1078,37 @@ class NormalizationTof:
             filters={"ROI container files": ["*_roi_container.json"]},
             type='file',
             multiple=False,
+            next=self.load_container_roi_from_file,
         )
         self.roi_container_file.show()
+
+    def load_container_roi_from_file(self, file_path):
+        roi_dict = load_json(file_path)
+        self.container_roi = Roi(left=roi_dict["left"], 
+                                 top=roi_dict["top"], 
+                                 width=roi_dict["width"], 
+                                 height=roi_dict["height"])
+        display(HTML(f"<span style='color:green; font-size:16px'>Loaded container ROI from file: {file_path}!</span>"))
+        notebook_logging.info(f"Loaded container ROI from file: {file_path} with values: {self.container_roi} ... Done!")
+        
+        # preview of the roi selected
+        if self.container_roi is not None:
+            display(HTML("<span style='font-size: 16px; color:blue'>Preview of the loaded ROI containing only the container from file ...</span>"))
+            if self.integrated_data is None:
+                self.integrated_data = self.get_integrated_data(self.dict_sample)
+            integrated_data = self.integrated_data
+
+            fig, ax = plt.subplots(figsize=(5, 5))
+            im = ax.imshow(integrated_data, cmap="viridis", aspect="auto")
+            cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
+
+            rect = patches.Rectangle((self.container_roi.left, self.container_roi.top), 
+                                     self.container_roi.width, 
+                                     self.container_roi.height, 
+                                     linewidth=1, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+            ax.set_title(f"Loaded ROI containing only the container from file")
+            plt.show()
 
     def select_container(self):
 
