@@ -1104,42 +1104,23 @@ class NormalizationTof:
         vmin = 0
         vmax = int(np.max(integrated_data))
         self.vrange_container = [vmin, vmax]
-               
-        self.fig_container, self.ax_container = plt.subplots(figsize=(10, 10), nrows=1, ncols=1, num="Container ROI Selection")
-        im = self.ax_container.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
-        self.cbar = plt.colorbar(im, ax=self.ax_container, orientation="vertical", label="Intensity", shrink=0.5)
-        
-        # self.rect_container = patches.Rectangle((default_left, default_top), default_width, default_height, linewidth=1, edgecolor='r', facecolor='none')
-        # self.ax_container.add_patch(self.rect_container)
-        # self.ax_container.set_title(f"Select ROI containing only the container")
     
         def container_roi_selection(vrange, left_right, top_bottom):
             
+            fig, ax = plt.subplots(figsize=(10, 10))
+            im = ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vrange[0], vmax=vrange[1])
+            cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
 
-            if self.vrange_container != vrange:
-                self.vrange_container = vrange
-                self.cbar.remove()
-            self.ax_container.clear()
-            
-            im = self.ax_container.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vrange[0], vmax=vrange[1])
-            self.cbar = plt.colorbar(im, ax=self.ax_container, orientation="vertical", label="Intensity", shrink=0.5)
-            plt.show()
-            
-            self.fig_container.canvas.draw_idle()
-            # # # else:
-                
             logging.info("Updating rectangle ...")
             if self.rect_container:
                 self.rect_container.remove()
         
             self.rect_container = patches.Rectangle((left_right[0], top_bottom[0]), left_right[1]-left_right[0], top_bottom[1]-top_bottom[0], linewidth=1, edgecolor='r', facecolor='none')
-            self.ax_container.add_patch(self.rect_container)
-            self.ax_container.set_title(f"Select ROI containing only the container")
+            ax.add_patch(self.rect_container)
+            ax.set_title(f"Select ROI containing only the container")
             
-            # plt.tight_layout()
-                
-            # # logging.info(f"Selected ROI - left: {left_right[0]}, top: {top_bottom[0]}, width: {left_right[1]-left_right[0]}, height: {top_bottom[1]-top_bottom[0]}")
-            # self.container_roi = Roi(left=left_right[0], top=top_bottom[0], width=left_right[1]-left_right[0], height=top_bottom[1]-top_bottom[0])
+    
+            self.container_roi = Roi(left=left_right[0], top=top_bottom[0], width=left_right[1]-left_right[0], height=top_bottom[1]-top_bottom[0])
 
         widgets_width = "800px"
         self.interactive_plot = interactive(
@@ -1188,6 +1169,7 @@ class NormalizationTof:
 
         self.roi = Roi(left=default_left, top=default_top,
                        width=default_width, height=default_height)
+
         
         def roi_selection(vrange, left_right, top_bottom):
             
