@@ -78,7 +78,8 @@ class NormalizationTof:
     default_container_roi = Roi(left=150, top=150, width=40, height=40)
     we_need_to_automatically_save_the_container_roi = False
     rect_container = None
-
+    container_roi_from_file = False
+    
     def initialize(self):
         LOG_PATH = "/SNS/VENUS/shared/log/"
         file_name, ext = os.path.splitext(os.path.basename(__file__))
@@ -144,8 +145,6 @@ class NormalizationTof:
         )
         display(self.detector_type_widget)
         
-        
-
     def reset_sample_dicts(self):
         self.dict_sample = {}
         self.dict_short_name_full_path["sample"] = {}
@@ -1088,27 +1087,9 @@ class NormalizationTof:
                                  top=roi_dict["top"], 
                                  width=roi_dict["width"], 
                                  height=roi_dict["height"])
+        self.container_roi_from_file = True
         display(HTML(f"<span style='color:green; font-size:16px'>Loaded container ROI from file: {file_path}!</span>"))
         notebook_logging.info(f"Loaded container ROI from file: {file_path} with values: {self.container_roi} ... Done!")
-        
-        # preview of the roi selected
-        if self.container_roi is not None:
-            display(HTML("<span style='font-size: 16px; color:blue'>Preview of the loaded ROI ...</span>"))
-            if self.integrated_data is None:
-                self.integrated_data = self.get_integrated_data(self.dict_sample)
-            integrated_data = self.integrated_data
-
-            fig, ax = plt.subplots(figsize=(5, 5))
-            im = ax.imshow(integrated_data, cmap="viridis", aspect="auto")
-            cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
-
-            rect = patches.Rectangle((self.container_roi.left, self.container_roi.top), 
-                                     self.container_roi.width, 
-                                     self.container_roi.height, 
-                                     linewidth=1, edgecolor='r', facecolor='none')
-            ax.add_patch(rect)
-            ax.set_title(f"Loaded ROI containing only the container from file")
-            plt.show()
 
     def select_container(self):
 
@@ -1269,6 +1250,35 @@ class NormalizationTof:
             self.roi = None
             self.container_roi = None
             display(HTML("<span style='color:blue'>Info: You are good to go, nothing to do here!</span>"))
+
+    def preview_roi_selection_container_imported(self):
+         # preview of the roi selected
+        if self.container_roi is not None:
+            if self.container_roi_from_file:
+                
+                display(HTML("<span style='font-size: 16px; color:blue'>Preview of the loaded ROI from file ...</span>"))
+
+                if self.integrated_data is None:
+                    self.integrated_data = self.get_integrated_data(self.dict_sample)
+                integrated_data = self.integrated_data
+
+                fig, ax = plt.subplots(figsize=(5, 5))
+                im = ax.imshow(integrated_data, cmap="viridis", aspect="auto")
+                cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
+
+                rect = patches.Rectangle((self.container_roi.left, self.container_roi.top), 
+                                        self.container_roi.width, 
+                                        self.container_roi.height, 
+                                        linewidth=1, edgecolor='r', facecolor='none')
+                ax.add_patch(rect)
+                ax.set_title(f"Loaded ROI containing only the container from file")
+                plt.show()
+                
+            else:
+                display(HTML("<span style='font-size: 14px; color:blue'>ROI container selected within that notebook (no need to preview again)!</span>"))
+            
+        else:
+            display(HTML("<span style='color:blue'>No container ROI selected!</span>"))
 
     def _on_replace_ob_zeros_by_local_median_flag_change(self, change):
         if change['new']:
