@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Tuple
 
 import h5py
+from matplotlib import container
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -1323,9 +1324,11 @@ def  export_corrected_normalized_data(sample_master_dict=None,
 
 
 def read_container_roi_file(container_roi_file=None) -> tuple[int, int, int, int]:
-    return 0, 0, 10, 10  # placeholder implementation
-
-
+        master_dict = load_json(container_roi_file)
+        list_container_values = master_dict['list_container_values']
+        return list_container_values
+        
+        
 def save_container_roi_file(output_folder:str,
                             sample_run_number: str, 
                             container_roi: Roi, 
@@ -1354,13 +1357,28 @@ def save_container_roi_file(output_folder:str,
     
 def normalize_by_container_roi(sample_data: np.ndarray, 
                                container_roi: Roi,
-                               container_roi_file,
+                               container_roi_file: str,
                                output_folder: str,
                                sample_run_number: str) -> np.ndarray:
     """normalize sample data subtracting by container roi"""
 
     logging.info(f"in normalize_by_container_roi:")
-    if container_roi is not None:
+    if container_roi_file is not None:
+        logging.info(f"\t {container_roi_file = }")
+        _container_value_array: float = read_container_roi_file(container_roi_file=container_roi_file)
+        logging.info(f"\t{_container_value_array =}")
+        logging.info(f"\t{use_live_container_value = }")
+        container_roi_file = None
+        
+        _normalized_sample = np.empty_like(sample_data)
+        for i, _sample in enumerate(sample_data):
+            _container_value = _container_value_array[i]
+            _log_sample = -np.log(_sample)
+            _log_container_value = -np.log(_container_value)
+            _log_normalized_sample = _log_sample - _log_container_value
+            _normalized_sample[i] = np.exp(- _log_normalized_sample)
+
+    else:
         logging.info(f"\t {container_roi = }")
         x0: int = container_roi.left
         y0: int = container_roi.top
@@ -1382,21 +1400,6 @@ def normalize_by_container_roi(sample_data: np.ndarray,
                                                     sample_run_number=sample_run_number, 
                                                     container_roi=container_roi,
                                                     list_container_values=list_container_values,
-                                                    integrated_image=np.sum(sample_data, axis=0))
+                                                    integrated_image=np.sum(sample_data, axis=0))    
         
-    else:
-        logging.info(f"\t {container_roi_file = }")
-        _container_value_array: float = read_container_roi_file(container_roi_file=container_roi_file)
-        logging.info(f"\t{_container_value =}")
-        logging.info(f"\t{use_live_container_value = }")
-        container_roi_file = None
-        
-        _normalized_sample = np.empty_like(sample_data)
-        for i, _sample in enumerate(sample_data):
-            _container_value = _container_value_array[i]
-            _log_sample = -np.log(_sample)
-            _log_container_value = -np.log(_container_value)
-            _log_normalized_sample = _log_sample - _log_container_value
-            _normalized_sample[i] = np.exp(- _log_normalized_sample)
-
     return _normalized_sample, container_roi_file

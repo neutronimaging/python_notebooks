@@ -118,8 +118,8 @@ def normalization_with_list_of_full_path(
         correct_chips_alignment_config (dict): configuration for chips alignment correction
         export_mode (dict): dictionary with export options
         roi (Roi): region of interest for full spectrum normalization
-        container_roi (Roi): region of interest for container only normalization (will take precedence over container_roi_file if both are provided)
-        container_roi_file (str): file path to container ROI file (scitiff format)
+        container_roi (Roi): region of interest for container only normalization 
+        container_roi_file (str): file path to container ROI file (scitiff format) (will take precedence over container_roi if both are provided)
 
     Returns:
         normalized_data | np.ndarray: normalized data

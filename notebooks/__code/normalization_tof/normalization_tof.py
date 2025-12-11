@@ -1094,15 +1094,6 @@ class NormalizationTof:
                                  width=master_dict["container_roi"]["width"], 
                                  height=master_dict["container_roi"]["height"])
            
-        # roi_dict = load_json(file_path)
-        # self.container_roi = Roi(left=roi_dict["left"], 
-        #                          top=roi_dict["top"], 
-        #                          width=roi_dict["width"], 
-        #                          height=roi_dict["height"])
-        # self.container_roi_from_file = True
-        # display(HTML(f"<span style='color:green; font-size:16px'>Loaded container ROI from file: {file_path}!</span>"))
-        # notebook_logging.info(f"Loaded container ROI from file: {file_path} with values: {self.container_roi} ... Done!")
-
     def select_container(self):
 
        # load first sample and display integrated image to select ROI
@@ -1141,7 +1132,6 @@ class NormalizationTof:
             ax.add_patch(self.rect_container)
             ax.set_title(f"Select ROI containing only the container")
             
-    
             self.container_roi = Roi(left=left_right[0], top=top_bottom[0], width=left_right[1]-left_right[0], height=top_bottom[1]-top_bottom[0])
 
         widgets_width = "800px"
