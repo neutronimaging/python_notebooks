@@ -82,7 +82,8 @@ def normalization_with_list_of_full_path(
     correct_chips_alignment_config: dict = None,
     export_mode: dict = None,
     roi = None,
-    container_roi = None) -> NormalizedData:
+    container_roi = None,
+    container_roi_file = None) -> NormalizedData:
     """normalize the sample data with ob data using proton charge and shutter counts
     
     Args:
@@ -117,7 +118,8 @@ def normalization_with_list_of_full_path(
         correct_chips_alignment_config (dict): configuration for chips alignment correction
         export_mode (dict): dictionary with export options
         roi (Roi): region of interest for full spectrum normalization
-        container_roi (Roi): region of interest for container only normalization
+        container_roi (Roi): region of interest for container only normalization (will take precedence over container_roi_file if both are provided)
+        container_roi_file (str): file path to container ROI file (scitiff format)
 
     Returns:
         normalized_data | np.ndarray: normalized data
@@ -322,12 +324,22 @@ def normalization_with_list_of_full_path(
                 first_ob_run_number,
             )
 
-        if container_roi is not None:
-            logging.info(f"Applying container normalization with roi: {container_roi}")
-            _sample_data = normalize_by_container_roi(
+        if (container_roi is not None) or (container_roi_file is not None):
+            logging.info(f"Applying container normalization:")
+            logging.info(f"\t {container_roi = }")
+            logging.info(f"\t {container_roi_file = }")
+            if verbose:
+                display(HTML(f"Applying container normalization:"))
+            
+            _sample_data, container_roi_file = normalize_by_container_roi(
                 sample_data=_sample_data,
                 container_roi=container_roi,
+                container_roi_file=container_roi_file,
+                output_folder=output_folder,
+                sample_run_number=_sample_run_number,
             )
+            if verbose and (container_roi_file is not None):
+                display(HTML(f"Container roi file created: {container_roi_file}."))
 
         logging.info(f"{_sample_data.shape = }")
         logging.info(f"{_sample_data.dtype = }")

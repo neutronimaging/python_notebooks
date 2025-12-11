@@ -7,7 +7,6 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
-from annotated_types import Not
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,6 +15,9 @@ from IPython.display import HTML, display
 from PIL import Image
 from skimage.io import imread
 from scipy.ndimage import median_filter
+
+from __code.normalization_tof import Roi
+from __code._utilities.json import load_json, save_json
 
 MARKERSIZE = 2
 
@@ -1320,18 +1322,81 @@ def  export_corrected_normalized_data(sample_master_dict=None,
         )
 
 
-def normalize_by_container_roi(sample_data=None, container_roi=None):
-    x0 = container_roi.left
-    y0 = container_roi.top
-    width = container_roi.width
-    height = container_roi.height
+def read_container_roi_file(container_roi_file=None) -> tuple[int, int, int, int]:
+    return 0, 0, 10, 10  # placeholder implementation
 
-    _normalized_sample = np.empty_like(sample_data)
-    for i, _sample in enumerate(sample_data):
-        _container_value = np.mean(np.mean(_sample[y0:y0 + height, x0:x0 + width], axis=0), axis=0)
-        _log_sample = -np.log(_sample)
-        _log_container_value = -np.log(_container_value)
-        _log_normalized_sample = _log_sample - _log_container_value
-        _normalized_sample[i] = np.exp(- _log_normalized_sample)
 
-    return _normalized_sample
+def save_container_roi_file(output_folder:str,
+                            sample_run_number: str, 
+                            container_roi: Roi, 
+                            list_container_values: list, 
+                            integrated_image: np.ndarray):
+    # container_roi_file = os.path.join(output_folder, f"container_roi_of_run_{sample_run_number}.tiff")
+    container_roi_file = os.path.join(output_folder, f"container_roi_of_run_{sample_run_number}.json")
+    
+    logging.info(f"Saving container roi file to {container_roi_file}")
+    # scitiff_dict = {'container_roi': container_roi,
+    #                 'list_container_values': list_container_values,
+    #                 }
+    
+    integrated_image = integrated_image.astype(float)
+    list_container_values = [float(_value) for _value in list_container_values]
+    master_dict = {'integrated_image': integrated_image.tolist(),
+                   'container_roi': {'left': float(container_roi.left),
+                                     'top': float(container_roi.top),
+                                     'width': float(container_roi.width),
+                                     'height': float(container_roi.height)},
+                   'list_container_values': list_container_values}
+    
+    save_json(container_roi_file, master_dict)
+    return container_roi_file
+    
+    
+def normalize_by_container_roi(sample_data: np.ndarray, 
+                               container_roi: Roi,
+                               container_roi_file,
+                               output_folder: str,
+                               sample_run_number: str) -> np.ndarray:
+    """normalize sample data subtracting by container roi"""
+
+    logging.info(f"in normalize_by_container_roi:")
+    if container_roi is not None:
+        logging.info(f"\t {container_roi = }")
+        x0: int = container_roi.left
+        y0: int = container_roi.top
+        width: int = container_roi.width
+        height: int = container_roi.height
+        
+        _normalized_sample = np.empty_like(sample_data)
+        list_container_values = []
+        for i, _sample in enumerate(sample_data):
+            _container_value = np.mean(np.mean(_sample[y0:y0 + height, x0:x0 + width], axis=0), axis=0)            
+            list_container_values.append(_container_value)
+            _log_sample = -np.log(_sample)
+            _log_container_value = -np.log(_container_value)
+            _log_normalized_sample = _log_sample - _log_container_value
+            _normalized_sample[i] = np.exp(- _log_normalized_sample)
+        
+        # save the container roi file
+        container_roi_file = save_container_roi_file(output_folder=output_folder, 
+                                                    sample_run_number=sample_run_number, 
+                                                    container_roi=container_roi,
+                                                    list_container_values=list_container_values,
+                                                    integrated_image=np.sum(sample_data, axis=0))
+        
+    else:
+        logging.info(f"\t {container_roi_file = }")
+        _container_value_array: float = read_container_roi_file(container_roi_file=container_roi_file)
+        logging.info(f"\t{_container_value =}")
+        logging.info(f"\t{use_live_container_value = }")
+        container_roi_file = None
+        
+        _normalized_sample = np.empty_like(sample_data)
+        for i, _sample in enumerate(sample_data):
+            _container_value = _container_value_array[i]
+            _log_sample = -np.log(_sample)
+            _log_container_value = -np.log(_container_value)
+            _log_normalized_sample = _log_sample - _log_container_value
+            _normalized_sample[i] = np.exp(- _log_normalized_sample)
+
+    return _normalized_sample, container_roi_file

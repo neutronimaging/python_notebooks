@@ -72,13 +72,14 @@ class NormalizationTof:
     dict_dc_data = None
 
     roi = None  # full spectrum ROI
+    
+    # container
     container_roi = None # container only ROI
-
     default_roi = Roi(left=50, top=50, width=200, height=200)
     default_container_roi = Roi(left=150, top=150, width=40, height=40)
     we_need_to_automatically_save_the_container_roi = False
     rect_container = None
-    container_roi_from_file = False
+    container_roi_file = None
     
     def initialize(self):
         LOG_PATH = "/SNS/VENUS/shared/log/"
@@ -1074,7 +1075,7 @@ class NormalizationTof:
         self.roi_container_file = MyFileSelectorPanel(
             instruction="Select ROI container file",
             start_dir=self.output_dir,
-            filters={"ROI container files": ["*_roi_container.json"]},
+            filters={"ROI container files": ["*_container_roi.tiff"]},  # scitiff file 
             type='file',
             multiple=False,
             next=self.load_container_roi_from_file,
@@ -1082,14 +1083,25 @@ class NormalizationTof:
         self.roi_container_file.show()
 
     def load_container_roi_from_file(self, file_path):
-        roi_dict = load_json(file_path)
-        self.container_roi = Roi(left=roi_dict["left"], 
-                                 top=roi_dict["top"], 
-                                 width=roi_dict["width"], 
-                                 height=roi_dict["height"])
-        self.container_roi_from_file = True
-        display(HTML(f"<span style='color:green; font-size:16px'>Loaded container ROI from file: {file_path}!</span>"))
-        notebook_logging.info(f"Loaded container ROI from file: {file_path} with values: {self.container_roi} ... Done!")
+        self.container_roi_file = file_path
+        notebook_logging.info(f"Loading container ROI from file: {file_path} ...")
+        display(HTML(f"<span style='color:blue; font-size:16px'>Will use the container ROI file: {file_path}!</span>"))
+       
+        master_dict = load_json(file_path)
+        self.container_integrated_image = master_dict["integrated_image"]
+        self.container_roi = Roi(left=master_dict["container_roi"]["left"], 
+                                 top=master_dict["container_roi"]["top"], 
+                                 width=master_dict["container_roi"]["width"], 
+                                 height=master_dict["container_roi"]["height"])
+           
+        # roi_dict = load_json(file_path)
+        # self.container_roi = Roi(left=roi_dict["left"], 
+        #                          top=roi_dict["top"], 
+        #                          width=roi_dict["width"], 
+        #                          height=roi_dict["height"])
+        # self.container_roi_from_file = True
+        # display(HTML(f"<span style='color:green; font-size:16px'>Loaded container ROI from file: {file_path}!</span>"))
+        # notebook_logging.info(f"Loaded container ROI from file: {file_path} with values: {self.container_roi} ... Done!")
 
     def select_container(self):
 
@@ -1098,8 +1110,8 @@ class NormalizationTof:
             display(HTML("<span style='color:red'>No sample runs selected!</span>"))
             return
 
-        display(HTML("<span style='font-size: 16px; color:blue'>Select ROI containing only the container!</span>"))
-        logging.info(f"Selecting ROI containing only the container...")
+        display(HTML("<span style='font-size: 16px; color:blue'>Select ROI of ONLY the container!</span>"))
+        logging.info(f"Selecting ROI of ONLY the container ...")
 
         if self.integrated_data is None:
             self.integrated_data = self.get_integrated_data(self.dict_sample)
@@ -1239,9 +1251,11 @@ class NormalizationTof:
 
             if self.remove_container_options_flag.value == "Use previously saved ROI containing only the container signal":
                 self.select_container_from_file()
+                self.container_roi_from_file = True
             
             else:
                 self.select_container()
+                self.container_roi_from_file = False
                 self.we_need_to_automatically_save_the_container_roi = True
             
             at_least_one_option = True
@@ -1254,13 +1268,12 @@ class NormalizationTof:
     def preview_roi_selection_container_imported(self):
          # preview of the roi selected
         if self.container_roi is not None:
+            
             if self.container_roi_from_file:
                 
                 display(HTML("<span style='font-size: 16px; color:blue'>Preview of the loaded ROI from file ...</span>"))
 
-                if self.integrated_data is None:
-                    self.integrated_data = self.get_integrated_data(self.dict_sample)
-                integrated_data = self.integrated_data
+                integrated_data = self.container_integrated_image
 
                 fig, ax = plt.subplots(figsize=(5, 5))
                 im = ax.imshow(integrated_data, cmap="viridis", aspect="auto")
@@ -1509,6 +1522,19 @@ class NormalizationTof:
 
         spectra_array = self.spectra_array
 
+        # # if we created a container roi and chose to save it, do it now
+        # current_date = get_current_time_in_special_file_name_format()
+        # if self.we_need_to_automatically_save_the_container_roi and self.export_container_roi.value:
+        #     container_roi_file = Path(output_folder) / Path(f"{current_date}_roi_container.json")
+        #     container_roi_dict = {'left': self.container_roi.left,
+        #                           'top': self.container_roi.top,
+        #                           'width': self.container_roi.width,
+        #                           'height': self.container_roi.height}
+            
+        #     save_json(container_roi_file, container_roi_dict)
+        #     logging.info(f"Container ROI saved to file: {container_roi_file}")
+        #     display(HTML(f"<span style='color:blue'>Container ROI saved to file: {container_roi_file}</span>"))
+
         self.normalized_dict = normalization_with_list_of_full_path(
             sample_dict=sample_dict,
             ob_dict=ob_dict,
@@ -1535,23 +1561,11 @@ class NormalizationTof:
             combine_samples=self.combine_sample_runs_flag.value,
             roi=self.roi,
             container_roi=self.container_roi,
+            container_roi_file=self.container_roi_file
         )
         
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         # display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
-        
-        # if we created a container roi and chose to save it, do it now
-        current_date = get_current_time_in_special_file_name_format()
-        if self.we_need_to_automatically_save_the_container_roi and self.export_container_roi.value:
-            container_roi_file = Path(output_folder) / Path(f"{current_date}_roi_container.json")
-            container_roi_dict = {'left': self.container_roi.left,
-                                  'top': self.container_roi.top,
-                                  'width': self.container_roi.width,
-                                  'height': self.container_roi.height}
-            
-            save_json(container_roi_file, container_roi_dict)
-            logging.info(f"Container ROI saved to file: {container_roi_file}")
-            display(HTML(f"<span style='color:blue'>Container ROI saved to file: {container_roi_file}</span>"))
         
     def profile_of_roi(self):
         normalized_data = self.normalized_dict.data
