@@ -1367,8 +1367,6 @@ def normalize_by_container_roi(sample_data: np.ndarray,
         logging.info(f"\t {container_roi_file = }")
         _container_value_array: float = read_container_roi_file(container_roi_file=container_roi_file)
         logging.info(f"\t{_container_value_array =}")
-        logging.info(f"\t{use_live_container_value = }")
-        container_roi_file = None
         
         _normalized_sample = np.empty_like(sample_data)
         for i, _sample in enumerate(sample_data):
