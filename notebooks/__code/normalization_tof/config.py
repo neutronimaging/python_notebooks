@@ -2,12 +2,12 @@ from __code.resonance_fitting import DetectorType
 
 
 class DEBUG_DATA:
-    ipts = "IPTS-35207"
+    ipts = "IPTS-35566"
     working_dir = f"/SNS/VENUS/{ipts}"
     autoreduce_dir = f"/SNS/VENUS/{ipts}/shared/autoreduce/mcp/images"
     output_folder = f"{working_dir}/shared/processed_data/jean_test"
-    sample_runs_selected = ["Run_13604"]
-    ob_runs_selected = ["Run_13605"]
+    sample_runs_selected = ["Run_14644", "Run_14645"]
+    ob_runs_selected = ["Run_14640", "Run_14641"]
     dc_runs_selected = []
     roi = [154, 156, 180, 17]
     container_roi = [150, 150, 40, 40]

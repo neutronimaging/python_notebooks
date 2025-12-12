@@ -1009,9 +1009,9 @@ class NormalizationTof:
                                                                       layout=widgets.Layout(width="500px"))
         self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
                                                            names='value')
-        self.correct_chips_alignment_flag = widgets.Checkbox(
-            description="Correct chips alignment", disabled=False, value=True
-        )
+        # self.correct_chips_alignment_flag = widgets.Checkbox(
+        #     description="Correct chips alignment", disabled=False, value=True
+        # )
         display(self.replace_ob_zeros_by_local_median_flag)
 
         kernel_size_label = widgets.Label(value="Kernel size for local median (odd number):", 
@@ -1320,20 +1320,20 @@ class NormalizationTof:
             disabled=not combined_flag,
         )
 
-        self.export_corrected_stack_of_combined_normalized_data = widgets.Checkbox(
-            description="Export corrected stack of combined normalized data (integrated sample divided by integrated ob)",
-            layout=widgets.Layout(width="100%"),
-            value=False,
-            disabled=True,
-        )
+        # self.export_corrected_stack_of_combined_normalized_data = widgets.Checkbox(
+        #     description="Export corrected stack of combined normalized data (integrated sample divided by integrated ob)",
+        #     layout=widgets.Layout(width="100%"),
+        #     value=False,
+        #     disabled=True,
+        # )
 
         list_widget_to_display =  [
                 self.export_corrected_stack_of_sample_data,
                 # self.export_corrected_stack_of_ob_data,
                 self.export_corrected_stack_of_normalized_data,
         ]
-        if self.combine_sample_runs_flag.value:
-            list_widget_to_display.append(self.export_corrected_stack_of_combined_normalized_data)
+        # if self.combine_sample_runs_flag.value:
+        #     list_widget_to_display.append(self.export_corrected_stack_of_combined_normalized_data)
         label = widgets.Label(value="Note: Any of the stacks exported will also contain the original spectra file")
         list_widget_to_display.append(label)
 
@@ -1467,7 +1467,7 @@ class NormalizationTof:
             "sample_stack": self.export_corrected_stack_of_sample_data.value,
             "ob_stack": self.export_corrected_stack_of_ob_data.value,
             "normalized_stack": self.export_corrected_stack_of_normalized_data.value,
-            "combined_normalized_stack": self.export_corrected_stack_of_combined_normalized_data.value,
+            # "combined_normalized_stack": self.export_corrected_stack_of_combined_normalized_data.value,
             "sample_integrated": self.export_corrected_integrated_sample_data.value,
             "ob_integrated": self.export_corrected_integrated_ob_data.value,
             "normalized_integrated": self.export_corrected_integrated_normalized_data.value,
@@ -1509,21 +1509,10 @@ class NormalizationTof:
                 correct_chips_alignment_config = timepix3_config
             else:
                 correct_chips_alignment_config = None
+        else:
+            correct_chips_alignment_config = None
 
         spectra_array = self.spectra_array
-
-        # # if we created a container roi and chose to save it, do it now
-        # current_date = get_current_time_in_special_file_name_format()
-        # if self.we_need_to_automatically_save_the_container_roi and self.export_container_roi.value:
-        #     container_roi_file = Path(output_folder) / Path(f"{current_date}_roi_container.json")
-        #     container_roi_dict = {'left': self.container_roi.left,
-        #                           'top': self.container_roi.top,
-        #                           'width': self.container_roi.width,
-        #                           'height': self.container_roi.height}
-            
-        #     save_json(container_roi_file, container_roi_dict)
-        #     logging.info(f"Container ROI saved to file: {container_roi_file}")
-        #     display(HTML(f"<span style='color:blue'>Container ROI saved to file: {container_roi_file}</span>"))
 
         self.normalized_dict = normalization_with_list_of_full_path(
             sample_dict=sample_dict,
@@ -1532,8 +1521,8 @@ class NormalizationTof:
             spectra_array=spectra_array,
             output_folder=output_folder,
             proton_charge_flag=self.proton_charge_flag.value,
-            monitor_counts_flag=self.monitor_counts_flag.value,
-            shutter_counts_flag=self.shutter_counts_flag.value,
+            # monitor_counts_flag=self.monitor_counts_flag.value,
+            # shutter_counts_flag=self.shutter_counts_flag.value,
             # replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
             replace_ob_zeros_by_local_median_flag=self.replace_ob_zeros_by_local_median_flag.value,
             kernel_size_for_local_median=(self.kernel_size_for_local_median_y.value,
