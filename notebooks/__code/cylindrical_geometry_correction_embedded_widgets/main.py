@@ -84,6 +84,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             display(HTML("<span>0 images found!</span>"))
             return
 
+        self.ipts_folder = self.working_dir
         self.working_dir = os.path.dirname(list_of_images[0])
 
         o_norm = Normalization()
@@ -540,7 +541,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def export_profiles(self):
         working_dir = os.path.dirname(self.working_dir)
-        output_folder_browser = FileFolderBrowser(working_dir=working_dir, next_function=self.export)
+        output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
+                                                  ipts_folder=self.ipts_folder,
+                                                  next_function=self.export)
         output_folder_browser.select_output_folder_with_new()
 
     def export(self, output_folder):
