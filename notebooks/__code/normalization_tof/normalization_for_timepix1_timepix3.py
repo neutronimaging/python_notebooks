@@ -3,6 +3,7 @@ import glob
 import logging
 import multiprocessing as mp
 import os
+from random import sample
 import shutil
 from pathlib import Path
 from typing import Tuple
@@ -229,7 +230,9 @@ def normalization_with_list_of_full_path(
     logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
 
     if correct_chips_alignment_flag:
-        correct_chips_alignment(ob_data_combined, correct_chips_alignment_config, verbose=verbose)
+        correct_chips_alignment(ob_data_combined, 
+                                correct_chips_alignment_config, 
+                                verbose=verbose)
 
     ob_data_combined_for_spectrum = calculate_ob_data_combined_used_by_spectrum_normalization(roi=roi,
                                                                                  ob_data_combined=ob_data_combined,
@@ -253,13 +256,23 @@ def normalization_with_list_of_full_path(
 
     # combine all dc images
     dc_data_combined = combine_dc_images(dc_master_dict)
-    if correct_chips_alignment_flag:
-        dc_data_combined = correct_chips_alignment(dc_data_combined, correct_chips_alignment_config, verbose=verbose)
+    
+    if dc_data_combined is not None:
+        
+        if correct_chips_alignment_flag:
+            dc_data_combined = correct_chips_alignment(dc_data_combined, 
+                                                    correct_chips_alignment_config, 
+                                                    verbose=verbose)
 
     if (dc_data_combined is not None) and (roi is not None):
         dc_data_combined_for_spectrum = [np.sum(np.sum(_data, axis=0), axis=0) for _data in dc_data_combined]
         logging.info(f"\t{np.shape(dc_data_combined) = }")
         logging.info(f"\t{np.shape(dc_data_combined_for_spectrum) = }")
+        
+        if correct_chips_alignment_flag:
+            dc_data_combined_for_spectrum = correct_chips_alignment(dc_data_combined_for_spectrum, 
+                                                    correct_chips_alignment_config, 
+                                                    verbose=verbose)
 
     else:
         logging.info(f"\tno roi provided! Skipping the normalization of spectrum.")
@@ -268,7 +281,9 @@ def normalization_with_list_of_full_path(
     # load sample images ===============================
     load_images(master_dict=sample_master_dict, data_type=DataType.sample, verbose=verbose)
     if correct_chips_alignment_flag:
-        correct_all_samples_chips_alignment(sample_master_dict, correct_chips_alignment_config, verbose=verbose)
+        correct_all_samples_chips_alignment(sample_master_dict, 
+                                            correct_chips_alignment_config, 
+                                            verbose=verbose)
 
     normalized_data = {}
     integrated_normalized_data = {}
@@ -297,6 +312,11 @@ def normalization_with_list_of_full_path(
             
         # get statistics of sample data
         logging_statistics_of_data(data=sample_data_combined, data_type=DataType.sample_combined)
+        
+        if correct_chips_alignment_flag:
+            sample_data_combined = correct_chips_alignment(sample_data_combined, 
+                                    correct_chips_alignment_config, 
+                                    verbose=verbose)
         
         if normalized_by_proton_charge:
             logging.info(f"Normalizing by proton charge")
@@ -448,6 +468,11 @@ def normalization_with_list_of_full_path(
 
             # get statistics of sample data
             logging_statistics_of_data(data=_sample_data, data_type=DataType.sample)
+      
+            if correct_chips_alignment_flag:
+                _sample_data = correct_chips_alignment(_sample_data, 
+                                                       correct_chips_alignment_config, 
+                                                       verbose=verbose)
       
             if normalized_by_proton_charge:
                 if verbose:

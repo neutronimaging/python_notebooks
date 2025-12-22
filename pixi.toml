@@ -43,3 +43,4 @@ neutronbraggedge = "*"
 sectorizedradialprofile = "*"
 imagingreso = "*"
 tdcsophiread = { path = "/SNS/VENUS/shared/zhangc/wheels/tdcsophiread-3.0.2-cp312-abi3-linux_x86_64.whl" }
+timepix-geometry-correction = { git = "https://github.com/ornlneutronimaging/timepix_geometry_correction.git", branch="main"}

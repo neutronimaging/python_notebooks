@@ -26,16 +26,17 @@ class DEBUG_DATA:
 #     container_roi = [150, 150, 40, 40]
 #     detector_type = DetectorType.tpx3  # timepix1 or timepix3
 
+
 timepix1_config = {
-    "chip1": {"xoffset": 1, "yoffset": 1, "description": "top right chip"},
+    "chip1": {"xoffset": 2.4, "yoffset": 1, "description": "top right chip"},
     "chip2": {"xoffset": 0, "yoffset": 0, "description": "top left and reference chip"},
     "chip3": {"xoffset": 0, "yoffset": 1, "description": "bottom left chip"},
-    "chip4": {"xoffset": 1, "yoffset": 2, "description": "bottom right chip"},
+    "chip4": {"xoffset": 2.3, "yoffset": 2.3, "description": "bottom right chip"},
 }
 
 timepix3_config = {
-    "chip1": {"xoffset": 0, "yoffset": 0, "description": "top right chip"},
+    "chip1": {"xoffset": 2.4, "yoffset": 1, "description": "top right chip"},
     "chip2": {"xoffset": 0, "yoffset": 0, "description": "top left and reference chip"},
-    "chip3": {"xoffset": 0, "yoffset": 0, "description": "bottom left chip"},
-    "chip4": {"xoffset": 0, "yoffset": 0, "description": "bottom right chip"},
+    "chip3": {"xoffset": 0, "yoffset": 1, "description": "bottom left chip"},
+    "chip4": {"xoffset": 2.3, "yoffset": 2.3, "description": "bottom right chip"},
 }

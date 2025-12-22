@@ -5,6 +5,7 @@ import multiprocessing as mp
 import os
 import shutil
 from pathlib import Path
+from sqlite3 import Time
 from typing import Tuple
 
 import h5py
@@ -16,6 +17,8 @@ from IPython.display import HTML, display
 from PIL import Image
 from skimage.io import imread
 from scipy.ndimage import median_filter
+
+from timepix_geometry_correction.correct import TimepixGeometryCorrection
 
 from __code.normalization_tof import Roi
 from __code._utilities.json import load_json, save_json
@@ -176,14 +179,28 @@ def correct_chips_alignment(data_combined=None, correct_chips_alignment_config=N
     if verbose:
         display(HTML("Correcting chips alignment ..."))
 
-    # do the math here on the data_combined
+    logging.info(f"\t{data_combined.shape = }")
 
+    data_combined_corrected = np.zeros_like(data_combined)
+    for _index, _data in enumerate(data_combined):
+        o_corrector = TimepixGeometryCorrection(raw_images=_data,
+                                                config=correct_chips_alignment_config)
+        data_corrected = o_corrector.correct()
+    
+        # remove useless dimension
+        data = np.array([np.squeeze(_data) for _data in data_corrected])
+        data_combined_corrected_squeezed = np.squeeze(data)
+        
+        data_combined_corrected[_index] = data_combined_corrected_squeezed
+
+    logging.info(f"\t{data_combined_corrected.shape = }")
+    
     logging.info("Chips alignment corrected!")
     
     if verbose:
         display(HTML("Chips alignment corrected!"))
   
-    return data_combined
+    return data_combined_corrected
 
 
 def correct_all_samples_chips_alignment(sample_master_dict=None, correct_chips_alignment_config=None, verbose=False):

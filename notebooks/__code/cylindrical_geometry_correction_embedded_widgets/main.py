@@ -22,10 +22,13 @@ matplotlib.rcParams["figure.figsize"] = (10, 10)
 from NeuNorm.normalization import Normalization
 
 from __code._utilities.file import make_or_increment_folder_name, make_tiff
+from __code._utilities import notebook_legend
 from __code.cylindrical_geometry_correction_embedded_widgets.cylindrical_geometry_correction import (
     number_of_pixels_at_that_position1,
 )
 from __code.file_folder_browser import FileFolderBrowser
+
+notebook_legend()
 
 
 class CylindricalGeometryCorrectionEmbeddedWidgets:
@@ -70,7 +73,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.working_dir = working_dir
 
     def select_images(self):
-        file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, next_function=self.load_images)
+        file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, 
+                                                next_function=self.load_images)
         file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
 
     def load_images(self, list_of_images):
@@ -111,31 +115,42 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             display(HTML("<span>Config file " + config_filename + "loaded!</span>"))
 
     def visualize_raw_images(self):
-        fig, ax1 = plt.subplots(num="Raw Images")
-        fig.show()
+        # fig, ax1 = plt.subplots(num="Raw Images")
+        # fig.show()
 
         def plot(image_index):
+            fig, ax1 = plt.subplots(num="Raw Images")
             data = self.data[image_index]
-            ax1.imshow(data, vmin=0, vmax=1)
+            im = ax1.imshow(data, vmin=0, vmax=1)
+            plt.colorbar(im, ax=ax1)
 
         v = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=len(self.data) - 1, value=0, layout=widgets.Layout(width="50%")),
+            image_index=widgets.IntSlider(min=0, 
+                                          max=len(self.data) - 1, 
+                                          value=0, 
+                                          layout=widgets.Layout(width="50%")),
         )
         display(v)
 
     def rotate_images(self):
-        fig = plt.figure(num="Rotation of images")
-        ax0 = plt.subplot(221)
-        ax1 = plt.subplot(223)
-        ax2 = plt.subplot(122)
+        # fig = plt.figure(num="Rotation of images")
+        # ax0 = plt.subplot(221)
+        # ax1 = plt.subplot(223)
+        # ax2 = plt.subplot(122)
 
         default_rotate_angle = self.config["default_rotate_angle"]
 
         profile_margin = 100
 
         def plot(rot_value, image_index, vert_guide, profile1_h, profile2_h):
-            ax0.cla()
+            
+            fig = plt.figure(num="Rotation of images")
+            ax0 = plt.subplot(221)
+            ax1 = plt.subplot(223)
+            ax2 = plt.subplot(122)
+            
+            # ax0.cla()
             data = self.data[image_index]
             data = rotate(data, rot_value)
             ax0.imshow(data, vmin=0, vmax=1)
@@ -167,7 +182,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             profile1 = data[profile1_h, vert_guide - profile_margin : vert_guide + profile_margin]
             profile2 = data[profile2_h, vert_guide - profile_margin : vert_guide + profile_margin]
 
-            ax1.cla()
+            # ax1.cla()
             ax1.plot(profile1, "b", label="profile 1")
             ax1.plot(profile2, "g", label="profile 2")
             plt.ylabel("Counts")
@@ -175,12 +190,12 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             plt.title("horizontal profiles around vertical guide")
             plt.tight_layout()
 
-            print(f"{point1 =}")
-            print(f"{point2 =}")
-            print(f"{point3 =}")
-            print(f"{point4 =}")
+            # print(f"{point1 =}")
+            # print(f"{point2 =}")
+            # print(f"{point3 =}")
+            # print(f"{point4 =}")
 
-            ax2.cla()
+            # ax2.cla()
             top = point1[1]
             bottom = point3[1]
             left = point1[0]
@@ -199,7 +214,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 continuous_update=False,
                 layout=widgets.Layout(width="50%"),
             ),
-            image_index=widgets.IntSlider(min=0, max=len(self.data) - 1, value=0, layout=widgets.Layout(width="50%")),
+            image_index=widgets.IntSlider(min=0, 
+                                          max=len(self.data) - 1,
+                                          value=0, 
+                                          layout=widgets.Layout(width="50%")),
             vert_guide=widgets.IntSlider(
                 min=0,
                 max=self.width - 1,
@@ -207,8 +225,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 layout=widgets.Layout(width="50%"),
                 continuous_update=False,
             ),
-            profile1_h=widgets.IntSlider(min=0, max=self.height - 1, continuous_update=False, value=1135),
-            profile2_h=widgets.IntSlider(min=0, max=self.height - 1, continuous_update=False, value=1794),
+            profile1_h=widgets.IntSlider(min=0, 
+                                         max=self.height - 1, 
+                                         continuous_update=False, 
+                                         value=1135),
+            profile2_h=widgets.IntSlider(min=0, 
+                                         max=self.height - 1,
+                                         continuous_update=False, 
+                                         value=1794),
         )
 
         display(self.v)
@@ -219,10 +243,6 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.data = [rotate(_data, rotation_value) for _data in self.data]
 
     def select_crop_region(self):
-        fig = plt.figure(num="Select Region to Crop")
-        ax0 = plt.subplot(221)
-        ax1 = plt.subplot(223)
-        ax2 = plt.subplot(122)
 
         # fig.set_figheight(6)
         # fig.set_figwidth(6)
@@ -230,8 +250,16 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         width = self.width
         height = self.height
 
-        def plot(image_index, left, right, top, bottom, profile_mker):
-            ax0.cla()
+        def plot(image_index, left_right, top_bottom, profile_mker):
+            
+            left, right = left_right
+            top, bottom = top_bottom
+            
+            fig = plt.figure(num="Select Region to Crop")
+            ax0 = plt.subplot(221)
+            ax1 = plt.subplot(223)
+            ax2 = plt.subplot(122)
+            
             ax0.imshow(self.data[image_index], vmin=0, vmax=1)
             ax0.axis("off")
             ax0.axvline(x=left, color="red", linestyle="--")
@@ -240,34 +268,49 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax0.axhline(y=bottom, color="red", linestyle="-.")
             ax0.axhline(y=profile_mker, color="blue", linestyle="dotted")
 
-            ax1.cla()
             profile = self.data[image_index][profile_mker, :]
             ax1.plot(profile, ".")
+            ax1.set_title("Profile at marker's position (dotted blue line)")
+            ax1.set_xlabel("Pixels")
+            ax1.set_ylabel("Counts")
             delta_x = right - left
             if delta_x < 0:
                 delta_x = 0
             left_x_profile = (left - delta_x) if (left - delta_x) > 0 else 0
             plt.xlim([left_x_profile, right + delta_x])
-            plt.xlabel("Horizontal pixel")
-            plt.ylabel("Counts")
-            plt.title("Profile at marker's position (dotted blue line)")
             ax1.axvline(x=left, linestyle="--", color="red")
             ax1.axvline(x=right, linestyle="--", color="red")
 
             ax2.cla()
             cropped_data = self.data[image_index][top : bottom + 1, left : right + 1]
             ax2.imshow(cropped_data, vmin=0, vmax=1)
+            ax2.set_title("Cropped Data Preview")
 
             return left, right, top, bottom
 
         self.crop_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            left=widgets.IntSlider(min=0, max=width - 1, value=self.config["default_crop"]["x0"]),
-            right=widgets.IntSlider(min=0, max=width - 1, value=self.config["default_crop"]["x1"]),
-            top=widgets.IntSlider(min=0, max=height - 1, value=self.config["default_crop"]["y0"]),
-            bottom=widgets.IntSlider(min=0, max=height - 1, value=self.config["default_crop"]["y1"]),
-            profile_mker=widgets.IntSlider(min=0, max=height - 1, value=self.config["default_crop"]["marker"]),
+            image_index=widgets.IntSlider(min=0, 
+                                          max=self.number_of_images - 1, 
+                                          value=0,
+                                          layout=widgets.Layout(width="50%")),
+            left_right=widgets.IntRangeSlider(
+                min=0, 
+                max=width - 1, 
+                value=[self.config["default_crop"]["x0"], self.config["default_crop"]["x1"]],
+                layout=widgets.Layout(width="50%")
+            ),
+            top_bottom=widgets.IntRangeSlider(
+                min=0, 
+                max=height - 1, 
+                value=[self.config["default_crop"]["y0"], self.config["default_crop"]["y1"]],
+                layout=widgets.Layout(width="50%")
+            ),
+            profile_mker=widgets.IntSlider(min=0, 
+                                           max=height - 1, 
+                                           value=self.config["default_crop"]["marker"],
+                                           layout=widgets.Layout(width="50%")
+                                           ),
         )
         display(self.crop_ui)
 
@@ -319,15 +362,17 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         if self.cropped_data is None:
             self.crop_region()
 
-        fig, ax1 = plt.subplots(num="Select top and bottom of background range")
         [height, _] = np.shape(self.cropped_data[0])
 
-        def plot(image_index, top, bottom):
-            ax1.cla()
+        def plot(image_index, top_bottom):
+            top, bottom = top_bottom
+            fig, ax1 = plt.subplots(num="Select top and bottom of background range")
+             
             ax1.imshow(self.cropped_data[image_index], vmin=0, vmax=1)
             # ax1.axis('off')
             ax1.axhline(y=top, color="red")
             ax1.axhline(y=bottom, color="red")
+            
             return top, bottom
 
         default_top = self.config["default_background"]["y0"]
@@ -335,18 +380,28 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         self.background_limit_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            top=widgets.IntSlider(min=0, max=height - 1, value=default_top),
-            bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom),
+            image_index=widgets.IntSlider(min=0, 
+                                          max=self.number_of_images - 1, 
+                                          value=0,
+                                          layout=widgets.Layout(width="50%")),
+            top_bottom=widgets.IntRangeSlider(
+                min=0, 
+                max=height - 1, 
+                value=[default_top, default_bottom],
+                layout=widgets.Layout(width="50%"),
+            ),
+            
         )
         display(self.background_limit_ui)
 
     def sample_region_selection(self):
-        fig, ax1 = plt.subplots(num="Select top and bottom of sample range")
+        
         [height, _] = np.shape(self.cropped_data[0])
 
-        def plot(image_index, top, bottom):
-            ax1.cla()
+        def plot(image_index, top_bottom):
+            top, bottom = top_bottom
+            fig, ax1 = plt.subplots(num="Select top and bottom of sample range")
+            
             ax1.imshow(self.cropped_data[image_index], vmin=0, vmax=1)
             # ax1.axis('off')
             ax1.axhline(y=top, color="red")
@@ -359,9 +414,15 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         self.sample_limit_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            top=widgets.IntSlider(min=0, max=height - 1, value=default_top),
-            bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom),
+            image_index=widgets.IntSlider(min=0, 
+                                          max=self.number_of_images - 1, 
+                                          value=0,
+                                          layout=widgets.Layout(width="50%")),
+            top_bottom=widgets.IntRangeSlider(
+                min=0, 
+                max=height - 1, 
+                value=[default_top, default_bottom]
+            , layout=widgets.Layout(width="50%")),
         )
         display(self.sample_limit_ui)
 
@@ -370,14 +431,18 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         this is where the vertical integrated signal from the background selected is removed from the signal
         range selected
         """
-        y0_background = self.background_limit_ui.children[1].value
-        y1_background = self.background_limit_ui.children[2].value
+        _y0_background, _y1_background = self.background_limit_ui.result
+        y0_background = min(_y0_background, _y1_background)
+        y1_background = max(_y0_background, _y1_background)
+        
         background_signal_integrated = [
             np.mean(_data[y0_background : y1_background + 1, :], axis=0) for _data in self.cropped_data
         ]
-
-        y0_sample = self.sample_limit_ui.children[1].value
-        y1_sample = self.sample_limit_ui.children[2].value
+        
+        _y0_sample, _y1_sample = self.sample_limit_ui.result
+        y0_sample = min(_y0_sample, _y1_sample)
+        y1_sample = max(_y0_sample, _y1_sample)
+        
         sample_without_background = []
         for _background, _sample in zip(background_signal_integrated, self.cropped_data, strict=False):
             _data = _sample[y0_sample : y1_sample + 1]
@@ -385,10 +450,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         self.sample_without_background = sample_without_background
 
-        fig, ax1 = plt.subplots(num="Sample without background")
-
         def plot(image_index):
-            ax1.cla()
+            fig, ax1 = plt.subplots(num="Sample without background")
             ax1.imshow(self.sample_without_background[image_index], vmin=0, vmax=1)
 
         self.sample_no_background_ui = interactive(
@@ -399,25 +462,24 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     def display_of_profiles(self):
         sample_without_background = self.sample_without_background
 
-        fig, ax = plt.subplots(nrows=1, ncols=2, num="Display of Profiles")
-
         height, width = np.shape(sample_without_background[0])
 
-        def plot(image_index, profile_height):
-            ax[0].cla()
+        def plot(image_index, profile_h):
+            
+            fig, ax = plt.subplots(nrows=1, ncols=2, num="Display of Profiles")
+            
             image = sample_without_background[image_index]
             ax[0].imshow(image)
-            ax[0].axhline(y=profile_height, color="red")
+            ax[0].axhline(y=profile_h, color="red")
 
-            ax[1].cla()
             data = sample_without_background[image_index]
-            profile = data[profile_height, :]
+            profile = data[profile_h, :]
             ax[1].plot(profile, ".")
 
         v = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            profile_height=widgets.IntSlider(min=0, max=height - 1, value=0),
+            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0, layout=widgets.Layout(width="50%")),
+            profile_h=widgets.IntSlider(min=0, max=height - 1, value=0, layout=widgets.Layout(width="50%")),
         )
         display(v)
 
@@ -453,11 +515,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         self.list_images_corrected = list_images_corrected
 
-        fig, ax = plt.subplots(nrows=2, ncols=1, num="Sample and profiles corrected ")
-        ax0, ax1 = ax
-
         def plot(image_index, index1, index2, plot_max):
-            ax0.cla()
+            
+            fig, ax = plt.subplots(nrows=2, ncols=1, num="Sample and profiles corrected ")
+            ax0, ax1 = ax
+        
             ax0.imshow(self.list_images_corrected[image_index], vmin=0, vmax=0.01)
             ax0.axhline(y=index1, linestyle="--", color="r")
             ax0.axhline(y=index2, linestyle="--", color="b")
@@ -469,17 +531,17 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         self.sample_corrected = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            index1=widgets.IntSlider(min=0, max=height - 1, value=int((height - 1) / 3)),
-            index2=widgets.IntSlider(min=0, max=height - 1, value=2 * int((height - 1) / 3)),
-            plot_max=widgets.FloatSlider(min=1e-5, max=1.0, step=0.001, value=0.02),
+            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0, layout=widgets.Layout(width="50%")),
+            index1=widgets.IntSlider(min=0, max=height - 1, value=int((height - 1) / 3), layout=widgets.Layout(width="50%")),
+            index2=widgets.IntSlider(min=0, max=height - 1, value=2 * int((height - 1) / 3), layout=widgets.Layout(width="50%")),
+            plot_max=widgets.FloatSlider(min=1e-5, max=1.0, step=0.001, value=0.02, layout=widgets.Layout(width="50%")),
         )
         display(self.sample_corrected)
 
     def export_profiles(self):
         working_dir = os.path.dirname(self.working_dir)
         output_folder_browser = FileFolderBrowser(working_dir=working_dir, next_function=self.export)
-        output_folder_browser.select_output_folder()
+        output_folder_browser.select_output_folder_with_new()
 
     def export(self, output_folder):
         output_folder = os.path.abspath(output_folder)

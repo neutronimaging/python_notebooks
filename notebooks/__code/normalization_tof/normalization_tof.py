@@ -982,7 +982,9 @@ class NormalizationTof:
             description="Shutter counts", value=shutter_counts_value, disabled=tpx3_disabled_flag
         )
         self.correct_chips_alignment_flag = widgets.Checkbox(
-            description="Correct chips alignment", disabled=True, value=False
+            description="Correct chips alignment", 
+            disabled=False, 
+            value=True
         )
 
         vertical_layout = widgets.VBox(
@@ -1009,9 +1011,7 @@ class NormalizationTof:
                                                                       layout=widgets.Layout(width="500px"))
         self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
                                                            names='value')
-        # self.correct_chips_alignment_flag = widgets.Checkbox(
-        #     description="Correct chips alignment", disabled=False, value=True
-        # )
+       
         display(self.replace_ob_zeros_by_local_median_flag)
 
         kernel_size_label = widgets.Label(value="Kernel size for local median (odd number):", 
