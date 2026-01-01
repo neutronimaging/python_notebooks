@@ -13,7 +13,9 @@ from __code.outliers_filtering.initialization import Initialization
 
 class InterfaceHandler(FileFolderBrowser):
     def __init__(self, working_dir=""):
-        super(InterfaceHandler, self).__init__(working_dir=working_dir, next_function=self.display_status)
+        super(InterfaceHandler, self).__init__(
+            working_dir=working_dir, next_function=self.display_status
+        )
 
     def get_list_of_files(self):
         return self.list_images_ui.selected
@@ -23,7 +25,13 @@ class InterfaceHandler(FileFolderBrowser):
 
     def display_status(self, list_of_files):
         nbr_images = str(len(list_of_files))
-        display(HTML('<span style="font-size: 15px; color:blue">You have selected ' + nbr_images + " images </span>"))
+        display(
+            HTML(
+                '<span style="font-size: 15px; color:blue">You have selected '
+                + nbr_images
+                + " images </span>"
+            )
+        )
 
 
 class Interface(QMainWindow):
@@ -135,7 +143,9 @@ class Interface(QMainWindow):
     def help_clicked(self):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/outliers-filtering-tool/")
+        webbrowser.open(
+            "https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/outliers-filtering-tool/"
+        )
 
     def display_image(self, image):
         self.ui.image_view.setImage(image)

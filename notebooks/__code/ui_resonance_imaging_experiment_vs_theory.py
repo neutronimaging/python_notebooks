@@ -20,7 +20,9 @@ class Ui_MainWindow:
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
         self.widget = QtWidgets.QWidget(self.splitter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -54,7 +56,9 @@ class Ui_MainWindow:
         self.energy_radio_button.setObjectName("energy_radio_button")
         self.horizontalLayout_8.addWidget(self.energy_radio_button)
         self.verticalLayout_4.addWidget(self.groupBox)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_4.addItem(spacerItem)
         self.horizontalLayout_4.addLayout(self.verticalLayout_4)
         self.verticalLayout = QtWidgets.QVBoxLayout()
@@ -64,17 +68,25 @@ class Ui_MainWindow:
         self.label_4.setObjectName("label_4")
         self.verticalLayout.addWidget(self.label_4)
         self.list_to_plot_widget = QtWidgets.QListWidget(self.widget1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.list_to_plot_widget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.list_to_plot_widget.sizePolicy().hasHeightForWidth()
+        )
         self.list_to_plot_widget.setSizePolicy(sizePolicy)
         self.list_to_plot_widget.setMinimumSize(QtCore.QSize(200, 100))
         self.list_to_plot_widget.setMaximumSize(QtCore.QSize(300, 300))
-        self.list_to_plot_widget.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.list_to_plot_widget.setSelectionMode(
+            QtWidgets.QAbstractItemView.MultiSelection
+        )
         self.list_to_plot_widget.setObjectName("list_to_plot_widget")
         self.verticalLayout.addWidget(self.list_to_plot_widget)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout_4.addLayout(self.verticalLayout)
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
@@ -87,12 +99,16 @@ class Ui_MainWindow:
         self.distance_source_detector_value = QtWidgets.QLineEdit(self.widget1)
         self.distance_source_detector_value.setMinimumSize(QtCore.QSize(80, 0))
         self.distance_source_detector_value.setMaximumSize(QtCore.QSize(80, 16777215))
-        self.distance_source_detector_value.setObjectName("distance_source_detector_value")
+        self.distance_source_detector_value.setObjectName(
+            "distance_source_detector_value"
+        )
         self.horizontalLayout.addWidget(self.distance_source_detector_value)
         self.label_2 = QtWidgets.QLabel(self.widget1)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout.addWidget(self.label_2)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem2)
         self.verticalLayout_3.addLayout(self.horizontalLayout)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
@@ -108,7 +124,9 @@ class Ui_MainWindow:
         self.detector_offset_units = QtWidgets.QLabel(self.widget1)
         self.detector_offset_units.setObjectName("detector_offset_units")
         self.horizontalLayout_2.addWidget(self.detector_offset_units)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_2.addItem(spacerItem3)
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
@@ -123,10 +141,14 @@ class Ui_MainWindow:
         self.time_spectra_file_browse_button = QtWidgets.QPushButton(self.widget1)
         self.time_spectra_file_browse_button.setMinimumSize(QtCore.QSize(100, 0))
         self.time_spectra_file_browse_button.setMaximumSize(QtCore.QSize(100, 16777215))
-        self.time_spectra_file_browse_button.setObjectName("time_spectra_file_browse_button")
+        self.time_spectra_file_browse_button.setObjectName(
+            "time_spectra_file_browse_button"
+        )
         self.horizontalLayout_3.addWidget(self.time_spectra_file_browse_button)
         self.verticalLayout_3.addLayout(self.horizontalLayout_3)
-        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_3.addItem(spacerItem4)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -147,13 +169,21 @@ class Ui_MainWindow:
 
         self.retranslateUi(MainWindow)
         self.done_button.clicked.connect(MainWindow.done_button_clicked)
-        self.distance_source_detector_value.editingFinished.connect(MainWindow.distance_source_detector_validated)
-        self.detector_offset_value.returnPressed.connect(MainWindow.detector_offset_validated)
-        self.time_spectra_file_browse_button.clicked.connect(MainWindow.time_spectra_file_browse_button_clicked)
+        self.distance_source_detector_value.editingFinished.connect(
+            MainWindow.distance_source_detector_validated
+        )
+        self.detector_offset_value.returnPressed.connect(
+            MainWindow.detector_offset_validated
+        )
+        self.time_spectra_file_browse_button.clicked.connect(
+            MainWindow.time_spectra_file_browse_button_clicked
+        )
         self.file_index_ratio_button.clicked.connect(MainWindow.radio_button_clicked)
         self.tof_radio_button.clicked.connect(MainWindow.radio_button_clicked)
         self.lambda_radio_button.clicked.connect(MainWindow.radio_button_clicked)
-        self.list_to_plot_widget.itemClicked["QListWidgetItem*"].connect(MainWindow.plot_selection_changed)
+        self.list_to_plot_widget.itemClicked["QListWidgetItem*"].connect(
+            MainWindow.plot_selection_changed
+        )
         self.energy_radio_button.clicked.connect(MainWindow.radio_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -172,5 +202,7 @@ class Ui_MainWindow:
         self.detector_offset_units.setText(_translate("MainWindow", "us"))
         self.label_5.setText(_translate("MainWindow", "Time Spectra File:"))
         self.time_spectra_file.setText(_translate("MainWindow", "N/A"))
-        self.time_spectra_file_browse_button.setText(_translate("MainWindow", "Browse ..."))
+        self.time_spectra_file_browse_button.setText(
+            _translate("MainWindow", "Browse ...")
+        )
         self.done_button.setText(_translate("MainWindow", "DONE"))

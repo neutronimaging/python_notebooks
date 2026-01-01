@@ -28,7 +28,9 @@ class Initialization(Parent):
         self.parent.ui.recap_edges_widget.setEnabled(False)
         self.parent.ui.calculated_edges_widget.setEnabled(False)
 
-        self.parent.ui.edge_calculation_file_index_slider.setMaximum(self.parent.nbr_files - 1)
+        self.parent.ui.edge_calculation_file_index_slider.setMaximum(
+            self.parent.nbr_files - 1
+        )
 
         data_0 = self.parent.list_of_data[0]
         nbr_points = len(data_0)
@@ -47,8 +49,12 @@ class Initialization(Parent):
             widget.setLayout(layout)
             return sc
 
-        self.parent.prepare_data_plot = _matplotlib(parent=self.parent, widget=self.parent.ui.prepare_data_widget)
-        self.parent.recap_edges_plot = _matplotlib(parent=self.parent, widget=self.parent.ui.recap_edges_widget)
+        self.parent.prepare_data_plot = _matplotlib(
+            parent=self.parent, widget=self.parent.ui.prepare_data_widget
+        )
+        self.parent.recap_edges_plot = _matplotlib(
+            parent=self.parent, widget=self.parent.ui.recap_edges_widget
+        )
         self.parent.calculated_edges_plot = _matplotlib(
             parent=self.parent, widget=self.parent.ui.calculated_edges_widget
         )

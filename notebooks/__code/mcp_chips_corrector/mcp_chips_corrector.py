@@ -31,7 +31,9 @@ class McpChipsCorrector:
         full_list_files = glob.glob(os.path.join(folder_selected, "*.tif*"))
         full_list_files.sort()
 
-        working_list_files = [file for file in full_list_files if "_SummedImg.fits" not in file]
+        working_list_files = [
+            file for file in full_list_files if "_SummedImg.fits" not in file
+        ]
 
         o_norm = Normalization()
         o_norm.load(file=working_list_files, notebook=True)

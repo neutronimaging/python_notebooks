@@ -56,8 +56,12 @@ class VenusMonitorHdf5:
             try:
                 with h5py.File(_nexus, "r") as nxs:
                     _index = np.array(nxs["entry"]["monitor1"]["event_index"])
-                    _time_offset = np.array(nxs["entry"]["monitor1"]["event_time_offset"])
-                    _time_zero = np.array(nxs["entry"]["monitor1"]["event_time_zero"]) * 10  # to convert to 100ns units
+                    _time_offset = np.array(
+                        nxs["entry"]["monitor1"]["event_time_offset"]
+                    )
+                    _time_zero = (
+                        np.array(nxs["entry"]["monitor1"]["event_time_zero"]) * 10
+                    )  # to convert to 100ns units
                     _total_counts = nxs["entry"]["monitor1"]["total_counts"][()]
 
                 list_data[_nexus] = {
@@ -68,7 +72,11 @@ class VenusMonitorHdf5:
                 }
 
             except KeyError:
-                display(HTML("<font color='red'>Error loading the monitor data!<br>Entry is missing!</font>"))
+                display(
+                    HTML(
+                        "<font color='red'>Error loading the monitor data!<br>Entry is missing!</font>"
+                    )
+                )
                 list_data[_nexus] = None
 
         self.list_data = list_data
@@ -83,14 +91,23 @@ class VenusMonitorHdf5:
 
         # distance
         distance_lock = widgets.Checkbox(False, layout=widgets.Layout(width="150px"))
-        distance_label = widgets.Label("Distance source_monitor", layout=widgets.Layout(width="200px"), disabled=True)
+        distance_label = widgets.Label(
+            "Distance source_monitor",
+            layout=widgets.Layout(width="200px"),
+            disabled=True,
+        )
         self.distance_source_detector_ui = widgets.FloatText(
             value=25, layout=widgets.Layout(width="100px"), disabled=True
         )
         distance_units_label = widgets.Label("m")
 
         distance_layout = widgets.HBox(
-            [distance_lock, distance_label, self.distance_source_detector_ui, distance_units_label]
+            [
+                distance_lock,
+                distance_label,
+                self.distance_source_detector_ui,
+                distance_units_label,
+            ]
         )
 
         def lock_changed(changes):
@@ -100,7 +117,9 @@ class VenusMonitorHdf5:
         distance_lock.observe(lock_changed, names="value")
 
         # monitor offset
-        monitor_label = widgets.Label("Monitor offset", layout=widgets.Layout(width="100px"))
+        monitor_label = widgets.Label(
+            "Monitor offset", layout=widgets.Layout(width="100px")
+        )
         self.monitor_offset_ui = widgets.FloatText(
             value=0,
             layout=widgets.Layout(width="100px"),
@@ -123,7 +142,9 @@ class VenusMonitorHdf5:
 
     def calculate_data_tof(self, time_offset=None, max_bin=2 * 16666):
         bins_size = self.bins_size
-        histo_tof, bins_tof = np.histogram(time_offset, bins=np.arange(0, max_bin, bins_size))
+        histo_tof, bins_tof = np.histogram(
+            time_offset, bins=np.arange(0, max_bin, bins_size)
+        )
         detector_offset_micros = self.detector_offset_micros
         _bins_tof = np.empty_like(bins_tof)
         for _index, _bin in enumerate(bins_tof):
@@ -136,13 +157,16 @@ class VenusMonitorHdf5:
         distance_source_detector_cm = self.distance_source_detector_m * 100.0
 
         lambda_axis_angstroms = VenusMonitorHdf5.from_micros_to_lambda(
-            tof_axis_micros=tof_axis, distance_source_detector_cm=distance_source_detector_cm
+            tof_axis_micros=tof_axis,
+            distance_source_detector_cm=distance_source_detector_cm,
         )
         return lambda_axis_angstroms
 
     def calculate_data_energy(self):
         lambda_axis_angstroms = self.lambda_axis_angstroms
-        self.energy_axis_ev = 1000 * (ENERGY_CONVERSION_FACTOR / (lambda_axis_angstroms * lambda_axis_angstroms))
+        self.energy_axis_ev = 1000 * (
+            ENERGY_CONVERSION_FACTOR / (lambda_axis_angstroms * lambda_axis_angstroms)
+        )
 
     @staticmethod
     def from_micros_to_lambda(tof_axis_micros, distance_source_detector_cm=2372.6):
@@ -185,7 +209,9 @@ class VenusMonitorHdf5:
                     continue
 
                 time_offset = list_data[_key]["event_time_offset"]
-                bins_tof, histo_tof = self.calculate_data_tof(time_offset=time_offset, max_bin=max_bin)
+                bins_tof, histo_tof = self.calculate_data_tof(
+                    time_offset=time_offset, max_bin=max_bin
+                )
                 self.list_data[_key]["bins_tof"] = bins_tof
                 self.list_data[_key]["histo_tof"] = histo_tof
                 lambda_axis_angstroms = self.calculate_data_lambda(bins_tof=bins_tof)
@@ -209,9 +235,14 @@ class VenusMonitorHdf5:
 
             display(HTML("<h2>Total counts:</h2>"))
             for _key in list_data.keys():
-                print(f"{os.path.basename(_key)}: {self.list_data[_key]['total_counts'][0]}")
+                print(
+                    f"{os.path.basename(_key)}: {self.list_data[_key]['total_counts'][0]}"
+                )
 
-        display_all = interactive(plot_data, max_bin=widgets.IntSlider(min=16666, max=5 * 16666, value=3 * 16666))
+        display_all = interactive(
+            plot_data,
+            max_bin=widgets.IntSlider(min=16666, max=5 * 16666, value=3 * 16666),
+        )
         display(display_all)
 
     # def display_all_at_once(self):
@@ -277,7 +308,9 @@ class VenusMonitorHdf5:
             base_nexus_file_name = os.path.basename(_nexus)
             split_nexus_file_name = base_nexus_file_name.split(".")
             time_stamp = get_current_time_in_special_file_name_format()
-            output_file_name = f"{split_nexus_file_name[0]}_monitor_data_{time_stamp}.txt"
+            output_file_name = (
+                f"{split_nexus_file_name[0]}_monitor_data_{time_stamp}.txt"
+            )
             full_output_file_name = os.path.join(output_folder, output_file_name)
 
             tof_axis = self.list_data[_nexus]["bins_tof"] / 10

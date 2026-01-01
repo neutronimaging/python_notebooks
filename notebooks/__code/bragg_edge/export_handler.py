@@ -18,7 +18,10 @@ class ExportHandler:
         base_folder = Path(self.parent.working_dir)
         directory = str(base_folder.parent)
         _export_folder = QFileDialog.getExistingDirectory(
-            self.parent, directory=directory, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self.parent,
+            directory=directory,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
 
         if _export_folder:
@@ -29,17 +32,34 @@ class ExportHandler:
             [x0, y0, x1, y1, width, height] = o_get.selection_roi_dimension()
 
             name_of_ascii_file = ExportHandler.makeup_name_of_profile_ascii_file(
-                base_name=str(base_folder.name), export_folder=_export_folder, x0=x0, y0=y0, width=width, height=height
+                base_name=str(base_folder.name),
+                export_folder=_export_folder,
+                x0=x0,
+                y0=y0,
+                width=width,
+                height=height,
             )
 
-            make_ascii_file(metadata=metadata, data=data, output_file_name=name_of_ascii_file, dim="1d")
+            make_ascii_file(
+                metadata=metadata,
+                data=data,
+                output_file_name=name_of_ascii_file,
+                dim="1d",
+            )
 
-            self.parent.ui.statusbar.showMessage(f"{name_of_ascii_file} has been created!", 10000)  # 10s
+            self.parent.ui.statusbar.showMessage(
+                f"{name_of_ascii_file} has been created!", 10000
+            )  # 10s
             self.parent.ui.statusbar.setStyleSheet("color: green")
 
     @staticmethod
     def makeup_name_of_profile_ascii_file(
-        base_name="default", export_folder="./", x0=None, y0=None, width=None, height=None
+        base_name="default",
+        export_folder="./",
+        x0=None,
+        y0=None,
+        width=None,
+        height=None,
     ):
         """this will return the full path name of the ascii file to create that will contain all the profiles
         starting with the selection box and all the way to the minimal size"""
@@ -76,20 +96,29 @@ class ExportHandler:
 
         metadata.append("#")
         metadata.append("#File Index, TOF(micros), lambda(Angstroms), ROIs (see above)")
-        data = ExportHandler.format_data(col1=index_axis, col2=tof_axis, col3=lambda_axis, dict_regions=dict_regions)
+        data = ExportHandler.format_data(
+            col1=index_axis, col2=tof_axis, col3=lambda_axis, dict_regions=dict_regions
+        )
 
         return data, metadata
 
     def add_fitting_infos_to_metadata(self, metadata):
         o_tab = GuiUtility(parent=self.parent)
-        fitting_algorithm_used = o_tab.get_tab_selected(tab_ui=self.parent.ui.tab_algorithm)
+        fitting_algorithm_used = o_tab.get_tab_selected(
+            tab_ui=self.parent.ui.tab_algorithm
+        )
         # fitting_rois = self.fitting_rois
         # fitting_flag = True if self.parent.fitting_peak_ui else False
         metadata.append(f"#fitting algorithm selected: {fitting_algorithm_used}")
-        metadata.append("#kropff fitting procedure started: {}".format(self.parent.fitting_procedure_started["kropff"]))
+        metadata.append(
+            "#kropff fitting procedure started: {}".format(
+                self.parent.fitting_procedure_started["kropff"]
+            )
+        )
         metadata.append(
             "#Bragg peak selection range: [{}, {}]".format(
-                self.parent.kropff_fitting_range["bragg_peak"][0], self.parent.kropff_fitting_range["bragg_peak"][1]
+                self.parent.kropff_fitting_range["bragg_peak"][0],
+                self.parent.kropff_fitting_range["bragg_peak"][1],
             )
         )
         # kropff
@@ -100,16 +129,22 @@ class ExportHandler:
 
         # March-dollase
         [left_peak, right_peak] = self.parent.march_dollase_fitting_range_selected
-        metadata.append(f"#march-dollase bragg peak selection range: [{left_peak}, {right_peak}]")
+        metadata.append(
+            f"#march-dollase bragg peak selection range: [{left_peak}, {right_peak}]"
+        )
         metadata.append(
             "#march-dollase fitting procedure started: {}".format(
                 self.parent.fitting_procedure_started["march-dollase"]
             )
         )
-        for _row_index, _row_entry in enumerate(self.parent.march_dollase_fitting_history_table):
+        for _row_index, _row_entry in enumerate(
+            self.parent.march_dollase_fitting_history_table
+        ):
             str_row_entry = [str(_value) for _value in _row_entry]
             joined_str_row_entry = ", ".join(str_row_entry)
-            metadata.append(f"#march-dollase history table row {_row_index}: {joined_str_row_entry}")
+            metadata.append(
+                f"#march-dollase history table row {_row_index}: {joined_str_row_entry}"
+            )
 
         sigma = self.parent.march_dollase_fitting_initial_parameters["sigma"]
         alpha = self.parent.march_dollase_fitting_initial_parameters["alpha"]
@@ -182,7 +217,9 @@ class ExportHandler:
         march_dollase_fitting_values=None,
     ):
         metadata = [f"#base folder: {base_folder}"]
-        metadata.append(f"#fitting peak range in file index: [{fitting_peak_range[0]}, {fitting_peak_range[1]}]")
+        metadata.append(
+            f"#fitting peak range in file index: [{fitting_peak_range[0]}, {fitting_peak_range[1]}]"
+        )
         metadata.append(f"#distance detector-sample: {distance_detector_sample}")
         metadata.append(f"#detector offset: {detector_offset}")
         for _row, _key in enumerate(dict_regions.keys()):
@@ -253,5 +290,7 @@ class ExportHandler:
             _col1 = col1[_row_index]
             _col2 = col2[_row_index]
             _col3 = col3[_row_index]
-            data.append(f"{_col1}, {_col2}, {_col3}, " + ", ".join(list_profile_for_this_row))
+            data.append(
+                f"{_col1}, {_col2}, {_col3}, " + ", ".join(list_profile_for_this_row)
+            )
         return data

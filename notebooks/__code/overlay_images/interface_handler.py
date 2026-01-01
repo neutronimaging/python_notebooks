@@ -13,9 +13,15 @@ from __code.overlay_images.initialization import Initialization
 
 class InterfaceHandler:
     def __init__(self, working_dir=None, o_norm_high_res=None, o_norm_low_res=None):
-        assert len(o_norm_low_res.data["sample"]["file_name"]) == len(o_norm_high_res.data["sample"]["file_name"])
+        assert len(o_norm_low_res.data["sample"]["file_name"]) == len(
+            o_norm_high_res.data["sample"]["file_name"]
+        )
 
-        o_interface = Interface(o_norm_high_res=o_norm_high_res, o_norm_low_res=o_norm_low_res, working_dir=working_dir)
+        o_interface = Interface(
+            o_norm_high_res=o_norm_high_res,
+            o_norm_low_res=o_norm_low_res,
+            working_dir=working_dir,
+        )
         o_interface.show()
 
         self.o_interface = o_interface
@@ -77,23 +83,34 @@ class Interface(QMainWindow):
     # if any of the current parameter is different from this, the EXPORT button becomes unavailable
     parameters_used_on_all_images = {"scaling_factor": 0, "xoffset": 0, "yoffset": 0}
 
-    def __init__(self, parent=None, o_norm_high_res=None, o_norm_low_res=None, working_dir=None):
+    def __init__(
+        self, parent=None, o_norm_high_res=None, o_norm_low_res=None, working_dir=None
+    ):
         self.o_norm_high_res = o_norm_high_res
         self.o_norm_low_res = o_norm_low_res
         self.working_dir = working_dir if working_dir else "./"
 
-        self.high_res_image_height, self.high_res_image_width = np.shape(o_norm_high_res.data["sample"]["data"][0])
-        self.low_res_image_height, self.low_res_image_width = np.shape(o_norm_low_res.data["sample"]["data"][0])
+        self.high_res_image_height, self.high_res_image_width = np.shape(
+            o_norm_high_res.data["sample"]["data"][0]
+        )
+        self.low_res_image_height, self.low_res_image_width = np.shape(
+            o_norm_low_res.data["sample"]["data"][0]
+        )
         self.rescaled_low_res_height, self.rescaled_low_res_width = None, None
         self.list_of_high_res_filename = o_norm_high_res.data["sample"]["file_name"]
 
-        self.high_res_input_folder = os.path.dirname(o_norm_high_res.data["sample"]["file_name"][0])
-        self.low_res_input_folder = os.path.dirname(o_norm_low_res.data["sample"]["file_name"][0])
+        self.high_res_input_folder = os.path.dirname(
+            o_norm_high_res.data["sample"]["file_name"][0]
+        )
+        self.low_res_input_folder = os.path.dirname(
+            o_norm_low_res.data["sample"]["file_name"][0]
+        )
 
         super(Interface, self).__init__(parent)
 
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_overlay.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_overlay.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Overlay images with scaling")
@@ -126,19 +143,27 @@ class Interface(QMainWindow):
 
     def markers_changed(self):
         o_get = Get(parent=self)
-        high_res_1_dict = o_get.marker_location(image_resolution="high_res", target_index="1")
+        high_res_1_dict = o_get.marker_location(
+            image_resolution="high_res", target_index="1"
+        )
         self.markers["high_res"]["1"]["x"] = high_res_1_dict["x"]
         self.markers["high_res"]["1"]["y"] = high_res_1_dict["y"]
 
-        high_res_2_dict = o_get.marker_location(image_resolution="high_res", target_index="2")
+        high_res_2_dict = o_get.marker_location(
+            image_resolution="high_res", target_index="2"
+        )
         self.markers["high_res"]["2"]["x"] = high_res_2_dict["x"]
         self.markers["high_res"]["2"]["y"] = high_res_2_dict["y"]
 
-        low_res_1_dict = o_get.marker_location(image_resolution="low_res", target_index="1")
+        low_res_1_dict = o_get.marker_location(
+            image_resolution="low_res", target_index="1"
+        )
         self.markers["low_res"]["1"]["x"] = low_res_1_dict["x"]
         self.markers["low_res"]["1"]["y"] = low_res_1_dict["y"]
 
-        low_res_2_dict = o_get.marker_location(image_resolution="low_res", target_index="2")
+        low_res_2_dict = o_get.marker_location(
+            image_resolution="low_res", target_index="2"
+        )
         self.markers["low_res"]["2"]["x"] = low_res_2_dict["x"]
         self.markers["low_res"]["2"]["y"] = low_res_2_dict["y"]
 
@@ -268,7 +293,9 @@ class Interface(QMainWindow):
 
     def profile_region_moved(self):
         o_get = Get(parent=self)
-        overlay_1_dict = o_get.marker_location(image_resolution="overlay", target_index="1")
+        overlay_1_dict = o_get.marker_location(
+            image_resolution="overlay", target_index="1"
+        )
         self.markers["overlay"]["1"]["x"] = overlay_1_dict["x"]
         self.markers["overlay"]["1"]["y"] = overlay_1_dict["y"]
 

@@ -8,7 +8,10 @@ from qtpy import QtGui
 from qtpy.QtWidgets import QFileDialog
 
 from __code.file_handler import copy_and_rename_files_to_folder, make_or_reset_folder
-from __code.panoramic_stitching_for_tof.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
+from __code.panoramic_stitching_for_tof.image_handler import (
+    HORIZONTAL_MARGIN,
+    VERTICAL_MARGIN,
+)
 
 FILE_PREFIX = "image_"
 
@@ -21,7 +24,8 @@ class Export:
         output_folder = QFileDialog.getExistingDirectory(
             self.parent,
             directory=self.parent.working_dir,
-            caption="Select where the folder containing the " "panoramic images will be created!",
+            caption="Select where the folder containing the "
+            "panoramic images will be created!",
             options=QFileDialog.ShowDirsOnly,
         )
         if output_folder:
@@ -63,26 +67,39 @@ class Export:
 
                 if _folder_index == 0:
                     panoramic_image[
-                        yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                        xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                        yoffset + VERTICAL_MARGIN : yoffset
+                        + image_height
+                        + VERTICAL_MARGIN,
+                        xoffset + HORIZONTAL_MARGIN : xoffset
+                        + image_width
+                        + HORIZONTAL_MARGIN,
                     ] = image
                     continue
 
                 temp_big_image = np.zeros((panoramic_height, panoramic_width))
 
                 temp_big_image[
-                    yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                    xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                    yoffset + VERTICAL_MARGIN : yoffset
+                    + image_height
+                    + VERTICAL_MARGIN,
+                    xoffset + HORIZONTAL_MARGIN : xoffset
+                    + image_width
+                    + HORIZONTAL_MARGIN,
                 ] = image
 
-                where_temp_big_image_has_value_only = np.where((temp_big_image != 0) & (panoramic_image == 0))
-                where_both_images_overlap = np.where((panoramic_image != 0) & (temp_big_image != 0))
+                where_temp_big_image_has_value_only = np.where(
+                    (temp_big_image != 0) & (panoramic_image == 0)
+                )
+                where_both_images_overlap = np.where(
+                    (panoramic_image != 0) & (temp_big_image != 0)
+                )
 
                 panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
                     where_temp_big_image_has_value_only
                 ]
                 panoramic_image[where_both_images_overlap] = (
-                    panoramic_image[where_both_images_overlap] + temp_big_image[where_both_images_overlap]
+                    panoramic_image[where_both_images_overlap]
+                    + temp_big_image[where_both_images_overlap]
                 ) / 2
 
             file_name = FILE_PREFIX + f"{_file_index:04d}.tiff"
@@ -96,7 +113,9 @@ class Export:
 
     def export_images(self, output_folder=None):
         new_folder_name = os.path.basename(self.parent.working_dir) + "_panoramic"
-        self.parent.ui.statusbar.showMessage(f"Exporting images in folder {new_folder_name}")
+        self.parent.ui.statusbar.showMessage(
+            f"Exporting images in folder {new_folder_name}"
+        )
         QtGui.QGuiApplication.processEvents()
 
         new_output_folder_name = os.path.join(output_folder, new_folder_name)
@@ -117,7 +136,9 @@ class Export:
 
         self.copy_txt_files_to_output_folder(output_folder=new_output_folder_name)
 
-        self.parent.ui.statusbar.showMessage(f"{new_output_folder_name} has been created!", 10000)  # 10s
+        self.parent.ui.statusbar.showMessage(
+            f"{new_output_folder_name} has been created!", 10000
+        )  # 10s
         QtGui.QGuiApplication.processEvents()
 
     def copy_txt_files_to_output_folder(self, output_folder=None):
@@ -133,5 +154,7 @@ class Export:
             list_new_file_names.append(new_name)
 
         copy_and_rename_files_to_folder(
-            list_files=list_txt_files, new_list_files_names=list_new_file_names, output_folder=output_folder
+            list_files=list_txt_files,
+            new_list_files_names=list_new_file_names,
+            output_folder=output_folder,
         )

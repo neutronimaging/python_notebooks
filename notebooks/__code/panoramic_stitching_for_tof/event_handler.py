@@ -42,7 +42,9 @@ class TOFEventHandler:
         if len(list_of_files) == 0:
             error_message = "Select the position of the images!"
             validate_button = False
-        elif (len(list_of_files) == len(list_folders)) and (len(set(list_of_files)) == len(list_folders)):
+        elif (len(list_of_files) == len(list_folders)) and (
+            len(set(list_of_files)) == len(list_folders)
+        ):
             validate_button = True
         else:
             validate_button = False
