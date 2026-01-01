@@ -6,7 +6,10 @@ from qtpy import QtCore
 from qtpy.QtWidgets import QProgressBar, QTableWidgetItem, QVBoxLayout
 
 from __code.file_handler import retrieve_time_stamp
-from __code.metadata_overlapping_images.general_classes import MetadataSettings, ScaleSettings
+from __code.metadata_overlapping_images.general_classes import (
+    MetadataSettings,
+    ScaleSettings,
+)
 
 from .get import Get
 
@@ -33,7 +36,9 @@ class Initializer:
     def table(self):
         # init the summary table
         list_files_full_name = self.parent.data_dict["file_name"]
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+        list_files_short_name = [
+            os.path.basename(_file) for _file in list_files_full_name
+        ]
 
         self.parent.ui.tableWidget.blockSignals(True)
         for _row, _file in enumerate(list_files_short_name):
@@ -62,7 +67,9 @@ class Initializer:
         # update size of table columns
         nbr_columns = self.parent.ui.tableWidget.columnCount()
         for _col in range(nbr_columns):
-            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.guide_table_width[_col])
+            self.parent.ui.tableWidget.setColumnWidth(
+                _col, self.parent.guide_table_width[_col]
+            )
 
         # populate list of metadata if file is a tiff
         o_get = Get(parent=self.parent)
@@ -73,7 +80,9 @@ class Initializer:
             self.parent.ui.select_metadata_combobox.setVisible(False)
 
         # list of scale available
-        self.parent.ui.scale_units_combobox.addItems(self.parent.list_scale_units["string"])
+        self.parent.ui.scale_units_combobox.addItems(
+            self.parent.list_scale_units["string"]
+        )
 
         # pixel size range
         [height, width] = np.shape(self.parent.data_dict["data"][0])

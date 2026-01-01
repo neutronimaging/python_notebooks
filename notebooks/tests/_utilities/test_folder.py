@@ -16,14 +16,17 @@ class TestFolders:
     def test_list_of_folders_to_check_is_list(self):
         list_of_folders_to_check = "file_name"
         with pytest.raises(ValueError):
-            folder.get_list_of_folders_with_specified_file_type(list_of_folders_to_check=list_of_folders_to_check)
+            folder.get_list_of_folders_with_specified_file_type(
+                list_of_folders_to_check=list_of_folders_to_check
+            )
 
     def test_file_extension_is_list(self):
         list_of_folders_to_check = ["folder1", "folder2"]
         file_extension = "file extension"
         with pytest.raises(ValueError):
             folder.get_list_of_folders_with_specified_file_type(
-                list_of_folders_to_check=list_of_folders_to_check, file_extension=file_extension
+                list_of_folders_to_check=list_of_folders_to_check,
+                file_extension=file_extension,
             )
 
     def test_folder_rejected_when_do_not_exist(self):

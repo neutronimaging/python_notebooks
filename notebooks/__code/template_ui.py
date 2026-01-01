@@ -61,7 +61,9 @@ class Interface(QMainWindow):
         self.ui.slider.valueChanged.connect(self.file_index_changed)
 
         # spacer
-        spacer = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacer = QtGui.QSpacerItem(
+            40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
+        )
 
         bottom_layout.addWidget(label_1)
         bottom_layout.addWidget(self.ui.slider)

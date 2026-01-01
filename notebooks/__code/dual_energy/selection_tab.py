@@ -33,7 +33,11 @@ class SelectionTab:
         self.parent.ui.profile.plot(
             x_axis,
             y_axis,
-            pen=(self.parent.selection_roi_rgb[0], self.parent.selection_roi_rgb[1], self.parent.selection_roi_rgb[2]),
+            pen=(
+                self.parent.selection_roi_rgb[0],
+                self.parent.selection_roi_rgb[1],
+                self.parent.selection_roi_rgb[2],
+            ),
         )
 
         self.parent.ui.profile.setLabel("bottom", x_axis_label)
@@ -46,10 +50,18 @@ class SelectionTab:
         ]
 
         self.parent.profile_selection_range_ui = pg.LinearRegionItem(
-            values=profile_selection_range, orientation=None, brush=None, movable=True, bounds=None
+            values=profile_selection_range,
+            orientation=None,
+            brush=None,
+            movable=True,
+            bounds=None,
         )
-        self.parent.profile_selection_range_ui.sigRegionChanged.connect(self.parent.profile_selection_range_changed)
-        self.parent.profile_selection_range_ui.sigRegionChangeFinished.connect(self.parent.roi_moved)
+        self.parent.profile_selection_range_ui.sigRegionChanged.connect(
+            self.parent.profile_selection_range_changed
+        )
+        self.parent.profile_selection_range_ui.sigRegionChangeFinished.connect(
+            self.parent.roi_moved
+        )
         self.parent.profile_selection_range_ui.setZValue(-10)
         self.parent.ui.profile.addItem(self.parent.profile_selection_range_ui)
 
@@ -100,7 +112,9 @@ class SelectionTab:
             bin_tof = tof_array_s[current_value]
             bin_lambda = lambda_array[current_value]
         elif current_axis_name == "tof":
-            bin_index = find_nearest_index(array=tof_array_s, value=current_value * 1e-6)
+            bin_index = find_nearest_index(
+                array=tof_array_s, value=current_value * 1e-6
+            )
             bin_tof = current_value
             bin_lambda = lambda_array[bin_index]
         elif current_axis_name == "lambda":
@@ -108,7 +122,11 @@ class SelectionTab:
             bin_tof = tof_array_s[bin_index]
             bin_lambda = current_value
 
-        self.parent.bin_size_value = {"index": bin_index, "tof": bin_tof, "lambda": bin_lambda}
+        self.parent.bin_size_value = {
+            "index": bin_index,
+            "tof": bin_tof,
+            "lambda": bin_lambda,
+        }
 
     def make_list_of_bins(self):
         [from_index, to_index] = self.parent.profile_selection_range
@@ -139,7 +157,9 @@ class SelectionTab:
             return
 
         roi_id = self.parent.roi_id
-        region = roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
+        region = roi_id.getArraySlice(
+            self.parent.final_image, self.parent.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
@@ -192,7 +212,9 @@ class SelectionTab:
             return
 
         try:
-            region = self.parent.roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
+            region = self.parent.roi_id.getArraySlice(
+                self.parent.final_image, self.parent.ui.image_view.imageItem
+            )
         except TypeError:
             return
 
@@ -206,7 +228,9 @@ class SelectionTab:
         _pen = QtGui.QPen()
         _pen.setColor(self.parent.roi_settings["color"])
         _pen.setWidthF(self.parent.roi_settings["width"])
-        self.parent.roi_id = pg.ROI([x0, y0], [new_value, new_value], pen=_pen, scaleSnap=True)
+        self.parent.roi_id = pg.ROI(
+            [x0, y0], [new_value, new_value], pen=_pen, scaleSnap=True
+        )
 
         self.parent.ui.image_view.addItem(self.parent.roi_id)
         self.parent.roi_id.sigRegionChanged.connect(self.parent.roi_moved)
@@ -234,7 +258,11 @@ class SelectionTab:
         self.parent.ui.profile.plot(
             x_axis,
             y_axis,
-            pen=(self.parent.shrinking_roi_rgb[0], self.parent.shrinking_roi_rgb[1], self.parent.shrinking_roi_rgb[2]),
+            pen=(
+                self.parent.shrinking_roi_rgb[0],
+                self.parent.shrinking_roi_rgb[1],
+                self.parent.shrinking_roi_rgb[2],
+            ),
         )
         self.parent.ui.profile.setLabel("bottom", x_axis_label)
         self.parent.ui.profile.setLabel("left", "Mean transmission")
@@ -244,7 +272,11 @@ class SelectionTab:
         self.parent.ui.profile.plot(
             x_axis,
             y_axis,
-            pen=(self.parent.selection_roi_rgb[0], self.parent.selection_roi_rgb[1], self.parent.selection_roi_rgb[2]),
+            pen=(
+                self.parent.selection_roi_rgb[0],
+                self.parent.selection_roi_rgb[1],
+                self.parent.selection_roi_rgb[2],
+            ),
         )
 
     def profile_of_bin_size_slider_changed(self, new_value):
@@ -293,7 +325,9 @@ class SelectionTab:
         _pen.setColor(self.parent.shrinking_roi_settings["color"])
         _pen.setWidthF(self.parent.shrinking_roi_settings["width"])
 
-        self.parent.shrinking_roi_id = pg.ROI([x0, y0], [width, height], pen=_pen, scaleSnap=True, movable=False)
+        self.parent.shrinking_roi_id = pg.ROI(
+            [x0, y0], [width, height], pen=_pen, scaleSnap=True, movable=False
+        )
         self.parent.ui.image_view.addItem(self.parent.shrinking_roi_id)
 
     def update_profile_of_bin_slider_widget(self):
@@ -307,7 +341,9 @@ class SelectionTab:
                 "height": fitting_input_dictionary["rois"][_key]["height"],
             }
         self.parent.dict_rois_imported = dict_rois_imported
-        self.parent.ui.profile_of_bin_size_slider.setRange(0, len(dict_rois_imported) - 1)
+        self.parent.ui.profile_of_bin_size_slider.setRange(
+            0, len(dict_rois_imported) - 1
+        )
         # self.parent.ui.profile_of_bin_size_slider.setMinimum(0)
         # self.parent.ui.profile_of_bin_size_slider.setMaximum(len(dict_rois_imported)-1)
         self.parent.ui.profile_of_bin_size_slider.setSingleStep(1)
@@ -336,7 +372,9 @@ class SelectionTab:
             left_bin = list_bin_index[n_bin]
             right_bin = list_bin_index[n_bin + 1]
             mean_images_of_bin = np.nanmean(list_data[left_bin:right_bin][:][:], axis=0)
-            mean_images_of_bin_and_selection = np.nanmean(mean_images_of_bin[y0:y1, x0:x1])
+            mean_images_of_bin_and_selection = np.nanmean(
+                mean_images_of_bin[y0:y1, x0:x1]
+            )
             list_mean_counts_of_bin.append(mean_images_of_bin_and_selection)
 
         o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
@@ -344,7 +382,9 @@ class SelectionTab:
         row_and_column_of_max_ratio_value = {"row": [], "column": []}
         for _row in np.arange(nbr_bin):
             for _col in np.arange(_row, nbr_bin):
-                bin_col_divided_by_bin_row = list_mean_counts_of_bin[_col] / list_mean_counts_of_bin[_row]
+                bin_col_divided_by_bin_row = (
+                    list_mean_counts_of_bin[_col] / list_mean_counts_of_bin[_row]
+                )
                 diff_with_1 = np.abs(1 - bin_col_divided_by_bin_row)
                 if diff_with_1 > max_ratio_value:
                     max_ratio_value = diff_with_1
@@ -362,9 +402,13 @@ class SelectionTab:
 
         # change the background of the max_ratio_value_cell
         for _row, _col in zip(
-            row_and_column_of_max_ratio_value["row"], row_and_column_of_max_ratio_value["column"], strict=False
+            row_and_column_of_max_ratio_value["row"],
+            row_and_column_of_max_ratio_value["column"],
+            strict=False,
         ):
-            o_table.set_background_color(row=_row, column=_col, qcolor=self.background_color_of_max_bin_ratio)
+            o_table.set_background_color(
+                row=_row, column=_col, qcolor=self.background_color_of_max_bin_ratio
+            )
 
         self.fill_summary_table(
             bin_index_1=row_and_column_of_max_ratio_value["row"][0],
@@ -378,11 +422,15 @@ class SelectionTab:
 
     @staticmethod
     def get_file_index_range(bin_index=None, list_bin_positions=None):
-        return SelectionTab.get_range_for_given_key(key="index", index=bin_index, list_bin_positions=list_bin_positions)
+        return SelectionTab.get_range_for_given_key(
+            key="index", index=bin_index, list_bin_positions=list_bin_positions
+        )
 
     @staticmethod
     def get_tof_index_range(bin_index=None, list_bin_positions=None):
-        return SelectionTab.get_range_for_given_key(key="tof", index=bin_index, list_bin_positions=list_bin_positions)
+        return SelectionTab.get_range_for_given_key(
+            key="tof", index=bin_index, list_bin_positions=list_bin_positions
+        )
 
     @staticmethod
     def get_lambda_index_range(bin_index=None, list_bin_positions=None):
@@ -420,14 +468,22 @@ class SelectionTab:
         (from_tof_index, to_tof_index) = SelectionTab.get_tof_index_range(
             bin_index=bin_index_1, list_bin_positions=list_bin_positions
         )
-        o_table.insert_item(row=0, column=3, value=from_tof_index * 1e6, format_str="{:f}")
-        o_table.insert_item(row=0, column=4, value=to_tof_index * 1e6, format_str="{:f}")
+        o_table.insert_item(
+            row=0, column=3, value=from_tof_index * 1e6, format_str="{:f}"
+        )
+        o_table.insert_item(
+            row=0, column=4, value=to_tof_index * 1e6, format_str="{:f}"
+        )
 
         (from_tof_index, to_tof_index) = SelectionTab.get_tof_index_range(
             bin_index=bin_index_2, list_bin_positions=list_bin_positions
         )
-        o_table.insert_item(row=1, column=3, value=from_tof_index * 1e6, format_str="{:f}")
-        o_table.insert_item(row=1, column=4, value=to_tof_index * 1e6, format_str="{:2f}")
+        o_table.insert_item(
+            row=1, column=3, value=from_tof_index * 1e6, format_str="{:f}"
+        )
+        o_table.insert_item(
+            row=1, column=4, value=to_tof_index * 1e6, format_str="{:2f}"
+        )
 
         # lambda index
         (from_lambda_index, to_lambda_index) = SelectionTab.get_lambda_index_range(
@@ -482,7 +538,10 @@ class SelectionTab:
         self.parent.ui.image_ratio_view.setImage(_image)
 
         o_table = TableHandler(table_ui=self.parent.ui.calculation_bin_table)
-        o_table.select_cell(row=optimum_bin_ratio["bin_number_1"], column=optimum_bin_ratio["bin_number_2"])
+        o_table.select_cell(
+            row=optimum_bin_ratio["bin_number_1"],
+            column=optimum_bin_ratio["bin_number_2"],
+        )
         self.save_widget_enabled(enabled=True)
         self.parent.calculated_live_image = _image
 
@@ -502,12 +561,16 @@ class SelectionTab:
 
         from_index1 = row
         to_index1 = from_index1 + 1
-        image_stack1 = data[list_bin_index[from_index1] : list_bin_index[to_index1]][:][:]
+        image_stack1 = data[list_bin_index[from_index1] : list_bin_index[to_index1]][:][
+            :
+        ]
         image1 = np.mean(image_stack1, axis=0)
 
         from_index2 = column
         to_index2 = from_index2 + 1
-        image_stack2 = data[list_bin_index[from_index2] : list_bin_index[to_index2]][:][:]
+        image_stack2 = data[list_bin_index[from_index2] : list_bin_index[to_index2]][:][
+            :
+        ]
         image2 = np.mean(image_stack2, axis=0)
 
         index_of_0 = np.where(image2 == 0)

@@ -38,7 +38,10 @@ class VenusDisplayMetadataFromHdf5:
         self.display_average_metadata = display_average_metadata
 
         self.legend_ui = widgets.Text(
-            value="", placeholder="Type your legend here", description="Legend:", disabled=False
+            value="",
+            placeholder="Type your legend here",
+            description="Legend:",
+            disabled=False,
         )
         display(self.legend_ui)
 
@@ -69,7 +72,9 @@ class VenusDisplayMetadataFromHdf5:
             return np.mean(np.array(nxs["value"][:]))
 
     def load_metadata(self, list_nexus_file_name):
-        dict_data, list_mean_data, list_nexus = self._load_metadata(list_nexus_file_name)
+        dict_data, list_mean_data, list_nexus = self._load_metadata(
+            list_nexus_file_name
+        )
         self.dict_data = dict_data
         self.list_mean_data = list_mean_data
         self.list_nexus = list_nexus
@@ -87,11 +92,17 @@ class VenusDisplayMetadataFromHdf5:
         )
 
         for _index, _pv_key in enumerate(self.list_mean_data.keys()):
-            axs[_index, 0].plot(self.list_mean_data[_pv_key], "o-", label=self.legend_ui.value)
+            axs[_index, 0].plot(
+                self.list_mean_data[_pv_key], "o-", label=self.legend_ui.value
+            )
             axs[_index, 0].set_title(f"Mean {list_pvs[_pv_key]['label']}")
             axs[_index, 0].set_ylabel(list_pvs[_pv_key]["label"])
             axs[_index, 0].set_xlabel("Nexus file index")
-            axs[_index, 0].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=90)
+            axs[_index, 0].set_xticks(
+                range(len(self.list_mean_data[_pv_key])),
+                labels=self.list_nexus,
+                rotation=90,
+            )
             axs[_index, 0].legend()
 
             for _nexus in self.dict_data.keys():
@@ -116,21 +127,32 @@ class VenusDisplayMetadataFromHdf5:
         )
 
         for _index, _pv_key in enumerate(self.list_mean_data.keys()):
-            axs[_index, 0].plot(self.list_mean_data[_pv_key], "o-", label=self.legend_ui.value)
+            axs[_index, 0].plot(
+                self.list_mean_data[_pv_key], "o-", label=self.legend_ui.value
+            )
             axs[_index, 0].set_title(f"Mean {list_pvs[_pv_key]['label']}")
             axs[_index, 0].set_ylabel(list_pvs[_pv_key]["label"])
             axs[_index, 0].set_xlabel("Nexus file index")
-            axs[_index, 0].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=90)
+            axs[_index, 0].set_xticks(
+                range(len(self.list_mean_data[_pv_key])),
+                labels=self.list_nexus,
+                rotation=90,
+            )
             axs[_index, 0].legend()
 
             axs[_index, 1].plot(
-                self.list_mean_data_second_set[_pv_key], "o-", color="red", label=self.legend_second_set_ui.value
+                self.list_mean_data_second_set[_pv_key],
+                "o-",
+                color="red",
+                label=self.legend_second_set_ui.value,
             )
             axs[_index, 1].set_title(f"Mean {list_pvs[_pv_key]['label']}")
             axs[_index, 1].set_ylabel(list_pvs[_pv_key]["label"])
             axs[_index, 1].set_xlabel("Nexus file index")
             axs[_index, 1].set_xticks(
-                range(len(self.list_mean_data_second_set[_pv_key])), labels=self.list_nexus_second_set, rotation=90
+                range(len(self.list_mean_data_second_set[_pv_key])),
+                labels=self.list_nexus_second_set,
+                rotation=90,
             )
             axs[_index, 1].legend()
 
@@ -146,11 +168,17 @@ class VenusDisplayMetadataFromHdf5:
         )
 
         for _index, _pv_key in enumerate(self.list_mean_data.keys()):
-            axs[_index].plot(self.list_mean_data[_pv_key], "o-", label=self.legend_ui.value)
+            axs[_index].plot(
+                self.list_mean_data[_pv_key], "o-", label=self.legend_ui.value
+            )
             axs[_index].set_title(f"Mean {list_pvs[_pv_key]['label']}")
             axs[_index].set_ylabel(list_pvs[_pv_key]["label"])
             axs[_index].set_xlabel("Nexus file index")
-            axs[_index].set_xticks(range(len(self.list_mean_data[_pv_key])), labels=self.list_nexus, rotation=90)
+            axs[_index].set_xticks(
+                range(len(self.list_mean_data[_pv_key])),
+                labels=self.list_nexus,
+                rotation=90,
+            )
             axs[_index].legend()
 
         plt.tight_layout()
@@ -160,7 +188,10 @@ class VenusDisplayMetadataFromHdf5:
         self.display_average_metadata = display_average_metadata
 
         self.legend_second_set_ui = widgets.Text(
-            value="", placeholder="Type your legend here", description="Legend:", disabled=False
+            value="",
+            placeholder="Type your legend here",
+            description="Legend:",
+            disabled=False,
         )
         display(self.legend_second_set_ui)
 
@@ -179,7 +210,9 @@ class VenusDisplayMetadataFromHdf5:
         self.nexus_ui.show()
 
     def load_metadata_second_set(self, list_nexus_file_name):
-        dict_data, list_mean_data, list_nexus = self._load_metadata(list_nexus_file_name)
+        dict_data, list_mean_data, list_nexus = self._load_metadata(
+            list_nexus_file_name
+        )
         self.dict_data_second_set = dict_data
         self.list_mean_data_second_set = list_mean_data
         self.list_nexus_second_set = list_nexus
@@ -193,7 +226,10 @@ class VenusDisplayMetadataFromHdf5:
         list_nexus = []
         list_mean_data = {_key: [] for _key in list_pvs.keys()}
 
-        dict_data = {os.path.basename(_nexus).split(".")[0]: {} for _nexus in list_nexus_file_name}
+        dict_data = {
+            os.path.basename(_nexus).split(".")[0]: {}
+            for _nexus in list_nexus_file_name
+        }
 
         for _nexus in list_nexus_file_name:
             _base_nexus = os.path.basename(_nexus)
@@ -205,8 +241,12 @@ class VenusDisplayMetadataFromHdf5:
                 _pv_path = list_pvs[_pv_key]["path"]
                 _pv_label = list_pvs[_pv_key]["label"]
                 try:
-                    _value = VenusDisplayMetadataFromHdf5.value_of_pv_path(_nexus, _pv_path)
-                    _mean_value = VenusDisplayMetadataFromHdf5.mean_value_of_pv_path(_nexus, _pv_path)
+                    _value = VenusDisplayMetadataFromHdf5.value_of_pv_path(
+                        _nexus, _pv_path
+                    )
+                    _mean_value = VenusDisplayMetadataFromHdf5.mean_value_of_pv_path(
+                        _nexus, _pv_path
+                    )
                     list_mean_data[_pv_key].append(_mean_value)
                     dict_data[_short_name_nexus][_pv_key] = _value
                     logging.info(f"{_pv_label}: {_mean_value}")

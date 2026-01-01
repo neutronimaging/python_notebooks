@@ -49,7 +49,9 @@ class Timepix3HistoHdf5McpDetector:
 
     default_parameters = {
         JSONKeys.dSD_m: 19.855,
-        JSONKeys.rois_selected: {0: {JSONKeys.x0: 467, JSONKeys.y0: 99, JSONKeys.x1: 975, JSONKeys.y1: 429}},
+        JSONKeys.rois_selected: {
+            0: {JSONKeys.x0: 467, JSONKeys.y0: 99, JSONKeys.x1: 975, JSONKeys.y1: 429}
+        },
         JSONKeys.offset_micros: 0,
         JSONKeys.time_shift: 0,
         JSONKeys.element: "Ni",
@@ -103,7 +105,11 @@ class Timepix3HistoHdf5McpDetector:
         )
         display(self.toggle_button)
 
-        validate_button = widgets.Button(description="SELECT", icon="folder-open", layout=widgets.Layout(width="310px"))
+        validate_button = widgets.Button(
+            description="SELECT",
+            icon="folder-open",
+            layout=widgets.Layout(width="310px"),
+        )
         display(validate_button)
 
         validate_button.on_click(self.input_selection_made)
@@ -174,11 +180,19 @@ class Timepix3HistoHdf5McpDetector:
 
         self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.a0] = float(a0)
         self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.b0] = float(b0)
-        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.ahkl] = float(ahkl)
-        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.bhkl] = float(bhkl)
-        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.lambdahkl] = float(lambdahkl)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.ahkl] = float(
+            ahkl
+        )
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.bhkl] = float(
+            bhkl
+        )
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.lambdahkl] = (
+            float(lambdahkl)
+        )
         self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.tau] = float(tau)
-        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.sigma] = float(sigma)
+        self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.sigma] = float(
+            sigma
+        )
 
         display(
             HTML(
@@ -197,7 +211,9 @@ class Timepix3HistoHdf5McpDetector:
 
         with h5py.File(nexus_file_name, "r") as f:
             self.stack = np.array(f["entry"]["histo"]["stack"])
-            self.time_spectra = np.array(f["entry"]["histo"]["tof_ns"]) / 1000  # to convert to micros
+            self.time_spectra = (
+                np.array(f["entry"]["histo"]["tof_ns"]) / 1000
+            )  # to convert to micros
 
     def preview_integrated_stack(self):
         self.integrated_stack = self.stack.sum(axis=0)
@@ -260,7 +276,12 @@ class Timepix3HistoHdf5McpDetector:
             total_pixels_in_rois += width * height
 
             _rect = patches.Rectangle(
-                (x0, y0), x1 - x0, y1 - y0, linewidth=1, edgecolor=list_matplotlib_colors[_roi_index], facecolor="none"
+                (x0, y0),
+                x1 - x0,
+                y1 - y0,
+                linewidth=1,
+                edgecolor=list_matplotlib_colors[_roi_index],
+                facecolor="none",
             )
             rect_array.append(_rect)
 
@@ -273,7 +294,9 @@ class Timepix3HistoHdf5McpDetector:
                 x1 = rois_selected[_roi_index]["x1"]
                 y1 = rois_selected[_roi_index]["y1"]
 
-                total_counts_for_this_image += np.nansum(_image[y0 : y1 + 1, x0 : x1 + 1])
+                total_counts_for_this_image += np.nansum(
+                    _image[y0 : y1 + 1, x0 : x1 + 1]
+                )
 
             profile.append(total_counts_for_this_image / total_pixels_in_rois)
 
@@ -296,7 +319,9 @@ class Timepix3HistoHdf5McpDetector:
                 _handler = BraggEdgeLibrary(material=[element], number_of_bragg_edges=6)
             else:  # Ta
                 _handler = BraggEdgeLibrary(
-                    new_material=[{"name": "Ta", "lattice": 3.3058, "crystal_structure": "BCC"}],
+                    new_material=[
+                        {"name": "Ta", "lattice": 3.3058, "crystal_structure": "BCC"}
+                    ],
                     number_of_bragg_edges=6,
                 )
 
@@ -363,7 +388,10 @@ class Timepix3HistoHdf5McpDetector:
                 readout_format=".3f",
             ),
             offset_micros=widgets.IntSlider(
-                value=self.default_parameters[JSONKeys.offset_micros], min=0, max=15000, continuous_update=False
+                value=self.default_parameters[JSONKeys.offset_micros],
+                min=0,
+                max=15000,
+                continuous_update=False,
             ),
             time_shift=widgets.IntSlider(
                 value=self.default_parameters[JSONKeys.time_shift],
@@ -372,7 +400,9 @@ class Timepix3HistoHdf5McpDetector:
                 step=1,
                 continuous_update=False,
             ),
-            element=widgets.RadioButtons(options=LIST_ELEMENTS, value=self.default_parameters[JSONKeys.element]),
+            element=widgets.RadioButtons(
+                options=LIST_ELEMENTS, value=self.default_parameters[JSONKeys.element]
+            ),
         )
         display(self.v)
 
@@ -382,7 +412,11 @@ class Timepix3HistoHdf5McpDetector:
                 '<span style="font-size: 20px; color:green">Full range of peak to fit (left_range, right_range)</span>'
             )
         )
-        display(HTML('<span style="font-size: 20px; color:red">Peak threshold (left_peak, right_peak)</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:red">Peak threshold (left_peak, right_peak)</span>'
+            )
+        )
 
         lambda_x_axis, profile_shifted = self.prepare_data()
         self.lambda_x_axis = lambda_x_axis
@@ -476,17 +510,25 @@ class Timepix3HistoHdf5McpDetector:
 
     def fitting(self):
         # setup parameters
-        display(HTML('<span style="font-size: 20px; color:blue">Init parameters</span>'))
+        display(
+            HTML('<span style="font-size: 20px; color:blue">Init parameters</span>')
+        )
 
         text_width = "80px"  # px
         display(HTML('<span style="font-size: 15px; color:green">High lambda</span>'))
         default_a0 = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.a0]
         self.a0_layout = widgets.HBox(
-            [widgets.Label("a\u2080"), widgets.IntText(default_a0, layout=widgets.Layout(width=text_width))]
+            [
+                widgets.Label("a\u2080"),
+                widgets.IntText(default_a0, layout=widgets.Layout(width=text_width)),
+            ]
         )
         default_b0 = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.b0]
         self.b0_layout = widgets.HBox(
-            [widgets.Label("b\u2080"), widgets.IntText(default_b0, layout=widgets.Layout(width=text_width))]
+            [
+                widgets.Label("b\u2080"),
+                widgets.IntText(default_b0, layout=widgets.Layout(width=text_width)),
+            ]
         )
         high_layout = widgets.VBox([self.a0_layout, self.b0_layout])
         display(high_layout)
@@ -494,14 +536,18 @@ class Timepix3HistoHdf5McpDetector:
         display(HTML(""))
 
         display(HTML('<span style="font-size: 15px; color:green">Low lambda</span>'))
-        default_ahkl = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.ahkl]
+        default_ahkl = self.default_parameters[JSONKeys.fitting_parameters][
+            JSONKeys.ahkl
+        ]
         self.ahkl_layout = widgets.HBox(
             [
                 widgets.Label("a\u2095\u2096\u2097"),
                 widgets.IntText(default_ahkl, layout=widgets.Layout(width=text_width)),
             ]
         )
-        default_bhkl = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.bhkl]
+        default_bhkl = self.default_parameters[JSONKeys.fitting_parameters][
+            JSONKeys.bhkl
+        ]
         self.bhkl_layout = widgets.HBox(
             [
                 widgets.Label("b\u2095\u2096\u2097"),
@@ -514,27 +560,45 @@ class Timepix3HistoHdf5McpDetector:
         display(HTML(""))
 
         display(HTML('<span style="font-size: 15px; color:green">Bragg peak</span>'))
-        default_lambdahkl = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.lambdahkl]
+        default_lambdahkl = self.default_parameters[JSONKeys.fitting_parameters][
+            JSONKeys.lambdahkl
+        ]
         self.lambdahkl_layout = widgets.HBox(
             [
                 widgets.Label("\u03bb\u2095\u2096\u2097"),
-                widgets.FloatText(default_lambdahkl, layout=widgets.Layout(width=text_width)),
+                widgets.FloatText(
+                    default_lambdahkl, layout=widgets.Layout(width=text_width)
+                ),
             ]
         )
         default_tau = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.tau]
         self.tau_layout = widgets.HBox(
-            [widgets.Label("\u03c4"), widgets.FloatText(default_tau, layout=widgets.Layout(width=text_width))]
+            [
+                widgets.Label("\u03c4"),
+                widgets.FloatText(default_tau, layout=widgets.Layout(width=text_width)),
+            ]
         )
-        default_sigma = self.default_parameters[JSONKeys.fitting_parameters][JSONKeys.sigma]
+        default_sigma = self.default_parameters[JSONKeys.fitting_parameters][
+            JSONKeys.sigma
+        ]
         self.sigma_layout = widgets.HBox(
-            [widgets.Label("\u03c3"), widgets.FloatText(default_sigma, layout=widgets.Layout(width=text_width))]
+            [
+                widgets.Label("\u03c3"),
+                widgets.FloatText(
+                    default_sigma, layout=widgets.Layout(width=text_width)
+                ),
+            ]
         )
-        bragg_peak_layout = widgets.VBox([self.lambdahkl_layout, self.tau_layout, self.sigma_layout])
+        bragg_peak_layout = widgets.VBox(
+            [self.lambdahkl_layout, self.tau_layout, self.sigma_layout]
+        )
         display(bragg_peak_layout)
 
         display(widgets.HTML("<hr"))
 
-        self.fitting_button = widgets.Button(description="FIT", layout=widgets.Layout(width="100%"))
+        self.fitting_button = widgets.Button(
+            description="FIT", layout=widgets.Layout(width="100%")
+        )
         display(self.fitting_button)
         self.fitting_button.on_click(self.fit_peak)
 
@@ -565,10 +629,26 @@ class Timepix3HistoHdf5McpDetector:
         self.right_edge_index = right_edge
 
         logging.info("Prepare data to fit:")
-        logging.info(f"\tpeak left_range: {left_lambda_range}" + "\u212b " + f"-> index: {left_peak}")
-        logging.info(f"\tpeak right_range: {right_lambda_range}" + "\u212b " + f"-> index: {right_peak}")
-        logging.info(f"\tedge left_range: {left_lambda_edge}" + "\u212b " + f"-> index: {left_edge}")
-        logging.info(f"\tedge right_range: {right_lambda_edge}" + "\u212b " + f"-> index: {right_edge}")
+        logging.info(
+            f"\tpeak left_range: {left_lambda_range}"
+            + "\u212b "
+            + f"-> index: {left_peak}"
+        )
+        logging.info(
+            f"\tpeak right_range: {right_lambda_range}"
+            + "\u212b "
+            + f"-> index: {right_peak}"
+        )
+        logging.info(
+            f"\tedge left_range: {left_lambda_edge}"
+            + "\u212b "
+            + f"-> index: {left_edge}"
+        )
+        logging.info(
+            f"\tedge right_range: {right_lambda_edge}"
+            + "\u212b "
+            + f"-> index: {right_edge}"
+        )
         logging.info(f"\tlambda_x_axis: {lambda_x_axis}")
 
         logging.info(f"\tsize of profile: {len(profile_shifted)}")
@@ -604,7 +684,9 @@ class Timepix3HistoHdf5McpDetector:
 
         # display full spectrum
         list_matplotlib_colors = Color.list_matplotlib
-        ax4.plot(x_axis_to_fit, -np.log(y_axis_to_fit), "*", color=list_matplotlib_colors[0])
+        ax4.plot(
+            x_axis_to_fit, -np.log(y_axis_to_fit), "*", color=list_matplotlib_colors[0]
+        )
 
         max_counts = 0
         dict_of_fit_dict = {}
@@ -630,13 +712,21 @@ class Timepix3HistoHdf5McpDetector:
 
         # display fitting
         # high lambda
-        x_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]["xaxis"]
-        y_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda]["yaxis"]
+        x_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda][
+            "xaxis"
+        ]
+        y_axis_fitted_high_lambda = o_fit_regions.fit_dict[FittingRegions.high_lambda][
+            "yaxis"
+        ]
         ax4.plot(x_axis_fitted_high_lambda, y_axis_fitted_high_lambda, "r-")
 
         # low lambda
-        x_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]["xaxis"]
-        y_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda]["yaxis"]
+        x_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda][
+            "xaxis"
+        ]
+        y_axis_fitted_low_lambda = o_fit_regions.fit_dict[FittingRegions.low_lambda][
+            "yaxis"
+        ]
         ax4.plot(x_axis_fitted_low_lambda, y_axis_fitted_low_lambda, "y-")
 
         # bragg peak
@@ -666,7 +756,10 @@ class Timepix3HistoHdf5McpDetector:
             _handler = BraggEdgeLibrary(material=[element], number_of_bragg_edges=6)
         else:  # Ta
             _handler = BraggEdgeLibrary(
-                new_material=[{"name": "Ta", "lattice": 3.3058, "crystal_structure": "BCC"}], number_of_bragg_edges=6
+                new_material=[
+                    {"name": "Ta", "lattice": 3.3058, "crystal_structure": "BCC"}
+                ],
+                number_of_bragg_edges=6,
             )
 
         self.bragg_edges = _handler.bragg_edges
@@ -688,7 +781,9 @@ class Timepix3HistoHdf5McpDetector:
 
     def saving_session(self):
         # select output location
-        o_output_folder = FileFolderBrowser(working_dir=self.working_dir, next_function=self.export_session)
+        o_output_folder = FileFolderBrowser(
+            working_dir=self.working_dir, next_function=self.export_session
+        )
         o_output_folder.select_output_folder(instruction="Select output folder ...")
 
     def export_session(self, output_folder=None):
@@ -699,7 +794,9 @@ class Timepix3HistoHdf5McpDetector:
         base, _ = os.path.splitext(os.path.basename(input_nexus_filename))
         current_time = get_current_time_in_special_file_name_format()
 
-        output_file_name = os.path.abspath(os.path.join(output_folder, f"config_{base}_{current_time}.cfg"))
+        output_file_name = os.path.abspath(
+            os.path.join(output_folder, f"config_{base}_{current_time}.cfg")
+        )
 
         # record all parameters
         rois_selected = self.rois_selected

@@ -202,7 +202,9 @@ class TableHandler:
         _item = self.table_ui.item(row, column)
         _item.setBackground(qcolor)
 
-    def fill_table_with(self, list_items=None, editable_columns_boolean=None, block_signal=False):
+    def fill_table_with(
+        self, list_items=None, editable_columns_boolean=None, block_signal=False
+    ):
         """
         :param:
         list_items: 2D array of text to put in the table
@@ -223,7 +225,12 @@ class TableHandler:
                     editable_flag = False
                 else:
                     editable_flag = editable_columns_boolean[_column_index]
-                self.insert_item(row=_row_index, column=_column_index, value=_text, editable=editable_flag)
+                self.insert_item(
+                    row=_row_index,
+                    column=_column_index,
+                    value=_text,
+                    editable=editable_flag,
+                )
 
         if block_signal:
             WidgetsHandler.block_signals(ui=self.table_ui, status=False)

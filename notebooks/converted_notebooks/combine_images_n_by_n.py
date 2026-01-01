@@ -21,7 +21,9 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.combine_images_n_by_n.combine_images_n_by_n import CombineImagesNByN as CombineImages
+from __code.combine_images_n_by_n.combine_images_n_by_n import (
+    CombineImagesNByN as CombineImages,
+)
 
 system.System.select_working_dir(notebook="combine_images_n_by_n")
 from __code.__all import custom_style

@@ -28,8 +28,12 @@ class DataInitialization:
         o_coarse = CoarseTabHandler(parent=self.parent)
         nbr_row = self.parent.ui.coarse_alignment_tableWidget.rowCount()
         nbr_column = self.parent.ui.coarse_alignment_tableWidget.columnCount()
-        nbr_empty_rows = o_coarse.get_number_of_empty_rows_from_top(nbr_row=nbr_row, nbr_column=nbr_column)
-        nbr_empty_columns = o_coarse.get_number_of_empty_columns_from_left(nbr_row=nbr_row, nbr_column=nbr_column)
+        nbr_empty_rows = o_coarse.get_number_of_empty_rows_from_top(
+            nbr_row=nbr_row, nbr_column=nbr_column
+        )
+        nbr_empty_columns = o_coarse.get_number_of_empty_columns_from_left(
+            nbr_row=nbr_row, nbr_column=nbr_column
+        )
 
         nbr_row = nbr_column = nbr_folders
         for _row in np.arange(nbr_row):
@@ -39,7 +43,11 @@ class DataInitialization:
                 if not folder_name == "":
                     xoffset = (_column - nbr_empty_columns) * image_width
                     yoffset = (_row - nbr_empty_rows) * image_height
-                    _offset_dict = {"xoffset": xoffset, "yoffset": yoffset, "visible": True}
+                    _offset_dict = {
+                        "xoffset": xoffset,
+                        "yoffset": yoffset,
+                        "visible": True,
+                    }
                     offset_dictionary[folder_name] = _offset_dict
 
         self.parent.offset_dictionary = offset_dictionary

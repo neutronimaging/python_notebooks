@@ -28,10 +28,14 @@ class Ui_MainWindow:
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.pyqtgraph_widget = QtWidgets.QWidget(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pyqtgraph_widget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pyqtgraph_widget.sizePolicy().hasHeightForWidth()
+        )
         self.pyqtgraph_widget.setSizePolicy(sizePolicy)
         self.pyqtgraph_widget.setObjectName("pyqtgraph_widget")
         self.horizontalLayout_7.addWidget(self.pyqtgraph_widget)
@@ -91,7 +95,9 @@ class Ui_MainWindow:
         self.scale_vertical_orientation = QtWidgets.QRadioButton(self.scale_groupbox)
         self.scale_vertical_orientation.setObjectName("scale_vertical_orientation")
         self.horizontalLayout_2.addWidget(self.scale_vertical_orientation)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_2.addItem(spacerItem)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
@@ -132,7 +138,9 @@ class Ui_MainWindow:
         self.scale_color_combobox.addItem("")
         self.scale_color_combobox.addItem("")
         self.horizontalLayout_5.addWidget(self.scale_color_combobox)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem1)
         self.label = QtWidgets.QLabel(self.scale_groupbox)
         self.label.setObjectName("label")
@@ -147,7 +155,9 @@ class Ui_MainWindow:
         self.horizontalLayout_11.addWidget(self.scale_groupbox)
         self.verticalLayout_5 = QtWidgets.QVBoxLayout()
         self.verticalLayout_5.setObjectName("verticalLayout_5")
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_5.addItem(spacerItem2)
         self.scale_position_label = QtWidgets.QLabel(self.layoutWidget1)
         self.scale_position_label.setEnabled(False)
@@ -181,7 +191,9 @@ class Ui_MainWindow:
         self.label_9.setAlignment(QtCore.Qt.AlignCenter)
         self.label_9.setObjectName("label_9")
         self.verticalLayout_5.addWidget(self.scale_position_frame)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_5.addItem(spacerItem3)
         self.horizontalLayout_11.addLayout(self.verticalLayout_5)
         self.verticalLayout_4.addLayout(self.horizontalLayout_11)
@@ -259,12 +271,16 @@ class Ui_MainWindow:
         self.metadata_color_combobox.addItem("")
         self.metadata_color_combobox.addItem("")
         self.horizontalLayout_6.addWidget(self.metadata_color_combobox)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_6.addItem(spacerItem4)
         self.verticalLayout.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_14 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_14.setObjectName("horizontalLayout_14")
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_14.addItem(spacerItem5)
         self.import_table_button = QtWidgets.QPushButton(self.metadata_groupbox)
         self.import_table_button.setObjectName("import_table_button")
@@ -273,7 +289,9 @@ class Ui_MainWindow:
         self.horizontalLayout_13.addWidget(self.metadata_groupbox)
         self.verticalLayout_8 = QtWidgets.QVBoxLayout()
         self.verticalLayout_8.setObjectName("verticalLayout_8")
-        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem6 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_8.addItem(spacerItem6)
         self.metadata_position_label = QtWidgets.QLabel(self.layoutWidget1)
         self.metadata_position_label.setEnabled(False)
@@ -311,7 +329,9 @@ class Ui_MainWindow:
         self.label_11.setAlignment(QtCore.Qt.AlignCenter)
         self.label_11.setObjectName("label_11")
         self.verticalLayout_8.addWidget(self.metadata_position_frame)
-        spacerItem7 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem7 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_8.addItem(spacerItem7)
         self.enable_graph_checkbox = QtWidgets.QCheckBox(self.layoutWidget1)
         self.enable_graph_checkbox.setEnabled(False)
@@ -372,7 +392,9 @@ class Ui_MainWindow:
         self.graph_color_combobox.addItem("")
         self.graph_color_combobox.addItem("")
         self.horizontalLayout_10.addWidget(self.graph_color_combobox)
-        spacerItem8 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem8 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_10.addItem(spacerItem8)
         self.verticalLayout_9.addLayout(self.horizontalLayout_10)
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
@@ -388,11 +410,15 @@ class Ui_MainWindow:
         self.metadata_graph_size_slider.setOrientation(QtCore.Qt.Horizontal)
         self.metadata_graph_size_slider.setObjectName("metadata_graph_size_slider")
         self.horizontalLayout_12.addWidget(self.metadata_graph_size_slider)
-        spacerItem9 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem9 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_12.addItem(spacerItem9)
         self.verticalLayout_9.addLayout(self.horizontalLayout_12)
         self.verticalLayout_8.addWidget(self.graph_groupBox)
-        spacerItem10 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem10 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_8.addItem(spacerItem10)
         self.horizontalLayout_13.addLayout(self.verticalLayout_8)
         self.verticalLayout_6.addLayout(self.horizontalLayout_13)
@@ -402,7 +428,9 @@ class Ui_MainWindow:
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout.addWidget(self.pushButton)
-        spacerItem11 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem11 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem11)
         self.export_button = QtWidgets.QPushButton(self.centralwidget)
         self.export_button.setObjectName("export_button")
@@ -439,41 +467,93 @@ class Ui_MainWindow:
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
         self.pushButton.clicked.connect(MainWindow.help_button_clicked)
         self.scale_checkbox.clicked["bool"].connect(MainWindow.scale_checkbox_clicked)
-        self.metadata_checkbox.clicked["bool"].connect(MainWindow.metadata_checkbox_clicked)
-        self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
+        self.metadata_checkbox.clicked["bool"].connect(
+            MainWindow.metadata_checkbox_clicked
+        )
+        self.previous_image_button.clicked.connect(
+            MainWindow.previous_image_button_clicked
+        )
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.file_slider.sliderPressed.connect(MainWindow.slider_file_clicked)
         self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
-        self.select_metadata_checkbox.clicked["bool"].connect(MainWindow.select_metadata_checkbox_clicked)
-        self.select_metadata_combobox.currentIndexChanged["int"].connect(MainWindow.metadata_list_changed)
-        self.scale_horizontal_orientation.clicked.connect(MainWindow.scale_orientation_clicked)
-        self.scale_vertical_orientation.clicked.connect(MainWindow.scale_orientation_clicked)
-        self.scale_thickness.valueChanged["int"].connect(MainWindow.scale_thickness_value_changed)
-        self.scale_color_combobox.currentIndexChanged["int"].connect(MainWindow.scale_color_changed)
-        self.scale_size_spinbox.valueChanged["int"].connect(MainWindow.scale_size_changed)
+        self.select_metadata_checkbox.clicked["bool"].connect(
+            MainWindow.select_metadata_checkbox_clicked
+        )
+        self.select_metadata_combobox.currentIndexChanged["int"].connect(
+            MainWindow.metadata_list_changed
+        )
+        self.scale_horizontal_orientation.clicked.connect(
+            MainWindow.scale_orientation_clicked
+        )
+        self.scale_vertical_orientation.clicked.connect(
+            MainWindow.scale_orientation_clicked
+        )
+        self.scale_thickness.valueChanged["int"].connect(
+            MainWindow.scale_thickness_value_changed
+        )
+        self.scale_color_combobox.currentIndexChanged["int"].connect(
+            MainWindow.scale_color_changed
+        )
+        self.scale_size_spinbox.valueChanged["int"].connect(
+            MainWindow.scale_size_changed
+        )
         self.scale_real_size.returnPressed.connect(MainWindow.scale_real_size_changed)
-        self.scale_units_combobox.currentIndexChanged["int"].connect(MainWindow.scale_units_changed)
-        self.scale_position_x.sliderMoved["int"].connect(MainWindow.scale_position_moved)
+        self.scale_units_combobox.currentIndexChanged["int"].connect(
+            MainWindow.scale_units_changed
+        )
+        self.scale_position_x.sliderMoved["int"].connect(
+            MainWindow.scale_position_moved
+        )
         self.scale_position_x.sliderPressed.connect(MainWindow.scale_position_clicked)
-        self.metadata_position_x.sliderMoved["int"].connect(MainWindow.metadata_position_moved)
-        self.metadata_position_x.sliderPressed.connect(MainWindow.metadata_position_clicked)
-        self.metadata_position_y.sliderMoved["int"].connect(MainWindow.metadata_position_moved)
-        self.metadata_position_y.sliderPressed.connect(MainWindow.metadata_position_clicked)
-        self.scale_position_y.sliderMoved["int"].connect(MainWindow.scale_position_moved)
+        self.metadata_position_x.sliderMoved["int"].connect(
+            MainWindow.metadata_position_moved
+        )
+        self.metadata_position_x.sliderPressed.connect(
+            MainWindow.metadata_position_clicked
+        )
+        self.metadata_position_y.sliderMoved["int"].connect(
+            MainWindow.metadata_position_moved
+        )
+        self.metadata_position_y.sliderPressed.connect(
+            MainWindow.metadata_position_clicked
+        )
+        self.scale_position_y.sliderMoved["int"].connect(
+            MainWindow.scale_position_moved
+        )
         self.scale_position_y.sliderPressed.connect(MainWindow.scale_position_clicked)
-        self.metadata_color_combobox.currentIndexChanged["int"].connect(MainWindow.metadata_color_changed)
-        self.manual_metadata_name.returnPressed.connect(MainWindow.metadata_name_return_pressed)
-        self.manual_metadata_units.returnPressed.connect(MainWindow.metadata_name_return_pressed)
-        self.metadata_graph_size_slider.sliderPressed.connect(MainWindow.metadata_graph_size_pressed)
-        self.metadata_graph_size_slider.sliderMoved["int"].connect(MainWindow.metadata_graph_size_moved)
+        self.metadata_color_combobox.currentIndexChanged["int"].connect(
+            MainWindow.metadata_color_changed
+        )
+        self.manual_metadata_name.returnPressed.connect(
+            MainWindow.metadata_name_return_pressed
+        )
+        self.manual_metadata_units.returnPressed.connect(
+            MainWindow.metadata_name_return_pressed
+        )
+        self.metadata_graph_size_slider.sliderPressed.connect(
+            MainWindow.metadata_graph_size_pressed
+        )
+        self.metadata_graph_size_slider.sliderMoved["int"].connect(
+            MainWindow.metadata_graph_size_moved
+        )
         self.import_table_button.clicked.connect(MainWindow.import_table_pressed)
-        self.tableWidget.customContextMenuRequested["QPoint"].connect(MainWindow.metadata_table_right_click)
+        self.tableWidget.customContextMenuRequested["QPoint"].connect(
+            MainWindow.metadata_table_right_click
+        )
         self.graph_position_y.sliderPressed.connect(MainWindow.graph_position_clicked)
         self.graph_position_x.sliderPressed.connect(MainWindow.graph_position_clicked)
-        self.graph_position_x.sliderMoved["int"].connect(MainWindow.graph_position_moved)
-        self.graph_position_y.sliderMoved["int"].connect(MainWindow.graph_position_moved)
-        self.enable_graph_checkbox.stateChanged["int"].connect(MainWindow.enable_graph_button_clicked)
-        self.graph_color_combobox.currentIndexChanged["int"].connect(MainWindow.graph_color_changed)
+        self.graph_position_x.sliderMoved["int"].connect(
+            MainWindow.graph_position_moved
+        )
+        self.graph_position_y.sliderMoved["int"].connect(
+            MainWindow.graph_position_moved
+        )
+        self.enable_graph_checkbox.stateChanged["int"].connect(
+            MainWindow.enable_graph_button_clicked
+        )
+        self.graph_color_combobox.currentIndexChanged["int"].connect(
+            MainWindow.graph_color_changed
+        )
         self.graph_position_x.sliderReleased.connect(MainWindow.graph_position_clicked)
         self.graph_position_y.sliderReleased.connect(MainWindow.graph_position_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -486,7 +566,9 @@ class Ui_MainWindow:
         self.next_image_button.setText(_translate("MainWindow", "Next Image"))
         self.scale_checkbox.setText(_translate("MainWindow", "Scale"))
         self.label_2.setText(_translate("MainWindow", "Orientation:"))
-        self.scale_horizontal_orientation.setText(_translate("MainWindow", "horizontal"))
+        self.scale_horizontal_orientation.setText(
+            _translate("MainWindow", "horizontal")
+        )
         self.scale_vertical_orientation.setText(_translate("MainWindow", "vertical"))
         self.label_3.setText(_translate("MainWindow", "Size:"))
         self.label_4.setText(_translate("MainWindow", "pixels     =="))
@@ -502,7 +584,9 @@ class Ui_MainWindow:
         self.label_8.setText(_translate("MainWindow", "x"))
         self.label_9.setText(_translate("MainWindow", "y"))
         self.metadata_checkbox.setText(_translate("MainWindow", "Metadata"))
-        self.select_metadata_checkbox.setText(_translate("MainWindow", "Select metadata"))
+        self.select_metadata_checkbox.setText(
+            _translate("MainWindow", "Select metadata")
+        )
         self.meta_label.setText(_translate("MainWindow", "Legend:"))
         self.label_12.setText(_translate("MainWindow", "... [Value] ..."))
         item = self.tableWidget.horizontalHeaderItem(0)
@@ -520,7 +604,9 @@ class Ui_MainWindow:
         self.label_10.setText(_translate("MainWindow", "x"))
         self.label_11.setText(_translate("MainWindow", "y"))
         self.enable_graph_checkbox.setText(_translate("MainWindow", "Enable Graph"))
-        self.metadata_position_label_4.setText(_translate("MainWindow", "Graph Position"))
+        self.metadata_position_label_4.setText(
+            _translate("MainWindow", "Graph Position")
+        )
         self.label_15.setText(_translate("MainWindow", "x"))
         self.label_16.setText(_translate("MainWindow", "y"))
         self.label_13.setText(_translate("MainWindow", "Color:"))
@@ -534,7 +620,9 @@ class Ui_MainWindow:
         self.export_button.setText(_translate("MainWindow", "Export Images ..."))
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
         self.actionWater_Intake.setText(_translate("MainWindow", "Water Intake ..."))
-        self.actionImportedFilesMetadata.setText(_translate("MainWindow", "Imported Files and Metadata ..."))
+        self.actionImportedFilesMetadata.setText(
+            _translate("MainWindow", "Imported Files and Metadata ...")
+        )
         self.actionBy_Time_Stamp.setText(_translate("MainWindow", "by Time Stamp"))
         self.actionBy_File_Name.setText(_translate("MainWindow", "by File Name"))
         self.actionDsc_files.setText(_translate("MainWindow", "dsc files ..."))

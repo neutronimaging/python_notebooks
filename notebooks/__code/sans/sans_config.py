@@ -186,7 +186,12 @@ biosans_parameters = {
 
 gpsans_parameters = {
     "special_parameters": {
-        "list": ["sample_transmission", "background_transmission", "beam_center", "transmission_radius_used (mm)"],
+        "list": [
+            "sample_transmission",
+            "background_transmission",
+            "beam_center",
+            "transmission_radius_used (mm)",
+        ],
         "path": ["reduction_information", "special_parameters"],
     },
     "sample_logs": {
