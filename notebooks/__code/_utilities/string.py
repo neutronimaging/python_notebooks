@@ -2,7 +2,9 @@ import numpy as np
 from IPython.display import HTML
 
 
-def get_beginning_common_part_of_string_from_list(list_of_text=None, filename_spacer="_"):
+def get_beginning_common_part_of_string_from_list(
+    list_of_text=None, filename_spacer="_"
+):
     """This method returns the continuous part of a string, from the beginning, that can be found
     in all string provided. The match will stop before the last filename_spacer
 

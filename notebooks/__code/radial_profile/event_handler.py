@@ -27,7 +27,9 @@ class EventHandler(Parent):
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
     def guide_color_changed(self):
         red = self.parent.ui.guide_red_slider.value()
@@ -69,14 +71,22 @@ class EventHandler(Parent):
 
         lines = np.array(
             [(255, 0, 0, 255, 2), (255, 0, 0, 0, 1), (255, 0, 0, 255, 2)],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
 
         if self.parent.sector_g:
             self.parent.ui.image_view.removeItem(self.parent.sector_g)
         self.parent.sector_g = pg.GraphItem()
         self.parent.ui.image_view.addItem(self.parent.sector_g)
-        self.parent.sector_g.setData(pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False)
+        self.parent.sector_g.setData(
+            pos=pos, adj=adj, pen=lines, size=1, symbol=symbols, pxMode=False
+        )
 
     def update_angle_label_position(self):
         x0 = int(str(self.parent.ui.circle_x.text()))

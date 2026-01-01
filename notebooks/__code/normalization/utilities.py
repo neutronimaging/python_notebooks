@@ -14,8 +14,12 @@ def make_full_output_normalization_folder_name(
 ):
     basename_sample_folder = os.path.basename(os.path.dirname(first_sample_file_name))
     basename_sample_folder += f"_{name_acquisition}_{name_config}"
-    full_basename_sample_folder = os.path.abspath(os.path.join(output_folder, basename_sample_folder))
-    full_basename_sample_folder = make_or_increment_folder_name(full_basename_sample_folder)
+    full_basename_sample_folder = os.path.abspath(
+        os.path.join(output_folder, basename_sample_folder)
+    )
+    full_basename_sample_folder = make_or_increment_folder_name(
+        full_basename_sample_folder
+    )
     return full_basename_sample_folder
 
 
@@ -78,7 +82,12 @@ def all_metadata_match(metadata_1={}, metadata_2={}, list_key_to_check=None):
 
     for _key in list_key:
         try:
-            if np.abs(float(metadata_1[_key]["value"]) - float(metadata_2[_key]["value"])) > METADATA_ERROR_ALLOWED:
+            if (
+                np.abs(
+                    float(metadata_1[_key]["value"]) - float(metadata_2[_key]["value"])
+                )
+                > METADATA_ERROR_ALLOWED
+            ):
                 return False
         except ValueError:
             if metadata_1[_key]["value"] != metadata_2[_key]["value"]:
@@ -129,7 +138,10 @@ def isolate_infos_from_file_index(index=-1, dictionary=None, all_keys=False):
         for _image in dictionary["list_images"].keys():
             _time_image = dictionary["list_time_stamp"][index]
             _user_format_time_image = dictionary["list_time_stamp_user_format"][index]
-            result_dictionary[_image] = {"system_time": _time_image, "user_format_time": _user_format_time_image}
+            result_dictionary[_image] = {
+                "system_time": _time_image,
+                "user_format_time": _user_format_time_image,
+            }
     else:
         _image = dictionary["list_images"][index]
         _time_image = dictionary["list_time_stamp"][index]

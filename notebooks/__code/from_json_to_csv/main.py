@@ -44,7 +44,9 @@ class FromJsonToCsv:
 
     def __calculate_image_dimension(self):
         _image_0 = self.data[0]
-        [self.image_dimension["height"], self.image_dimension["width"]] = np.shape(_image_0)
+        [self.image_dimension["height"], self.image_dimension["width"]] = np.shape(
+            _image_0
+        )
 
     def __bin_parameter_changed(self, sender):
         new_width_bin = int(self.bin_width_para.value)
@@ -67,9 +69,16 @@ class FromJsonToCsv:
         _height = self.image_dimension["height"]
         left_widgets = widgets.VBox(
             [
-                widgets.HTML(value="<b>Current Image Size:</b>", layout=widgets.Layout(width="250px")),
-                widgets.Label(f"Width: {_width} pixels", layout=widgets.Layout(width="100%")),
-                widgets.Label(f"Height: {_height} pixels", layout=widgets.Layout(width="100%")),
+                widgets.HTML(
+                    value="<b>Current Image Size:</b>",
+                    layout=widgets.Layout(width="250px"),
+                ),
+                widgets.Label(
+                    f"Width: {_width} pixels", layout=widgets.Layout(width="100%")
+                ),
+                widgets.Label(
+                    f"Height: {_height} pixels", layout=widgets.Layout(width="100%")
+                ),
             ]
         )
 
@@ -94,7 +103,9 @@ class FromJsonToCsv:
 
         center_widgets = widgets.VBox(
             [
-                widgets.HTML("<b>Bin Parameter:</b>", layout=widgets.Layout(width="250px")),
+                widgets.HTML(
+                    "<b>Bin Parameter:</b>", layout=widgets.Layout(width="250px")
+                ),
                 self.bin_width_para,
                 self.bin_height_para,
             ]
@@ -102,9 +113,15 @@ class FromJsonToCsv:
 
         self.right_widgets = widgets.VBox(
             [
-                widgets.HTML("<b>New Image Size:</b>", layout=widgets.Layout(width="250px")),
-                widgets.Label(f"Width: {250} pixels", layout=widgets.Layout(width="100%")),
-                widgets.Label(f"Height: {250} pixels", layout=widgets.Layout(width="100%")),
+                widgets.HTML(
+                    "<b>New Image Size:</b>", layout=widgets.Layout(width="250px")
+                ),
+                widgets.Label(
+                    f"Width: {250} pixels", layout=widgets.Layout(width="100%")
+                ),
+                widgets.Label(
+                    f"Height: {250} pixels", layout=widgets.Layout(width="100%")
+                ),
             ]
         )
 
@@ -147,7 +164,9 @@ class FromJsonToCsv:
         new_width = int(new_width)
 
         _new_data = data[0:new_height, 0:new_width]
-        _new_data = _new_data.reshape(_nbr_height_bin, height_bin, _nbr_width_bin, width_bin)
+        _new_data = _new_data.reshape(
+            _nbr_height_bin, height_bin, _nbr_width_bin, width_bin
+        )
         data_rebinned = _new_data.mean(axis=3).mean(axis=1)
 
         return data_rebinned
@@ -163,7 +182,9 @@ class FromJsonToCsv:
         # output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected,
         #                                              "{}_rebin_by_{}".format(input_folder, self.bin_value)))
         bin_string = f"{self.bin_height_value}height_{self.bin_width_value}width"
-        output_folder = os.path.abspath(os.path.join(output_folder, f"{input_folder}_rebin_by_{bin_string}"))
+        output_folder = os.path.abspath(
+            os.path.join(output_folder, f"{input_folder}_rebin_by_{bin_string}")
+        )
         utilities.make_dir(dir=output_folder, overwrite=False)
 
         w = widgets.IntProgress()
@@ -179,4 +200,10 @@ class FromJsonToCsv:
 
             w.value = _index + 1
 
-        display(HTML('<span style="font-size: 20px; color:blue">File created in ' + output_folder + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">File created in '
+                + output_folder
+                + "</span>"
+            )
+        )

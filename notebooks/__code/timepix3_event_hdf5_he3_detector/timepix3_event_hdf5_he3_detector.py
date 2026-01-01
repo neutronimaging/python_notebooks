@@ -67,14 +67,20 @@ class Timepix3EventHdf5:
 
         bin_size = hbox.children[1]
 
-        fig, ax = plt.subplots(figsize=(8, 8), nrows=1, ncols=1, num="Histogram of He3 detector")
+        fig, ax = plt.subplots(
+            figsize=(8, 8), nrows=1, ncols=1, num="Histogram of He3 detector"
+        )
 
-        def plot_rebinned_data(x_axis="TOF", nbrs_bins=2, dSD_m=19.855, offset_micros=0, element="Ni"):
+        def plot_rebinned_data(
+            x_axis="TOF", nbrs_bins=2, dSD_m=19.855, offset_micros=0, element="Ni"
+        ):
             if element == "Ni":
                 _handler = BraggEdgeLibrary(material=[element], number_of_bragg_edges=5)
             else:  # Ta
                 _handler = BraggEdgeLibrary(
-                    new_material=[{"name": "Ta", "lattice": 3.3058, "crystal_structure": "BCC"}],
+                    new_material=[
+                        {"name": "Ta", "lattice": 3.3058, "crystal_structure": "BCC"}
+                    ],
                     number_of_bragg_edges=5,
                 )
 
@@ -132,11 +138,20 @@ class Timepix3EventHdf5:
                 options=["TOF", "lambda"],
                 value="lambda",
             ),
-            nbrs_bins=widgets.IntSlider(value=10000, min=1, max=100000, continuous_update=False),
-            dSD_m=widgets.FloatSlider(
-                value=19.855, min=15, max=25, step=0.001, continuous_update=False, readout_format=".3f"
+            nbrs_bins=widgets.IntSlider(
+                value=10000, min=1, max=100000, continuous_update=False
             ),
-            offset_micros=widgets.IntSlider(value=0, min=0, max=15000, continuous_update=False),
+            dSD_m=widgets.FloatSlider(
+                value=19.855,
+                min=15,
+                max=25,
+                step=0.001,
+                continuous_update=False,
+                readout_format=".3f",
+            ),
+            offset_micros=widgets.IntSlider(
+                value=0, min=0, max=15000, continuous_update=False
+            ),
             element=widgets.RadioButtons(options=["Ni", "Ta"], value="Ni"),
         )
         display(v)

@@ -20,9 +20,13 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.group_images_by_cycle_for_panoramic_stitching.group_images import GroupImages
+from __code.group_images_by_cycle_for_panoramic_stitching.group_images import (
+    GroupImages,
+)
 
-system.System.select_working_dir(notebook="group_images_by_cycle_for_panoramic_stitching")
+system.System.select_working_dir(
+    notebook="group_images_by_cycle_for_panoramic_stitching"
+)
 from __code.__all import custom_style
 
 custom_style.style()

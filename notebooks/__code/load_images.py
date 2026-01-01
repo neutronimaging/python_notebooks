@@ -37,7 +37,10 @@ class LoadImages:
 
         # display(HTML('<span style="font-size: 20px; color:blue">Select the images you want to work on!</span>'))
         self.list_images_ui = fileselector.FileSelectorPanel(
-            instruction="Select Images...", multiple=True, next=next, start_dir=self.working_dir
+            instruction="Select Images...",
+            multiple=True,
+            next=next,
+            start_dir=self.working_dir,
         )
         self.list_images_ui.show()
 

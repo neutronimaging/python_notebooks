@@ -49,7 +49,10 @@ class Main:
 
     def select_ascii_file(self):
         self.file_ui = fileselector.FileSelectorPanel(
-            instruction="Select Ascii file", start_dir=self.working_dir, multiple=False, next=self.load
+            instruction="Select Ascii file",
+            start_dir=self.working_dir,
+            multiple=False,
+            next=self.load,
         )
         self.file_ui.show()
 
@@ -58,7 +61,9 @@ class Main:
         self.import_ascii()
         display(
             HTML(
-                '<span style="font-size: 20px; color:blue">' + str(os.path.basename(filename)) + " "
+                '<span style="font-size: 20px; color:blue">'
+                + str(os.path.basename(filename))
+                + " "
                 "has been loaded !</span>"
             )
         )
@@ -131,15 +136,25 @@ class Main:
             self.ax0.cla()
 
             self.im0 = self.ax0.imshow(
-                data, interpolation=interpolation_method, cmap=colormap, vmin=min_value, vmax=max_value
+                data,
+                interpolation=interpolation_method,
+                cmap=colormap,
+                vmin=min_value,
+                vmax=max_value,
             )
             self.cb0 = plt.colorbar(self.im0, ax=self.ax0)
 
         v = interactive(
             plot_lambda,
-            min_value=widgets.FloatSlider(min=minimum, max=maximum, value=minimum, step=step),
-            max_value=widgets.FloatSlider(min=minimum, max=maximum, value=maximum, step=step),
-            colormap=widgets.Dropdown(options=CMAPS, value=DEFAULT_CMAPS, layout=widgets.Layout(width="300px")),
+            min_value=widgets.FloatSlider(
+                min=minimum, max=maximum, value=minimum, step=step
+            ),
+            max_value=widgets.FloatSlider(
+                min=minimum, max=maximum, value=maximum, step=step
+            ),
+            colormap=widgets.Dropdown(
+                options=CMAPS, value=DEFAULT_CMAPS, layout=widgets.Layout(width="300px")
+            ),
             interpolation_method=widgets.Dropdown(
                 options=INTERPOLATION_METHODS,
                 value=DEFAULT_INTERPOLATION,
@@ -172,7 +187,11 @@ class Main:
             self.ax1.cla()
 
             self.im1 = self.ax1.imshow(
-                data, interpolation=interpolation_method, cmap=colormap, vmin=min_value, vmax=max_value
+                data,
+                interpolation=interpolation_method,
+                cmap=colormap,
+                vmin=min_value,
+                vmax=max_value,
             )
             self.cb1 = plt.colorbar(self.im1, ax=self.ax1)
 
@@ -200,9 +219,15 @@ class Main:
 
         v = interactive(
             plot_d,
-            min_value=widgets.FloatSlider(min=minimum, max=maximum, value=minimum, step=step),
-            max_value=widgets.FloatSlider(min=minimum, max=maximum, value=maximum, step=step),
-            colormap=widgets.Dropdown(options=CMAPS, value=DEFAULT_CMAPS, layout=widgets.Layout(width="300px")),
+            min_value=widgets.FloatSlider(
+                min=minimum, max=maximum, value=minimum, step=step
+            ),
+            max_value=widgets.FloatSlider(
+                min=minimum, max=maximum, value=maximum, step=step
+            ),
+            colormap=widgets.Dropdown(
+                options=CMAPS, value=DEFAULT_CMAPS, layout=widgets.Layout(width="300px")
+            ),
             interpolation_method=widgets.Dropdown(
                 options=INTERPOLATION_METHODS,
                 value=DEFAULT_INTERPOLATION,
@@ -235,7 +260,11 @@ class Main:
             self.ax2.cla()
 
             self.im2 = self.ax2.imshow(
-                data, interpolation=interpolation_method, cmap=colormap, vmin=min_value, vmax=max_value
+                data,
+                interpolation=interpolation_method,
+                cmap=colormap,
+                vmin=min_value,
+                vmax=max_value,
             )
             self.cb2 = plt.colorbar(self.im2, ax=self.ax2)
 
@@ -277,9 +306,15 @@ class Main:
 
         v = interactive(
             plot_microstrain,
-            min_value=widgets.FloatSlider(min=minimum, max=maximum, value=minimum, step=step),
-            max_value=widgets.FloatSlider(min=minimum, max=maximum, value=maximum, step=step),
-            colormap=widgets.Dropdown(options=CMAPS, value=DEFAULT_CMAPS, layout=widgets.Layout(width="300px")),
+            min_value=widgets.FloatSlider(
+                min=minimum, max=maximum, value=minimum, step=step
+            ),
+            max_value=widgets.FloatSlider(
+                min=minimum, max=maximum, value=maximum, step=step
+            ),
+            colormap=widgets.Dropdown(
+                options=CMAPS, value=DEFAULT_CMAPS, layout=widgets.Layout(width="300px")
+            ),
             interpolation_method=widgets.Dropdown(
                 options=INTERPOLATION_METHODS,
                 value=DEFAULT_INTERPOLATION,

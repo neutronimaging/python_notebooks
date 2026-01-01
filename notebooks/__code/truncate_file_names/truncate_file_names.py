@@ -16,7 +16,9 @@ class TruncateFileNames:
 
     def select_input_files(self):
         self.input_files_ui = fileselector.FileSelectorPanel(
-            instruction="Select List of Files", start_dir=self.working_dir, multiple=True
+            instruction="Select List of Files",
+            start_dir=self.working_dir,
+            multiple=True,
         )
         self.input_files_ui.show()
 
@@ -39,8 +41,12 @@ class NamingSchemaDefinition:
             raise ValueError("TruncateFileNames is missing!")
 
         if self.list_of_files:
-            _random_input_list = utilities.get_n_random_element(input_list=self.list_of_files, n=10)
-            self.random_input_list = [os.path.basename(_file) for _file in _random_input_list]
+            _random_input_list = utilities.get_n_random_element(
+                input_list=self.list_of_files, n=10
+            )
+            self.random_input_list = [
+                os.path.basename(_file) for _file in _random_input_list
+            ]
 
         self.basename = os.path.basename(self.list_of_files[0])
         self.working_dir = os.path.dirname(os.path.dirname(self.list_of_files[0]))
@@ -62,28 +68,40 @@ class NamingSchemaDefinition:
             [
                 widgets.Label("Random Input:", layout=widgets.Layout(width="15%")),
                 widgets.Dropdown(
-                    options=self.random_input_list, value=self.random_input_list[0], layout=widgets.Layout(width="50%")
+                    options=self.random_input_list,
+                    value=self.random_input_list[0],
+                    layout=widgets.Layout(width="50%"),
                 ),
             ]
         )
         self.random_input_checkbox = self.box1.children[1]
-        self.random_input_checkbox.observe(self.random_input_checkbox_value_changed, "value")
+        self.random_input_checkbox.observe(
+            self.random_input_checkbox_value_changed, "value"
+        )
 
-        self.box2 = widgets.HBox([widgets.Label("String to remove:", layout=widgets.Layout(width="30%"))])
+        self.box2 = widgets.HBox(
+            [widgets.Label("String to remove:", layout=widgets.Layout(width="30%"))]
+        )
 
         self.box6 = widgets.HBox(
             [
-                widgets.Label(value="    On the left:", layout=widgets.Layout(width="40%")),
+                widgets.Label(
+                    value="    On the left:", layout=widgets.Layout(width="40%")
+                ),
                 widgets.Text(value="", layout=widgets.Layout(width="60%")),
             ]
         )
         self.box7 = widgets.HBox(
             [
-                widgets.Label(value="    On the right:", layout=widgets.Layout(width="40%")),
+                widgets.Label(
+                    value="    On the right:", layout=widgets.Layout(width="40%")
+                ),
                 widgets.Text(value="", layout=widgets.Layout(width="60%")),
             ]
         )
-        self.box8 = widgets.VBox([self.box6, self.box7], layout=widgets.Layout(width="50%"))
+        self.box8 = widgets.VBox(
+            [self.box6, self.box7], layout=widgets.Layout(width="50%")
+        )
         self.left_part_to_remove_text = self.box6.children[1]
         self.right_part_to_remove_text = self.box7.children[1]
         self.left_part_to_remove_text.observe(self.left_part_text_changed, "value")
@@ -99,7 +117,9 @@ class NamingSchemaDefinition:
 
         separate_line = widgets.HTML(value="<hr>", layout=widgets.Layout(width="100%"))
 
-        vbox = widgets.VBox([self.box1, separate_line, self.box2, self.box8, separate_line, self.box9])
+        vbox = widgets.VBox(
+            [self.box1, separate_line, self.box2, self.box8, separate_line, self.box9]
+        )
         display(vbox)
 
         self.update_new_file_name()
@@ -127,8 +147,14 @@ class NamingSchemaDefinition:
 
     def check_new_names(self):
         dict_old_new_names = self.create_dict_old_new_filenames()
-        old_names_new_names = [f"{os.path.basename(_key)} -> {_value}" for _key, _value in dict_old_new_names.items()]
-        select_widget = widgets.Select(options=old_names_new_names, layout=widgets.Layout(width="100%", height="400px"))
+        old_names_new_names = [
+            f"{os.path.basename(_key)} -> {_value}"
+            for _key, _value in dict_old_new_names.items()
+        ]
+        select_widget = widgets.Select(
+            options=old_names_new_names,
+            layout=widgets.Layout(width="100%", height="400px"),
+        )
         display(select_widget)
 
     def create_dict_old_new_filenames(self):
@@ -165,7 +191,9 @@ class NamingSchemaDefinition:
         input_folder = os.path.abspath(self.input_folder)
         input_folder_renamed = os.path.basename(input_folder) + "_renamed"
         self.output_folder_ui.shortcut_buttons.close()
-        new_output_folder = os.path.join(os.path.abspath(output_folder), input_folder_renamed)
+        new_output_folder = os.path.join(
+            os.path.abspath(output_folder), input_folder_renamed
+        )
         dict_old_new_names = self.create_dict_old_new_filenames()
 
         utilities.copy_files(

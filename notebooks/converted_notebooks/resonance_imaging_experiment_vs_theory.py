@@ -64,7 +64,10 @@ print(f"Working dir: {working_dir}")
 
 # + format="tab" run_control={"frozen": false, "read_only": false}
 input_folder_ui = ipywe.fileselector.FileSelectorPanel(
-    instruction="Select Input Folder", type="directory", start_dir=working_dir, multiple=False
+    instruction="Select Input Folder",
+    type="directory",
+    start_dir=working_dir,
+    multiple=False,
 )
 input_folder_ui.show()
 
@@ -89,7 +92,9 @@ _sample.show()
 # + run_control={"frozen": false, "read_only": false}
 o_reso = _sample.o_reso
 
-_image = ImageWindow(stack=(o_norm.data["sample"]["data"]), working_folder=working_folder, o_reso=o_reso)
+_image = ImageWindow(
+    stack=(o_norm.data["sample"]["data"]), working_folder=working_folder, o_reso=o_reso
+)
 _image.show()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

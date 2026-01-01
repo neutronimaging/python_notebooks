@@ -50,7 +50,11 @@ class ShiftTimeOffset:
             )
             self.list_of_fits_files = list_of_fits_files
         else:
-            display(HTML('<span style="font-size: 15px; color:red">No FITS files Found!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:red">No FITS files Found!</span>'
+                )
+            )
 
     def retrieve_parent_folder(self, folder):
         self.working_dir = Path(folder).parent
@@ -64,7 +68,13 @@ class ShiftTimeOffset:
             )
         )
         for _folder in list_of_other_folders:
-            display(HTML('<span style="font-size: 15px; color:green"> - ' + _folder + " FITS files to process!</span>"))
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:green"> - '
+                    + _folder
+                    + " FITS files to process!</span>"
+                )
+            )
 
     def retrieve_name_of_timestamp_file(self, input_folder):
         timestamp_files = list(Path(input_folder).glob("*_Spectra.txt"))
@@ -79,7 +89,11 @@ class ShiftTimeOffset:
             )
             self.timestamp_file = timestamp_file
         else:
-            display(HTML('<span style="font-size: 15px; color:red">Time stamp not Found</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:red">Time stamp not Found</span>'
+                )
+            )
 
     def load_timestamp_file(self, timestamp_file):
         counts_vs_time_array = pd.read_csv(timestamp_file, sep="\t")
@@ -104,7 +118,10 @@ class ShiftTimeOffset:
             return index
 
         self.index_slider = interact(
-            plot_cutoff, index=widgets.IntSlider(min=0, max=x_index_axis[-1], value=0, continuous_update=False)
+            plot_cutoff,
+            index=widgets.IntSlider(
+                min=0, max=x_index_axis[-1], value=0, continuous_update=False
+            ),
         )
 
     def get_file_prefix(self, file_name):
@@ -125,7 +142,9 @@ class ShiftTimeOffset:
 
         nbr_folder = len(list_of_folders)
 
-        progress_bar = widgets.IntProgress(max=nbr_folder, layout=widgets.Layout(width="50%"))
+        progress_bar = widgets.IntProgress(
+            max=nbr_folder, layout=widgets.Layout(width="50%")
+        )
         display(progress_bar)
 
         offset_index = self.index_slider.widget.result
@@ -134,7 +153,9 @@ class ShiftTimeOffset:
 
         for _index, _current_working_folder in enumerate(list_of_folders):
             # get full list of FITS files
-            list_of_fits_files = np.array(self.get_list_of_fits_files(_current_working_folder))
+            list_of_fits_files = np.array(
+                self.get_list_of_fits_files(_current_working_folder)
+            )
             if list_of_fits_files == []:
                 continue
 
@@ -145,7 +166,9 @@ class ShiftTimeOffset:
             self.retrieve_name_of_timestamp_file(_current_working_folder)
             timestamp_file = self.timestamp_file
             if not Path(timestamp_file).exists():
-                list_folder_with_error.append(f"Error in {_current_working_folder}. Timestamp file missing!")
+                list_folder_with_error.append(
+                    f"Error in {_current_working_folder}. Timestamp file missing!"
+                )
                 continue
 
             # rename all files starting by file at index offset_index which will become index 0
@@ -155,7 +178,9 @@ class ShiftTimeOffset:
             new_output_dir = current_working_dir + "_timeoffset_corrected"
 
             self.copy_and_renamed_fits_files(
-                output_dir=new_output_dir, original_list_of_files=new_list_of_fits_files, prefix=prefix
+                output_dir=new_output_dir,
+                original_list_of_files=new_list_of_fits_files,
+                prefix=prefix,
             )
 
             # modify timestamp file
@@ -163,7 +188,9 @@ class ShiftTimeOffset:
                 output_dir=new_output_dir, old_timestamp_filename=timestamp_file
             )
             self.create_new_timestamp_file(
-                timestamp_file=timestamp_file, offset=offset_index, new_timestamp_filename=new_timestamp_filename
+                timestamp_file=timestamp_file,
+                offset=offset_index,
+                new_timestamp_filename=new_timestamp_filename,
             )
 
             progress_bar.value = _index + 1
@@ -176,7 +203,9 @@ class ShiftTimeOffset:
         short_old_timestamp_filename = str(Path(old_timestamp_filename).name)
         return str(Path(output_dir).joinpath(short_old_timestamp_filename))
 
-    def create_new_timestamp_file(self, timestamp_file="", offset=0, new_timestamp_filename=""):
+    def create_new_timestamp_file(
+        self, timestamp_file="", offset=0, new_timestamp_filename=""
+    ):
         timestamp_array = self.load_timestamp_file(timestamp_file)
         time_axis = timestamp_array[:, 0]
         new_counts_axis = np.roll(np.array(timestamp_array[:, 1]), -offset)
@@ -188,18 +217,28 @@ class ShiftTimeOffset:
         # bring back axis together
         combined_array = np.stack((new_time_axis, new_counts_axis)).T
         # print("new timesamp_filename is {}".format(new_timestamp_filename))
-        make_ascii_file(data=combined_array, output_file_name=new_timestamp_filename, sep="\t")
+        make_ascii_file(
+            data=combined_array, output_file_name=new_timestamp_filename, sep="\t"
+        )
 
     def display_errors(self, list_folder_with_error=[]):
         for _line in list_folder_with_error:
-            display(HTML('<span style="font-size: 20px; color:red">' + _line + "!</span>"))
+            display(
+                HTML('<span style="font-size: 20px; color:red">' + _line + "!</span>")
+            )
 
-    def copy_and_renamed_fits_files(self, output_dir="./", original_list_of_files=[], prefix="test"):
+    def copy_and_renamed_fits_files(
+        self, output_dir="./", original_list_of_files=[], prefix="test"
+    ):
         current_working_dir = str(Path(original_list_of_files[0]).parent)
         make_or_reset_folder(output_dir)
         log_file = str(Path(output_dir).joinpath("renaming_log.txt"))
 
-        renaming_log_file = [f"Renaming schema of folder {current_working_dir}", "old name -> new name", ""]
+        renaming_log_file = [
+            f"Renaming schema of folder {current_working_dir}",
+            "old name -> new name",
+            "",
+        ]
         for index, _file in enumerate(original_list_of_files):
             old_name = Path(_file).name
             new_name = Path(output_dir).joinpath(prefix + f"_{index:05d}.fits")

@@ -111,7 +111,9 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def init_table(self):
         list_files_full_name = self.data_dict["file_name"]
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+        list_files_short_name = [
+            os.path.basename(_file) for _file in list_files_full_name
+        ]
 
         list_time_stamp = self.timestamp_dict["list_time_stamp"]
         list_time_stamp_user_format = self.timestamp_dict["list_time_stamp_user_format"]
@@ -119,7 +121,9 @@ class CalibratedTransmissionUi(QMainWindow):
         for _row, _file in enumerate(list_files_short_name):
             self.ui.summary_table.insertRow(_row)
             self.set_item_summary_table(row=_row, col=0, value=_file)
-            self.set_item_summary_table(row=_row, col=1, value=list_time_stamp_user_format[_row])
+            self.set_item_summary_table(
+                row=_row, col=1, value=list_time_stamp_user_format[_row]
+            )
             _offset = list_time_stamp[_row] - time_0
             self.set_item_summary_table(row=_row, col=2, value=f"{_offset:0.2f}")
 
@@ -150,7 +154,10 @@ class CalibratedTransmissionUi(QMainWindow):
 
         def define_roi(roi_dict, callback_function):
             cal = pg.RectROI(
-                [roi_dict["x0"], roi_dict["y0"]], roi_dict["height"], roi_dict["width"], pen=roi_dict["color"]
+                [roi_dict["x0"], roi_dict["y0"]],
+                roi_dict["height"],
+                roi_dict["width"],
+                pen=roi_dict["color"],
             )
             cal.addScaleHandle([1, 1], [0, 0])
             cal.addScaleHandle([0, 0], [1, 1])
@@ -335,7 +342,9 @@ class CalibratedTransmissionUi(QMainWindow):
                 cal1_value = self.calibration["1"]["value"]
                 cal2_mean = self.calibration["2"]["mean_counts"]
                 cal2_value = self.calibration["2"]["value"]
-                return (cal2_value - cal1_value) / (cal2_mean - cal1_mean) * (input_value - cal1_mean) + cal1_value
+                return (cal2_value - cal1_value) / (cal2_mean - cal1_mean) * (
+                    input_value - cal1_mean
+                ) + cal1_value
 
             elif cali_1:
                 index = "1"
@@ -366,7 +375,9 @@ class CalibratedTransmissionUi(QMainWindow):
             for _data_index, _data in enumerate(self.data_dict["data"]):
                 data_counts = np.nanmean(_data[y0 : y0 + height, x0 : x0 + width])
 
-                real_data_counts = ratio_calibration(cali_1=cali_1, cali_2=cali_2, input_value=data_counts)
+                real_data_counts = ratio_calibration(
+                    cali_1=cali_1, cali_2=cali_2, input_value=data_counts
+                )
 
                 item = QTableWidgetItem(f"{real_data_counts:.2f}")
                 _measurement_data.append(real_data_counts)
@@ -400,7 +411,9 @@ class CalibratedTransmissionUi(QMainWindow):
 
         for _index, _key in enumerate(self.measurement_dict.keys()):
             _data = self.measurement_dict[_key]
-            self.ui.measurement_view.plot(_data, name=f"Region {1+_index}", pen=_color_list[_index])
+            self.ui.measurement_view.plot(
+                _data, name=f"Region {1+_index}", pen=_color_list[_index]
+            )
             self.ui.measurement_view.setLabel("bottom", "File Index")
             self.ui.measurement_view.setLabel("left", "Mean Counts Calibrated")
 
@@ -484,7 +497,9 @@ class CalibratedTransmissionUi(QMainWindow):
     def insert_measurement_roi_ui(self, row=-1):
         default_roi = self.default_measurement_roi
         new_roi = pg.RectROI(
-            [default_roi["x0"], default_roi["y0"]], [default_roi["height"], default_roi["width"]], pen="g"
+            [default_roi["x0"], default_roi["y0"]],
+            [default_roi["height"], default_roi["width"]],
+            pen="g",
         )
         new_roi.addScaleHandle([1, 1], [0, 0])
         new_roi.addScaleHandle([0, 0], [1, 1])
@@ -740,7 +755,10 @@ class CalibratedTransmissionUi(QMainWindow):
 
     def export_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         if _export_folder:
             o_export = ExportCalibration(parent=self, export_folder=_export_folder)
@@ -776,25 +794,43 @@ class ExportCalibration:
             metadata.append("#Calibration Region 1:")
             metadata.append(f"#   x0: {str(self.parent.ui.calibration1_x0.text())}")
             metadata.append(f"#   y0: {str(self.parent.ui.calibration1_y0.text())}")
-            metadata.append(f"#   width: {str(self.parent.ui.calibration1_width.text())}")
-            metadata.append(f"#   height: {str(self.parent.ui.calibration1_height.text())}")
-            metadata.append(f"#   file index: {str(self.parent.ui.calibration1_index.text())}")
-            metadata.append(f"#   value requested: {str(self.parent.ui.calibration1_value.text())}")
+            metadata.append(
+                f"#   width: {str(self.parent.ui.calibration1_width.text())}"
+            )
+            metadata.append(
+                f"#   height: {str(self.parent.ui.calibration1_height.text())}"
+            )
+            metadata.append(
+                f"#   file index: {str(self.parent.ui.calibration1_index.text())}"
+            )
+            metadata.append(
+                f"#   value requested: {str(self.parent.ui.calibration1_value.text())}"
+            )
         if self.parent.ui.use_calibration2_checkbox.isChecked():
             metadata.append("#Calibration Region 2:")
             metadata.append(f"#   x0: {str(self.parent.ui.calibration2_x0.text())}")
             metadata.append(f"#   y0: {str(self.parent.ui.calibration2_y0.text())}")
-            metadata.append(f"#   width: {str(self.parent.ui.calibration2_width.text())}")
-            metadata.append(f"#   height: {str(self.parent.ui.calibration2_height.text())}")
-            metadata.append(f"#   file index: {str(self.parent.ui.calibration2_index.text())}")
-            metadata.append(f"#   value requested: {str(self.parent.ui.calibration2_value.text())}")
+            metadata.append(
+                f"#   width: {str(self.parent.ui.calibration2_width.text())}"
+            )
+            metadata.append(
+                f"#   height: {str(self.parent.ui.calibration2_height.text())}"
+            )
+            metadata.append(
+                f"#   file index: {str(self.parent.ui.calibration2_index.text())}"
+            )
+            metadata.append(
+                f"#   value requested: {str(self.parent.ui.calibration2_value.text())}"
+            )
         nbr_measurement_region = self.parent.ui.tableWidget.rowCount()
         _legend = "#File_name, Time_stamp, Relative_time(s)"
         if nbr_measurement_region > 0:
             metadata.append("#Measurement Regions:")
             for _index_region in np.arange(nbr_measurement_region):
                 [x0, y0, width, height] = self.parent.get_item_row(row=_index_region)
-                metadata.append(f"#  region {_index_region}: [x0, y0, width, height]=[{x0}, {y0}, {width}, {height}]")
+                metadata.append(
+                    f"#  region {_index_region}: [x0, y0, width, height]=[{x0}, {y0}, {width}, {height}]"
+                )
                 _legend += f", Mean_counts_of_region {_index_region+1}"
         metadata.append("#")
         metadata.append(_legend)
@@ -809,15 +845,26 @@ class ExportCalibration:
         for _row in np.arange(nbr_files):
             _row_str = []
             for _col in np.arange(nbr_col):
-                _row_str.append(str(self.parent.ui.summary_table.item(_row, _col).text()))
+                _row_str.append(
+                    str(self.parent.ui.summary_table.item(_row, _col).text())
+                )
             data.append(",".join(_row_str))
 
         export_file_name = os.path.basename(self.parent.working_dir)
-        full_export_file_name = os.path.join(self.export_folder, export_file_name + "_calibrated_transmission.txt")
+        full_export_file_name = os.path.join(
+            self.export_folder, export_file_name + "_calibrated_transmission.txt"
+        )
 
-        make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim="1d")
+        make_ascii_file(
+            metadata=metadata,
+            data=data,
+            output_file_name=full_export_file_name,
+            dim="1d",
+        )
 
         QApplication.processEvents()
 
         # display name of file exported for 10s
-        self.parent.ui.statusbar.showMessage(f"File Created: {full_export_file_name}", 10000)
+        self.parent.ui.statusbar.showMessage(
+            f"File Created: {full_export_file_name}", 10000
+        )

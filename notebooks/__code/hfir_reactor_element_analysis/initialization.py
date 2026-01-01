@@ -25,15 +25,23 @@ class Initialization:
             widget.setLayout(layout)
             return sc
 
-        self.parent.profiles_plot = _matplotlib(parent=self.parent, widget=self.parent.ui.profiles_widget)
+        self.parent.profiles_plot = _matplotlib(
+            parent=self.parent, widget=self.parent.ui.profiles_widget
+        )
 
-        self.parent.elements_position = _matplotlib(parent=self.parent, widget=self.parent.ui.elements_position_widget)
+        self.parent.elements_position = _matplotlib(
+            parent=self.parent, widget=self.parent.ui.elements_position_widget
+        )
 
-        self.parent.elements_position.mpl_connect("button_press_event", self.parent.click_on_elements_position_plot)
+        self.parent.elements_position.mpl_connect(
+            "button_press_event", self.parent.click_on_elements_position_plot
+        )
 
     def widgets(self):
         list_of_images = self.parent.list_of_images
-        list_n_random_int = get_n_random_int_of_max_value_m(n=10, max=len(list_of_images))
+        list_n_random_int = get_n_random_int_of_max_value_m(
+            n=10, max=len(list_of_images)
+        )
         pandas_obj = self.parent.o_pandas
         list_max = []
         list_min = []
@@ -64,7 +72,9 @@ class Initialization:
         o_table = TableHandler(table_ui=self.parent.ui.metadata_tableWidget)
         o_table.set_column_sizes(column_sizes=[200, 200])
 
-        self.parent.ui.number_of_elements_spinBox.setValue(self.parent.NUMBER_OF_FUEL_ELEMENTS)
+        self.parent.ui.number_of_elements_spinBox.setValue(
+            self.parent.NUMBER_OF_FUEL_ELEMENTS
+        )
 
     def statusbar(self):
         self.parent.eventProgress = QProgressBar(self.parent.ui.statusbar)
@@ -97,4 +107,6 @@ class Initialization:
         for _row_index, _row_value in enumerate(formatted_data):
             o_table.insert_empty_row(_row_index)
             for _col_index, _value in enumerate(_row_value):
-                o_table.insert_item(row=_row_index, column=_col_index, value=_value, editable=False)
+                o_table.insert_item(
+                    row=_row_index, column=_col_index, value=_value, editable=False
+                )

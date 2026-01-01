@@ -1,7 +1,5 @@
-import glob
 from dotenv import load_dotenv
 import logging as notebook_logging
-from logging.handlers import RotatingFileHandler
 import os
 from loguru import logger
 from pathlib import Path
@@ -11,16 +9,17 @@ import pandas as pd
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 from IPython.display import HTML, display
-from ipywidgets import interactive
-from PIL import Image
 import periodictable
 import ipysheet
-from ipysheet import sheet, cell, row, column, from_dataframe, to_array, calculation
+from ipysheet import from_dataframe, to_array
 
 # from pleiades.processing.normalization import normalization as normalization_with_pleaides
 # from pleiades.processing import Roi as PleiadesRoi
 # from pleiades.processing import Facility
-from pleiades.sammy.io.data_manager import convert_csv_to_sammy_twenty, validate_sammy_twenty_format
+from pleiades.sammy.io.data_manager import (
+    convert_csv_to_sammy_twenty,
+    validate_sammy_twenty_format,
+)
 from pleiades.sammy.io.json_manager import JsonManager
 from pleiades.sammy.io.inp_manager import InpManager
 from pleiades.sammy.backends.local import LocalSammyRunner
@@ -29,25 +28,17 @@ from pleiades.sammy.interface import SammyFilesMultiMode
 from pleiades.sammy.results.manager import ResultsManager
 
 from __code.resonance_fitting import VENUS_RES_FUNC, SAMMY_EXE_PATH
-from __code._utilities.list import extract_list_of_runs_from_string
-from __code._utilities.nexus import extract_file_path_from_nexus
 from __code._utilities.logger import display_dictionary_in_logging
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
-from __code.resonance_fitting.config import DEBUG_DATA, timepix1_config, timepix3_config
+from __code.resonance_fitting.config import DEBUG_DATA
 from __code.resonance_fitting.get import Get
 
 from __code.normalization_tof.normalization_tof import NormalizationTof
 from __code.ipywe.fileselector import FileSelectorPanel as FileSelectorPanel
-from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
-from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
-    load_data_using_multithreading,
-    # normalization,
-    normalization_with_list_of_full_path,
-    retrieve_list_of_tif,
-)
 
 FONT_SIZE = 14
+
 
 class FilesPaths:
     logging = None
@@ -55,6 +46,7 @@ class FilesPaths:
     inp_file = None
     json_path = None
     sammy_files_multi_mode = None
+
 
 class FolderPaths:
     working = None
@@ -69,18 +61,17 @@ class FolderPaths:
 
 
 class ResonanceFitting(NormalizationTof):
-
     df_to_use = None
-    horizontal_box = None # total abundance display box
+    horizontal_box = None  # total abundance display box
 
     def __init__(self, working_dir=None, debug=False):
         self.folder_paths = FolderPaths()
         self.files_paths = FilesPaths()
-        
+
         self.initialize_logging()
 
         load_dotenv(".envrc")
-        
+
         if debug:
             self.folder_paths.working = Path(DEBUG_DATA.working_dir)
             self.folder_paths.output = Path(DEBUG_DATA.output_folder)
@@ -105,7 +96,9 @@ class ResonanceFitting(NormalizationTof):
 
         # self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
         # self.shared_dir = str(Path(shared_dir[self.instrument][0]) / str(ipts) / shared_dir[self.instrument][1])
-        self.folder_paths.shared = Path("/") / _facility / self.instrument / str(ipts) / "shared"
+        self.folder_paths.shared = (
+            Path("/") / _facility / self.instrument / str(ipts) / "shared"
+        )
 
         notebook_logging.info(f"Instrument: {self.instrument}")
         notebook_logging.info(f"Working dir: {self.folder_paths.working}")
@@ -115,16 +108,17 @@ class ResonanceFitting(NormalizationTof):
         notebook_logging.info(f"Shared dir: {self.folder_paths.shared}")
 
     def initialize_logging(self):
-
-        logger.remove() # Remove default logger
+        logger.remove()  # Remove default logger
 
         LOG_PATH = "/SNS/VENUS/shared/log/"
         base_file_name = Path(__file__).name
         file_name_without_extension = Path(base_file_name).stem
         user_name = os.getlogin()  # add user name to the log file name
-        log_file_name = LOG_PATH / Path(f"{user_name}_{str(file_name_without_extension)}.log")
+        log_file_name = LOG_PATH / Path(
+            f"{user_name}_{str(file_name_without_extension)}.log"
+        )
         self.files_paths.logging = log_file_name
-        
+
         # rotating_handler = RotatingFileHandler(log_file_name,
         #                                        maxBytes=50*1024*1024,  # 50 MB
         #                                        backupCount=5)
@@ -140,8 +134,14 @@ class ResonanceFitting(NormalizationTof):
             format="[%(levelname)s] - %(asctime)s - %(message)s",
             level=notebook_logging.INFO,
         )
-        notebook_logging.info(f"*** Starting a new script {file_name_without_extension} ***")
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Log file: {log_file_name}</span>"))
+        notebook_logging.info(
+            f"*** Starting a new script {file_name_without_extension} ***"
+        )
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:blue'>Log file: {log_file_name}</span>"
+            )
+        )
 
     def select_normalized_text_file(self):
         self.file_selector = FileSelectorPanel(
@@ -169,7 +169,7 @@ class ResonanceFitting(NormalizationTof):
         list_elements = periodictable.elements
         dict_elements = {}
         for _el in list_elements:
-            dict_elements[_el.name.capitalize()] = {'symbol': _el.symbol}
+            dict_elements[_el.name.capitalize()] = {"symbol": _el.symbol}
         list_elements_names = list(dict_elements.keys())
         list_elements_names.sort()
         self.dict_elements = dict_elements
@@ -177,13 +177,17 @@ class ResonanceFitting(NormalizationTof):
         if self.debug:
             default_symbol_selected = DEBUG_DATA.isotope_element
             for _el_name in dict_elements.keys():
-                if dict_elements[_el_name]['symbol'] == default_symbol_selected:
+                if dict_elements[_el_name]["symbol"] == default_symbol_selected:
                     default_element_selected = _el_name
                     break
         else:
             default_element_selected = "Hydrogen"
 
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element/isotopes to use:</span>"))
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:blue'>Select element/isotopes to use:</span>"
+            )
+        )
         self.list_elements_widget = widgets.Dropdown(
             options=list_elements_names,
             value=default_element_selected,
@@ -191,12 +195,12 @@ class ResonanceFitting(NormalizationTof):
             disabled=False,
         )
         display(self.list_elements_widget)
-        self.list_elements_widget.observe(self._on_element_change, names='value')
-        
+        self.list_elements_widget.observe(self._on_element_change, names="value")
+
         self._display_tables_and_buttons()
 
         # empty stylesheet table for now
-        _df = pd.DataFrame({'Isotope': [None], 'Abundance (%)': [0]})
+        _df = pd.DataFrame({"Isotope": [None], "Abundance (%)": [0]})
         self.isotope_to_use_sheet = from_dataframe(_df)
         self.df_to_use = _df
         display(self.isotope_to_use_sheet)
@@ -210,8 +214,12 @@ class ResonanceFitting(NormalizationTof):
         self._sammy_files_multi_mode()
         self._local_sammy_config()
         self._multi_isotope_sammy_execution()
-        
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY input files created in: {self.folder_paths.sammy_working}!</span>") )
+
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY input files created in: {self.folder_paths.sammy_working}!</span>"
+            )
+        )
 
     def display_results(self):
         self._results_analysis()
@@ -226,7 +234,11 @@ class ResonanceFitting(NormalizationTof):
     def _transmitted_text_file_selected(self, file_path):
         file_path = Path(file_path)
         notebook_logging.info(f"Transmitted text file selected: {file_path}")
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Transmission file: {file_path.name} ... selected!</span>"))
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:green'>Transmission file: {file_path.name} ... selected!</span>"
+            )
+        )
 
         self.files_paths.transmission = file_path
 
@@ -234,36 +246,43 @@ class ResonanceFitting(NormalizationTof):
 
     def _display_transmitted_data(self):
         notebook_logging.info("Displaying transmitted data ...")
-        df = pd.read_csv(self.files_paths.transmission, 
-                         delim_whitespace=True, 
-                         names=['Energy (eV)', 'Transmission', 'Uncertainty'],
-                         index_col=False,
-                         skiprows=1)
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Transmitted data preview:</span>"))
+        df = pd.read_csv(
+            self.files_paths.transmission,
+            delim_whitespace=True,
+            names=["Energy (eV)", "Transmission", "Uncertainty"],
+            index_col=False,
+            skiprows=1,
+        )
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:blue'>Transmitted data preview:</span>"
+            )
+        )
         display(df.head(10))
-     
+
         fig, ax = plt.subplots(figsize=(10, 6))
-        ax.errorbar(df['Energy (eV)'], 
-                    df['Transmission'], 
-                    yerr=df['Uncertainty'], 
-                    fmt='o', 
-                    markersize=3, 
-                    label=str(self.files_paths.transmission.name), 
-                    color='blue', 
-                    ecolor='lightgray', 
-                    elinewidth=1, 
-                    capsize=2)
-        ax.set_xlabel('Energy (eV)')
-        ax.set_xscale('log')
-        ax.set_yscale('log')
+        ax.errorbar(
+            df["Energy (eV)"],
+            df["Transmission"],
+            yerr=df["Uncertainty"],
+            fmt="o",
+            markersize=3,
+            label=str(self.files_paths.transmission.name),
+            color="blue",
+            ecolor="lightgray",
+            elinewidth=1,
+            capsize=2,
+        )
+        ax.set_xlabel("Energy (eV)")
+        ax.set_xscale("log")
+        ax.set_yscale("log")
         ax.grid(True, which="both", ls="--", lw=0.5)
-        ax.set_ylabel('Transmission')
-        ax.set_title(f'Transmitted Data with Uncertainty')
+        ax.set_ylabel("Transmission")
+        ax.set_title("Transmitted Data with Uncertainty")
         ax.legend()
         plt.show()
 
     def _stagging_folders_setup(self, file_path):
-
         # set up various stagging folder for SAMMY
         self.folder_paths.output = Path(file_path)
         self.folder_paths.stagging = self.folder_paths.output / "hf_analysis"
@@ -279,32 +298,64 @@ class ResonanceFitting(NormalizationTof):
         Path(self.folder_paths.sammy_working).mkdir(parents=True, exist_ok=True)
         Path(self.folder_paths.sammy_output).mkdir(parents=True, exist_ok=True)
 
-
-        notebook_logging.info("\nStagging folders setup:")    
-        notebook_logging.info(f"output folder: {self.folder_paths.output} ... {self.folder_paths.output.is_dir()}   ")
-        notebook_logging.info(f"Stagging folder: {self.folder_paths.stagging} ... {self.folder_paths.stagging.is_dir()}")
-        notebook_logging.info(f"Spectra folder: {self.folder_paths.spectra} ... {self.folder_paths.spectra.is_dir()}")
-        notebook_logging.info(f"Twenty folder: {self.folder_paths.twenty} ... {self.folder_paths.twenty.is_dir()}")
-        notebook_logging.info(f"SAMMY working folder: {self.folder_paths.sammy_working} ... {self.folder_paths.sammy_working.is_dir()}")
-        notebook_logging.info(f"SAMMY output folder: {self.folder_paths.sammy_output} ... {self.folder_paths.sammy_output.is_dir()}")
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Stagging folders created!</span>"))
+        notebook_logging.info("\nStagging folders setup:")
+        notebook_logging.info(
+            f"output folder: {self.folder_paths.output} ... {self.folder_paths.output.is_dir()}   "
+        )
+        notebook_logging.info(
+            f"Stagging folder: {self.folder_paths.stagging} ... {self.folder_paths.stagging.is_dir()}"
+        )
+        notebook_logging.info(
+            f"Spectra folder: {self.folder_paths.spectra} ... {self.folder_paths.spectra.is_dir()}"
+        )
+        notebook_logging.info(
+            f"Twenty folder: {self.folder_paths.twenty} ... {self.folder_paths.twenty.is_dir()}"
+        )
+        notebook_logging.info(
+            f"SAMMY working folder: {self.folder_paths.sammy_working} ... {self.folder_paths.sammy_working.is_dir()}"
+        )
+        notebook_logging.info(
+            f"SAMMY output folder: {self.folder_paths.sammy_output} ... {self.folder_paths.sammy_output.is_dir()}"
+        )
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:green'>Stagging folders created!</span>"
+            )
+        )
         notebook_logging.info("")
 
     def _converting_transmission_to_twenty_format(self):
-        notebook_logging.info("Converting transmission data .txt to .twenty format for SAMMY ...")
-        twenty_file = self.folder_paths.twenty / self.files_paths.transmission.name.replace(".txt", ".twenty")
+        notebook_logging.info(
+            "Converting transmission data .txt to .twenty format for SAMMY ..."
+        )
+        twenty_file = (
+            self.folder_paths.twenty
+            / self.files_paths.transmission.name.replace(".txt", ".twenty")
+        )
         convert_csv_to_sammy_twenty(self.files_paths.transmission, twenty_file)
         if validate_sammy_twenty_format(twenty_file):
-            notebook_logging.info(f"Conversion successful! Twenty file created at: {twenty_file}")
-            display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Twenty file created at: {twenty_file}</span>"))
+            notebook_logging.info(
+                f"Conversion successful! Twenty file created at: {twenty_file}"
+            )
+            display(
+                HTML(
+                    f"<span style='font-size: {FONT_SIZE}px; color:green'>Twenty file created at: {twenty_file}</span>"
+                )
+            )
         else:
-            notebook_logging.error("Conversion failed! The generated .twenty file is not valid.")
-            display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Conversion failed! The generated .twenty file is not valid.</span>"))
+            notebook_logging.error(
+                "Conversion failed! The generated .twenty file is not valid."
+            )
+            display(
+                HTML(
+                    f"<span style='font-size: {FONT_SIZE}px; color:red'>Conversion failed! The generated .twenty file is not valid.</span>"
+                )
+            )
 
     def _on_element_change(self, change):
         notebook_logging.info(f"Element selected: {change['new']}")
         self.isotope_sheet.close()
-        element_symbol = self.dict_elements[change['new']]['symbol']
+        element_symbol = self.dict_elements[change["new"]]["symbol"]
         self._create_and_display_isotope_table(element_symbol=element_symbol)
 
         self.isotope_to_use_sheet.close()
@@ -321,29 +372,29 @@ class ResonanceFitting(NormalizationTof):
     def _get_dict_isotopes(self, element_symbol):
         """
         Get a dictionary of isotopes and their abundances for a given element.
-        
+
         dict = {[isotope_name]: {'abundance': None, 'mass': None}}
-        
+
         return dict
         """
         # element = periodictable.elements.symbol(element_name)
         _dict = {}
         for _el in getattr(periodictable, element_symbol):
-            _dict[str(_el)] = {'abundance': _el.abundance, 
-                          'mass': _el.mass}
+            _dict[str(_el)] = {"abundance": _el.abundance, "mass": _el.mass}
 
         notebook_logging.info(f"in get_dict_isotopes: {element_symbol = }, {_dict = }")
         return _dict
 
     def _create_and_display_isotope_table(self, element_symbol):
-
         dict_isotopes = self._get_dict_isotopes(element_symbol)
 
         list_isotopes_for_this_element = dict_isotopes.keys()
         notebook_logging.info(f"{list_isotopes_for_this_element}")
         # list_mass_isotopes = [dict_isotopes[iso]['mass'] for iso in list_isotopes_for_this_element]
-        list_abundance_isotopes = [dict_isotopes[iso]['abundance'] for iso in list_isotopes_for_this_element]
-        
+        list_abundance_isotopes = [
+            dict_isotopes[iso]["abundance"] for iso in list_isotopes_for_this_element
+        ]
+
         # create a boolean array of the same length as list_isotopes_for_this_element
 
         list_use_it = np.array([False for _ in list_isotopes_for_this_element])
@@ -351,10 +402,12 @@ class ResonanceFitting(NormalizationTof):
             if value > 0:
                 list_use_it[_index] = True
 
-        temp_dict = {'Isotope': np.array(list_isotopes_for_this_element), 
-                    'Abundance (%)': np.array(list_abundance_isotopes),
-                    'use it': list_use_it}
-        
+        temp_dict = {
+            "Isotope": np.array(list_isotopes_for_this_element),
+            "Abundance (%)": np.array(list_abundance_isotopes),
+            "use it": list_use_it,
+        }
+
         df = pd.DataFrame(temp_dict)
 
         self.isotope_sheet = from_dataframe(df)
@@ -370,27 +423,39 @@ class ResonanceFitting(NormalizationTof):
 
         array = to_array(self.isotope_sheet)
         notebook_logging.info(f"Isotope selection as array:\n{array}")
-        
+
         for _index, row in enumerate(array):
-            notebook_logging.info(f"at {_index =}, {row[0] = }, {row[1] = }, {row[2] = }")
+            notebook_logging.info(
+                f"at {_index =}, {row[0] = }, {row[1] = }, {row[2] = }"
+            )
 
         # retrieve the content of the isotope_to_use_sheet
         df_to_use = ipysheet.to_dataframe(self.isotope_to_use_sheet)
         # remove any row with 'Isotope' = None
-        df_to_use = df_to_use[df_to_use['Isotope'].notna()]
+        df_to_use = df_to_use[df_to_use["Isotope"].notna()]
         notebook_logging.info(f"Current isotopes to use:\n{df_to_use}")
 
         # add it the new isotopes selected with 'use it' = True
         for _index, row in enumerate(array):
             notebook_logging.info(f"Processing row {_index}: {row}, {row[2] =}")
-            if str(row[2]) == 'True':  # 'use it' is True
+            if str(row[2]) == "True":  # 'use it' is True
                 isotope_name = row[0]
                 abundance = f"{float(str(row[1])):.4f}"
-                notebook_logging.info(f"Adding isotope: {isotope_name} with abundance: {abundance}")
-                df_to_use = pd.concat([df_to_use, pd.DataFrame({'Isotope': [isotope_name], 'Abundance (%)': [abundance]})], ignore_index=True)
+                notebook_logging.info(
+                    f"Adding isotope: {isotope_name} with abundance: {abundance}"
+                )
+                df_to_use = pd.concat(
+                    [
+                        df_to_use,
+                        pd.DataFrame(
+                            {"Isotope": [isotope_name], "Abundance (%)": [abundance]}
+                        ),
+                    ],
+                    ignore_index=True,
+                )
 
-         # remove duplicates
-        self.df_to_use = df_to_use.drop_duplicates(subset='Isotope')
+        # remove duplicates
+        self.df_to_use = df_to_use.drop_duplicates(subset="Isotope")
 
         self.isotope_to_use_sheet.close()
         self.validate_isotope_button.close()
@@ -400,29 +465,30 @@ class ResonanceFitting(NormalizationTof):
 
         # listen to all events in this table
         for cell in self.isotope_to_use_sheet.cells:
-            cell.observe(self._on_isotope_to_use_table_change, names='value')
+            cell.observe(self._on_isotope_to_use_table_change, names="value")
 
         self._display_tables_and_buttons()
         display(self.isotope_to_use_sheet)
-        
+
         self._update_total_abundance_of_isotopes_to_use()
 
         # disable button (to make sure only 1 element is added at a time)
-        # self.validate_isotope_button.disabled = True        
+        # self.validate_isotope_button.disabled = True
 
     def _on_isotope_to_use_table_change(self, change):
         self._update_total_abundance_of_isotopes_to_use()
 
     def _update_total_abundance_of_isotopes_to_use(self):
-
         if self.horizontal_box:
             self.horizontal_box.close()
 
         df_to_use = ipysheet.to_dataframe(self.isotope_to_use_sheet)
-        list_abundances = df_to_use['Abundance (%)'].tolist()
+        list_abundances = df_to_use["Abundance (%)"].tolist()
         list_abundances_float = [float(_value) for _value in list_abundances]
         total_abundance = sum(list_abundances_float)
-        notebook_logging.info(f"Total abundance of isotopes to use: {total_abundance} %")
+        notebook_logging.info(
+            f"Total abundance of isotopes to use: {total_abundance} %"
+        )
 
         if total_abundance > 100.0:
             color = "red"
@@ -436,16 +502,15 @@ class ResonanceFitting(NormalizationTof):
         display(self.horizontal_box)
 
     def _display_tables_and_buttons(self):
-        """display the isotope table. the button to validate the selection as well as the table of isotopes to use
-        """
-        
+        """display the isotope table. the button to validate the selection as well as the table of isotopes to use"""
+
         dict_elements = self.dict_elements
 
         full_name_of_element = self.list_elements_widget.value
-        element_symbol = dict_elements[full_name_of_element]['symbol']
+        element_symbol = dict_elements[full_name_of_element]["symbol"]
 
         self._create_and_display_isotope_table(element_symbol=element_symbol)
-        
+
         self.validate_isotope_button = widgets.Button(
             description="Add to list of elements/isotopes to consider",
             layout=widgets.Layout(width="100%"),
@@ -464,11 +529,11 @@ class ResonanceFitting(NormalizationTof):
         """
         list_reformatted = []
         for _iso in list_isotopes:
-            if '-' not in _iso:
+            if "-" not in _iso:
                 list_reformatted.append(_iso)
                 continue
-            
-            parts = _iso.split('-')
+
+            parts = _iso.split("-")
             if len(parts) == 2:
                 reformatted = f"{parts[1]}-{parts[0]}"
                 list_reformatted.append(reformatted)
@@ -486,10 +551,10 @@ class ResonanceFitting(NormalizationTof):
 
         # retrieve isotopes and abundances to use
         df_to_use = ipysheet.to_dataframe(self.isotope_to_use_sheet)
-        list_isotopes = df_to_use['Isotope'].tolist()
+        list_isotopes = df_to_use["Isotope"].tolist()
         list_isotopes_reformatted = self._reformat_list_isotopes(list_isotopes)
-        list_abundances = df_to_use['Abundance (%)'].tolist()
-        list_abundances_float = [float(_value)*0.01 for _value in list_abundances]
+        list_abundances = df_to_use["Abundance (%)"].tolist()
+        list_abundances_float = [float(_value) * 0.01 for _value in list_abundances]
 
         notebook_logging.info(f"\t{list_isotopes = }")
         notebook_logging.info(f"\t{list_isotopes_reformatted =}")
@@ -501,23 +566,32 @@ class ResonanceFitting(NormalizationTof):
             isotopes=list_isotopes_reformatted,
             abundances=list_abundances_float,
             working_dir=self.folder_paths.stagging,
-            custom_global_settings={"forceRMoore": "yes",
-                                    "purgeSpinGroups": "yes",
-                                    "fudge": "0.7"}
+            custom_global_settings={
+                "forceRMoore": "yes",
+                "purgeSpinGroups": "yes",
+                "fudge": "0.7",
+            },
         )
 
         self.files_paths.json_path = json_path
 
         notebook_logging.info(f"Configuration file created at: {json_path}")
-        endf_files = [f for f in os.listdir(self.folder_paths.stagging) if f.endswith('.par')]
-        notebook_logging.info(f"ENDf files found in working directory: {len(endf_files)} files")
+        endf_files = [
+            f for f in os.listdir(self.folder_paths.stagging) if f.endswith(".par")
+        ]
+        notebook_logging.info(
+            f"ENDf files found in working directory: {len(endf_files)} files"
+        )
         for f in sorted(endf_files):
             notebook_logging.info(f"\t- {f}")
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>Configuration file created at: {json_path}</span>"))
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:green'>Configuration file created at: {json_path}</span>"
+            )
+        )
         notebook_logging.info("")
 
     def _setup_element_manager(self):
-
         # from all the elements selected, let's find out the one with the most abundant isotope
         table_array = to_array(self.isotope_to_use_sheet)
         max_abundance = 0.0
@@ -526,92 +600,128 @@ class ResonanceFitting(NormalizationTof):
             if _float_abundance > max_abundance:
                 max_abundance = _float_abundance
                 most_abundant_isotope = _element
-           
-        notebook_logging.info(f"Most abundant isotope selected: {most_abundant_isotope}")
 
-        mass_number_str, element_symbol = most_abundant_isotope.split('-')
+        notebook_logging.info(
+            f"Most abundant isotope selected: {most_abundant_isotope}"
+        )
+
+        mass_number_str, element_symbol = most_abundant_isotope.split("-")
         my_periodic_table_element = getattr(periodictable, element_symbol)
 
         self.most_abundant_element_symbol = element_symbol
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Most Abundant Element Selected: <b>{element_symbol}</b></span>"))
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:blue'>Most Abundant Element Selected: <b>{element_symbol}</b></span>"
+            )
+        )
 
         label_width = "160px"
         text_width = "80px"
         # mass number of the element selected
-        _label_left = widgets.HTML("<div style='text-align: right'>Mass number:</div>",
-                                   layout=widgets.Layout(width=label_width))
-        self.mass_number_widget = widgets.IntText(value=int(mass_number_str), 
-                                       disabled=False,
-                                       layout=widgets.Layout(width=text_width))
-        _hori_layout_1 = widgets.HBox([_label_left, 
-                                       self.mass_number_widget])
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Mass number:</div>",
+            layout=widgets.Layout(width=label_width),
+        )
+        self.mass_number_widget = widgets.IntText(
+            value=int(mass_number_str),
+            disabled=False,
+            layout=widgets.Layout(width=text_width),
+        )
+        _hori_layout_1 = widgets.HBox([_label_left, self.mass_number_widget])
         display(_hori_layout_1)
 
         # density (g/cm^3)
-        
-        _label_left = widgets.HTML("<div style='text-align: right'>Density (g/cm<sup>3</sup>):</div>",
-                                   layout=widgets.Layout(width=label_width))
-        self.density_widget = widgets.FloatText(value=my_periodic_table_element.density, 
-                                     disabled=False,
-                                     layout=widgets.Layout(width=text_width))
+
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Density (g/cm<sup>3</sup>):</div>",
+            layout=widgets.Layout(width=label_width),
+        )
+        self.density_widget = widgets.FloatText(
+            value=my_periodic_table_element.density,
+            disabled=False,
+            layout=widgets.Layout(width=text_width),
+        )
         _hori_layout_2 = widgets.HBox([_label_left, self.density_widget])
         display(_hori_layout_2)
 
         # thickness (mm)
-        _label_left = widgets.HTML("<div style='text-align: right'>Thickness (mm):</div>",
-                                   layout=widgets.Layout(width=label_width))
-        self.thickness_widget = widgets.FloatText(value=0.05, 
-                                       disabled=False,
-                                       layout=widgets.Layout(width=text_width))
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Thickness (mm):</div>",
+            layout=widgets.Layout(width=label_width),
+        )
+        self.thickness_widget = widgets.FloatText(
+            value=0.05, disabled=False, layout=widgets.Layout(width=text_width)
+        )
         _hori_layout_3 = widgets.HBox([_label_left, self.thickness_widget])
         display(_hori_layout_3)
 
         # atomic mass amu
-        _label_left = widgets.HTML("<div style='text-align: right'>Atomic mass (amu):</div>",
-                                   layout=widgets.Layout(width=label_width))
-        self.atomic_mass_widget = widgets.FloatText(value=my_periodic_table_element.mass, 
-                                         disabled=False,
-                                         layout=widgets.Layout(width=text_width))
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Atomic mass (amu):</div>",
+            layout=widgets.Layout(width=label_width),
+        )
+        self.atomic_mass_widget = widgets.FloatText(
+            value=my_periodic_table_element.mass,
+            disabled=False,
+            layout=widgets.Layout(width=text_width),
+        )
         _hori_layout_4 = widgets.HBox([_label_left, self.atomic_mass_widget])
-        display(_hori_layout_4) 
+        display(_hori_layout_4)
 
         # abundance (%)
-        _label_left = widgets.HTML("<div style='text-align: right'>Abundance (%):</div>",
-                                   layout=widgets.Layout(width=label_width))
-        self.abundance_widget = widgets.FloatSlider(value=100.0, min=0, max=100, step=0.1, disabled=False)
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Abundance (%):</div>",
+            layout=widgets.Layout(width=label_width),
+        )
+        self.abundance_widget = widgets.FloatSlider(
+            value=100.0, min=0, max=100, step=0.1, disabled=False
+        )
         _hori_layout_5 = widgets.HBox([_label_left, self.abundance_widget])
         display(_hori_layout_5)
 
         # energy range (ev)
-        _label_left = widgets.HTML("<div style='text-align: right'>Energy range (eV):</div>",
-                                   layout=widgets.Layout(width=label_width))
-        self.energy_range_widget = widgets.FloatRangeSlider(value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False)
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Energy range (eV):</div>",
+            layout=widgets.Layout(width=label_width),
+        )
+        self.energy_range_widget = widgets.FloatRangeSlider(
+            value=[1.0, 200.0], min=0, max=2000, step=0.1, disabled=False
+        )
         _hori_layout_6 = widgets.HBox([_label_left, self.energy_range_widget])
         display(_hori_layout_6)
 
         # temperature (K)
-        _label_left = widgets.HTML("<div style='text-align: right'>Temperature (K):</div>",
-                                   layout=widgets.Layout(width=label_width))
-        self.temperature_widget = widgets.FloatSlider(value=293.6, min=0, max=1000, step=0.1, disabled=False)
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Temperature (K):</div>",
+            layout=widgets.Layout(width=label_width),
+        )
+        self.temperature_widget = widgets.FloatSlider(
+            value=293.6, min=0, max=1000, step=0.1, disabled=False
+        )
         _hori_layout_7 = widgets.HBox([_label_left, self.temperature_widget])
         display(_hori_layout_7)
 
         # title
-        _label_left = widgets.HTML("<div style='text-align: right'>Title:</div>",
-                                   layout=widgets.Layout(width=label_width))
+        _label_left = widgets.HTML(
+            "<div style='text-align: right'>Title:</div>",
+            layout=widgets.Layout(width=label_width),
+        )
         o_get = Get(parent=self)
-        _element_name = o_get.full_name_of_element_from_abreviation(self.most_abundant_element_symbol)
+        _element_name = o_get.full_name_of_element_from_abreviation(
+            self.most_abundant_element_symbol
+        )
         _ipts = self.ipts
         _instrument = self.instrument
         _title = f"{_element_name} multi-isotope transmission analysis - {_instrument} {_ipts}"
-        self.title_widget = widgets.Text(value=_title, 
-                                        disabled=False,
-                                        layout=widgets.Layout(width="100%"))
-        _hori_layout_8 = widgets.HBox([_label_left, self.title_widget], layout=widgets.Layout(width="100%"))
+        self.title_widget = widgets.Text(
+            value=_title, disabled=False, layout=widgets.Layout(width="100%")
+        )
+        _hori_layout_8 = widgets.HBox(
+            [_label_left, self.title_widget], layout=widgets.Layout(width="100%")
+        )
         display(_hori_layout_8)
 
     def _create_multi_isotope_inp(self):
-
         notebook_logging.info("Creating SAMMY input file for resonance fitting ...")
         _element = self.most_abundant_element_symbol
         mass_number = self.mass_number_widget.value
@@ -626,18 +736,19 @@ class ResonanceFitting(NormalizationTof):
         title = self.title_widget.value
 
         material_props = {
-            'element': _element,
-            'mass_number': mass_number,
-            'density_g_cm3': density,
-            'thickness_mm': thickness,
-            'atomic_mass_amu': atomic_mass,
-            'abundance': abundance,
-            'min_energy_eV': min_energy,
-            'max_energy_eV': max_energy,
-            'temperature_K': temperature}
-    
-        notebook_logging.info(f"calling InpManager.create_multi_isotope_inp ...")
-        notebook_logging.info(f"material_props:")
+            "element": _element,
+            "mass_number": mass_number,
+            "density_g_cm3": density,
+            "thickness_mm": thickness,
+            "atomic_mass_amu": atomic_mass,
+            "abundance": abundance,
+            "min_energy_eV": min_energy,
+            "max_energy_eV": max_energy,
+            "temperature_K": temperature,
+        }
+
+        notebook_logging.info("calling InpManager.create_multi_isotope_inp ...")
+        notebook_logging.info("material_props:")
         display_dictionary_in_logging(material_props)
         inp_file = self.folder_paths.stagging / "hf_fitting.inp"
         self.files_paths.inp_file = inp_file
@@ -653,13 +764,18 @@ class ResonanceFitting(NormalizationTof):
         )
 
         notebook_logging.info(f"SAMMY input file created at: {inp_file}")
-        notebook_logging.info(f"")
+        notebook_logging.info("")
 
     def _sammy_files_multi_mode(self):
-        notebook_logging.info("Creating SAMMY files for multi-isotope resonance fitting ...")
+        notebook_logging.info(
+            "Creating SAMMY files for multi-isotope resonance fitting ..."
+        )
         transmission_file_path = self.files_paths.transmission.name
         notebook_logging.info(f"\t{transmission_file_path = }")
-        data_file = self.folder_paths.twenty / f"{transmission_file_path.replace('.txt', '.twenty')}"
+        data_file = (
+            self.folder_paths.twenty
+            / f"{transmission_file_path.replace('.txt', '.twenty')}"
+        )
         notebook_logging.info(f"\t{data_file = }")
         notebook_logging.info(f"\tjson-config: {self.files_paths.json_path = }")
 
@@ -667,11 +783,13 @@ class ResonanceFitting(NormalizationTof):
             input_file=self.files_paths.inp_file,
             json_config_file=self.files_paths.json_path,
             data_file=data_file,
-            endf_directory=self.folder_paths.stagging
+            endf_directory=self.folder_paths.stagging,
         )
         self.files_paths.sammy_files_multi_mode = files
         notebook_logging.info(f"\t{files = }")
-        notebook_logging.info("SAMMY files for multi-isotope resonance fitting created.")
+        notebook_logging.info(
+            "SAMMY files for multi-isotope resonance fitting created."
+        )
         notebook_logging.info("")
 
     def _local_sammy_config(self):
@@ -683,9 +801,11 @@ class ResonanceFitting(NormalizationTof):
         notebook_logging.info(f"\t{working_directory = }")
         notebook_logging.info(f"\t{output_directory = }")
 
-        config = LocalSammyConfig(sammy_executable=sammy_executable,
-                                  working_dir=working_directory,
-                                  output_dir=output_directory)
+        config = LocalSammyConfig(
+            sammy_executable=sammy_executable,
+            working_dir=working_directory,
+            output_dir=output_directory,
+        )
         notebook_logging.info(f"\t{config = }")
 
         self.runner = LocalSammyRunner(config=config)
@@ -693,22 +813,32 @@ class ResonanceFitting(NormalizationTof):
         notebook_logging.info("")
 
     def _multi_isotope_sammy_execution(self):
-        notebook_logging.info("Starting multi-isotope SAMMY resonance fitting execution ...")
+        notebook_logging.info(
+            "Starting multi-isotope SAMMY resonance fitting execution ..."
+        )
         notebook_logging.info(f"\t{self.files_paths.sammy_files_multi_mode = }")
         self.runner.prepare_environment(self.files_paths.sammy_files_multi_mode)
         result = self.runner.execute_sammy(self.files_paths.sammy_files_multi_mode)
         notebook_logging.info(f"\tresult: {result =}")
-        
+
         notebook_logging.info("SAMMY resonance fitting execution completed.")
         notebook_logging.info(f"Execution status: {result.success}")
         notebook_logging.info(f"Runtime: {result.runtime_seconds} seconds")
-   
+
         if result.error_message:
             notebook_logging.error(f"Error message: {result.error_message}")
-            display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:red'>Error during SAMMY execution: {result.error_message}</span>")  )
+            display(
+                HTML(
+                    f"<span style='font-size: {FONT_SIZE}px; color:red'>Error during SAMMY execution: {result.error_message}</span>"
+                )
+            )
         else:
-            display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY execution completed successfully!</span>") )
-        
+            display(
+                HTML(
+                    f"<span style='font-size: {FONT_SIZE}px; color:green'>SAMMY execution completed successfully!</span>"
+                )
+            )
+
         self.runner.collect_outputs(result=result)
         self.runner.cleanup()
 
@@ -721,20 +851,33 @@ class ResonanceFitting(NormalizationTof):
         lst_file_path = self.folder_paths.sammy_output / "SAMMY.LST"
 
         self.results_manager = ResultsManager(
-            lpt_file_path=lpt_file_path,
-            lst_file_path=lst_file_path
+            lpt_file_path=lpt_file_path, lst_file_path=lst_file_path
         )
 
         data = self.results_manager.get_data()
 
         # self.results_manager
 
-        notebook_logging.info(f"\t energy range: {data.energy.min():.3e} eV to {data.energy.max():.3e} eV")
+        notebook_logging.info(
+            f"\t energy range: {data.energy.min():.3e} eV to {data.energy.max():.3e} eV"
+        )
         notebook_logging.info(f"\t data points: {len(data.energy)}")
 
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>Results summary:</span>"))
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Energy range: <b>{data.energy.min():.3e} eV</b> to <b>{data.energy.max():.3e} eV</span>"))
-        display(HTML(f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Data points: <b>{len(data.energy)}</b></span>"))
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:blue'>Results summary:</span>"
+            )
+        )
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Energy range: <b>{data.energy.min():.3e} eV</b> to <b>{data.energy.max():.3e} eV</span>"
+            )
+        )
+        display(
+            HTML(
+                f"<span style='font-size: {FONT_SIZE}px; color:blue'>&emsp; Data points: <b>{len(data.energy)}</b></span>"
+            )
+        )
 
         fig = self.results_manager.plot_transmission(
             figsize=(12, 8),
@@ -753,52 +896,68 @@ class ResonanceFitting(NormalizationTof):
         notebook_logging.info("")
 
     def _multi_isotope_fitting_quality_metrics(self):
-        
         results_manager = self.results_manager
-        
+
         if results_manager.run_results.fit_results:
             print(f"Fit iterations: {len(results_manager.run_results.fit_results)}")
-        
+
             for i, fit_result in enumerate(results_manager.run_results.fit_results):
                 print(f"\nIteration {i+1}:")
-                
+
                 chi_sq = fit_result.get_chi_squared_results()
                 if chi_sq.chi_squared is not None:
                     print(f"  Chi-squared: {chi_sq.chi_squared:.4f}")
                     print(f"  Data points: {chi_sq.dof}")
                     print(f"  Reduced chi-squared: {chi_sq.reduced_chi_squared:.6f}")
-                
+
                 physics = fit_result.get_physics_data()
-                if hasattr(physics, 'broadening_parameters'):
+                if hasattr(physics, "broadening_parameters"):
                     broadening = physics.broadening_parameters
-                    if hasattr(broadening, 'thick') and broadening.thick is not None:
+                    if hasattr(broadening, "thick") and broadening.thick is not None:
                         print(f"  Number density: {broadening.thick:.6e} atoms/barn-cm")
                         print(f"  Temperature: {broadening.temp:.2f} K")
-                
+
                 # Multi-isotope abundances
                 nuclear = fit_result.get_nuclear_data()
-                if hasattr(nuclear, 'isotopes') and nuclear.isotopes:
+                if hasattr(nuclear, "isotopes") and nuclear.isotopes:
                     print("\n  Isotopic abundances:")
-                    hf_isotopes = ["Hf-174", "Hf-176", "Hf-177", "Hf-178", "Hf-179", "Hf-180"]
-                    natural_abundances = [0.0016, 0.0526, 0.1860, 0.2728, 0.1362, 0.3508]
-                    
+                    hf_isotopes = [
+                        "Hf-174",
+                        "Hf-176",
+                        "Hf-177",
+                        "Hf-178",
+                        "Hf-179",
+                        "Hf-180",
+                    ]
+                    natural_abundances = [
+                        0.0016,
+                        0.0526,
+                        0.1860,
+                        0.2728,
+                        0.1362,
+                        0.3508,
+                    ]
+
                     for j, isotope in enumerate(nuclear.isotopes):
-                        if j < len(hf_isotopes) and hasattr(isotope, 'abundance'):
+                        if j < len(hf_isotopes) and hasattr(isotope, "abundance"):
                             fitted = isotope.abundance
                             natural = natural_abundances[j]
                             ratio = fitted / natural if natural > 0 else 0
-                            print(f"    {hf_isotopes[j]}: fitted={fitted:.6f}, natural={natural:.4f}, ratio={ratio:.3f}")
+                            print(
+                                f"    {hf_isotopes[j]}: fitted={fitted:.6f}, natural={natural:.4f}, ratio={ratio:.3f}"
+                            )
 
             # Final results
             if len(results_manager.run_results.fit_results) > 0:
                 final_fit = results_manager.run_results.fit_results[-1]
                 final_chi = final_fit.get_chi_squared_results()
                 final_phys = final_fit.get_physics_data()
-                
+
                 print("\nFinal multi-isotope fit results:")
                 if final_chi.reduced_chi_squared:
                     print(f"  Reduced chi-squared: {final_chi.reduced_chi_squared:.6f}")
-                if hasattr(final_phys, 'broadening_parameters'):
-                    if hasattr(final_phys.broadening_parameters, 'thick'):
-                        print(f"  Number density: {final_phys.broadening_parameters.thick:.6e} atoms/barn-cm")      
-                        
+                if hasattr(final_phys, "broadening_parameters"):
+                    if hasattr(final_phys.broadening_parameters, "thick"):
+                        print(
+                            f"  Number density: {final_phys.broadening_parameters.thick:.6e} atoms/barn-cm"
+                        )

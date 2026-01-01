@@ -36,8 +36,12 @@ class ExportImages:
 
             exporter = pyqtgraph.exporters.ImageExporter(self.parent.ui.image_view.view)
 
-            exporter.params.param("width").setValue(2024, blockSignal=exporter.widthChanged)
-            exporter.params.param("height").setValue(2014, blockSignal=exporter.heightChanged)
+            exporter.params.param("width").setValue(
+                2024, blockSignal=exporter.widthChanged
+            )
+            exporter.params.param("height").setValue(
+                2014, blockSignal=exporter.heightChanged
+            )
 
             exporter.export(output_file_name)
 
