@@ -180,6 +180,7 @@ def normalization_with_list_of_full_path(
     logging.info(f"{max_iterations = }")
     logging.info(f"{correct_chips_alignment_flag = }")
     logging.info(f"{distance_source_detector_m = }")
+    logging.info(f"{detector_delay_us = }")
     logging.info(f"")
     
     sample_master_dict, sample_status_metadata = create_master_dict(
@@ -373,7 +374,10 @@ def normalization_with_list_of_full_path(
         logging.info(f"number of NaN in normalized data: {np.sum(np.isnan(normalized_data[str_list_run_number]))}")
         logging.info(f"number of inf in normalized data: {np.sum(np.isinf(normalized_data[str_list_run_number]))}")
 
-        detector_delay_us = sample_master_dict[list_run_number[0]][MasterDictKeys.detector_delay_us]
+        if detector_delay_us is None:
+            detector_delay_us = sample_master_dict[list_run_number[0]][MasterDictKeys.detector_delay_us]
+            logging.info(f"detector_delay argument is None, using detector delay from first sample run: {detector_delay_us} us")
+        
         time_spectra = sample_master_dict[list_run_number[0]][MasterDictKeys.list_spectra]
 
         dict_to_return.tof_array = time_spectra
@@ -534,7 +538,10 @@ def normalization_with_list_of_full_path(
             logging.info(f"number of NaN in normalized data: {np.sum(np.isnan(normalized_data[_sample_run_number]))}")
             logging.info(f"number of inf in normalized data: {np.sum(np.isinf(normalized_data[_sample_run_number]))}")
 
-            detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
+            if detector_delay_us is None:
+                detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
+                logging.info(f"detector_delay argument is None, using detector delay from sample run {_sample_run_number}: {detector_delay_us} us")
+                
             time_spectra = sample_master_dict[_sample_run_number][MasterDictKeys.list_spectra]
 
             dict_to_return.tof_array = time_spectra

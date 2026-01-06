@@ -1048,16 +1048,16 @@ class NormalizationTof:
 
         display(HTML("<hr>"))
 
-        label = widgets.Label(value="Distance source detector (m)", layout=widgets.Layout(width="200px"))
+        label = widgets.Label(value="Distance source detector (m)", layout=widgets.Layout(width="150px"))
         self.distance_source_detector = widgets.FloatText(
-            value=distance_source_detector_m[self.instrument], disabled=False, layout=widgets.Layout(width="50px")
+            value=distance_source_detector_m[self.instrument], disabled=False, layout=widgets.Layout(width="150px")
         )
         hori_layout = widgets.HBox([label, self.distance_source_detector])
         display(hori_layout)
 
         if self.instrument == "SNAP":
-            label = widgets.Label(value="Detector offset (us)", layout=widgets.Layout(width="200px"))
-            self.detector_offset_us = widgets.FloatText(value=0.0, disabled=False, layout=widgets.Layout(width="50px"))
+            label = widgets.Label(value="Detector offset (us)", layout=widgets.Layout(width="150px"))
+            self.detector_offset_us = widgets.FloatText(value=0.0, disabled=False, layout=widgets.Layout(width="150px"))
             hori_layout = widgets.HBox([label, self.detector_offset_us])
             display(hori_layout)
 
