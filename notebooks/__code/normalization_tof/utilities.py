@@ -293,7 +293,7 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
     # if not combine_samples:
     fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
     normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
-    im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
+    im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray", vmin=0, vmax=1)
     plt.colorbar(im2, ax=axs3[0])
     axs3[0].set_title(f"Integrated Normalized data")
 
