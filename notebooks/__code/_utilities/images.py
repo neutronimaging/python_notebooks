@@ -1,6 +1,8 @@
 import dxchange
 import numpy as np
 from tqdm import tqdm
+from skimage.io import imread
+import multiprocessing as mp
 
 
 def _init_arr_from_stack(list_files, ext=".tiff", slc=None):
@@ -40,3 +42,18 @@ def read_img_stack(list_files: list, ext=".tiff", fliplr=False, flipud=False):
                 _arr = np.flipud(_arr)
             arr[m] = _arr
     return arr
+
+
+def _worker(fl):
+    return (imread(fl).astype(np.float32)).swapaxes(0, 1)
+
+
+def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = False) -> np.ndarray:
+    """load data using multithreading"""
+    with mp.Pool(processes=40) as pool:
+        data = pool.map(_worker, list_tif)
+
+    if combine_tof:
+        return np.array(data).sum(axis=0)
+    else:
+        return np.array(data, dtype=np.float32)

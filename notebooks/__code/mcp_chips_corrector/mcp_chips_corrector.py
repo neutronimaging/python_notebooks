@@ -3,8 +3,8 @@ import os
 
 import numpy as np
 from IPython.display import HTML, display
-from NeuNorm.normalization import Normalization
-
+# from NeuNorm.normalization import Normalization
+from __code._utilities.images import load_data_using_multithreading
 from __code.ipywe import fileselector
 
 
@@ -33,12 +33,9 @@ class McpChipsCorrector:
 
         working_list_files = [file for file in full_list_files if "_SummedImg.fits" not in file]
 
-        o_norm = Normalization()
-        o_norm.load(file=working_list_files, notebook=True)
-
+        self.working_data = load_data_using_multithreading(list_tif=working_list_files)
         self.input_working_folder = folder_selected
         self.working_list_files = working_list_files
-        self.working_data = o_norm.data["sample"]["data"]
 
         # create integrated data set
         self.integrated_data = np.sum(self.working_data, axis=0)
