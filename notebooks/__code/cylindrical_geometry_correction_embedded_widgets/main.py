@@ -313,13 +313,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         height = self.height
 
         vmax = np.max(self.data)
+        fig_size = 10
 
-        def plot(image_index, left_right, top_bottom, profile_mker, vrange):
+        def plot(fig_size, image_index, left_right, top_bottom, profile_mker, vrange):
             
             left, right = left_right
             top, bottom = top_bottom
             
-            fig = plt.figure(num="Select Region to Crop")
+            fig = plt.figure(num="Select Region to Crop", figsize=(fig_size, fig_size))
             ax0 = plt.subplot(221)
             ax1 = plt.subplot(223)
             ax2 = plt.subplot(122)
@@ -356,10 +357,12 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         self.crop_ui = interactive(
             plot,
+            fig_size=widgets.IntSlider(min=5, max=20, value=10, layout=widgets.Layout(width="50%")),
             image_index=widgets.IntSlider(min=0, 
                                           max=self.number_of_images - 1, 
                                           value=0,
                                           layout=widgets.Layout(width="50%")),
+            
             left_right=widgets.IntRangeSlider(
                 min=0, 
                 max=width - 1, 
