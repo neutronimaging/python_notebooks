@@ -17,11 +17,12 @@ import numpy as np
 from IPython.display import HTML, display
 from ipywidgets import interactive
 
-matplotlib.rcParams["figure.figsize"] = (10, 10)
+matplotlib.rcParams["figure.figsize"] = (7, 7)
 
 from NeuNorm.normalization import Normalization
 
 from __code._utilities.file import make_or_increment_folder_name, make_tiff
+from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code._utilities import notebook_legend
 from __code.cylindrical_geometry_correction_embedded_widgets.cylindrical_geometry_correction import (
     number_of_pixels_at_that_position1,
@@ -49,13 +50,15 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             "right_inner_cylinder": 0,
         },
         "default_crop": {"x0": 386, "x1": 540, "y0": 889, "y1": 1824, "marker": 1000},
-        "default_rotate_angle": 0,
+        "rotation_angle": {"angle": 0.0,
+                           "rotate_90_flag": False},
         "default_background": {"y0": 35, "y1": 282},
         "default_sample": {"y0": 415, "y1": 935},
         "profiles_limit": {
             "description": "range to use and to combine to extract profile. Mean algorithm is used to combine profiles",
-            "top": 89,
-            "bottom": 119,
+            "top": -1,
+            "bottom": -1,
+            "vertical_guide": -1,
         },
     }
 
@@ -99,31 +102,37 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def select_config(self):
         config_browser = FileFolderBrowser(
-            working_dir=os.path.dirname(self.working_dir), next_function=self.load_config
+            working_dir=os.path.dirname(self.working_dir), 
+            next_function=self.load_config,
+            ipts_folder=self.ipts_folder,
         )
-        config_browser.select_images(
+        config_browser.select_input_file_with_jump(
             instruction="Select config file ...",
-            multiple_flag=False,
             filters={"config": "*.json"},
             default_filter="config",
         )
-
+        
     def load_config(self, config_filename):
         if config_filename:
             with open(config_filename) as f:
                 self.config = json.load(f)
 
-            display(HTML("<span>Config file " + config_filename + "loaded!</span>"))
+            display(HTML("<span>Config file " + config_filename + " loaded!</span>"))
 
     def visualize_raw_images(self):
         # fig, ax1 = plt.subplots(num="Raw Images")
         # fig.show()
 
-        def plot(image_index):
+        vmax = np.max(self.data)
+
+        def plot(image_index, vrange):
+            
+            vmin, vmax = vrange
+            
             fig, ax1 = plt.subplots(num="Raw Images")
             data = self.data[image_index]
-            im = ax1.imshow(data, vmin=0, vmax=1)
-            plt.colorbar(im, ax=ax1)
+            im = ax1.imshow(data, vmin=vmin, vmax=vmax)
+            plt.colorbar(im, ax=ax1, shrink=0.5)
 
         v = interactive(
             plot,
@@ -131,8 +140,24 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                           max=len(self.data) - 1, 
                                           value=0, 
                                           layout=widgets.Layout(width="50%")),
+            vrange=widgets.FloatRangeSlider(min=0,
+                                            max=vmax,
+                                            value=[0, vmax],
+                                            layout=widgets.Layout(width="50%"))
         )
         display(v)
+
+    def update_config_after_rotation(self):
+        profile_1, profile_2 = self.v.children[4].value, self.v.children[5].value
+        profile_vertical_guide = self.v.children[2].value
+        top_profileh = min(profile_1, profile_2)
+        bottom_profileh = max(profile_1, profile_2)
+        self.config["profiles_limit"]["top"] = top_profileh
+        self.config["profiles_limit"]["bottom"] = bottom_profileh
+        self.config["profiles_limit"]["vertical_guide"] = profile_vertical_guide
+        
+        self.config["rotation_angle"]["angle"] = self.v.children[1].value
+        self.config["rotation_angle"]["rotate_90_flag"] = self.v.children[0].value
 
     def rotate_images(self):
         # fig = plt.figure(num="Rotation of images")
@@ -140,11 +165,25 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         # ax1 = plt.subplot(223)
         # ax2 = plt.subplot(122)
 
-        default_rotate_angle = self.config["default_rotate_angle"]
+        default_rotate_angle = self.config["rotation_angle"]["angle"]
+        default_rot_90_flag = self.config["rotation_angle"]["rotate_90_flag"]
 
         profile_margin = 100
+        vmax = np.max(self.data)
 
-        def plot(rot_value, image_index, vert_guide, profile1_h, profile2_h):
+        height, width = np.shape(self.data[0])
+        if self.config["profiles_limit"]["top"] == -1:
+            default_profile1_h = int(self.height / 3)
+            default_profile2_h = int(2 * self.height / 3)
+            vertical_guide = int(self.width / 2)
+        else:
+            default_profile1_h = self.config["profiles_limit"]["top"]
+            default_profile2_h = self.config["profiles_limit"]["bottom"]
+            vertical_guide = self.config["profiles_limit"].get("vertical_guide", int(self.width / 2))
+
+        def plot(rot_90_flag, rot_value, image_index, vert_guide, profile1_h, profile2_h, vrange):
+            
+            vmin, vmax = vrange
             
             fig = plt.figure(num="Rotation of images")
             ax0 = plt.subplot(221)
@@ -153,18 +192,25 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             
             # ax0.cla()
             data = self.data[image_index]
+            if rot_90_flag:
+                data = np.rot90(data)
+                
             data = rotate(data, rot_value)
-            ax0.imshow(data, vmin=0, vmax=1)
+                
+            ax0.imshow(data, vmin=vmin, vmax=vmax)
             ax0.axvline(x=vert_guide, color="red", linestyle="--")
 
-            point1 = [vert_guide - profile_margin, profile1_h]
-            point2 = [vert_guide + profile_margin, profile1_h]
+            top_profileh = np.min([profile1_h, profile2_h])
+            bottom_profileh = np.max([profile1_h, profile2_h])
+
+            point1 = [vert_guide - profile_margin, top_profileh]
+            point2 = [vert_guide + profile_margin, top_profileh]
             x_values = [point1[0], point2[0]]
             y_values = [point1[1], point2[1]]
             ax0.plot(x_values, y_values, linestyle="--", color="b")
 
-            point3 = [vert_guide - profile_margin, profile2_h]
-            point4 = [vert_guide + profile_margin, profile2_h]
+            point3 = [vert_guide - profile_margin, bottom_profileh]
+            point4 = [vert_guide + profile_margin, bottom_profileh]
             x_values = [point3[0], point4[0]]
             y_values = [point3[1], point4[1]]
             ax0.plot(x_values, y_values, linestyle="--", color="g")
@@ -180,15 +226,15 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             #             color='g',
             #             linestyle="--")
 
-            profile1 = data[profile1_h, vert_guide - profile_margin : vert_guide + profile_margin]
-            profile2 = data[profile2_h, vert_guide - profile_margin : vert_guide + profile_margin]
+            profile1 = data[top_profileh, vert_guide - profile_margin : vert_guide + profile_margin]
+            profile2 = data[bottom_profileh, vert_guide - profile_margin : vert_guide + profile_margin]
+            ax1.set_ylabel("Counts")
+            ax1.set_xlabel("Pixels")
+            ax1.set_title("Profiles of horizontal lines")
 
             # ax1.cla()
             ax1.plot(profile1, "b", label="profile 1")
             ax1.plot(profile2, "g", label="profile 2")
-            plt.ylabel("Counts")
-            plt.xlabel("Pixels")
-            plt.title("horizontal profiles around vertical guide")
             plt.tight_layout()
 
             # print(f"{point1 =}")
@@ -203,11 +249,13 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             right = point2[0]
 
             tilted_data = data[top:bottom, left:right]
-            ax2.imshow(tilted_data, vmin=0, vmax=1)
+            ax2.imshow(tilted_data, vmin=vmin, vmax=vmax)
             ax2.axvline(profile_margin, linestyle="--", color="r")
+            ax2.set_title("Preview of region between the two profiles")
 
         self.v = interactive(
             plot,
+            rot_90_flag=widgets.Checkbox(value=default_rot_90_flag, description="Rotate 90 deg"),
             rot_value=widgets.FloatSlider(
                 min=-5.0,
                 max=5.0,
@@ -222,24 +270,37 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             vert_guide=widgets.IntSlider(
                 min=0,
                 max=self.width - 1,
-                value=int(self.width / 2),
+                value=vertical_guide,
                 layout=widgets.Layout(width="50%"),
                 continuous_update=False,
             ),
             profile1_h=widgets.IntSlider(min=0, 
                                          max=self.height - 1, 
                                          continuous_update=False, 
-                                         value=1135),
+                                         value=default_profile1_h,
+                                         layout=widgets.Layout(width="50%")),
             profile2_h=widgets.IntSlider(min=0, 
                                          max=self.height - 1,
                                          continuous_update=False, 
-                                         value=1794),
+                                         value=default_profile2_h,
+                                         layout=widgets.Layout(width="50%")),
+            vrange=widgets.FloatRangeSlider(min=0,
+                                            max=vmax,
+                                            value=[0, vmax],
+                                            layout=widgets.Layout(width="50%")),
         )
 
         display(self.v)
 
     def apply_rotation(self):
-        rotation_value = self.v.children[0].value
+        
+        self.update_config_after_rotation()
+        
+        rotation_value = self.v.children[1].value
+        rotation_90_flag = self.v.children[0].value
+        if rotation_90_flag:
+            rotation_value += 90.0
+                    
         self.rotation_value = rotation_value
         self.data = [rotate(_data, rotation_value) for _data in self.data]
 
@@ -251,7 +312,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         width = self.width
         height = self.height
 
-        def plot(image_index, left_right, top_bottom, profile_mker):
+        vmax = np.max(self.data)
+
+        def plot(image_index, left_right, top_bottom, profile_mker, vrange):
             
             left, right = left_right
             top, bottom = top_bottom
@@ -261,8 +324,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax1 = plt.subplot(223)
             ax2 = plt.subplot(122)
             
-            ax0.imshow(self.data[image_index], vmin=0, vmax=1)
-            ax0.axis("off")
+            vmin, vmax = vrange
+            
+            ax0.imshow(self.data[image_index], vmin=vmin, vmax=vmax)
+            # ax0.axis("off")
             ax0.axvline(x=left, color="red", linestyle="--")
             ax0.axvline(x=right, color="red", linestyle="--")
             ax0.axhline(y=top, color="red", linestyle="-.")
@@ -284,7 +349,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
             ax2.cla()
             cropped_data = self.data[image_index][top : bottom + 1, left : right + 1]
-            ax2.imshow(cropped_data, vmin=0, vmax=1)
+            ax2.imshow(cropped_data, vmin=vmin, vmax=vmax)
             ax2.set_title("Cropped Data Preview")
 
             return left, right, top, bottom
@@ -312,12 +377,23 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                            value=self.config["default_crop"]["marker"],
                                            layout=widgets.Layout(width="50%")
                                            ),
+            vrange=widgets.FloatRangeSlider(
+                min=0,
+                max=vmax,
+                value=[0, vmax],
+                step=0.01,
+                layout=widgets.Layout(width="50%")
+            )
         )
         display(self.crop_ui)
 
     def crop_region(self):
         [x0, x1, y0, y1] = self.crop_ui.result
         self.crop = {"x0": 0, "x1": x1, "y0": y0, "y1": y1}
+        self.config["default_crop"]["x0"] = x0
+        self.config["default_crop"]["x1"] = x1
+        self.config["default_crop"]["y0"] = y0
+        self.config["default_crop"]["y1"] = y1
 
         cropped_data = [_data[y0 : y1 + 1, x0 : x1 + 1] for _data in self.data]
         self.cropped_data = cropped_data
@@ -333,9 +409,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         )
         working_dir = os.path.dirname(self.working_dir)
         self.file_selection_ui = FileFolderBrowser(
-            working_dir=working_dir, next_function=self.export_cropped_images_step2
+            ipts_folder=self.ipts_folder,
+            working_dir=working_dir, 
+            next_function=self.export_cropped_images_step2
         )
-        self.file_selection_ui.select_output_folder()
+        self.file_selection_ui.select_output_folder_with_new()
 
     def export_cropped_images_step2(self, output_folder):
         output_folder = os.path.abspath(output_folder)
@@ -357,19 +435,21 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             progress_bar.value = index + 1
 
         progress_bar.close()
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created!</span>"))
+        display(HTML(f'<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images exported to " + base_working_dir + "!</span>"))
 
     def background_range_selection(self):
         if self.cropped_data is None:
             self.crop_region()
 
         [height, _] = np.shape(self.cropped_data[0])
+        vmax = np.max(self.cropped_data)
 
-        def plot(image_index, top_bottom):
+        def plot(image_index, top_bottom, vrange):
             top, bottom = top_bottom
+            vmin, vmax = vrange
             fig, ax1 = plt.subplots(num="Select top and bottom of background range")
              
-            ax1.imshow(self.cropped_data[image_index], vmin=0, vmax=1)
+            ax1.imshow(self.cropped_data[image_index], vmin=vmin, vmax=vmax)
             # ax1.axis('off')
             ax1.axhline(y=top, color="red")
             ax1.axhline(y=bottom, color="red")
@@ -391,6 +471,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 value=[default_top, default_bottom],
                 layout=widgets.Layout(width="50%"),
             ),
+            vrange=widgets.FloatRangeSlider(
+                min=0,
+                max=vmax,
+                value=[0, vmax],
+                layout=widgets.Layout(width="50%")),
             
         )
         display(self.background_limit_ui)
@@ -398,12 +483,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     def sample_region_selection(self):
         
         [height, _] = np.shape(self.cropped_data[0])
+        vmax = np.max(self.cropped_data)
 
-        def plot(image_index, top_bottom):
+        def plot(image_index, top_bottom, vrange):
             top, bottom = top_bottom
+            vmin, vmax = vrange
             fig, ax1 = plt.subplots(num="Select top and bottom of sample range")
             
-            ax1.imshow(self.cropped_data[image_index], vmin=0, vmax=1)
+            ax1.imshow(self.cropped_data[image_index], vmin=vmin, vmax=vmax)
             # ax1.axis('off')
             ax1.axhline(y=top, color="red")
             ax1.axhline(y=bottom, color="red")
@@ -424,6 +511,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 max=height - 1, 
                 value=[default_top, default_bottom]
             , layout=widgets.Layout(width="50%")),
+            vrange=widgets.FloatRangeSlider(
+                min=0,
+                max=vmax,
+                value=[0, vmax],
+                layout=widgets.Layout(width="50%"))
         )
         display(self.sample_limit_ui)
 
@@ -435,6 +527,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         _y0_background, _y1_background = self.background_limit_ui.result
         y0_background = min(_y0_background, _y1_background)
         y1_background = max(_y0_background, _y1_background)
+        self.config["default_background"]["y0"] = y0_background
+        self.config["default_background"]["y1"] = y1_background
         
         background_signal_integrated = [
             np.mean(_data[y0_background : y1_background + 1, :], axis=0) for _data in self.cropped_data
@@ -443,6 +537,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         _y0_sample, _y1_sample = self.sample_limit_ui.result
         y0_sample = min(_y0_sample, _y1_sample)
         y1_sample = max(_y0_sample, _y1_sample)
+        self.config["default_sample"]["y0"] = y0_sample 
+        self.config["default_sample"]["y1"] = y1_sample
         
         sample_without_background = []
         for _background, _sample in zip(background_signal_integrated, self.cropped_data, strict=False):
@@ -450,13 +546,17 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             sample_without_background.append(np.abs(_data - _background))
 
         self.sample_without_background = sample_without_background
-
-        def plot(image_index):
+        vmax = np.max(self.sample_without_background)
+        
+        def plot(image_index, vrange):
+            vmin, vmax = vrange
             fig, ax1 = plt.subplots(num="Sample without background")
-            ax1.imshow(self.sample_without_background[image_index], vmin=0, vmax=1)
+            ax1.imshow(self.sample_without_background[image_index], vmin=vmin, vmax=vmax)
 
         self.sample_no_background_ui = interactive(
-            plot, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0)
+            plot, 
+            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            vrange=widgets.FloatRangeSlider(min=0, max=vmax, value=[0, vmax], layout=widgets.Layout(width="50%")),
         )
         display(self.sample_no_background_ui)
 
@@ -470,12 +570,16 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             fig, ax = plt.subplots(nrows=1, ncols=2, num="Display of Profiles")
             
             image = sample_without_background[image_index]
-            ax[0].imshow(image)
+            im = ax[0].imshow(image)
             ax[0].axhline(y=profile_h, color="red")
+            plt.colorbar(im, ax=ax[0], shrink=0.5)
 
             data = sample_without_background[image_index]
             profile = data[profile_h, :]
             ax[1].plot(profile, ".")
+            ax[1].set_title("Profile at height " + str(profile_h))
+            ax[1].set_xlabel("Pixels")
+            ax[1].set_ylabel("Counts")
 
         v = interactive(
             plot,
@@ -515,13 +619,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 list_images_corrected[image_index][h, :] = expected_array
 
         self.list_images_corrected = list_images_corrected
+        vmax = np.max(self.list_images_corrected)
 
-        def plot(image_index, index1, index2, plot_max):
+        def plot(image_index, index1, index2, plot_max, vrange):
             
             fig, ax = plt.subplots(nrows=2, ncols=1, num="Sample and profiles corrected ")
             ax0, ax1 = ax
         
-            ax0.imshow(self.list_images_corrected[image_index], vmin=0, vmax=0.01)
+            ax0.imshow(self.list_images_corrected[image_index], vmin=vrange[0], vmax=vrange[1])
             ax0.axhline(y=index1, linestyle="--", color="r")
             ax0.axhline(y=index2, linestyle="--", color="b")
 
@@ -536,8 +641,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             index1=widgets.IntSlider(min=0, max=height - 1, value=int((height - 1) / 3), layout=widgets.Layout(width="50%")),
             index2=widgets.IntSlider(min=0, max=height - 1, value=2 * int((height - 1) / 3), layout=widgets.Layout(width="50%")),
             plot_max=widgets.FloatSlider(min=1e-5, max=1.0, step=0.001, value=0.02, layout=widgets.Layout(width="50%")),
+            vrange=widgets.FloatRangeSlider(min=0, max=vmax, value=[0, vmax], layout=widgets.Layout(width="50%")),
         )
-        display(self.sample_corrected)
 
     def export_profiles(self):
         working_dir = os.path.dirname(self.working_dir)
@@ -600,8 +705,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         progress_bar.close()
 
-        config_filename = os.path.join(output_folder, "config.json")
-        self.export_config(output_folder=base_working_dir, config_filename=config_filename)
+        _current_time = get_current_time_in_special_file_name_format()
+        config_filename = os.path.join(output_folder, f"config_{_current_time}.json")
+        self.export_config(config_filename=config_filename)
 
         display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " ASCII files created!</span>"))
 
@@ -613,6 +719,6 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         display(HTML('<span style="font-size: 12px; color:blue"> Output folder: ' + base_working_dir + "!</span>"))
 
-    def export_config(self, output_folder=None, config_filename=None):
+    def export_config(self, config_filename=None):
         with open(config_filename, "w") as outfile:
             json.dump(self.config, outfile)

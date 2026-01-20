@@ -34,6 +34,17 @@ class FileFolderBrowser:
         )
         self.list_images_ui.show()
 
+    def select_input_file_with_jump(self, instruction="Select Input File ...", filters={"All": "*.*"}, default_filter="All"):
+        self.list_input_files_ui = myfileselector.FileSelectorPanelWithJumpFolders(
+            instruction=instruction,
+            start_dir=self.working_dir,
+            type="file",
+            filters=filters,
+            default_filter=default_filter,
+            ipts_folder=self.ipts_folder,
+            next=self.next_function,
+        )
+
     def select_input_folder(self, instruction="Select Input Folder ...", multiple_flag=False):
         self.list_input_folders_ui = myfileselector.MyFileSelectorPanel(
             instruction=instruction,
