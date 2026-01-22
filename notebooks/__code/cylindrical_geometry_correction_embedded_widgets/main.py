@@ -38,6 +38,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     data = None
     number_of_images = None
 
+    remove_background_flag = True
+    background_limit_ui = None
+
     config = {
         "cylinders_position": {
             "description": "pixel position in the cropped data image of the center, inner and outer radius",
@@ -53,7 +56,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         "default_crop": {"x0": 386, "x1": 540, "y0": 889, "y1": 1824, "marker": 1000},
         "rotation_angle": {"angle": 0.0,
                            "rotate_90_flag": False},
-        "default_background": {"y0": 35, "y1": 282},
+        "default_background": {"y0": 35, "y1": 282, "flag": False},
         "default_sample": {"y0": 415, "y1": 935},
         "profiles_limit": {
             "description": "range to use and to combine to extract profile. Mean algorithm is used to combine profiles",
@@ -482,12 +485,16 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 max=vmax,
                 value=[0, vmax],
                 layout=widgets.Layout(width="50%")),
-            back_flag=widgets.Checkbox(value=True, description="Select background" )
+            back_flag=widgets.Checkbox(value=self.config["default_background"]["flag"], 
+                                       description="Select background" )
             
         )
         display(self.background_limit_ui)
 
     def sample_region_selection(self):
+        
+        if self.cropped_data is None:
+            self.crop_region()
         
         [height, _] = np.shape(self.cropped_data[0])
         vmax = np.max(self.cropped_data)
@@ -526,20 +533,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         )
         display(self.sample_limit_ui)
 
-    def remove_background_signal(self):
+    def update_signal(self):
         """
         this is where the vertical integrated signal from the background selected is removed from the signal
         range selected
         """ 
-        _y0_background, _y1_background, back_flag = self.background_limit_ui.result
-        y0_background = min(_y0_background, _y1_background)
-        y1_background = max(_y0_background, _y1_background)
-        self.config["default_background"]["y0"] = y0_background
-        self.config["default_background"]["y1"] = y1_background
-        
-        background_signal_integrated = [
-            np.mean(_data[y0_background : y1_background + 1, :], axis=0) for _data in self.cropped_data
-        ]
         
         _y0_sample, _y1_sample = self.sample_limit_ui.result
         y0_sample = min(_y0_sample, _y1_sample)
@@ -547,18 +545,35 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.config["default_sample"]["y0"] = y0_sample 
         self.config["default_sample"]["y1"] = y1_sample
         
-        sample_without_background = []
-        for _background, _sample in zip(background_signal_integrated, self.cropped_data, strict=False):
-            _data = _sample[y0_sample : y1_sample + 1]
-            
-            if not back_flag:
+        if self.background_limit_ui is None:
+            self.remove_background_flag = False
+            self.config["default_background"]["flag"] = False
+       
+            sample_without_background = []
+            for _sample in self.cropped_data:
+                _data = _sample[y0_sample : y1_sample + 1]
                 sample_without_background.append(_data)
-            else:
+                
+        else:
+            _y0_background, _y1_background, back_flag = self.background_limit_ui.result
+            y0_background = min(_y0_background, _y1_background)
+            y1_background = max(_y0_background, _y1_background)
+            self.config["default_background"]["y0"] = y0_background
+            self.config["default_background"]["y1"] = y1_background
+            self.config["default_background"]["flag"] = back_flag
+        
+            background_signal_integrated = [
+                np.mean(_data[y0_background : y1_background + 1, :], axis=0) for _data in self.cropped_data
+            ]
+        
+            sample_without_background = []
+            for _background, _sample in zip(background_signal_integrated, self.cropped_data, strict=False):
+                _data = _sample[y0_sample : y1_sample + 1]
                 sample_without_background.append(np.abs(_data - _background))
 
         self.sample_without_background = sample_without_background
         vmax = np.max(self.sample_without_background)
-        
+                
         def plot(image_index, vrange):
             vmin, vmax = vrange
             fig, ax1 = plt.subplots(num="Sample without background")
@@ -591,6 +606,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax[1].set_title("Profile at height " + str(profile_h))
             ax[1].set_xlabel("Pixels")
             ax[1].set_ylabel("Counts")
+            plt.tight_layout()
 
         v = interactive(
             plot,
