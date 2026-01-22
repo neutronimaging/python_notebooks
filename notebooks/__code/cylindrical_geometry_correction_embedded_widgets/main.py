@@ -679,6 +679,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         for index, image in enumerate(list_images_corrected):
             _name = os.path.basename(list_of_images[index])
             full_name = os.path.join(base_working_dir, _name)
+            # make sure the extension is .tif
+            if not full_name.lower().endswith(".tif"):
+                base_name_without_suffix = PurePosixPath(_name).stem
+                full_name = os.path.join(base_working_dir, base_name_without_suffix + ".tif")
             make_tiff(filename=full_name, data=image)
             progress_bar.value = index + 1
 
