@@ -1,4 +1,5 @@
 import os
+from random import sample
 import sys
 from pathlib import PurePosixPath
 
@@ -447,17 +448,19 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         [height, _] = np.shape(self.cropped_data[0])
         vmax = np.max(self.cropped_data)
 
-        def plot(image_index, top_bottom, vrange):
+        def plot(image_index, top_bottom, vrange, back_flag):
             top, bottom = top_bottom
             vmin, vmax = vrange
             fig, ax1 = plt.subplots(num="Select top and bottom of background range")
              
             ax1.imshow(self.cropped_data[image_index], vmin=vmin, vmax=vmax)
             # ax1.axis('off')
-            ax1.axhline(y=top, color="red")
-            ax1.axhline(y=bottom, color="red")
             
-            return top, bottom
+            if back_flag:
+                ax1.axhline(y=top, color="red")
+                ax1.axhline(y=bottom, color="red")
+            
+            return top, bottom, back_flag
 
         default_top = self.config["default_background"]["y0"]
         default_bottom = self.config["default_background"]["y1"]
@@ -479,6 +482,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 max=vmax,
                 value=[0, vmax],
                 layout=widgets.Layout(width="50%")),
+            back_flag=widgets.Checkbox(value=True, description="Select background" )
             
         )
         display(self.background_limit_ui)
@@ -526,8 +530,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         """
         this is where the vertical integrated signal from the background selected is removed from the signal
         range selected
-        """
-        _y0_background, _y1_background = self.background_limit_ui.result
+        """ 
+        _y0_background, _y1_background, back_flag = self.background_limit_ui.result
         y0_background = min(_y0_background, _y1_background)
         y1_background = max(_y0_background, _y1_background)
         self.config["default_background"]["y0"] = y0_background
@@ -546,7 +550,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         sample_without_background = []
         for _background, _sample in zip(background_signal_integrated, self.cropped_data, strict=False):
             _data = _sample[y0_sample : y1_sample + 1]
-            sample_without_background.append(np.abs(_data - _background))
+            
+            if not back_flag:
+                sample_without_background.append(_data)
+            else:
+                sample_without_background.append(np.abs(_data - _background))
 
         self.sample_without_background = sample_without_background
         vmax = np.max(self.sample_without_background)

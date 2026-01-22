@@ -347,6 +347,7 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
             axs6[0].set_xlabel("Lambda (A)")
             axs6[0].set_ylabel("Transmission (a.u.)")
             axs6[0].legend()
+            logging.info(f"{lambda_array = }")
 
             axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", 
                             markersize=MARKERSIZE, 
@@ -355,6 +356,7 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
             axs6[1].set_ylabel("Transmission (a.u.)")
             axs6[1].set_xscale("log")
             axs6[1].legend()
+            logging.info(f"{energy_array = }")
 
             plt.tight_layout()
 
