@@ -1,3 +1,6 @@
+
+from IPython.display import display, HTML
+
 from __code.ipywe import fileselector as fileselector
 from __code.ipywe import myfileselector as myfileselector
 
@@ -9,7 +12,7 @@ class FileFolderBrowser:
         self.ipts_folder = ipts_folder
 
     def select_images(
-        self, instruction="Select Images ...", multiple_flag=True, filters={"All": "*.*"}, default_filter="All"
+        self, instruction="Select Images to process...", multiple_flag=True, filters={"All": "*.*"}, default_filter="All"
     ):
         self.list_images_ui = myfileselector.MyFileSelectorPanel(
             instruction=instruction,

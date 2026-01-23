@@ -92,6 +92,7 @@ class MyFileSelectorPanel:
         self.footer = ipyw.HTML("")
         self.body = self.createBody(curdir)
         self.panel = ipyw.VBox(children=[self.header, self.body, self.footer])
+        self.panel2 = ipyw.VBox(children=[])
 
     def createBody(self, curdir):
         self.curdir = curdir
@@ -303,6 +304,7 @@ class MyFileSelectorPanel:
 
     def remove(self):
         close(self.panel)
+        
 
 
 # XXX css for big select area XXX

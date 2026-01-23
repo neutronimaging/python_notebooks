@@ -83,13 +83,20 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, 
                                                 next_function=self.load_images)
         file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
+        self.out = widgets.Output()
+        display(self.out)
 
     def load_images(self, list_of_images):
+
+        with self.out:
+            self.out.clear_output()
+            display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
+
         self.number_of_images = len(list_of_images)
         self.list_of_images = list_of_images
         if self.number_of_images == 0:
-            display(HTML("<span>0 images found!</span>"))
-            return
+            with self.out:
+                return
 
         self.ipts_folder = self.working_dir
         self.working_dir = os.path.dirname(list_of_images[0])
@@ -100,9 +107,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         # self.data = [np.rot90(_data) for _data in data]
 
         if self.data:
-            [self.height, self.width] = np.shape(np.squeeze(self.data[0]))
+            with self.out:
+                self.out.clear_output()
+                display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
 
-        display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
+            [self.height, self.width] = np.shape(np.squeeze(self.data[0]))
 
     def select_config(self):
         config_browser = FileFolderBrowser(
@@ -115,13 +124,17 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             filters={"config": "*.json"},
             default_filter="config",
         )
+        self.out = widgets.Output()
+        display(self.out)
         
     def load_config(self, config_filename):
         if config_filename:
             with open(config_filename) as f:
                 self.config = json.load(f)
 
-            display(HTML("<span>Config file " + config_filename + " loaded!</span>"))
+            with self.out:
+                self.out.clear_output()
+                display(HTML(f"<span style='font-size: 12px; color:blue'> Config file loaded: " + config_filename + "</span>"))
 
     def visualize_raw_images(self):
         # fig, ax1 = plt.subplots(num="Raw Images")
@@ -421,6 +434,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             next_function=self.export_cropped_images_step2
         )
         self.file_selection_ui.select_output_folder_with_new()
+        self.out = widgets.Output()
+        display(self.out)
 
     def export_cropped_images_step2(self, output_folder):
         output_folder = os.path.abspath(output_folder)
@@ -433,16 +448,24 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         nbr_images = len(list_of_images)
         progress_bar = widgets.IntProgress(min=0, max=nbr_images - 1)
-        display(progress_bar)
+        with self.out:
+            display(progress_bar)
 
         for index, image in enumerate(list_images_corrected):
             _name = os.path.basename(list_of_images[index])
             full_name = os.path.join(base_working_dir, _name)
+            
+            if not full_name.lower().endswith(".tif"):
+                base_name_without_suffix = PurePosixPath(_name).stem
+                full_name = os.path.join(base_working_dir, base_name_without_suffix + ".tif")
+            
             make_tiff(filename=full_name, data=image)
             progress_bar.value = index + 1
 
         progress_bar.close()
-        display(HTML(f'<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images exported to " + base_working_dir + "!</span>"))
+        with self.out:
+            display(HTML(f'<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images exported to " + base_working_dir + "!</span>"))
+            display(widgets.Label(value="Exported images to: " + base_working_dir))
 
     def background_range_selection(self):
         if self.cropped_data is None:
@@ -677,6 +700,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                                   ipts_folder=self.ipts_folder,
                                                   next_function=self.export)
         output_folder_browser.select_output_folder_with_new()
+        self.out = widgets.Output()
+        display(self.out)
 
     def export(self, output_folder):
         output_folder = os.path.abspath(output_folder)
@@ -690,7 +715,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         nbr_images = len(list_of_images)
         progress_bar = widgets.IntProgress(min=0, max=nbr_images - 1)
-        display(progress_bar)
+        with self.out:
+            display(progress_bar)
 
         for index, image in enumerate(list_images_corrected):
             _name = os.path.basename(list_of_images[index])
@@ -703,12 +729,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             progress_bar.value = index + 1
 
         progress_bar.close()
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created!</span>"))
+        with self.out:
+            display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created!</span>"))
 
         # export profiles
 
         progress_bar = widgets.IntProgress(min=0, max=nbr_images - 1)
-        display(progress_bar)
+        with self.out:
+            display(progress_bar)
 
         metadata = {}
         metadata["rotation value (degrees)"] = self.rotation_value
@@ -740,16 +768,18 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         config_filename = os.path.join(output_folder, f"config_{_current_time}.json")
         self.export_config(config_filename=config_filename)
 
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " ASCII files created!</span>"))
+        with self.out:
+            display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " ASCII files created!</span>"))
 
         json_file_name = os.path.join(base_working_dir, "metadata.json")
         with open(json_file_name, "w") as outfile:
             json.dump(metadata, outfile)
-        display(HTML('<span style="font-size: 12px; color:blue"> metadata json file created (metadata.json)!</span>'))
-        display(HTML('<span style="font-size: 12px; color:blue"> config file: ' + config_filename + "</span>"))
-
-        display(HTML('<span style="font-size: 12px; color:blue"> Output folder: ' + base_working_dir + "!</span>"))
-
+        
+        with self.out:
+            display(HTML('<span style="font-size: 12px; color:blue"> metadata json file created (metadata.json)!</span>'))
+            display(HTML('<span style="font-size: 12px; color:blue"> config file: ' + config_filename + "</span>"))
+            display(HTML('<span style="font-size: 12px; color:blue"> Output folder: ' + base_working_dir + "!</span>"))
+        
     def export_config(self, config_filename=None):
         with open(config_filename, "w") as outfile:
             json.dump(self.config, outfile)
