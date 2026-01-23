@@ -520,34 +520,39 @@ class FileSelectorPanelWithJumpFolders:
             if not os.path.exists(start_dir):
                 start_dir = os.path.expanduser("~")
 
-            self.output_folder_ui.remove()
-            self.display_file_selector(
-                instruction=instruction,
-                start_dir=start_dir,
-                type=type,
-                next=next,
-                multiple=multiple,
-                newdir_toolbar_button=newdir_toolbar_button,
-                custom_layout=custom_layout,
-                filters=filters,
-                stay_alive=stay_alive,
-            )
+            # self.output_folder_ui.remove()
+            with self.out:
+                self.output_folder_ui.remove()
+                self.display_file_selector(
+                    instruction=instruction,
+                    start_dir=start_dir,
+                    type=type,
+                    next=next,
+                    multiple=multiple,
+                    newdir_toolbar_button=newdir_toolbar_button,
+                    custom_layout=custom_layout,
+                    filters=filters,
+                    stay_alive=stay_alive,
+                )
+            
 
         def display_file_selector_from_home(ev):
             start_dir = os.path.expanduser("~")
 
-            self.output_folder_ui.remove()
-            self.display_file_selector(
-                instruction=instruction,
-                start_dir=start_dir,
-                type=type,
-                next=next,
-                multiple=multiple,
-                newdir_toolbar_button=newdir_toolbar_button,
-                custom_layout=custom_layout,
-                filters=filters,
-                stay_alive=stay_alive,
-            )
+            #self.output_folder_ui.remove()
+            with self.out:
+                self.output_folder_ui.remove()
+                self.display_file_selector(
+                    instruction=instruction,
+                    start_dir=start_dir,
+                    type=type,
+                    next=next,
+                    multiple=multiple,
+                    newdir_toolbar_button=newdir_toolbar_button,
+                    custom_layout=custom_layout,
+                    filters=filters,
+                    stay_alive=stay_alive,
+                )
 
         ipts = os.path.basename(ipts_folder)
 
@@ -599,6 +604,9 @@ class FileSelectorPanelWithJumpFolders:
             default_filter=default_filter,
             stay_alive=stay_alive,
         )
+        
+        self.out = widgets.Output()
+        display(self.out)
 
     def display_file_selector(
         self,
