@@ -207,6 +207,12 @@ class TimepixChipsAlignmentCorrection:
             axs[0, 0].axhline(y=y, color='r', linestyle='--', alpha=0.2)
             axs[0, 0].axhline(y=y+size, color='r', linestyle='--', alpha=0.2)   
             
+            # show the edge of the chips
+            axs[0, 0].axhline(y=255, color='white', linestyle='-', alpha=0.2)
+            axs[0, 0].axhline(y=256, color='white', linestyle='-', alpha=0.2)
+            axs[0, 0].axvline(x=255, color='white', linestyle='-', alpha=0.2)
+            axs[0, 0].axvline(x=256, color='white', linestyle='-', alpha=0.2)
+            
             rect_container = patches.Rectangle((x, y), size, size, linewidth=1, edgecolor='yellow', facecolor='none')
             axs[0, 0].add_patch(rect_container)
             
@@ -258,13 +264,24 @@ class TimepixChipsAlignmentCorrection:
         stack_of_images = self.working_data
         working_file_names = self.working_list_files
         
+        with self.out:
+            self.out.clear_output()    
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:blue">'
+                    + "Starting correction of "
+                    + str(len(stack_of_images))
+                    + " files...</span>"
+                )
+            )
+        
         for idx, img in tqdm(enumerate(stack_of_images)):
             o_corrector = TimepixGeometryCorrection(raw_images=img,
                                                     config=self.detector_config)
             corrected_image = o_corrector.correct(display=False)
             base_name = os.path.basename(working_file_names[idx])
             output_file = os.path.join(folder_selected, f"Corrected_{base_name}")
-            make_tiff(data=corrected_image[0], filename=output_file)
+            make_tiff(data=corrected_image, filename=output_file)
         
         # o_corrector = TimepixGeometryCorrection(raw_images=stack_of_images,
         #                                         config=self.detector_config)
@@ -275,13 +292,13 @@ class TimepixChipsAlignmentCorrection:
         #     output_file = os.path.join(folder_selected, f"Corrected_{base_name}")
         #     plt.imsave(output_file, corrected_image, cmap='viridis')
             
-        # with self.out:
-        self.out.clear_output()    
-        display(
-            HTML(
-                '<span style="font-size: 15px; color:green">'
-                + str(len(stack_of_images))
-                + " files have been corrected and saved to " + folder_selected + "</span>"
+        with self.out:
+            self.out.clear_output()    
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:green">'
+                    + str(len(stack_of_images))
+                    + " files have been corrected and saved to " + folder_selected + "</span>"
+                )
             )
-        )
         
