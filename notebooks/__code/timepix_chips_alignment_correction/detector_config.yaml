@@ -1,0 +1,16 @@
+chip1:
+  description: top right chip
+  xoffset: 2.4
+  yoffset: 1
+chip2:
+  description: top left and reference chip
+  xoffset: 0
+  yoffset: 0
+chip3:
+  description: bottom left chip
+  xoffset: 0
+  yoffset: 1
+chip4:
+  description: bottom right chip
+  xoffset: 2.3
+  yoffset: 2.3

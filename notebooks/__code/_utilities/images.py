@@ -3,6 +3,8 @@ import numpy as np
 from tqdm import tqdm
 from skimage.io import imread
 import multiprocessing as mp
+from PIL import Image
+import astropy.io.fits as fits
 
 
 def _init_arr_from_stack(list_files, ext=".tiff", slc=None):
@@ -57,3 +59,16 @@ def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = Fa
         return np.array(data).sum(axis=0)
     else:
         return np.array(data, dtype=np.float32)
+    
+
+def make_tiff(data=[], filename="", metadata=None):
+    new_image = Image.fromarray(data)
+    if metadata:
+        new_image.save(filename, tiffinfo=metadata)
+    else:
+        new_image.save(filename)
+
+
+def make_fits(data=[], filename=""):
+    fits.writeto(filename, data, clobber=True)
+    
