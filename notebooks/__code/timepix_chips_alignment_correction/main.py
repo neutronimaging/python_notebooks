@@ -195,44 +195,51 @@ class TimepixChipsAlignmentCorrection:
         
     def display_correction(self):
         
-        def preview_correction(x, y, size=5):
+        default_size = 25
+        def preview_correction(x, y, size=5, show_markers=True):
                 
             fig, axs = plt.subplots(2, 2, figsize=(12, 12))
             
             # left size, original integrated data
-            axs[0, 0].imshow(self.integrated_data, cmap='viridis')
+            im00 = axs[0, 0].imshow(self.integrated_data, cmap='viridis')
             axs[0, 0].set_title('Original Integrated Data')
-            axs[0, 0].axvline(x=x, color='r', linestyle='--', alpha=0.2)
-            axs[0, 0].axvline(x=x+size, color='r', linestyle='--', alpha=0.2)
-            axs[0, 0].axhline(y=y, color='r', linestyle='--', alpha=0.2)
-            axs[0, 0].axhline(y=y+size, color='r', linestyle='--', alpha=0.2)   
+            plt.colorbar(im00, ax=axs[0,0], shrink=0.6)
+            if show_markers:
+                axs[0, 0].axvline(x=x, color='r', linestyle='--', alpha=0.2)
+                axs[0, 0].axvline(x=x+size, color='r', linestyle='--', alpha=0.2)
+                axs[0, 0].axhline(y=y, color='r', linestyle='--', alpha=0.2)
+                axs[0, 0].axhline(y=y+size, color='r', linestyle='--', alpha=0.2)   
             
-            # show the edge of the chips
-            axs[0, 0].axhline(y=255, color='white', linestyle='-', alpha=0.2)
-            axs[0, 0].axhline(y=256, color='white', linestyle='-', alpha=0.2)
-            axs[0, 0].axvline(x=255, color='white', linestyle='-', alpha=0.2)
-            axs[0, 0].axvline(x=256, color='white', linestyle='-', alpha=0.2)
+                # show the edge of the chips
+                axs[0, 0].axhline(y=255, color='white', linestyle='-', alpha=0.2)
+                axs[0, 0].axhline(y=256, color='white', linestyle='-', alpha=0.2)
+                axs[0, 0].axvline(x=255, color='white', linestyle='-', alpha=0.2)
+                axs[0, 0].axvline(x=256, color='white', linestyle='-', alpha=0.2)
             
             rect_container = patches.Rectangle((x, y), size, size, linewidth=1, edgecolor='yellow', facecolor='none')
             axs[0, 0].add_patch(rect_container)
             
             # right side, corrected integrated data (placeholder)
             corrected_data = self.corrected_integrated_data
-            axs[0, 1].imshow(corrected_data, cmap='viridis')
+            im01 = axs[0, 1].imshow(corrected_data, cmap='viridis')
+            plt.colorbar(im01, ax=axs[0,1], shrink=0.6)
             axs[0, 1].set_title('Corrected Integrated Data')
-            axs[0, 1].axvline(x=x, color='r', linestyle='--', alpha=0.2)
-            axs[0, 1].axvline(x=x+size, color='r', linestyle='--', alpha=0.2)
-            axs[0, 1].axhline(y=y, color='r', linestyle='--', alpha=0.2)
-            axs[0, 1].axhline(y=y+size, color='r', linestyle='--', alpha=0.2)
+            if show_markers:
+                axs[0, 1].axvline(x=x, color='r', linestyle='--', alpha=0.2)
+                axs[0, 1].axvline(x=x+size, color='r', linestyle='--', alpha=0.2)
+                axs[0, 1].axhline(y=y, color='r', linestyle='--', alpha=0.2)
+                axs[0, 1].axhline(y=y+size, color='r', linestyle='--', alpha=0.2)
             rect_container = patches.Rectangle((x, y), size, size, linewidth=1, edgecolor='yellow', facecolor='none')
             axs[0, 1].add_patch(rect_container)
             
             # zoom in second row
-            axs[1, 0].imshow(self.integrated_data[y:y+size, x:x+size], cmap='viridis')   
+            im10 = axs[1, 0].imshow(self.integrated_data[y:y+size, x:x+size], cmap='viridis')   
             axs[1, 0].set_title(f'Zoomed Original Data (x: {x}, y: {y}, Size: {size}x)')
+            plt.colorbar(im10, ax=axs[1,0], shrink=0.6)
             
-            axs[1, 1].imshow(corrected_data[y:y+size, x:x+size], cmap='viridis')
+            im11 = axs[1, 1].imshow(corrected_data[y:y+size, x:x+size], cmap='viridis')
             axs[1, 1].set_title(f'Zoomed Corrected Data (x: {x}, y: {y}, Size: {size}x)') 
+            plt.colorbar(im11, ax=axs[1,1], shrink=0.6)
             
             # plt.show()
             plt.tight_layout()
@@ -241,9 +248,10 @@ class TimepixChipsAlignmentCorrection:
         
         display_preview_correction = interactive(
             preview_correction,
-            x=widgets.IntSlider(min=0, max=width-1, step=1, value=width//2, description='x:', layout=widgets.Layout(width='50%')),
-            y=widgets.IntSlider(min=0, max=height-1, step=1, value=height//2, description='y:', layout=widgets.Layout(width='50%')),
-            size=widgets.IntSlider(min=2, max=100, step=1, value=25, description='Size:', layout=widgets.Layout(width='50%')),
+            x=widgets.IntSlider(min=0, max=width-1, step=1, value=width//2-default_size//2, description='x:', layout=widgets.Layout(width='50%')),
+            y=widgets.IntSlider(min=0, max=height-1, step=1, value=height//2-default_size//2, description='y:', layout=widgets.Layout(width='50%')),
+            size=widgets.IntSlider(min=2, max=100, step=1, value=default_size, description='Size:', layout=widgets.Layout(width='50%')),
+            show_markers=widgets.Checkbox(value=True, description='Show guides')
         )
         display(display_preview_correction)
         
@@ -281,7 +289,7 @@ class TimepixChipsAlignmentCorrection:
             corrected_image = o_corrector.correct(display=False)
             base_name = os.path.basename(working_file_names[idx])
             output_file = os.path.join(folder_selected, f"Corrected_{base_name}")
-            make_tiff(data=corrected_image, filename=output_file)
+            make_tiff(data=corrected_image[0], filename=output_file)
         
         # o_corrector = TimepixGeometryCorrection(raw_images=stack_of_images,
         #                                         config=self.detector_config)
