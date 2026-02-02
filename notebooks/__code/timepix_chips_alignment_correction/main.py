@@ -28,6 +28,18 @@ class DetectorType:
     # CUSTOM = "Custom"
 
 
+class ChipsLabelPosition:
+    x_left = 15
+    x_right = 512 - x_left
+    y_top = 20
+    y_bottom = 512-y_top
+
+    chip1 = (x_right, y_top)
+    chip2 = (x_left, y_top)
+    chip3 = (x_left, y_bottom)
+    chip4 = (x_right, y_bottom)
+
+
 class TimepixChipsAlignmentCorrection:
     working_data = None
 
@@ -210,9 +222,21 @@ class TimepixChipsAlignmentCorrection:
             
             # left size, original integrated data
             im00 = axs[0, 0].imshow(self.integrated_data, cmap='viridis')
+            
             axs[0, 0].set_title('Original Integrated Data')
             plt.colorbar(im00, ax=axs[0,0], shrink=0.6)
             if show_markers:
+                
+                # add "chips1" in top right corner of the image
+                axs[0, 0].text(ChipsLabelPosition.chip3[0], ChipsLabelPosition.chip3[1], 
+                            'Chips3', color='white', fontsize=12, weight='bold', ha='left', va='bottom')
+                axs[0, 0].text(ChipsLabelPosition.chip2[0], ChipsLabelPosition.chip2[1], 
+                            'Chips2', color='white', fontsize=12, weight='bold', ha='left', va='top')
+                axs[0, 0].text(ChipsLabelPosition.chip1[0], ChipsLabelPosition.chip1[1], 
+                            'Chips1', color='white', fontsize=12, weight='bold', ha='right', va='top')
+                axs[0, 0].text(ChipsLabelPosition.chip4[0], ChipsLabelPosition.chip4[1], 
+                            'Chips4', color='white', fontsize=12, weight='bold', ha='right', va='bottom')            
+                
                 axs[0, 0].axvline(x=x, color='r', linestyle='--', alpha=0.2)
                 axs[0, 0].axvline(x=x+size, color='r', linestyle='--', alpha=0.2)
                 axs[0, 0].axhline(y=y, color='r', linestyle='--', alpha=0.2)
@@ -233,6 +257,16 @@ class TimepixChipsAlignmentCorrection:
             plt.colorbar(im01, ax=axs[0,1], shrink=0.6)
             axs[0, 1].set_title('Corrected Integrated Data')
             if show_markers:
+                
+                axs[0, 1].text(ChipsLabelPosition.chip3[0], ChipsLabelPosition.chip3[1], 
+                            'Chips3', color='white', fontsize=12, weight='bold', ha='left', va='bottom')
+                axs[0, 1].text(ChipsLabelPosition.chip2[0], ChipsLabelPosition.chip2[1], 
+                            'Chips2', color='white', fontsize=12, weight='bold', ha='left', va='top')
+                axs[0, 1].text(ChipsLabelPosition.chip1[0], ChipsLabelPosition.chip1[1], 
+                            'Chips1', color='white', fontsize=12, weight='bold', ha='right', va='top')
+                axs[0, 1].text(ChipsLabelPosition.chip4[0], ChipsLabelPosition.chip4[1], 
+                            'Chips4', color='white', fontsize=12, weight='bold', ha='right', va='bottom')     
+                
                 axs[0, 1].axvline(x=x, color='r', linestyle='--', alpha=0.2)
                 axs[0, 1].axvline(x=x+size, color='r', linestyle='--', alpha=0.2)
                 axs[0, 1].axhline(y=y, color='r', linestyle='--', alpha=0.2)
@@ -274,7 +308,7 @@ class TimepixChipsAlignmentCorrection:
                                    description='Size:', 
                                    layout=widgets.Layout(width='50%')),
             show_markers=widgets.Checkbox(value=True, 
-                                          description='Show guides'),
+                                          description='Show guides/labels'),
             # recalculate_button=widgets.ToggleButton(description="Recalculate Correction", 
             #                                         value=False, 
             #                                         disabled=recalculate_button_disabled, 
