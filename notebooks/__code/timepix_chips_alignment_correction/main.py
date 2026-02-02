@@ -25,7 +25,7 @@ from __code.timepix_chips_alignment_correction import config
 class DetectorType:
     TIMEPIX1 = "Timepix 1"
     TIMEPIX3 = "Timepix 3"
-    CUSTOM = "Custom"
+    # CUSTOM = "Custom"
 
 
 class TimepixChipsAlignmentCorrection:
@@ -79,7 +79,8 @@ class TimepixChipsAlignmentCorrection:
     def select_detector(self):
         label = widgets.Label("Select Detector Type:",
                               layout=widgets.Layout(width='13%'))
-        self.detector_type_ui = widgets.Dropdown(options=[DetectorType.TIMEPIX1, DetectorType.TIMEPIX3, DetectorType.CUSTOM],
+        list_of_detector_types = [DetectorType.__dict__.get(key) for key in DetectorType.__dict__.keys() if not key.startswith('__')]
+        self.detector_type_ui = widgets.Dropdown(options=list_of_detector_types,
                                             value=DetectorType.TIMEPIX1,
                                             # value=DetectorType.CUSTOM,      # DEBUGGING PURPOSE
                                             # description='Detector Type:',
@@ -90,24 +91,23 @@ class TimepixChipsAlignmentCorrection:
         display(box)
         
     def correction_settings(self):
-        if self.detector_type_ui.value == DetectorType.CUSTOM:
-            # self.select_config_file()
+        # if self.detector_type_ui.value == DetectorType.CUSTOM:
+        #     # self.select_config_file()
+        #     # for debugging purpose only
+        #     config_file = "/SNS/VENUS/IPTS-35945/shared/processed_data/jean_test/detector_config.yaml"
+        #     self.load_config_file(config_file)
             
-            # for debugging purpose only
-            config_file = "/SNS/VENUS/IPTS-35945/shared/processed_data/jean_test/detector_config.yaml"
-            self.load_config_file(config_file)
-            
+        # else:
+        if self.detector_type_ui.value == DetectorType.TIMEPIX1:
+            _detector_config = config.config_timepix1
+        elif self.detector_type_ui.value == DetectorType.TIMEPIX3:
+            _detector_config = config.config_timepix3
         else:
-            if self.detector_type_ui.value == DetectorType.TIMEPIX1:
-                _detector_config = config.config_timepix1
-            elif self.detector_type_ui.value == DetectorType.TIMEPIX3:
-                _detector_config = config.config_timepix3
-            else:
-                raise ValueError("Unsupported detector type")
-            self.detector_config = _detector_config
-            self.display_detector_config(editable=False)
-            self.correct_integrated_data()
-            self.display_correction()
+            raise ValueError("Unsupported detector type")
+        self.detector_config = _detector_config
+        self.display_detector_config(editable=False)
+        self.correct_integrated_data()
+        self.display_correction()
             
     def select_config_file(self):
         select_config = fileselector.FileSelectorPanel(
@@ -124,6 +124,7 @@ class TimepixChipsAlignmentCorrection:
     def load_config_file(self, file_selected):
         with open(file_selected, 'r') as f:
             detector_config = yaml.safe_load(f)
+        self.default_config_file = file_selected
         self.detector_config = detector_config
         self.display_detector_config(editable=True)
         self.correct_integrated_data()
@@ -148,16 +149,11 @@ class TimepixChipsAlignmentCorrection:
                 'xoffset': float(xoffset_ui.value),
                 'yoffset': float(yoffset_ui.value)
             }
-        print("before")
-        print(self.detector_config)
         self.detector_config = updated_config
-        print("after")
-        print(self.detector_config)
     
     def on_recalculate_clicked(self, status):
         with self.out:
             self.out.clear_output()
-            
             self.save_new_config()
             self.correct_integrated_data()
             self.display_correction()
@@ -166,39 +162,51 @@ class TimepixChipsAlignmentCorrection:
         items = []
         detector_config = self.detector_config
         for chip, params in detector_config.items():
+            
+            if editable:
+                if 'chip2' in chip:
+                    disabled_state = True
+                else:
+                    disabled_state = not editable
+            else:
+                disabled_state = True
+                
             chip_label = widgets.HTML(value=f"<b>{chip} ({params['description']})</b>",
                                      layout=widgets.Layout(width='25%'))
             xoffset_ui = widgets.FloatText(value=params['xoffset'],
                                            description='X Offset:',
-                                           disabled=not editable,
+                                           disabled=disabled_state,
                                            layout=widgets.Layout(width='15%'))
             yoffset_ui = widgets.FloatText(value=params['yoffset'],
                                            description='Y Offset:',
-                                           disabled=not editable,
+                                           disabled=disabled_state,
                                            layout=widgets.Layout(width='15%'))
             box = widgets.HBox([chip_label, xoffset_ui, yoffset_ui])
             
             items.append(box)
+
         self.vbox = widgets.VBox(items)
         display(self.vbox)
         
-        if editable:
-            self.recalculate_button = widgets.Button(description="Recalculate Correction", 
-                                                     layout=widgets.Layout(margin='10px 0px 0px 0px', width="50%"),
-                                                     )
-            display(self.recalculate_button)
-            self.recalculate_button.on_click(self.on_recalculate_clicked)
-            self.out = widgets.Output()
-            display(self.out)
+        # if editable:
+        #     self.recalculate_button = widgets.Button(description="Recalculate Correction", 
+        #                                              layout=widgets.Layout(margin='10px 0px 0px 0px', width="60%"),
+        #                                              )
+        #     # display(self.recalculate_button)
+        #     self.recalculate_button.on_click(self.on_recalculate_clicked)
+        #     display(self.recalculate_button)
+        #     self.out = widgets.Output()
+        #     display(self.out)
             
         display(HTML("<hr>"))
         
     def display_correction(self):
         
         default_size = 25
+        # def preview_correction(x, y, size=5, show_markers=True, recalculate_button=True):
         def preview_correction(x, y, size=5, show_markers=True):
                 
-            fig, axs = plt.subplots(2, 2, figsize=(12, 12))
+            self.fig, axs = plt.subplots(2, 2, figsize=(12, 12))
             
             # left size, original integrated data
             im00 = axs[0, 0].imshow(self.integrated_data, cmap='viridis')
@@ -246,12 +254,32 @@ class TimepixChipsAlignmentCorrection:
             
         height, width = self.integrated_data.shape
         
+        # if self.detector_type_ui.value == DetectorType.CUSTOM:
+        recalculate_button_disabled = False
+        # else:
+        #     recalculate_button_disabled = True
+        
         display_preview_correction = interactive(
             preview_correction,
-            x=widgets.IntSlider(min=0, max=width-1, step=1, value=width//2-default_size//2, description='x:', layout=widgets.Layout(width='50%')),
-            y=widgets.IntSlider(min=0, max=height-1, step=1, value=height//2-default_size//2, description='y:', layout=widgets.Layout(width='50%')),
-            size=widgets.IntSlider(min=2, max=100, step=1, value=default_size, description='Size:', layout=widgets.Layout(width='50%')),
-            show_markers=widgets.Checkbox(value=True, description='Show guides')
+            x=widgets.IntSlider(min=0, max=width-1, step=1, 
+                                value=width//2-default_size//2, 
+                                description='x:', 
+                                layout=widgets.Layout(width='50%')),
+            y=widgets.IntSlider(min=0, max=height-1, step=1, 
+                                value=height//2-default_size//2, 
+                                description='y:', 
+                                layout=widgets.Layout(width='50%')),
+            size=widgets.IntSlider(min=2, max=100, step=1, 
+                                   value=default_size, 
+                                   description='Size:', 
+                                   layout=widgets.Layout(width='50%')),
+            show_markers=widgets.Checkbox(value=True, 
+                                          description='Show guides'),
+            # recalculate_button=widgets.ToggleButton(description="Recalculate Correction", 
+            #                                         value=False, 
+            #                                         disabled=recalculate_button_disabled, 
+            #                                         layout=widgets.Layout(width="60%"),   
+            #                               )
         )
         display(display_preview_correction)
         
