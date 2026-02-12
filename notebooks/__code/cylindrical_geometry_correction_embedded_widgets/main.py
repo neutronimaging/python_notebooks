@@ -3,6 +3,7 @@ from random import sample
 import sys
 from pathlib import PurePosixPath
 
+from click import style
 import pandas as pd
 from scipy.ndimage import rotate
 
@@ -31,6 +32,13 @@ from __code.cylindrical_geometry_correction_embedded_widgets.cylindrical_geometr
 from __code.file_folder_browser import FileFolderBrowser
 
 notebook_legend()
+
+def widget_output(func):
+    def wrapper_function(*args, **kwargs):
+        out = widgets.Output()
+        display(out)
+        return func(*args, **kwargs)
+    return wrapper_function
 
 
 class CylindricalGeometryCorrectionEmbeddedWidgets:
@@ -76,15 +84,26 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     # list of images full path names
     list_of_images = None
 
-    def __init__(self, working_dir="./"):
+    def __init__(self, working_dir="./", debug=False):
         self.working_dir = working_dir
+        self.debug = debug
 
+    @widget_output
     def select_images(self):
+        if self.debug:
+                data_dir = "/HFIR/CG1D/IPTS-26647/shared/analysis/2022_04_29_metals/"
+                fits_file = os.path.join(data_dir, "TI_Al_C_WC.fits")
+                self.out = widgets.Output()
+                display(self.out)
+                self.load_images(list_of_images=[fits_file, fits_file])
+                return
+            
         file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, 
                                                 next_function=self.load_images)
         file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
-        self.out = widgets.Output()
-        display(self.out)
+        
+        # self.out = widgets.Output()
+        # display(self.out)
 
     def load_images(self, list_of_images):
 
@@ -113,7 +132,15 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
             [self.height, self.width] = np.shape(np.squeeze(self.data[0]))
 
+    @widget_output
     def select_config(self):
+        if self.debug:
+            config_file = os.path.join(os.path.dirname(__file__), "config_work.json")
+            self.out = widgets.Output()
+            display(self.out)
+            self.load_config(config_file)
+            return
+        
         config_browser = FileFolderBrowser(
             working_dir=os.path.dirname(self.working_dir), 
             next_function=self.load_config,
@@ -124,8 +151,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             filters={"config": "*.json"},
             default_filter="config",
         )
-        self.out = widgets.Output()
-        display(self.out)
+        # self.out = widgets.Output()
+        # display(self.out)
         
     def load_config(self, config_filename):
         if config_filename:
@@ -332,7 +359,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         vmax = np.max(self.data)
         fig_size = 10
 
-        def plot(fig_size, image_index, left_right, top_bottom, profile_mker, vrange):
+        def plot(fig_size, image_index, left_right, top_bottom, profile_marker, vrange):
             
             left, right = left_right
             top, bottom = top_bottom
@@ -350,9 +377,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax0.axvline(x=right, color="red", linestyle="--")
             ax0.axhline(y=top, color="red", linestyle="-.")
             ax0.axhline(y=bottom, color="red", linestyle="-.")
-            ax0.axhline(y=profile_mker, color="blue", linestyle="dotted")
+            ax0.axhline(y=profile_marker, color="blue", linestyle="dotted")
 
-            profile = self.data[image_index][profile_mker, :]
+            profile = self.data[image_index][profile_marker, :]
             ax1.plot(profile, ".")
             ax1.set_title("Profile at marker's position (dotted blue line)")
             ax1.set_xlabel("Pixels")
@@ -372,14 +399,18 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
             return left, right, top, bottom
 
+        description_width = "150px"
+
         self.crop_ui = interactive(
             plot,
-            fig_size=widgets.IntSlider(min=5, max=20, value=10, layout=widgets.Layout(width="50%")),
+            fig_size=widgets.IntSlider(min=5, max=20, value=10, layout=widgets.Layout(width="50%"),
+                                       style={"description_width": description_width}
+                ),
             image_index=widgets.IntSlider(min=0, 
                                           max=self.number_of_images - 1, 
                                           value=0,
                                           layout=widgets.Layout(width="50%")),
-            
+            style={"description_width": description_width},
             left_right=widgets.IntRangeSlider(
                 min=0, 
                 max=width - 1, 
@@ -390,12 +421,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 min=0, 
                 max=height - 1, 
                 value=[self.config["default_crop"]["y0"], self.config["default_crop"]["y1"]],
+                style={"description_width": description_width},
                 layout=widgets.Layout(width="50%")
             ),
-            profile_mker=widgets.IntSlider(min=0, 
+            profile_marker=widgets.IntSlider(min=0, 
                                            max=height - 1, 
                                            value=self.config["default_crop"]["marker"],
-                                           layout=widgets.Layout(width="50%")
+                                           layout=widgets.Layout(width="50%"),
+                                           style={"description_width": description_width}
                                            ),
             vrange=widgets.FloatRangeSlider(
                 min=0,
@@ -466,6 +499,32 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         with self.out:
             display(HTML(f'<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images exported to " + base_working_dir + "!</span>"))
             display(widgets.Label(value="Exported images to: " + base_working_dir))
+
+    def visualize_edges(self):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def background_range_selection(self):
         if self.cropped_data is None:
