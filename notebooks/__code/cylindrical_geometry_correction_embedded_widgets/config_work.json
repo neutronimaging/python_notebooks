@@ -12,7 +12,7 @@
   },
   "default_crop": {
     "x0": 552,
-    "x1": 856,
+    "x1": 845,
     "y0": 0,
     "y1": 1455,
     "marker": 1000
@@ -28,7 +28,7 @@
   "profiles_limit": {
     "description": "range to use and to combine to extract profile. Mean algorithm is used to combine profiles",
     "top": 89,
-    "bottom": 119
+    "bottom": 1234
   },
   "rotation_angle": {
     "angle": 0.3,

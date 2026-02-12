@@ -2,6 +2,7 @@ import os
 from random import sample
 import sys
 from pathlib import PurePosixPath
+import logging
 
 from click import style
 import pandas as pd
@@ -29,6 +30,11 @@ from __code._utilities import notebook_legend
 from __code.cylindrical_geometry_correction_embedded_widgets.cylindrical_geometry_correction import (
     number_of_pixels_at_that_position1,
 )
+# from __code.cylindrical_geometry_correction_embedded_widgets.handler import CylinderGeometry
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import DetectionConfig
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import detect_cylindrical_boundary
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import replace_with_nans
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import display_edges
 from __code.file_folder_browser import FileFolderBrowser
 
 notebook_legend()
@@ -84,9 +90,27 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     # list of images full path names
     list_of_images = None
 
+    def initialize(self):
+        LOG_PATH = "/SNS/VENUS/shared/log/"
+        file_name, ext = os.path.splitext(os.path.basename(__file__))
+        user_name = os.getlogin()  # add user name to the log file name
+        log_file_name = os.path.join(LOG_PATH, f"{file_name}_{user_name}.log")
+        logging.basicConfig(
+            filename=log_file_name,
+            filemode="w",
+            format="[%(levelname)s] - %(asctime)s - %(message)s",
+            level=logging.INFO,
+        )
+        logging.info(f"*** Starting a new script {file_name} ***")
+
     def __init__(self, working_dir="./", debug=False):
+        self.initialize()
         self.working_dir = working_dir
+        self.shared_dir = self.working_dir + "/shared"
+        _, _facility, _beamline, self.ipts, _ = self.shared_dir.split("/")
+        
         self.debug = debug
+        logging.info(f"Debugging mode: {self.debug}")
 
     @widget_output
     def select_images(self):
@@ -109,7 +133,6 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         with self.out:
             self.out.clear_output()
-            display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
 
         self.number_of_images = len(list_of_images)
         self.list_of_images = list_of_images
@@ -129,8 +152,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             with self.out:
                 self.out.clear_output()
                 display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
+                logging.info(f"Number of images loaded: {len(list_of_images)}")
 
             [self.height, self.width] = np.shape(np.squeeze(self.data[0]))
+            logging.info(f"Image dimensions (height x width): {self.height} x {self.width}")
 
     @widget_output
     def select_config(self):
@@ -449,7 +474,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.config["default_crop"]["y1"] = y1
 
         cropped_data = [_data[y0 : y1 + 1, x0 : x1 + 1] for _data in self.data]
-        self.cropped_data = cropped_data
+        self.cropped_data = np.array(cropped_data)
 
     def export_cropped_images(self):
         if self.cropped_data is None:
@@ -500,8 +525,12 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             display(HTML(f'<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images exported to " + base_working_dir + "!</span>"))
             display(widgets.Label(value="Exported images to: " + base_working_dir))
 
-    def visualize_edges(self):
-        pass
+    def calculate_and_visualize_edges(self):
+        images = replace_with_nans(self.cropped_data)
+        detection_config = DetectionConfig()
+        detection_config.diagnostics = True
+        geometry, diagnostics = detect_cylindrical_boundary(images[0], detection_config)
+        display_edges(geometry, diagnostics)
 
 
 
@@ -515,158 +544,6 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-    def background_range_selection(self):
-        if self.cropped_data is None:
-            self.crop_region()
-
-        [height, _] = np.shape(self.cropped_data[0])
-        vmax = np.max(self.cropped_data)
-
-        def plot(image_index, top_bottom, vrange, back_flag):
-            top, bottom = top_bottom
-            vmin, vmax = vrange
-            fig, ax1 = plt.subplots(num="Select top and bottom of background range")
-             
-            ax1.imshow(self.cropped_data[image_index], vmin=vmin, vmax=vmax)
-            # ax1.axis('off')
-            
-            if back_flag:
-                ax1.axhline(y=top, color="red")
-                ax1.axhline(y=bottom, color="red")
-            
-            return top, bottom, back_flag
-
-        default_top = self.config["default_background"]["y0"]
-        default_bottom = self.config["default_background"]["y1"]
-
-        self.background_limit_ui = interactive(
-            plot,
-            image_index=widgets.IntSlider(min=0, 
-                                          max=self.number_of_images - 1, 
-                                          value=0,
-                                          layout=widgets.Layout(width="50%")),
-            top_bottom=widgets.IntRangeSlider(
-                min=0, 
-                max=height - 1, 
-                value=[default_top, default_bottom],
-                layout=widgets.Layout(width="50%"),
-            ),
-            vrange=widgets.FloatRangeSlider(
-                min=0,
-                max=vmax,
-                value=[0, vmax],
-                layout=widgets.Layout(width="50%")),
-            back_flag=widgets.Checkbox(value=self.config["default_background"]["flag"], 
-                                       description="Select background" )
-            
-        )
-        display(self.background_limit_ui)
-
-    def sample_region_selection(self):
-        
-        if self.cropped_data is None:
-            self.crop_region()
-        
-        [height, _] = np.shape(self.cropped_data[0])
-        vmax = np.max(self.cropped_data)
-
-        def plot(image_index, top_bottom, vrange):
-            top, bottom = top_bottom
-            vmin, vmax = vrange
-            fig, ax1 = plt.subplots(num="Select top and bottom of sample range")
-            
-            ax1.imshow(self.cropped_data[image_index], vmin=vmin, vmax=vmax)
-            # ax1.axis('off')
-            ax1.axhline(y=top, color="red")
-            ax1.axhline(y=bottom, color="red")
-
-            return top, bottom
-
-        default_top = self.config["default_sample"]["y0"]
-        default_bottom = self.config["default_sample"]["y1"]
-
-        self.sample_limit_ui = interactive(
-            plot,
-            image_index=widgets.IntSlider(min=0, 
-                                          max=self.number_of_images - 1, 
-                                          value=0,
-                                          layout=widgets.Layout(width="50%")),
-            top_bottom=widgets.IntRangeSlider(
-                min=0, 
-                max=height - 1, 
-                value=[default_top, default_bottom]
-            , layout=widgets.Layout(width="50%")),
-            vrange=widgets.FloatRangeSlider(
-                min=0,
-                max=vmax,
-                value=[0, vmax],
-                layout=widgets.Layout(width="50%"))
-        )
-        display(self.sample_limit_ui)
-
-    def update_signal(self):
-        """
-        this is where the vertical integrated signal from the background selected is removed from the signal
-        range selected
-        """ 
-        
-        _y0_sample, _y1_sample = self.sample_limit_ui.result
-        y0_sample = min(_y0_sample, _y1_sample)
-        y1_sample = max(_y0_sample, _y1_sample)
-        self.config["default_sample"]["y0"] = y0_sample 
-        self.config["default_sample"]["y1"] = y1_sample
-        
-        if self.background_limit_ui is None:
-            self.remove_background_flag = False
-            self.config["default_background"]["flag"] = False
-       
-            sample_without_background = []
-            for _sample in self.cropped_data:
-                _data = _sample[y0_sample : y1_sample + 1]
-                sample_without_background.append(_data)
-                
-        else:
-            _y0_background, _y1_background, back_flag = self.background_limit_ui.result
-            y0_background = min(_y0_background, _y1_background)
-            y1_background = max(_y0_background, _y1_background)
-            self.config["default_background"]["y0"] = y0_background
-            self.config["default_background"]["y1"] = y1_background
-            self.config["default_background"]["flag"] = back_flag
-        
-            background_signal_integrated = [
-                np.mean(_data[y0_background : y1_background + 1, :], axis=0) for _data in self.cropped_data
-            ]
-        
-            sample_without_background = []
-            for _background, _sample in zip(background_signal_integrated, self.cropped_data, strict=False):
-                _data = _sample[y0_sample : y1_sample + 1]
-                sample_without_background.append(np.abs(_data - _background))
-
-        self.sample_without_background = sample_without_background
-        vmax = np.max(self.sample_without_background)
-                
-        def plot(image_index, vrange):
-            vmin, vmax = vrange
-            fig, ax1 = plt.subplots(num="Sample without background")
-            ax1.imshow(self.sample_without_background[image_index], vmin=vmin, vmax=vmax)
-
-        self.sample_no_background_ui = interactive(
-            plot, 
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            vrange=widgets.FloatRangeSlider(min=0, max=vmax, value=[0, vmax], layout=widgets.Layout(width="50%")),
-        )
-        display(self.sample_no_background_ui)
 
     def display_of_profiles(self):
         sample_without_background = self.sample_without_background

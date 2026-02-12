@@ -85,7 +85,7 @@ class NormalizationTof:
         LOG_PATH = "/SNS/VENUS/shared/log/"
         file_name, ext = os.path.splitext(os.path.basename(__file__))
         user_name = os.getlogin()  # add user name to the log file name
-        log_file_name = os.path.join(LOG_PATH, f"{user_name}_{file_name}.log")
+        log_file_name = os.path.join(LOG_PATH, f"{file_name}_{user_name}.log")
         notebook_logging.basicConfig(
             filename=log_file_name,
             filemode="w",
