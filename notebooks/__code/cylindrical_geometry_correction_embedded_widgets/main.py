@@ -208,10 +208,12 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             image_index=widgets.IntSlider(min=0, 
                                           max=len(self.data) - 1, 
                                           value=0, 
+                                          style={"description_width": "150px"},
                                           layout=widgets.Layout(width="50%")),
             vrange=widgets.FloatRangeSlider(min=0,
                                             max=vmax,
                                             value=[0, vmax],
+                                            style={"description_width": "150px"},
                                             layout=widgets.Layout(width="50%"))
         )
         display(v)
@@ -229,11 +231,6 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.config["rotation_angle"]["rotate_90_flag"] = self.v.children[0].value
 
     def rotate_images(self):
-        # fig = plt.figure(num="Rotation of images")
-        # ax0 = plt.subplot(221)
-        # ax1 = plt.subplot(223)
-        # ax2 = plt.subplot(122)
-
         default_rotate_angle = self.config["rotation_angle"]["angle"]
         default_rot_90_flag = self.config["rotation_angle"]["rotate_90_flag"]
 
@@ -254,10 +251,11 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             
             vmin, vmax = vrange
             
-            fig = plt.figure(num="Rotation of images")
-            ax0 = plt.subplot(221)
-            ax1 = plt.subplot(223)
-            ax2 = plt.subplot(122)
+            fig = plt.figure(num="Rotation of images", figsize=(15, 10))
+            ax0 = plt.subplot(231) # preview
+            ax1 = plt.subplot(234) # horizontal profiles
+            ax3 = plt.subplot(132) # vertical profile
+            ax2 = plt.subplot(133) # region between the two profiles
             
             # ax0.cla()
             data = self.data[image_index]
@@ -304,12 +302,6 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             # ax1.cla()
             ax1.plot(profile1, "b", label="profile 1")
             ax1.plot(profile2, "g", label="profile 2")
-            plt.tight_layout()
-
-            # print(f"{point1 =}")
-            # print(f"{point2 =}")
-            # print(f"{point3 =}")
-            # print(f"{point4 =}")
 
             # ax2.cla()
             top = point1[1]
@@ -320,7 +312,18 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             tilted_data = data[top:bottom, left:right]
             ax2.imshow(tilted_data, vmin=vmin, vmax=vmax)
             ax2.axvline(profile_margin, linestyle="--", color="r")
-            ax2.set_title("Preview of region between the two profiles")
+            ax2.set_title("Zoom between \n hori. guides")
+
+            vertical_profile = data[top_profileh: bottom_profileh, vert_guide]
+            vertical_profile = vertical_profile[::-1]
+            pixels = np.arange(len(vertical_profile))
+            ax3.plot(vertical_profile, pixels, "r", label="vertical profile")
+            ax3.set_xlabel("Counts")
+            ax3.set_ylabel("Pixels")
+            ax3.invert_yaxis()
+            ax3.set_title("Vertical profile")
+
+            plt.tight_layout()
 
         self.v = interactive(
             plot,
@@ -393,6 +396,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax0 = plt.subplot(221)
             ax1 = plt.subplot(223)
             ax2 = plt.subplot(122)
+            # ax3 = plt.subplot(133) # vertical profile in the cropped region
             
             vmin, vmax = vrange
             
@@ -421,6 +425,17 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             cropped_data = self.data[image_index][top : bottom + 1, left : right + 1]
             ax2.imshow(cropped_data, vmin=vmin, vmax=vmax)
             ax2.set_title("Cropped Data Preview")
+
+            # vertical_profile = np.sum(self.data[image_index][top : bottom + 1, left : right + 1], axis=1)
+            # vertical_profile = vertical_profile[::-1]
+            # pixels = np.arange(len(vertical_profile))
+            # ax3.plot(vertical_profile, pixels, "r")
+            # #ax3.plot(pixels, vertical_profile, "r")
+            # # ax3.set_yscale("log")
+            # ax3.set_title("Vertical profile in the cropped region")
+            # ax3.set_xlabel("Counts")
+            # ax3.set_ylabel("Pixels")
+
 
             return left, right, top, bottom
 
@@ -465,7 +480,39 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         )
         display(self.crop_ui)
 
-    def crop_region(self):
+    def checking_edges(self):
+        [x0, x1, y0, y1] = self.crop_ui.result
+        def plot_checking(image_index):
+            fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10),
+                                    gridspec_kw={'hspace': 0},
+                                    sharex=False)
+
+            data = self.data[image_index]
+            data = data[y0 : y1 + 1, x0 : x1 + 1]
+            # rotate 90 degrees
+            data_rotated = np.rot90(data, k=3)
+            
+            axs[0].imshow(data_rotated, cmap="viridis")
+            axs[0].tick_params(labelbottom=False)
+            axs[0].tick_params(labeltop=True)
+            
+            profile = np.sum(data, axis=1)
+            profile = profile[::-1]
+            pixels = np.arange(len(profile))
+            axs[1].plot(pixels, profile, "r")
+            # limit x axis to the cropped region
+            axs[1].set_xlim([0, x1 - x0])
+            axs[1].set_title("Vertical profile in the cropped region")
+            axs[1].set_ylabel("")
+            axs[1].set_xlabel("Pixels")
+            
+        v = interactive(
+            plot_checking,
+            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0, layout=widgets.Layout(width="50%")),
+        )
+        display(v)
+
+    def crop_images(self):
         [x0, x1, y0, y1] = self.crop_ui.result
         self.crop = {"x0": 0, "x1": x1, "y0": y0, "y1": y1}
         self.config["default_crop"]["x0"] = x0
@@ -478,7 +525,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def export_cropped_images(self):
         if self.cropped_data is None:
-            self.crop_region()
+            self.crop_images()
 
         display(
             HTML(
