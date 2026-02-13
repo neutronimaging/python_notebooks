@@ -983,8 +983,8 @@ class NormalizationTof:
         )
         self.correct_chips_alignment_flag = widgets.Checkbox(
             description="Correct chips alignment", 
-            disabled=True,          # FIXME 
-            value=False             # FIXME
+            disabled=False,         
+            value=True             
         )
 
         vertical_layout = widgets.VBox(
