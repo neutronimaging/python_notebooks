@@ -314,11 +314,6 @@ def normalization_with_list_of_full_path(
         # get statistics of sample data
         logging_statistics_of_data(data=sample_data_combined, data_type=DataType.sample_combined)
         
-        # if correct_chips_alignment_flag:
-        #     sample_data_combined = correct_chips_alignment(sample_data_combined, 
-        #                             correct_chips_alignment_config, 
-        #                             verbose=verbose)
-        
         if normalized_by_proton_charge:
             logging.info(f"Normalizing by proton charge")
             logging.info(f"\t{sample_sum_proton_charge = }")
@@ -459,7 +454,6 @@ def normalization_with_list_of_full_path(
 
     else:
     
-
         # normalize the sample data
         for _sample_run_number in sample_master_dict.keys():
             
@@ -473,10 +467,10 @@ def normalization_with_list_of_full_path(
             # get statistics of sample data
             logging_statistics_of_data(data=_sample_data, data_type=DataType.sample)
       
-            if correct_chips_alignment_flag:
-                _sample_data = correct_chips_alignment(_sample_data, 
-                                                       correct_chips_alignment_config, 
-                                                       verbose=verbose)
+            # if correct_chips_alignment_flag:
+            #     _sample_data = correct_chips_alignment(_sample_data, 
+            #                                            correct_chips_alignment_config, 
+            #                                            verbose=verbose)
       
             if normalized_by_proton_charge:
                 if verbose:
