@@ -231,9 +231,9 @@ def normalization_with_list_of_full_path(
     logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
 
     if correct_chips_alignment_flag:
-        correct_chips_alignment(ob_data_combined, 
-                                correct_chips_alignment_config, 
-                                verbose=verbose)
+        ob_data_combined = correct_chips_alignment(ob_data_combined, 
+                                                   correct_chips_alignment_config, 
+                                                   verbose=verbose)
 
     ob_data_combined_for_spectrum = calculate_ob_data_combined_used_by_spectrum_normalization(roi=roi,
                                                                                  ob_data_combined=ob_data_combined,
