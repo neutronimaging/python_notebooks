@@ -71,6 +71,18 @@ class CylinderGeometry(BaseModel):
         )
         
         
+@dataclass(frozen=True, slots=True)
+class ChordResult:
+    # Vectorized chord length along x (same for all rows inside the cylinder’s vertical span)
+    Lx: np.ndarray                 # shape: (width,)
+    # 2D chord map (broadcasted along y only within cylinder vertical extent)
+    chord_map: np.ndarray          # shape: (height, width)
+    # Boolean mask where chord_map is valid (inside cylinder’s vertical span and |x-center_x|<=radius)
+    mask: np.ndarray               # shape: (height, width)
+    # Simple stats for quick logging
+    stats: dict   
+        
+        
 @dataclass(slots=True)
 class DetectionConfig:
     # horizontal (left/right)
@@ -260,3 +272,254 @@ def display_edges(geometry: CylinderGeometry, diagnostics: Optional[DetectionDia
 
     plt.tight_layout()
     
+    
+def show_detection(
+    image: np.ndarray,
+    geometry: CylinderGeometry,
+    diagnostics: Optional[DetectionDiagnostics] = None,
+    *,
+    figsize: Tuple[int, int] = (12, 10),
+) -> None:
+    """Optional visualization kept separate from detection logic."""
+    fig, axes = plt.subplots(2, 2, figsize=figsize)
+
+    # 1) Original with bounds
+    ax = axes[0, 0]
+    ax.imshow(image, cmap="gray")
+    ax.axvline(geometry.left_edge, color="r", linestyle="--", linewidth=2, label="Left")
+    ax.axvline(geometry.right_edge, color="g", linestyle="--", linewidth=2, label="Right")
+    ax.axhline(geometry.top_edge, color="b", linestyle="--", linewidth=2, label="Top")
+    ax.axhline(geometry.bottom_edge, color="y", linestyle="--", linewidth=2, label="Bottom")
+    ax.plot(geometry.center_x, geometry.center_y, "ro", markersize=8, label="Center")
+    ax.set_title("Detected Cylinder Geometry")
+    ax.legend(loc="upper right")
+    ax.axis("off")
+
+    # 2) Edge magnitude crop
+    if diagnostics and diagnostics.edges_mag is not None:
+        ax = axes[0, 1]
+        ax.imshow(diagnostics.edges_mag, cmap="hot")
+        rect = plt.Rectangle(
+            (geometry.left_edge, geometry.top_edge),
+            geometry.width,
+            geometry.height,
+            fill=False, color="c", linewidth=2, label="Detected Region",
+        )
+        ax.add_patch(rect)
+        ax.set_title("Edge Magnitude + Region")
+        ax.legend()
+        ax.axis("off")
+    else:
+        axes[0, 1].axis("off")
+
+    # 3) Horizontal profile
+    if diagnostics and diagnostics.horizontal_profile_smooth is not None:
+        ax = axes[1, 0]
+        prof = diagnostics.horizontal_profile_smooth
+        ax.plot(prof, label="Smoothed Horizontal Profile")
+        if diagnostics.peaks is not None:
+            ax.plot(diagnostics.peaks, prof[diagnostics.peaks], "ro", label="Peaks")
+        ax.set_xlabel("X (pixels)")
+        ax.set_ylabel("Edge strength")
+        ax.set_title("Horizontal Profile")
+        ax.grid(True, alpha=0.3)
+        ax.legend()
+    else:
+        axes[1, 0].axis("off")
+
+    # 4) Vertical profile and counts
+    if diagnostics and diagnostics.vertical_edge_profile is not None:
+        ax = axes[1, 1]
+        vprof = diagnostics.vertical_edge_profile
+        vcount = diagnostics.vertical_edge_count
+        ax.plot(vprof, np.arange(len(vprof)), "b-", label="Max Edge Strength")
+        if vcount is not None and vcount.max() > 0:
+            ax.plot(
+                (vcount / vcount.max()) * (vprof.max() if vprof.max() > 0 else 1.0),
+                np.arange(len(vcount)),
+                "r--", alpha=0.7, label="Edge Count (scaled)",
+            )
+        ax.axhline(geometry.top_edge, color="b", linestyle=":", linewidth=2, label=f"Top ({geometry.top_edge})")
+        ax.axhline(geometry.bottom_edge, color="y", linestyle=":", linewidth=2, label=f"Bottom ({geometry.bottom_edge})")
+        ax.set_ylabel("Y (pixels)")
+        ax.set_xlabel("Edge strength / count")
+        ax.set_title("Vertical Edge Analysis")
+        ax.grid(True, alpha=0.3)
+        ax.invert_yaxis()
+        ax.legend()
+    else:
+        axes[1, 1].axis("off")
+
+    plt.tight_layout()
+    plt.show()
+    
+    
+def chord_length_profile_x(
+    width: int,
+    center_x: int,
+    outer_radius: int,
+    *,
+    is_hollow: bool = False,
+    inner_radius: Optional[int] = None,
+    edge_epsilon: float = 0.0,
+) -> np.ndarray:
+    """
+    Compute the 1D chord length profile L(x) for a vertical cylinder.
+
+    For a solid cylinder:
+        L(x) = 2 * sqrt(R^2 - (x - center_x)^2)   for |x - center_x| <= R
+             = 0                                   otherwise
+
+    For a hollow cylinder:
+        L(x) = L_outer(x) - L_inner(x), clipped at >= 0
+
+    Parameters
+    ----------
+    width : int
+        Width of the image in pixels.
+    center_x : int
+        Horizontal coordinate of the cylinder center (in pixels).
+    outer_radius : int
+        Outer radius of the cylinder in pixels.
+    is_hollow : bool, optional
+        If True, compute profile for a hollow cylinder. Default is False.
+    inner_radius : int, optional
+        Inner radius (in pixels) for hollow cylinder. Ignored if
+        `is_hollow` is False.
+    edge_epsilon : float, optional
+        Minimum chord length value to enforce for numerical stability.
+        Values 0 < L < edge_epsilon are clipped to edge_epsilon.
+        Useful only if the profile will be used in divisions. Default is 0.
+
+    Returns
+    -------
+    L : ndarray of shape (width,)
+        1D chord length profile across the image columns.
+    """
+    x = np.arange(width, dtype=np.float64)
+    dx = x - float(center_x)
+
+    outer_sq = np.maximum(0.0, float(outer_radius) ** 2 - dx**2)
+    L_outer = 2.0 * np.sqrt(outer_sq)
+
+    if not is_hollow:
+        L = L_outer
+    else:
+        if inner_radius is None:
+            raise ValueError("inner_radius must be provided when is_hollow=True")
+        inner_sq = np.maximum(0.0, float(inner_radius) ** 2 - dx**2)
+        L_inner = 2.0 * np.sqrt(inner_sq)
+        L = np.maximum(0.0, L_outer - L_inner)
+
+    if edge_epsilon > 0.0:
+        small_pos = (L > 0.0) & (L < edge_epsilon)
+        L = L.copy()
+        L[small_pos] = edge_epsilon
+
+    return L
+
+
+def calculate_cylindrical_chord_map(
+    image_shape: Tuple[int, int],
+    *,
+    center_x: int,
+    top_edge: int,
+    bottom_edge: int,
+    radius: int,
+    is_hollow: bool = False,
+    inner_radius: Optional[int] = None,
+    outside_fill: Literal["zero", "nan"] = "zero",
+    edge_epsilon: float = 0.0,
+) -> ChordResult:
+    """
+    Calculate the chord length profile and 2D map for a vertical cylinder.
+
+    The chord length map represents the physical path length through the
+    cylinder at each horizontal position. For an upright cylinder, the
+    chord length depends only on `x`, and is broadcast vertically between
+    `top_edge` and `bottom_edge`.
+
+    Parameters
+    ----------
+    image_shape : tuple of int
+        Shape of the image as (height, width).
+    center_x : int
+        Horizontal coordinate of the cylinder center (in pixels).
+    top_edge : int
+        Top edge (row index) of the cylinder bounding box.
+    bottom_edge : int
+        Bottom edge (row index) of the cylinder bounding box.
+    radius : int
+        Outer radius of the cylinder in pixels.
+    is_hollow : bool, optional
+        If True, compute chord lengths for a hollow cylinder. Default is False.
+    inner_radius : int, optional
+        Inner radius in pixels (used only if `is_hollow=True`).
+    outside_fill : {"zero", "nan"}, optional
+        Value assigned outside the cylinder region in the returned map.
+        Default is "zero".
+    edge_epsilon : float, optional
+        Minimum chord length value to enforce for numerical stability.
+        Useful if chord lengths will later appear in denominators.
+        Default is 0.
+
+    Returns
+    -------
+    result : ChordResult
+        A dataclass with fields:
+
+        - Lx : ndarray of shape (width,)
+            1D chord length profile along the horizontal axis.
+        - chord_map : ndarray of shape (height, width)
+            2D chord length map with outside filled as 0 or NaN.
+        - mask : ndarray of bool, shape (height, width)
+            Boolean mask indicating valid cylinder pixels.
+        - stats : dict
+            Summary statistics (min, max, mean inside the cylinder, etc.).
+
+    Notes
+    -----
+    - Outside the cylinder, the chord length is physically zero. Setting it to
+      NaN (`outside_fill="nan"`) can be safer for debugging, as invalid regions
+      will not contribute silently to calculations.
+    - The `mask` should be used to restrict subsequent operations (e.g.,
+      attenuation fitting or geometry correction) to valid pixels.
+    """
+    height, width = image_shape
+
+    Lx = chord_length_profile_x(
+        width=width,
+        center_x=center_x,
+        outer_radius=radius,
+        is_hollow=is_hollow,
+        inner_radius=inner_radius,
+        edge_epsilon=edge_epsilon,
+    )
+
+    col_mask = Lx > 0.0
+    row_mask = np.zeros(height, dtype=bool)
+    row_mask[max(0, top_edge):min(height, bottom_edge + 1)] = True
+
+    mask = np.outer(row_mask, col_mask)
+
+    if outside_fill == "nan":
+        chord_map = np.full((height, width), np.nan, dtype=np.float64)
+    else:
+        chord_map = np.zeros((height, width), dtype=np.float64)
+
+    chord_map[row_mask, :] = Lx
+
+    valid_vals = chord_map[mask]
+    stats = {
+        "shape": chord_map.shape,
+        "valid_pixels": int(mask.sum()),
+        "min_inside": float(np.nanmin(valid_vals)) if valid_vals.size else np.nan,
+        "max_inside": float(np.nanmax(valid_vals)) if valid_vals.size else np.nan,
+        "mean_inside": float(np.nanmean(valid_vals)) if valid_vals.size else np.nan,
+        "radius": int(radius),
+        "diameter": int(2 * radius),
+        "type": "hollow" if is_hollow else "solid",
+        "outside_fill": outside_fill,
+    }
+
+    return ChordResult(Lx=Lx, chord_map=chord_map, mask=mask, stats=stats)

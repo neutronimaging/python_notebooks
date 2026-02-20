@@ -3,6 +3,7 @@ from random import sample
 import sys
 from pathlib import PurePosixPath
 import logging
+from tkinter import Y
 
 from click import style
 import pandas as pd
@@ -481,6 +482,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         display(self.crop_ui)
 
     def checking_edges(self):
+        
+        display(HTML("Sample has been rotated by 90 degrees, so the vertical profile is now horizontal"))
+        display(HTML("Check that the signal is relatively flat and that the edges are not too high counts!"))
+        
         [x0, x1, y0, y1] = self.crop_ui.result
         def plot_checking(image_index):
             fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10),
@@ -501,7 +506,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             pixels = np.arange(len(profile))
             axs[1].plot(pixels, profile, "r")
             # limit x axis to the cropped region
-            axs[1].set_xlim([0, x1 - x0])
+            axs[1].set_xlim([0, y1 - y0])
             axs[1].set_title("Vertical profile in the cropped region")
             axs[1].set_ylabel("")
             axs[1].set_xlabel("Pixels")
@@ -572,12 +577,20 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             display(HTML(f'<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images exported to " + base_working_dir + "!</span>"))
             display(widgets.Label(value="Exported images to: " + base_working_dir))
 
+    def visualize_or_not_results(self):
+        display(HTML('<span style="font-size: 15px; color:blue">Do you want to visualize the calculated edges and chord length map?</span>'))
+        self.visualize_results = widgets.ToggleButtons(options=["Yes", "No"], description="", value="Yes")
+        display(self.visualize_results)
+
     def calculate_and_visualize_edges(self):
         images = replace_with_nans(self.cropped_data)
         detection_config = DetectionConfig()
         detection_config.diagnostics = True
         geometry, diagnostics = detect_cylindrical_boundary(images[0], detection_config)
-        display_edges(geometry, diagnostics)
+        if self.visualize_results.value == "Yes":
+            display_edges(geometry, diagnostics)
+        else:
+            display(HTML('<span style="font-size: 12px; color:blue">Edges detected but not visualized!</span>'))
 
 
 
