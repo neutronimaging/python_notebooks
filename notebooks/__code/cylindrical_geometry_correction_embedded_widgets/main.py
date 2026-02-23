@@ -625,6 +625,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             mask_yx=res.mask,
             copy=True,  # keep original untouched
         )
+        _intermediate = np.swapaxes(Tcorr, 0, 2)
+        self.corrected_images = np.swapaxes(_intermediate, 1, 2) # "nbr, H, W
         
         if self.visualize_results.value == "Yes":
             display_edges(geometry, diagnostics)
@@ -640,9 +642,17 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         else:
             display(HTML('<span style="font-size: 12px; color:blue">Edges detected but not visualized!</span>'))
 
+    def display_before_and_after_correction(self):
+        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(15, 10))
+        im0 = axs[0].imshow(self.integrated_cropped_image)
+        plt.colorbar(im0, ax=axs[0], shrink=0.5, label="Counts")
+        axs[0].set_title("Before correction")
+        im1 = axs[1].imshow(np.sum(self.corrected_images, axis=0))
+        plt.colorbar(im1, ax=axs[1], shrink=0.5, label="Counts")
+        axs[1].set_title("After correction")
 
-
-
+        plt.tight_layout()
+        plt.show()
 
 
 
