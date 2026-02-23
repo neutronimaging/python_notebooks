@@ -9,6 +9,8 @@ from ipywidgets import interactive
 from IPython.display import display
 import ipywidgets as widgets
 import logging
+import json
+from pathlib import PurePosixPath
 
 # Third-party libraries
 import matplotlib.pyplot as plt
@@ -26,6 +28,7 @@ from scipy.signal import find_peaks, savgol_filter
 
 from tqdm.auto import tqdm
 
+from __code._utilities.file import make_or_increment_folder_name, make_tiff
 from notebooks.__code.cylindrical_geometry_correction_embedded_widgets.utilities import replace_nan_with_local_median
 
 
@@ -1037,3 +1040,44 @@ def visualize_correction(
 
     plt.tight_layout()
     plt.show()
+
+def export_config(config_filename=None, config=None):
+    logging.info(f"Exporting config to file: {config_filename}")
+    with open(config_filename, "w") as outfile:
+        json.dump(config, outfile)
+        
+def export_images(output_folder=None, working_dir=None, stack_of_images=None, out=None, list_of_input_filenames=None):
+    logging.info(f"Exporting images to folder: {output_folder}")
+    logging.info(f"\tworking_dir: {working_dir}")
+    logging.info(f"\tstack_of_images shape: {np.shape(stack_of_images)}")
+    logging.info(f"\tlist_of_input_filenames: {list_of_input_filenames}")
+    
+    output_folder = os.path.abspath(output_folder)
+    base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected")
+    base_working_dir = make_or_increment_folder_name(base_working_dir)
+
+    # export images
+    list_of_images_corrected = stack_of_images
+
+    nbr_images = len(list_of_images_corrected)
+    progress_bar = widgets.IntProgress(min=0, max=nbr_images - 1)
+    with out:
+        display(progress_bar)
+
+    for index, image in enumerate(list_of_images_corrected):
+        logging.info(f"\tExporting image {index+1}/{nbr_images} to TIFF...")
+        logging.info(f"\t\t{list_of_input_filenames[index]= }")
+        _name = os.path.basename(list_of_input_filenames[index])
+        logging.info(f"\t\t{_name= }")
+        full_name = os.path.join(base_working_dir, _name)
+        # make sure the extension is .tif
+        if not full_name.lower().endswith(".tif"):
+            base_name_without_suffix = PurePosixPath(_name).stem
+            full_name = os.path.join(base_working_dir, base_name_without_suffix + ".tif")
+        make_tiff(filename=full_name, data=image)
+        progress_bar.value = index + 1
+
+        progress_bar.close()
+    
+    with out:
+        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created in " + base_working_dir + "  !</span>"))

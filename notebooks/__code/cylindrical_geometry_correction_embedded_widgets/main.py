@@ -25,7 +25,7 @@ matplotlib.rcParams["figure.figsize"] = (7, 7)
 
 from NeuNorm.normalization import Normalization
 
-from __code._utilities.file import make_or_increment_folder_name, make_tiff
+# from __code._utilities.file import make_or_increment_folder_name, make_tiff
 from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code._utilities import notebook_legend
 from __code.cylindrical_geometry_correction_embedded_widgets.cylindrical_geometry_correction import (
@@ -41,7 +41,9 @@ from __code.cylindrical_geometry_correction_embedded_widgets.handler import calc
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import display_chord_map
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import compute_correction_map_factor
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import apply_cylindrical_correction
-from __code.cylindrical_geometry_correction_embedded_widgets.handler import visualize_correction   
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import visualize_correction 
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import export_config  
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import export_images
 from __code.file_folder_browser import FileFolderBrowser
 
 notebook_legend()
@@ -643,107 +645,45 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             display(HTML('<span style="font-size: 12px; color:blue">Edges detected but not visualized!</span>'))
 
     def display_before_and_after_correction(self):
-        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(15, 10))
-        im0 = axs[0].imshow(self.integrated_cropped_image)
-        plt.colorbar(im0, ax=axs[0], shrink=0.5, label="Counts")
-        axs[0].set_title("Before correction")
-        im1 = axs[1].imshow(np.sum(self.corrected_images, axis=0))
-        plt.colorbar(im1, ax=axs[1], shrink=0.5, label="Counts")
-        axs[1].set_title("After correction")
+        def plot_before_after_correction(image_index):
+            fig, axs = plt.subplots(nrows=1, 
+                                    ncols=2, 
+                                    figsize=(15, 10))
+            fig.suptitle(f"Before and After Correction of image #{image_index}")
+            im0 = axs[0].imshow(self.cropped_data[image_index])
+            plt.colorbar(im0, ax=axs[0], shrink=0.5, label="Counts")
+            axs[0].set_title("Before correction")
+            im1 = axs[1].imshow(self.corrected_images[image_index])
+            plt.colorbar(im1, ax=axs[1], shrink=0.5, label="Counts")
+            axs[1].set_title("After correction")
+            plt.tight_layout()
+            plt.show()
+        
+        interactive_plot = interactive(plot_before_after_correction, 
+                                       image_index=widgets.IntSlider(min=0, 
+                                                                     max=len(self.corrected_images)-1, 
+                                                                     step=1, 
+                                                                     value=0,
+                                                                     layout=widgets.Layout(width="50%")))
+        display(interactive_plot)
 
-        plt.tight_layout()
-        plt.show()
-
-
-
-
-
-    def export_profiles(self):
+    def export(self):
         working_dir = os.path.dirname(self.working_dir)
         output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
                                                   ipts_folder=self.ipts_folder,
-                                                  next_function=self.export)
+                                                  next_function=self.export_images_and_config,
+                                                  )
         output_folder_browser.select_output_folder_with_new()
         self.out = widgets.Output()
         display(self.out)
 
-    def export(self, output_folder):
-        output_folder = os.path.abspath(output_folder)
-        working_dir = self.working_dir
-        base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected")
-        base_working_dir = make_or_increment_folder_name(base_working_dir)
-
-        # export images
-        list_images_corrected = self.list_images_corrected
-        list_of_images = self.list_of_images
-
-        nbr_images = len(list_of_images)
-        progress_bar = widgets.IntProgress(min=0, max=nbr_images - 1)
-        with self.out:
-            display(progress_bar)
-
-        for index, image in enumerate(list_images_corrected):
-            _name = os.path.basename(list_of_images[index])
-            full_name = os.path.join(base_working_dir, _name)
-            # make sure the extension is .tif
-            if not full_name.lower().endswith(".tif"):
-                base_name_without_suffix = PurePosixPath(_name).stem
-                full_name = os.path.join(base_working_dir, base_name_without_suffix + ".tif")
-            make_tiff(filename=full_name, data=image)
-            progress_bar.value = index + 1
-
-        progress_bar.close()
-        with self.out:
-            display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created!</span>"))
-
-        # export profiles
-
-        progress_bar = widgets.IntProgress(min=0, max=nbr_images - 1)
-        with self.out:
-            display(progress_bar)
-
-        metadata = {}
-        metadata["rotation value (degrees)"] = self.rotation_value
-        x0 = self.crop["x0"]
-        x1 = self.crop["x1"]
-        y0 = self.crop["y0"]
-        y1 = self.crop["y1"]
-
-        metadata["crop"] = {
-            "crop": {"x0": x0, "y0": y0, "x1": x1, "y1": y1},
-        }
-        metadata["input folder"] = working_dir
-        metadata["output folder"] = base_working_dir
-
-        for index, image in enumerate(list_images_corrected):
-            _name = os.path.basename(list_of_images[index])
-            base_name_without_suffix = PurePosixPath(_name).stem
-            base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
-            full_name_of_ascii_file = os.path.join(base_working_dir, base_name_of_ascii_file)
-
-            df = pd.DataFrame(image)
-            df.to_csv(full_name_of_ascii_file)
-
-            progress_bar.value = index + 1
-
-        progress_bar.close()
-
-        _current_time = get_current_time_in_special_file_name_format()
-        config_filename = os.path.join(output_folder, f"config_{_current_time}.json")
-        self.export_config(config_filename=config_filename)
-
-        with self.out:
-            display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " ASCII files created!</span>"))
-
-        json_file_name = os.path.join(base_working_dir, "metadata.json")
-        with open(json_file_name, "w") as outfile:
-            json.dump(metadata, outfile)
+    def export_images_and_config(self, output_folder):
+        export_images(output_folder=output_folder, 
+                      working_dir=self.working_dir,
+                      stack_of_images=self.corrected_images,
+                      out=self.out,
+                      list_of_input_filenames=self.list_of_images,)
+        export_config(config_filename=os.path.join(output_folder, "config.json"), 
+                      config=self.config
+                      )    
         
-        with self.out:
-            display(HTML('<span style="font-size: 12px; color:blue"> metadata json file created (metadata.json)!</span>'))
-            display(HTML('<span style="font-size: 12px; color:blue"> config file: ' + config_filename + "</span>"))
-            display(HTML('<span style="font-size: 12px; color:blue"> Output folder: ' + base_working_dir + "!</span>"))
-        
-    def export_config(self, config_filename=None):
-        with open(config_filename, "w") as outfile:
-            json.dump(self.config, outfile)
