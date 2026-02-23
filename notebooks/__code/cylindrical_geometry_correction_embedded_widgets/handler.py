@@ -16,6 +16,7 @@ import matplotlib.gridspec as gridspec
 import matplotlib.patches as patches
 from matplotlib import colors
 import numpy as np
+from IPython.display import HTML
 from pydantic import BaseModel, Field, field_validator, model_validator
 from scipy import ndimage, stats
 from scipy.ndimage import gaussian_filter1d, median_filter
@@ -106,6 +107,19 @@ class DetectionDiagnostics:
     edge_threshold: Optional[float] = None
     vertical_edge_profile: Optional[np.ndarray] = None
     vertical_edge_count: Optional[np.ndarray] = None
+
+
+@dataclass(frozen=True)
+class MuEstimationConfig:
+    # Common
+    exclude_edge_frac: float = 0.1     # drop columns where L(x) < frac * max(L)
+    # Discrete (two-column, local-pairs)
+    window: int = 7                    # half-width for local neighborhoods
+    # Iterative (global fit with smooth baseline)
+    baseline_order: int = 3            # polynomial order for b(x); 0=constant
+    robust: bool = True                # Huber-like weighting toggle (simple)
+    max_iter: int = 5     
+
 
 
 def detect_cylindrical_boundary(
@@ -251,6 +265,10 @@ def replace_with_nans(images):
 
 
 def display_edges(geometry: CylinderGeometry, diagnostics: Optional[DetectionDiagnostics] = None):
+   
+    display(HTML("<hr style='border:1px solid blue'>"))
+    display(HTML(f"<h3 style='color:blue'>Edges calculated</h3>"))
+   
     fig, ax = plt.subplots(ncols=2, nrows=3, figsize=(10, 10))
     # ax.plot(diagnostics.edges_x[50, :])
     ax[0, 0].imshow(diagnostics.edges_x, cmap='gray', aspect='auto')
@@ -271,9 +289,10 @@ def display_edges(geometry: CylinderGeometry, diagnostics: Optional[DetectionDia
     ax[2, 1].set_title('Vertical Edge Count')
 
     plt.tight_layout()
+    plt.show()
     
     
-def show_detection(
+def display_detection(
     image: np.ndarray,
     geometry: CylinderGeometry,
     diagnostics: Optional[DetectionDiagnostics] = None,
@@ -281,6 +300,10 @@ def show_detection(
     figsize: Tuple[int, int] = (12, 10),
 ) -> None:
     """Optional visualization kept separate from detection logic."""
+    
+    display(HTML("<hr style='border:1px solid blue'>"))
+    display(HTML(f"<h3 style='color:blue'>Detection results (edge, verticality</h3>"))
+    
     fig, axes = plt.subplots(2, 2, figsize=figsize)
 
     # 1) Original with bounds
@@ -523,3 +546,494 @@ def calculate_cylindrical_chord_map(
     }
 
     return ChordResult(Lx=Lx, chord_map=chord_map, mask=mask, stats=stats)
+
+
+def display_chord_map(
+    result: ChordResult,
+    geometry,
+    background: Optional[np.ndarray] = None,
+    *,
+    figsize: Tuple[int, int] = (14, 8),
+) -> None:
+    """
+    Display the chord length map and related information.
+
+    Layout
+    ------
+    Top row (2/3 height):
+        - Detected geometry
+        - 2D chord length map
+        - Cylinder mask
+    Bottom row (1/3 height):
+        - Chord-length profile L(x) spanning full width
+
+    Parameters
+    ----------
+    result : ChordResult
+        The result object containing chord length data.
+    geometry : object
+        The geometry object containing cylinder parameters (must have
+        center_x, center_y, radius, top_edge, bottom_edge).
+    background : ndarray, optional
+        Background image to display behind the chord map.
+    figsize : tuple of int, optional
+        Figure size for the plot. Default is (14, 8).
+    """
+    
+    display(HTML("<hr style='border:1px solid blue'>"))
+    display(HTML(f"<h3 style='color:blue'>Cylindrical chord map</h3>"))
+    
+    fig = plt.figure(figsize=figsize)
+    gs = gridspec.GridSpec(
+        2, 3, height_ratios=[2, 1], figure=fig
+    )  # 2/3 vs 1/3 row height
+
+    # --- Top row (3 plots) ---
+    ax0 = fig.add_subplot(gs[0, 0])
+    if background is not None:
+        ax0.imshow(background, cmap="gray")
+    else:
+        ax0.imshow(np.zeros_like(result.chord_map), cmap="gray")
+    ax0.axvline(geometry.center_x - geometry.radius, color="r", linestyle="--", label="Left")
+    ax0.axvline(geometry.center_x + geometry.radius, color="g", linestyle="--", label="Right")
+    ax0.axhline(geometry.top_edge, color="b", linestyle="--", label="Top")
+    ax0.axhline(geometry.bottom_edge, color="y", linestyle="--", label="Bottom")
+    ax0.plot(geometry.center_x, geometry.center_y, "ro", ms=6, label="Center")
+    ax0.set_title("Detected Geometry")
+    ax0.legend(loc="upper right")
+    # ax0.axis("off")
+
+    ax1 = fig.add_subplot(gs[0, 1])
+    im1 = ax1.imshow(result.chord_map, cmap="plasma")
+    ax1.set_title("Chord length map")
+    # ax1.axis("off")
+    fig.colorbar(im1, ax=ax1, shrink=0.7, label="Chord length (px)")
+
+    ax2 = fig.add_subplot(gs[0, 2])
+    ax2.imshow(result.mask, cmap="Greys")
+    ax2.set_title("Cylinder mask")
+    # ax2.axis("off")
+
+    # --- Bottom row (1 plot spanning all 3 columns) ---
+    ax3 = fig.add_subplot(gs[1, :])  # span all 3 columns
+    x = np.arange(result.Lx.size)
+    ax3.plot(x, result.Lx, lw=2)
+    ax3.set_xlabel("x (pixels)")
+    ax3.set_ylabel("Chord length (pixels)")
+    ax3.set_title("Chord-length profile L(x)")
+    ax3.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+    
+
+def estimate_mu(
+    T_yxl: np.ndarray,
+    Lx: np.ndarray,
+    mask_yx: np.ndarray,
+    method: Literal["discrete", "iterative"] = "discrete",
+    *,
+    cfg: Optional[MuEstimationConfig] = None,
+) -> np.ndarray:
+    """
+    Estimate the wavelength-dependent attenuation coefficient μ(λ).
+
+    Parameters
+    ----------
+    T_yxl : ndarray, shape (H, W, L)
+        Transmission cube (per-wavelength/TOF). Values may exceed 1 due to OB issues.
+    Lx : ndarray, shape (W,)
+        Chord-length profile along x (pixels).
+    mask_yx : ndarray of bool, shape (H, W)
+        Cylinder support mask. Only pixels where mask=True are used.
+    method : {"discrete", "iterative"}, optional
+        - "discrete": two-column local-pairs median slope (your method).
+        - "iterative": global slope + smooth baseline b(x) (alternating fit).
+    cfg : MuEstimationConfig, optional
+        Tunable parameters for each method.
+
+    Returns
+    -------
+    mu_lambda : ndarray, shape (L,)
+        Estimated μ(λ) for each wavelength bin.
+    """
+    if cfg is None:
+        cfg = MuEstimationConfig()
+
+    H, W, L = T_yxl.shape
+    # Build a 1D in-cylinder mask over x using Lx and edge exclusion
+    Lmax = float(np.nanmax(Lx))
+    x_use = (Lx > cfg.exclude_edge_frac * Lmax)
+
+    # Reduce over y using the cylinder mask → get a robust 1D profile in x
+    # We take the masked geometric mean along y to reduce speckle:
+    # y(x,λ) = -ln T̄(x,λ) with T̄ the masked geometric mean across y-rows.
+    # Add tiny epsilon to avoid log(0).
+    eps = 1e-12
+    mask_rows = mask_yx.any(axis=1)
+    # per x, collect y where mask True
+    mu = np.zeros(L, dtype=np.float64)
+
+    # Precompute per-x masked means across y for all λ
+    # Shape: (W, L)
+    Tbar_xl = np.full((W, L), np.nan, dtype=np.float64)
+    for xi in range(W):
+        if not x_use[xi]:
+            continue
+        row_sel = mask_yx[:, xi] & mask_rows
+        if not np.any(row_sel):
+            continue
+        # geometric mean across rows: exp(mean(log(T+eps)))
+        vals = T_yxl[row_sel, xi, :]  # shape (Ny, L)
+        Tbar_xl[xi, :] = np.exp(np.nanmean(np.log(vals + eps), axis=0))
+
+    # Valid x indices for regression
+    valid_x = np.where(np.isfinite(Tbar_xl).all(axis=1) & x_use)[0]
+    if valid_x.size < 2:
+        raise ValueError("Not enough valid columns inside the cylinder to estimate μ(λ).")
+
+    # Common transformation
+    y_xl = -np.log(np.clip(Tbar_xl[valid_x, :], eps, None))  # shape: (Xv, L)
+    L_vec = Lx[valid_x]                                      # shape: (Xv,)
+
+    if method == "discrete":
+        mu = _estimate_mu_discrete(y_xl, L_vec, window=cfg.window)
+    elif method == "iterative":
+        mu = _estimate_mu_iterative(
+            y_xl, L_vec,
+            baseline_order=cfg.baseline_order,
+            robust=cfg.robust,
+            max_iter=cfg.max_iter,
+        )
+    else:
+        raise ValueError(f"Unknown method: {method}")
+
+    # Enforce physical non-negativity
+    mu = np.maximum(0.0, mu)
+    return mu
+
+
+def _estimate_mu_discrete(
+    y_xl: np.ndarray,
+    L_vec: np.ndarray,
+    *,
+    window: int,
+) -> np.ndarray:
+    """
+    Discrete (two-column, local-pairs) estimator.
+    For each λ, compute local pairwise slopes (y_i - y_j)/(L_i - L_j) within +/- window,
+    then take the median across pairs and positions.
+    """
+    Xv, L = y_xl.shape
+    mu = np.zeros(L, dtype=np.float64)
+
+    for k in range(L):
+        yx = y_xl[:, k]
+        slopes = []
+        for i in range(Xv):
+            j0 = max(0, i - window)
+            j1 = min(Xv, i + window + 1)
+            Li = L_vec[i]
+            yi = yx[i]
+            Lj = L_vec[j0:j1]
+            yj = yx[j0:j1]
+            dL = Lj - Li
+            sel = np.abs(dL) > 0
+            if np.any(sel):
+                slopes.extend(((yj[sel] - yi) / dL[sel]).tolist())
+        if slopes:
+            mu[k] = np.median(slopes)
+        else:
+            mu[k] = 0.0
+    return mu
+
+
+def _estimate_mu_iterative(
+    y_xl: np.ndarray,
+    L_vec: np.ndarray,
+    *,
+    baseline_order: int,
+    robust: bool,
+    max_iter: int,
+) -> np.ndarray:
+    """
+    Iterative global estimator:
+    minimize  y(x,λ) ≈ μ(λ) * L(x) + b_λ(x),  with b_λ(x) a low-order polynomial in x.
+    Alternating steps: (1) fit μ given b, (2) fit b given μ. Optionally robust-weighted.
+    """
+    Xv, L = y_xl.shape
+    # Normalize x-grid for numerical stability in polynomial fit
+    xv = np.linspace(-1.0, 1.0, Xv)
+    Phi = np.vstack([xv**p for p in range(baseline_order + 1)]).T  # (Xv, P)
+    P = Phi.shape[1]
+
+    mu = np.zeros(L, dtype=np.float64)
+    # Initialize baseline and weights
+    b_xl = np.zeros_like(y_xl)     # baseline per (x,λ)
+    W_xl = np.ones_like(y_xl)      # weights for robust fitting
+
+    for _ in range(max_iter):
+        # Step 1: fit μ(λ) via weighted least squares over x
+        # y ≈ μ L + b  => μ = argmin Σ_x w (y - b - μL)^2
+        # closed-form per λ:
+        num = np.sum(W_xl * L_vec[:, None] * (y_xl - b_xl), axis=0)
+        den = np.sum(W_xl * (L_vec[:, None]**2), axis=0) + 1e-12
+        mu = num / den
+        mu = np.maximum(0.0, mu)
+
+        # Step 2: fit b_λ(x) as poly(x) to residuals r = y - μL
+        r_xl = y_xl - (L_vec[:, None] * mu[None, :])
+        # Per λ polynomial regression in closed form
+        # b(·,λ) = Phi * beta_λ ; beta_λ = (Phi^T Phi)^-1 Phi^T r_·λ
+        G = np.linalg.pinv(Phi)   # (P, Xv)
+        beta_l = G @ r_xl         # (P, L)
+        b_xl = Phi @ beta_l       # (Xv, L)
+
+        # Optional robust weights (Huber-like)
+        if robust:
+            resid = y_xl - (L_vec[:, None] * mu[None, :]) - b_xl
+            s = 1.4826 * np.median(np.abs(resid), axis=0) + 1e-12
+            z = resid / s[None, :]
+            W_xl = 1.0 / (1.0 + z**2)  # smooth Tukey-like; bounded influence
+
+    return mu
+
+
+def build_correction_factor_map(
+    Lx: np.ndarray,
+    mu_lambda: np.ndarray,
+    D: float,
+) -> np.ndarray:
+    """
+    Construct C(x,λ) = exp(-μ(λ) * (D - L(x))) without allocating huge temporaries.
+
+    Parameters
+    ----------
+    Lx : ndarray, shape (W,)
+        Chord-length profile across x.
+    mu_lambda : ndarray, shape (L,)
+        Estimated attenuation coefficients per wavelength.
+    D : float
+        Target uniform thickness (diameter) in pixel units.
+
+    Returns
+    -------
+    C_xl : ndarray, shape (W, L)
+        Correction factor map over (x, λ).
+    """
+    # (W,1) and (1,L) broadcasting → (W,L)
+    return np.exp(-(D - Lx[:, None]) * mu_lambda[None, :])
+
+
+def compute_correction(
+    T_yxl: np.ndarray,
+    Lx: np.ndarray,
+    mask_yx: np.ndarray,
+    D: float,
+    method: Literal["discrete", "iterative"] = "discrete",
+    *,
+    cfg: Optional[MuEstimationConfig] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Convenience: estimate μ(λ) with the chosen method and return (μ(λ), C(x,λ)).
+
+    Returns
+    -------
+    mu_lambda : ndarray, shape (L,)
+    C_xl : ndarray, shape (W, L)
+    """
+    mu_lambda = estimate_mu(T_yxl, Lx, mask_yx, method=method, cfg=cfg)
+    C_xl = build_correction_factor_map(Lx, mu_lambda, D)
+    return mu_lambda, C_xl
+
+
+def compute_correction_map_factor(hyperspectral_stack, geometry, res):
+
+    logging.info("Starting correction factor computation...")
+    logging.info(f"\tbefore swapping axis {np.shape(hyperspectral_stack)= }")
+    hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 2)
+    hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 1) # "H, W, L"
+    logging.info(f"\tafter swapping axis {np.shape(hyperspectral_stack)= }")
+    
+    # Compute the correction factors
+    mu_config = MuEstimationConfig(
+    window=9,  # larger window size leads to smoother discrete estimates
+    )
+    
+    # Discrete method
+    mu_disc, C_disc = compute_correction(
+    T_yxl=hyperspectral_stack,
+    Lx=res.Lx,
+    mask_yx=res.mask,
+    D=geometry.right_edge - geometry.left_edge,
+    method="discrete",
+    cfg=mu_config
+    )
+   
+    # Iterative method
+    mu_iter, C_iter = compute_correction(
+    T_yxl=hyperspectral_stack,
+    Lx=res.Lx,
+    mask_yx=res.mask,
+    D=geometry.right_edge - geometry.left_edge,
+    method="iterative",
+    cfg=mu_config
+    )
+    
+    return mu_disc, mu_iter, C_disc
+
+
+def display_compute_correction_map_factor(mu_disc, mu_iter):
+    display(HTML("<hr style='border:1px solid blue'>"))
+    display(HTML(f"<h3 style='color:blue'>Computer correction map factor</h3>"))
+    
+    plt.figure(figsize=(8,3))
+    plt.plot(mu_disc, label="discrete method")
+    plt.plot(mu_iter, label="iterative method", alpha=0.7)
+    plt.xlabel("λ bin"); plt.ylabel(r"$\mu(\lambda)$"); plt.title("Estimator agreement")
+    plt.grid(True, alpha=0.3)
+    plt.legend(loc="best")
+    plt.show()
+    
+
+def apply_cylindrical_correction(
+    T_yxl: np.ndarray,
+    C_xl: np.ndarray,
+    mask_yx: np.ndarray,
+    *,
+    copy: bool = True,
+) -> np.ndarray:
+    """
+    Apply cylindrical geometry correction to a hyperspectral transmission cube.
+
+    The correction is applied as:
+        T_corr(y, x, λ) := T(y, x, λ) * C(x, λ)
+    for pixels inside `mask_yx`. Pixels outside the mask are left unchanged.
+
+    Parameters
+    ----------
+    T_yxl : ndarray, shape (H, W, L)
+        Input transmission data (may contain values > 1 due to OB issues).
+    C_xl : ndarray, shape (W, L)
+        Correction factor map over (x, λ). Typically C(x, λ) = exp[-μ(λ) (D - L(x))].
+    mask_yx : ndarray of bool, shape (H, W)
+        Cylinder support mask (True where the sample exists and correction should apply).
+    copy : bool, optional
+        If True, operate on a copy and return it. If False, correct in-place.
+        Default is True.
+
+    Returns
+    -------
+    Tcorr_yxl : ndarray, shape (H, W, L)
+        Corrected transmission cube.
+
+    Notes
+    -----
+    - This function avoids allocating a full (H, W, L) correction cube by
+      applying C(x, λ) row-by-row only on columns where `mask_yx` is True.
+    - Outside the mask, data are left as-is so downstream code can keep using
+      the original background if needed.
+    """
+    if T_yxl.ndim != 3:
+        raise ValueError(f"`T_yxl` must be 3D (H,W,L), got shape {T_yxl.shape}.")
+    H, W, L = T_yxl.shape
+    if C_xl.shape != (W, L):
+        raise ValueError(f"`C_xl` must have shape (W,L)={(W,L)}, got {C_xl.shape}.")
+    if mask_yx.shape != (H, W):
+        raise ValueError(f"`mask_yx` must have shape (H,W)={(H,W)}, got {mask_yx.shape}.")
+
+    Tcorr = T_yxl.copy() if copy else T_yxl
+
+    # Apply per row to avoid huge broadcasts; only touch masked columns
+    rows = np.where(mask_yx.any(axis=1))[0]
+    for y in rows:
+        xmask = mask_yx[y, :]
+        if np.any(xmask):
+            # Multiply only the columns inside the cylinder for all λ
+            # shapes: Tcorr[y, xmask, :] (Nx, L) *= C_xl[xmask, :] (Nx, L)
+            Tcorr[y, xmask, :] *= C_xl[xmask, :]
+
+    return Tcorr
+
+
+def visualize_correction(
+    T_yxl: np.ndarray,
+    Tcorr_yxl: np.ndarray,
+    mask_yx: np.ndarray,
+    *,
+    lambda_indices: Optional[Sequence[int]] = None,
+    figsize: Tuple[int, int] = (14, 8),
+) -> None:
+    """
+    Visualize before/after correction with improved diagnostics.
+
+    Top row (2/3 height)
+    --------------------
+    - Before:  heatmap of  A(x,λ) = -ln( T̄(x,λ) )
+    - After:   heatmap of  A^D(x,λ) = -ln( T̄^D(x,λ) )
+    - Diff:    (After - Before) with diverging colormap centered at 0
+
+    Bottom row (1/3 height)
+    -----------------------
+    - x-profiles at selected λ bins:
+        * color encodes λ index
+        * linestyle encodes before (solid) vs after (dashed)
+
+    Notes
+    -----
+    - T̄ is the geometric mean across y within the cylinder mask.
+    - Air (columns outside cylinder support) are shown in light gray.
+    """
+    
+    H, W, nbr_images = T_yxl.shape
+    
+    if T_yxl.shape != Tcorr_yxl.shape:
+        raise ValueError("`T_yxl` and `Tcorr_yxl` must have the same shape.")
+    if mask_yx.shape != T_yxl.shape[:2]:
+        raise ValueError("`mask_yx` must match the first two dims of T.")
+    H, W, L = T_yxl.shape
+
+    # # Geometric mean across y (masked) -> (W, L)
+    eps = 1e-12
+    rows = np.where(mask_yx.any(axis=1))[0]
+    if rows.size == 0:
+        raise ValueError("Mask has no valid rows.")
+    T_sub = T_yxl[rows, :, :]
+    Tc_sub = Tcorr_yxl[rows, :, :]
+    M_sub = mask_yx[rows, :]
+
+    Tbar_xl = np.full((W, L), np.nan, dtype=np.float64)
+    Tbar_corr_xl = np.full((W, L), np.nan, dtype=np.float64)
+
+    # column-wise (x) masking
+    xmask = M_sub.any(axis=0)  # True for x within cylinder vertically
+
+    for x in np.where(xmask)[0]:
+        ymask = M_sub[:, x]
+        # geometric means over y
+        Tbar_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(T_sub[ymask, x, :], eps, None)), axis=0))
+        Tbar_corr_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(Tc_sub[ymask, x, :], eps, None)), axis=0))
+  
+    list_images_indices = []
+    if nbr_images >= 3:
+        list_images_indices = [0, nbr_images-1, nbr_images//2]
+    else:
+        list_images_indices = list(range(nbr_images))
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
+    list_color = ['blue', 'green', 'orange']
+
+    for idx, li in enumerate(list_images_indices):
+        xgrid = np.arange(W)
+        Tb = np.ma.masked_where(~xmask, Tbar_xl[:, li])
+        Ta = np.ma.masked_where(~xmask, Tbar_corr_xl[:, li])
+        ax.plot(xgrid, Tb, color=list_color[idx], linestyle='-', label=f"profile of image {idx} before")
+        ax.plot(xgrid, Ta, color=list_color[idx], linestyle='--', label=f"profile of image {idx} after")
+        ax.set_xlabel("x (pixels)")
+        ax.set_ylabel(r"$\bar{T}(x)$")
+        ax.set_title(f"x-profiles of various images index")
+        ax.grid(True, alpha=0.3)
+        ax.legend()
+
+    plt.tight_layout()
+    plt.show()

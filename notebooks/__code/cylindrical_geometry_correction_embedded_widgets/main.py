@@ -36,6 +36,12 @@ from __code.cylindrical_geometry_correction_embedded_widgets.handler import Dete
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import detect_cylindrical_boundary
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import replace_with_nans
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import display_edges
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import display_detection
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import calculate_cylindrical_chord_map
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import display_chord_map
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import compute_correction_map_factor
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import apply_cylindrical_correction
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import visualize_correction   
 from __code.file_folder_browser import FileFolderBrowser
 
 notebook_legend()
@@ -93,7 +99,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def initialize(self):
         LOG_PATH = "/SNS/VENUS/shared/log/"
-        file_name, ext = os.path.splitext(os.path.basename(__file__))
+        file_name = "cylindrical_geometry_correction_embedded_widgets"
         user_name = os.getlogin()  # add user name to the log file name
         log_file_name = os.path.join(LOG_PATH, f"{file_name}_{user_name}.log")
         logging.basicConfig(
@@ -150,6 +156,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         # self.data = [np.rot90(_data) for _data in data]
 
         if self.data:
+            
+            # integrated image
+            self.integrated_image = np.sum(self.data, axis=0)
+            
             with self.out:
                 self.out.clear_output()
                 display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
@@ -527,6 +537,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         cropped_data = [_data[y0 : y1 + 1, x0 : x1 + 1] for _data in self.data]
         self.cropped_data = np.array(cropped_data)
+        self.integrated_cropped_image = np.sum(self.cropped_data, axis=0)
 
     def export_cropped_images(self):
         if self.cropped_data is None:
@@ -582,13 +593,50 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.visualize_results = widgets.ToggleButtons(options=["Yes", "No"], description="", value="Yes")
         display(self.visualize_results)
 
-    def calculate_and_visualize_edges(self):
+    def calculate_and_visualize(self):
         images = replace_with_nans(self.cropped_data)
         detection_config = DetectionConfig()
         detection_config.diagnostics = True
         geometry, diagnostics = detect_cylindrical_boundary(images[0], detection_config)
+        res = calculate_cylindrical_chord_map(
+            image_shape=self.integrated_cropped_image.shape,
+            center_x=geometry.center_x,
+            top_edge=geometry.top_edge,
+            bottom_edge=geometry.bottom_edge,
+            radius=geometry.radius,
+            is_hollow=False,         # or True with inner_radius=...
+            outside_fill="nan",      # or "zeros"
+            edge_epsilon=0.0,        # usually 0 for Beer–Lambert workflows
+        )
+        logging.info(f"Calculated cylindrical chord map with center_x={geometry.center_x}," \
+                     f" top_edge={geometry.top_edge}, bottom_edge={geometry.bottom_edge}, radius={geometry.radius}")
+        logging.info(f"res = {res.stats}")
+
+        mu_disc, mu_iter, C_disc = compute_correction_map_factor(self.cropped_data,
+                                      geometry,
+                                      res)
+        
+        hyperspectral_stack = np.swapaxes(self.cropped_data, 0, 2)
+        hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 1) # "H, W, L"
+        
+        Tcorr = apply_cylindrical_correction(
+            T_yxl=hyperspectral_stack,
+            C_xl=C_disc,
+            mask_yx=res.mask,
+            copy=True,  # keep original untouched
+        )
+        
         if self.visualize_results.value == "Yes":
             display_edges(geometry, diagnostics)
+            display_detection(self.integrated_cropped_image, geometry, diagnostics)
+            display_chord_map(res, geometry, background=self.integrated_cropped_image, figsize=(12, 8))
+            # display_compute_correction_map_factor(mu_disc, mu_iter)
+            visualize_correction(
+                T_yxl=hyperspectral_stack,
+                Tcorr_yxl=Tcorr,
+                mask_yx=res.mask,
+                lambda_indices=[int(0.1*mu_disc.size), int(0.5*mu_disc.size), int(0.9*mu_disc.size)],
+                )
         else:
             display(HTML('<span style="font-size: 12px; color:blue">Edges detected but not visualized!</span>'))
 
@@ -599,96 +647,6 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
 
 
-
-
-
-
-
-
-    def display_of_profiles(self):
-        sample_without_background = self.sample_without_background
-
-        height, width = np.shape(sample_without_background[0])
-
-        def plot(image_index, profile_h):
-            
-            fig, ax = plt.subplots(nrows=1, ncols=2, num="Display of Profiles")
-            
-            image = sample_without_background[image_index]
-            im = ax[0].imshow(image)
-            ax[0].axhline(y=profile_h, color="red")
-            plt.colorbar(im, ax=ax[0], shrink=0.5)
-
-            data = sample_without_background[image_index]
-            profile = data[profile_h, :]
-            ax[1].plot(profile, ".")
-            ax[1].set_title("Profile at height " + str(profile_h))
-            ax[1].set_xlabel("Pixels")
-            ax[1].set_ylabel("Counts")
-            plt.tight_layout()
-
-        v = interactive(
-            plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0, layout=widgets.Layout(width="50%")),
-            profile_h=widgets.IntSlider(min=0, max=height - 1, value=0, layout=widgets.Layout(width="50%")),
-        )
-        display(v)
-
-    def correct_cylinder_geometry(self):
-        """
-        apply the cylindrical geometry correction to the sample cropped, over the entire images
-        """
-
-        sample_without_background = self.sample_without_background
-        width = np.shape(sample_without_background)[2]
-        height = np.shape(sample_without_background)[1]
-
-        radius = int(width / 2.0)
-
-        list_images_corrected = np.zeros(np.shape(sample_without_background))
-
-        # looping over all images
-        for image_index, image in enumerate(sample_without_background):
-            for h in np.arange(height):
-                profile = image[h, :]
-
-                number_of_pixels = []
-                expected_array = []
-                for x_index, x in enumerate(profile):
-                    measure = x
-                    number_of_pixels_through_thickness = number_of_pixels_at_that_position1(
-                        position=x_index, radius=radius
-                    )
-                    number_of_pixels.append(number_of_pixels_through_thickness)
-                    expected_array.append(measure / number_of_pixels_through_thickness)
-
-                list_images_corrected[image_index][h, :] = expected_array
-
-        self.list_images_corrected = list_images_corrected
-        vmax = np.max(self.list_images_corrected)
-
-        def plot(image_index, index1, index2, plot_max, vrange):
-            
-            fig, ax = plt.subplots(nrows=2, ncols=1, num="Sample and profiles corrected ")
-            ax0, ax1 = ax
-        
-            ax0.imshow(self.list_images_corrected[image_index], vmin=vrange[0], vmax=vrange[1])
-            ax0.axhline(y=index1, linestyle="--", color="r")
-            ax0.axhline(y=index2, linestyle="--", color="b")
-
-            ax1.cla()
-            ax1.plot(self.list_images_corrected[image_index][index1, :], ".", color="r")
-            ax1.plot(self.list_images_corrected[image_index][index2, :], ".", color="b")
-            plt.ylim([0, plot_max])
-
-        self.sample_corrected = interactive(
-            plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0, layout=widgets.Layout(width="50%")),
-            index1=widgets.IntSlider(min=0, max=height - 1, value=int((height - 1) / 3), layout=widgets.Layout(width="50%")),
-            index2=widgets.IntSlider(min=0, max=height - 1, value=2 * int((height - 1) / 3), layout=widgets.Layout(width="50%")),
-            plot_max=widgets.FloatSlider(min=1e-5, max=1.0, step=0.001, value=0.02, layout=widgets.Layout(width="50%")),
-            vrange=widgets.FloatRangeSlider(min=0, max=vmax, value=[0, vmax], layout=widgets.Layout(width="50%")),
-        )
 
     def export_profiles(self):
         working_dir = os.path.dirname(self.working_dir)
