@@ -48,12 +48,12 @@ from __code.file_folder_browser import FileFolderBrowser
 
 notebook_legend()
 
-def widget_output(func):
-    def wrapper_function(*args, **kwargs):
-        out = widgets.Output()
-        display(out)
-        return func(*args, **kwargs)
-    return wrapper_function
+# def widget_output(func):
+#     def wrapper_function(*args, **kwargs):
+#         out = widgets.Output()
+#         display(out)
+#         return func(*args, **kwargs)
+#     return wrapper_function
 
 
 class CylindricalGeometryCorrectionEmbeddedWidgets:
@@ -99,9 +99,19 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
     # list of images full path names
     list_of_images = None
 
-    def initialize(self):
+    def initialize_path(self, working_dir="~/"):
+        self.working_dir = working_dir
+        self.shared_dir = working_dir + "/shared"
+        _, _facility, _beamline, self.ipts, _ = self.shared_dir.split("/")
+        self.ipts_folder = os.path.join("/SNS", _beamline, self.ipts)
+        logging.info(f"Initialized paths with working_dir: {self.working_dir}")
+        logging.info(f"\tShared directory: {self.shared_dir}")
+        logging.info(f"\tIPTS folder: {self.ipts_folder}")
+        logging.info(f"\tFacility: {_facility}, Beamline: {_beamline}, IPTS: {self.ipts}")
+
+    def initialize(self, mode="white_beam"):
         LOG_PATH = "/SNS/VENUS/shared/log/"
-        file_name = "cylindrical_geometry_correction_embedded_widgets"
+        file_name = f"cylindrical_geometry_correction_embedded_widgets_{mode}"
         user_name = os.getlogin()  # add user name to the log file name
         log_file_name = os.path.join(LOG_PATH, f"{file_name}_{user_name}.log")
         logging.basicConfig(
@@ -112,16 +122,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         )
         logging.info(f"*** Starting a new script {file_name} ***")
 
-    def __init__(self, working_dir="./", debug=False):
-        self.initialize()
-        self.working_dir = working_dir
-        self.shared_dir = self.working_dir + "/shared"
-        _, _facility, _beamline, self.ipts, _ = self.shared_dir.split("/")
+    def __init__(self, working_dir="./", debug=False, mode="white_beam"):
+        self.initialize(mode=mode)
+        self.initialize_path(working_dir=working_dir)
+        self.mode = mode # white_beam or tof
         
         self.debug = debug
         logging.info(f"Debugging mode: {self.debug}")
 
-    @widget_output
     def select_images(self):
         if self.debug:
                 data_dir = "/HFIR/CG1D/IPTS-26647/shared/analysis/2022_04_29_metals/"
@@ -133,13 +141,25 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             
         file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, 
                                                 next_function=self.load_images)
-        file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
-        
-        # self.out = widgets.Output()
-        # display(self.out)
+        file_folder_browser.select_images(filters={"TIFF": "*.tif?"})    
+        self.out = widgets.Output()
+        display(self.out)
+   
+    def select_folder(self):
+        if self.debug:
+            data_dir = "/SNS/VENUS/IPTS-35945/shared/autoreduce/mcp/images/Run_7815/"
+            self.out = widgets.Output()
+            display(self.out)
+            self.load_images_from_folder(data_dir)
+            return
+
+        folder_browser = FileFolderBrowser(working_dir=self.working_dir, 
+                                          next_function=self.load_images_from_folder)
+        folder_browser.select_input_folder()
+        self.out = widgets.Output()
+        display(self.out)
 
     def load_images(self, list_of_images):
-
         with self.out:
             self.out.clear_output()
 
@@ -169,11 +189,30 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
             [self.height, self.width] = np.shape(np.squeeze(self.data[0]))
             logging.info(f"Image dimensions (height x width): {self.height} x {self.width}")
+            
+            logging.info(f"{np.shape(self.data) = }")
 
-    @widget_output
+    def load_images_from_folder(self, folder_name):
+        logging.info(f"Selected folder: {folder_name}")
+        list_of_images = []
+        for file in os.listdir(folder_name):
+            if file.lower().endswith((".tif", ".tiff")):
+                list_of_images.append(os.path.join(folder_name, file))
+        list_of_images.sort()
+        
+        if self.debug:
+            logging.info("Debug mode is ON. Only loading a subset of images.")
+            list_of_images = list_of_images[:20]  # Load only the first 5 images for debugging
+        
+        logging.info(f"Number of TIFF images found in the folder: {len(list_of_images)}")
+        self.load_images(list_of_images)
+
     def select_config(self):
         if self.debug:
-            config_file = os.path.join(os.path.dirname(__file__), "config_work.json")
+            if self.mode == "tof":
+                config_file = os.path.join(os.path.dirname(__file__), "config_tof.json")
+            else:
+                config_file = os.path.join(os.path.dirname(__file__), "config_white_beam.json")
             self.out = widgets.Output()
             display(self.out)
             self.load_config(config_file)
@@ -232,8 +271,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         display(v)
 
     def update_config_after_rotation(self):
-        profile_1, profile_2 = self.v.children[4].value, self.v.children[5].value
-        profile_vertical_guide = self.v.children[2].value
+        profile_1, profile_2 = self.v.children[3].value, self.v.children[4].value
+        profile_vertical_guide = self.v.children[1].value
         top_profileh = min(profile_1, profile_2)
         bottom_profileh = max(profile_1, profile_2)
         self.config["profiles_limit"]["top"] = top_profileh
@@ -248,9 +287,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         default_rot_90_flag = self.config["rotation_angle"]["rotate_90_flag"]
 
         profile_margin = 100
-        vmax = np.max(self.data)
+        vmax = np.max(self.integrated_image)
 
-        height, width = np.shape(self.data[0])
+        height, width = np.shape(self.integrated_image)
         if self.config["profiles_limit"]["top"] == -1:
             default_profile1_h = int(self.height / 3)
             default_profile2_h = int(2 * self.height / 3)
@@ -260,7 +299,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             default_profile2_h = self.config["profiles_limit"]["bottom"]
             vertical_guide = self.config["profiles_limit"].get("vertical_guide", int(self.width / 2))
 
-        def plot(rot_90_flag, rot_value, image_index, vert_guide, profile1_h, profile2_h, vrange):
+        # def plot(rot_90_flag, rot_value, image_index, vert_guide, profile1_h, profile2_h, vrange):
+        def plot(rot_90_flag, rot_value, vert_guide, profile1_h, profile2_h, vrange):
             
             vmin, vmax = vrange
             
@@ -271,7 +311,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax2 = plt.subplot(133) # region between the two profiles
             
             # ax0.cla()
-            data = self.data[image_index]
+            data = self.integrated_image
             if rot_90_flag:
                 data = np.rot90(data)
                 
@@ -348,10 +388,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 continuous_update=False,
                 layout=widgets.Layout(width="50%"),
             ),
-            image_index=widgets.IntSlider(min=0, 
-                                          max=len(self.data) - 1,
-                                          value=0, 
-                                          layout=widgets.Layout(width="50%")),
+            # image_index=widgets.IntSlider(min=0, 
+            #                               max=len(self.data) - 1,
+            #                               value=0, 
+            #                               layout=widgets.Layout(width="50%")),
             vert_guide=widgets.IntSlider(
                 min=0,
                 max=self.width - 1,
@@ -388,6 +428,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                     
         self.rotation_value = rotation_value
         self.data = [rotate(_data, rotation_value) for _data in self.data]
+        self.integrated_image = np.sum(self.data, axis=0)
 
     def select_crop_region(self):
 
@@ -397,10 +438,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         width = self.width
         height = self.height
 
-        vmax = np.max(self.data)
+        vmax = np.max(self.integrated_image)
         fig_size = 10
 
-        def plot(fig_size, image_index, left_right, top_bottom, profile_marker, vrange):
+        def plot(fig_size, left_right, top_bottom, profile_marker, vrange):
             
             left, right = left_right
             top, bottom = top_bottom
@@ -413,7 +454,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             
             vmin, vmax = vrange
             
-            ax0.imshow(self.data[image_index], vmin=vmin, vmax=vmax)
+            ax0.imshow(self.integrated_image, vmin=vmin, vmax=vmax)
             # ax0.axis("off")
             ax0.axvline(x=left, color="red", linestyle="--")
             ax0.axvline(x=right, color="red", linestyle="--")
@@ -421,7 +462,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax0.axhline(y=bottom, color="red", linestyle="-.")
             ax0.axhline(y=profile_marker, color="blue", linestyle="dotted")
 
-            profile = self.data[image_index][profile_marker, :]
+            profile = self.integrated_image[profile_marker, :]
             ax1.plot(profile, ".")
             ax1.set_title("Profile at marker's position (dotted blue line)")
             ax1.set_xlabel("Pixels")
@@ -435,7 +476,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ax1.axvline(x=right, linestyle="--", color="red")
 
             ax2.cla()
-            cropped_data = self.data[image_index][top : bottom + 1, left : right + 1]
+            cropped_data = self.integrated_image[top : bottom + 1, left : right + 1]
             ax2.imshow(cropped_data, vmin=vmin, vmax=vmax)
             ax2.set_title("Cropped Data Preview")
 
@@ -459,10 +500,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             fig_size=widgets.IntSlider(min=5, max=20, value=10, layout=widgets.Layout(width="50%"),
                                        style={"description_width": description_width}
                 ),
-            image_index=widgets.IntSlider(min=0, 
-                                          max=self.number_of_images - 1, 
-                                          value=0,
-                                          layout=widgets.Layout(width="50%")),
+            # image_index=widgets.IntSlider(min=0, 
+            #                               max=self.number_of_images - 1, 
+            #                               value=0,
+            #                               layout=widgets.Layout(width="50%")),
             style={"description_width": description_width},
             left_right=widgets.IntRangeSlider(
                 min=0, 
@@ -499,12 +540,12 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         display(HTML("Check that the signal is relatively flat and that the edges are not too high counts!"))
         
         [x0, x1, y0, y1] = self.crop_ui.result
-        def plot_checking(image_index):
+        def plot_checking(image_index, integrated_flag):
             fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10),
                                     gridspec_kw={'hspace': 0},
                                     sharex=False)
 
-            data = self.data[image_index]
+            data = self.data[image_index] if not integrated_flag else self.integrated_image
             data = data[y0 : y1 + 1, x0 : x1 + 1]
             # rotate 90 degrees
             data_rotated = np.rot90(data, k=3)
@@ -526,6 +567,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         v = interactive(
             plot_checking,
             image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0, layout=widgets.Layout(width="50%")),
+            integrated_flag=widgets.Checkbox(value=False, description="Integrate images", layout=widgets.Layout(width="50%")),
         )
         display(v)
 
