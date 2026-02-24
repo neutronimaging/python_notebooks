@@ -1119,7 +1119,7 @@ def combine_images(
         sum_proton_charge = np.sum(list_proton_charges)
         logging.info(f"\t Total proton charge of all {data_type} runs: {sum_proton_charge} C")
     else:
-        sum_proton_charge = 1.0  # dummy value to avoid division by zero
+        sum_proton_charge = 1.0
 
     for _run_number in master_dict.keys():
         logging.info(f"Combining {data_type}# {_run_number} ...")
@@ -1159,9 +1159,16 @@ def combine_images(
     logging.info("Combining all ob images is done!")
     logging.info(f"\tbefore: {len(full_data_corrected) = }")
     if use_proton_charge:
-        data_combined = np.array(full_data_corrected).sum(axis=0)
+        coeff = np.mean(list_proton_charges)
     else:
-        data_combined = np.array(full_data_corrected).mean(axis=0)
+        coeff = 1
+            
+    data_combined = np.array(full_data_corrected).sum(axis=0) / coeff
+    
+    # if use_proton_charge:
+    #     data_combined = np.array(full_data_corrected).sum(axis=0)
+    # else:
+    #     data_combined = np.array(full_data_corrected).mean(axis=0)
         
     logging.info(f"\tafter: {data_combined.shape = }")
 
