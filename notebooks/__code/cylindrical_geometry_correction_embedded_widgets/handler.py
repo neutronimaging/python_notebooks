@@ -11,6 +11,7 @@ import ipywidgets as widgets
 import logging
 import json
 from pathlib import PurePosixPath
+import pandas as pd
 
 # Third-party libraries
 import matplotlib.pyplot as plt
@@ -959,7 +960,7 @@ def apply_cylindrical_correction(
     return Tcorr
 
 
-def visualize_correction(
+def visualize_correction_for_white_beam(
     T_yxl: np.ndarray,
     Tcorr_yxl: np.ndarray,
     mask_yx: np.ndarray,
@@ -1041,10 +1042,159 @@ def visualize_correction(
     plt.tight_layout()
     plt.show()
 
+
+def visualize_correction_for_tof(
+    T_yxl: np.ndarray,
+    Tcorr_yxl: np.ndarray,
+    mask_yx: np.ndarray,
+    *,
+    lambda_indices: Optional[Sequence[int]] = None,
+    figsize: Tuple[int, int] = (14, 8),
+) -> None:
+    """
+    Visualize before/after correction with improved diagnostics.
+
+    Top row (2/3 height)
+    --------------------
+    - Before:  heatmap of  A(x,λ) = -ln( T̄(x,λ) )
+    - After:   heatmap of  A^D(x,λ) = -ln( T̄^D(x,λ) )
+    - Diff:    (After - Before) with diverging colormap centered at 0
+
+    Bottom row (1/3 height)
+    -----------------------
+    - x-profiles at selected λ bins:
+        * color encodes λ index
+        * linestyle encodes before (solid) vs after (dashed)
+
+    Notes
+    -----
+    - T̄ is the geometric mean across y within the cylinder mask.
+    - Air (columns outside cylinder support) are shown in light gray.
+    """
+    if T_yxl.shape != Tcorr_yxl.shape:
+        raise ValueError("`T_yxl` and `Tcorr_yxl` must have the same shape.")
+    if mask_yx.shape != T_yxl.shape[:2]:
+        raise ValueError("`mask_yx` must match the first two dims of T.")
+    H, W, L = T_yxl.shape
+
+    # Choose λ bins for profile plots
+    if lambda_indices is None:
+        lambda_indices = [int(0.1 * L), int(0.5 * L), int(0.9 * L)]
+    lambda_indices = [i for i in lambda_indices if 0 <= i < L]
+    if not lambda_indices:
+        raise ValueError("No valid `lambda_indices` to plot.")
+
+    # Geometric mean across y (masked) -> (W, L)
+    eps = 1e-12
+    rows = np.where(mask_yx.any(axis=1))[0]
+    if rows.size == 0:
+        raise ValueError("Mask has no valid rows.")
+    T_sub = T_yxl[rows, :, :]
+    Tc_sub = Tcorr_yxl[rows, :, :]
+    M_sub = mask_yx[rows, :]
+
+    Tbar_xl = np.full((W, L), np.nan, dtype=np.float64)
+    Tbar_corr_xl = np.full((W, L), np.nan, dtype=np.float64)
+
+    # column-wise (x) masking
+    xmask = M_sub.any(axis=0)  # True for x within cylinder vertically
+
+    for x in np.where(xmask)[0]:
+        ymask = M_sub[:, x]
+        # geometric means over y
+        Tbar_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(T_sub[ymask, x, :], eps, None)), axis=0))
+        Tbar_corr_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(Tc_sub[ymask, x, :], eps, None)), axis=0))
+
+    A_before = -np.log(np.clip(Tbar_xl, eps, None))       # (W, L)
+    A_after  = -np.log(np.clip(Tbar_corr_xl, eps, None))  # (W, L)
+    A_delta  = A_after - A_before
+
+    # Colormaps: set 'bad' (NaN) → light gray for air/out-of-ROI
+    cmap_seq = plt.cm.viridis.copy()
+    cmap_seq.set_bad(color="lightgray")
+    cmap_div = plt.cm.bwr.copy()
+    cmap_div.set_bad(color="lightgray")
+
+    # Zero-centered normalization for the difference panel
+    # Use symmetric limits based on finite values
+    finite_delta = np.isfinite(A_delta)
+    if np.any(finite_delta):
+        vmax = np.nanpercentile(np.abs(A_delta[finite_delta]), 98.0)
+        norm_div = colors.TwoSlopeNorm(vcenter=0.0, vmin=-vmax, vmax=vmax)
+    else:
+        norm_div = colors.TwoSlopeNorm(vcenter=0.0, vmin=-1.0, vmax=1.0)
+
+    # Layout
+    fig = plt.figure(figsize=figsize)
+    gs = gridspec.GridSpec(2, 3, height_ratios=[2, 1], figure=fig)
+
+    # Top row: heatmaps
+    ax0 = fig.add_subplot(gs[0, 0])
+    im0 = ax0.imshow(np.ma.masked_invalid(A_before), aspect='auto', cmap=cmap_seq)
+    ax0.set_title(r"Before: $-\ln \bar{T}(x,\lambda)$")
+    ax0.set_xlabel("λ bin")
+    ax0.set_ylabel("x")
+    fig.colorbar(im0, ax=ax0, shrink=0.8)
+
+    ax1 = fig.add_subplot(gs[0, 1])
+    im1 = ax1.imshow(np.ma.masked_invalid(A_after), aspect='auto', cmap=cmap_seq)
+    ax1.set_title(r"After: $-\ln \bar{T}^D(x,\lambda)$")
+    ax1.set_xlabel("λ bin")
+    ax1.set_ylabel("x")
+    fig.colorbar(im1, ax=ax1, shrink=0.8)
+
+    ax2 = fig.add_subplot(gs[0, 2])
+    im2 = ax2.imshow(np.ma.masked_invalid(A_delta), aspect='auto', cmap=cmap_div, norm=norm_div)
+    ax2.set_title(r"Difference: After − Before")
+    ax2.set_xlabel("λ bin")
+    ax2.set_ylabel("x")
+    fig.colorbar(im2, ax=ax2, shrink=0.8)
+
+    # Annotate air region in the top panels (optional but clarifying)
+    # We'll draw semi-transparent bands where xmask is False
+    air_rows = np.where(~xmask)[0]
+    if air_rows.size:
+        for ax in (ax0, ax1, ax2):
+            for r in air_rows:
+                ax.axhspan(r-0.5, r+0.5, color="lightgray", alpha=0.15, lw=0)
+
+    # Bottom row: x-profiles — color=λ, linestyle=before/after
+    ax3 = fig.add_subplot(gs[1, :])
+    xgrid = np.arange(W)
+    # color map for chosen λs
+    palette = plt.cm.tab10(np.linspace(0, 1, max(3, len(lambda_indices))))
+    for idx, li in enumerate(lambda_indices):
+        col = palette[idx]
+        # Use masked arrays so air columns plot as gaps
+        Tb = np.ma.masked_where(~xmask, Tbar_xl[:, li])
+        Ta = np.ma.masked_where(~xmask, Tbar_corr_xl[:, li])
+        ax3.plot(xgrid, Tb, color=col, linestyle='-', label=f"λ={li} (before)")
+        ax3.plot(xgrid, Ta, color=col, linestyle='--', label=f"λ={li} (after)")
+    ax3.set_xlabel("x (pixels)")
+    ax3.set_ylabel(r"$\bar{T}(x,\lambda)$")
+    ax3.set_title("x-profiles at selected λ bins")
+    ax3.grid(True, alpha=0.3)
+    ax3.legend(ncol=min(3, 2*len(lambda_indices)))
+
+    plt.tight_layout()
+    plt.show()
+
+    # Quantitative flatness summary (unchanged)
+    if np.any(xmask):
+        def cov_across_x(A):
+            m = np.nanmean(A[xmask, :], axis=0)
+            s = np.nanstd(A[xmask, :], axis=0)
+            return s / np.maximum(m, 1e-12)
+        cov_b = cov_across_x(A_before)
+        cov_a = cov_across_x(A_after)
+        print(f"Flatness CoV across x — median over λ: before={np.nanmedian(cov_b):.4g}, after={np.nanmedian(cov_a):.4g}")  
+
+
 def export_config(config_filename=None, config=None):
     logging.info(f"Exporting config to file: {config_filename}")
     with open(config_filename, "w") as outfile:
         json.dump(config, outfile)
+
         
 def export_images(output_folder=None, working_dir=None, stack_of_images=None, out=None, list_of_input_filenames=None):
     logging.info(f"Exporting images to folder: {output_folder}")
@@ -1081,3 +1231,436 @@ def export_images(output_folder=None, working_dir=None, stack_of_images=None, ou
     
     with out:
         display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created in " + base_working_dir + "  !</span>"))
+
+
+def analyze_hyperspectral_comparison(
+    T_yxl_before: np.ndarray,
+    T_yxl_after: Optional[np.ndarray] = None,
+    *,
+    mask_yx: Optional[np.ndarray] = None,
+    title_prefix: str = "Hyperspectral",
+    n_intensity_bins: int = 100,
+    selected_channels_count: int = 5,
+    selected_channels: Optional[Sequence[int]] = None,
+    figsize: Tuple[int, int] = (16, 7),
+    percentile_clip: float = 99.5,
+    show_plots: bool = True,
+    show_statistics: bool = True,
+    min_positive_val: Optional[float] = None,
+) -> Dict[str, Any]:
+    """
+    Analyze hyperspectral transmission data (before and optional after correction).
+
+    This function computes 2D histograms of Log10(intensity) vs TOF channel, basic and
+    per-channel statistics, and (if `T_yxl_after` is provided) side-by-side comparisons
+    with a difference panel. It supports restricting the analysis to a region-of-interest
+    via `mask_yx`.
+
+    Parameters
+    ----------
+    T_yxl_before : ndarray, shape (H, W, L)
+        Original hyperspectral transmission cube.
+    T_yxl_after : ndarray, shape (H, W, L), optional
+        Corrected hyperspectral cube to compare against the original.
+    mask_yx : ndarray of bool, shape (H, W), optional
+        If provided, analysis is restricted to pixels where mask is True.
+    title_prefix : str, optional
+        Prefix for plot titles. Default is "Hyperspectral".
+    n_intensity_bins : int, optional
+        Number of intensity bins in the (log-scaled) 2D histogram. Default is 100.
+    selected_channels_count : int, optional
+        Number of channels to include in the bottom histograms if `selected_channels` is None.
+        Default is 5.
+    selected_channels : sequence of int, optional
+        Explicit list of TOF channel indices to show in the bottom histograms.
+        Overrides `selected_channels_count` if provided.
+    figsize : tuple of int, optional
+        Matplotlib figure size. Default is (16, 7).
+    percentile_clip : float, optional
+        Upper percentile used to clip outliers in per-channel hist visualization.
+        Default is 99.5.
+    show_plots : bool, optional
+        If True, render plots. Default is True.
+    show_statistics : bool, optional
+        If True, print summary statistics. Default is True.
+    min_positive_val : float, optional
+        Minimum positive value to consider for analysis. If None, uses the global minimum.
+
+    Returns
+    -------
+    results : dict
+        Dictionary containing:
+        - 'basic_stats_before' : dict of global stats for T_yxl_before
+        - 'basic_stats_after'  : dict of global stats for T_yxl_after (if provided)
+        - 'value_distribution_before' : dict with counts and percentages for ranges
+        - 'value_distribution_after'  : dict (if provided)
+        - 'hist_2d_before' : ndarray (n_bins-1, L) 2D histogram for before
+        - 'hist_2d_after'  : ndarray (n_bins-1, L) 2D histogram for after (if provided)
+        - 'channel_stats_df_before' : pd.DataFrame per-channel stats (before)
+        - 'channel_stats_df_after'  : pd.DataFrame per-channel stats (after, if provided)
+        - 'log_intensity_bins' : 1D ndarray of intensity bin edges (shared for before/after)
+        - 'min_positive_val' : float intensity lower bound used
+        - 'max_val' : float intensity upper bound used
+    """
+    # ---------- helpers ----------
+    def _flatten_data(T, M):
+        if M is None:
+            return T.reshape(-1)
+        return T[M].reshape(-1)
+
+    def _per_channel_iter(T, M):
+        H, W, L = T.shape
+        for ch in range(L):
+            if M is None:
+                yield ch, T[:, :, ch].reshape(-1)
+            else:
+                yield ch, T[:, :, ch][M].reshape(-1)
+
+    def _basic_and_distribution(flat):
+        total_pixels = flat.size
+        min_val = float(np.nanmin(flat))
+        max_val = float(np.nanmax(flat))
+        mean_val = float(np.nanmean(flat))
+        median_val = float(np.nanmedian(flat))
+        count_normal = int(np.sum((flat >= 0) & (flat <= 1)))
+        count_above_1 = int(np.sum(flat > 1))
+        count_negative = int(np.sum(flat < 0))
+        return (
+            {
+                'min_value': min_val,
+                'max_value': max_val,
+                'mean_value': mean_val,
+                'median_value': median_val,
+                'total_pixels': total_pixels,
+            },
+            {
+                'normal_count': count_normal,
+                'above_1_count': count_above_1,
+                'negative_count': count_negative,
+                'total_pixels': total_pixels,
+                'normal_percentage': 100.0 * count_normal / max(total_pixels, 1),
+                'above_1_percentage': 100.0 * count_above_1 / max(total_pixels, 1),
+                'negative_percentage': 100.0 * count_negative / max(total_pixels, 1),
+            },
+        )
+
+    def _per_channel_stats(T, M):
+        recs = []
+        for ch, vec in _per_channel_iter(T, M):
+            recs.append({
+                'channel': ch,
+                'min_val': float(np.nanmin(vec)),
+                'max_val': float(np.nanmax(vec)),
+                'mean_val': float(np.nanmean(vec)),
+                'median_val': float(np.nanmedian(vec)),
+                'std_val': float(np.nanstd(vec)),
+                'above_1_count': int(np.sum(vec > 1)),
+                'above_1_percentage': float(100.0 * np.sum(vec > 1) / max(vec.size, 1)),
+                'negative_count': int(np.sum(vec < 0)),
+                'zero_count': int(np.sum(vec == 0)),
+            })
+        return pd.DataFrame.from_records(recs)
+
+    def _2d_histogram_log(T, M, log_bins):
+        H, W, L = T.shape
+        hist = np.zeros((log_bins.size - 1, L), dtype=np.float64)
+        Tlog = np.log10(np.clip(T, min_positive_val, None))
+        for ch in range(L):
+            vec = Tlog[:, :, ch].reshape(-1) if M is None else Tlog[:, :, ch][M].reshape(-1)
+            h, _ = np.histogram(vec, bins=log_bins)
+            hist[:, ch] = h
+        return hist
+
+    # ---------- inputs & shared bins ----------
+    if T_yxl_before.ndim != 3:
+        raise ValueError("T_yxl_before must be 3D (H,W,L).")
+    if T_yxl_after is not None and T_yxl_after.shape != T_yxl_before.shape:
+        raise ValueError("T_yxl_after must match T_yxl_before shape.")
+
+    H, W, L = T_yxl_before.shape
+    if mask_yx is not None and mask_yx.shape != (H, W):
+        raise ValueError("mask_yx must have shape (H, W).")
+
+    # Flattened views
+    flat_before = _flatten_data(T_yxl_before, mask_yx)
+    if T_yxl_after is not None:
+        flat_after = _flatten_data(T_yxl_after, mask_yx)
+
+    # Shared intensity binning across before/after for fair comparison
+    # Use positive values only to define the lower bound for log bins
+    pos_before = flat_before[flat_before > 0]
+    if pos_before.size == 0:
+        raise ValueError("No positive values in 'before' data to define log bins.")
+
+    if T_yxl_after is None:
+        min_positive_val = float(np.nanmin(pos_before)) if min_positive_val is None else min_positive_val
+        max_val = float(np.nanmax(flat_before))
+    else:
+        pos_after = flat_after[flat_after > 0]
+        if pos_after.size == 0:
+            raise ValueError("No positive values in 'after' data to define log bins.")
+        min_positive_val = float(np.nanmin([np.nanmin(pos_before), np.nanmin(pos_after)])) if min_positive_val is None else min_positive_val
+        max_val = float(np.nanmax([np.nanmax(flat_before), np.nanmax(flat_after)]))
+
+    # Log-spaced intensity bins and corresponding log bins
+    log_intensity_bins = np.logspace(np.log10(min_positive_val), np.log10(max_val), n_intensity_bins)
+    log_bins = np.log10(log_intensity_bins)
+
+    # ---------- stats ----------
+    basic_before, dist_before = _basic_and_distribution(flat_before)
+    df_before = _per_channel_stats(T_yxl_before, mask_yx)
+    hist_before = _2d_histogram_log(T_yxl_before, mask_yx, log_bins)
+
+    if T_yxl_after is not None:
+        basic_after, dist_after = _basic_and_distribution(flat_after)
+        df_after = _per_channel_stats(T_yxl_after, mask_yx)
+        hist_after = _2d_histogram_log(T_yxl_after, mask_yx, log_bins)
+        hist_diff = hist_after - hist_before
+    else:
+        basic_after = dist_after = df_after = hist_after = hist_diff = None
+
+    # ---------- reporting ----------
+    if show_statistics:
+        print(f"{title_prefix} (scope: {'masked ROI' if mask_yx is not None else 'full image'})")
+        print(f"Cube shape: {T_yxl_before.shape}, dtype: {T_yxl_before.dtype}")
+        print(f"Log-binning intensity range: [{min_positive_val:.3g}, {max_val:.3g}]")
+        print("\nBefore (original) — basic stats:")
+        print(pd.Series(basic_before).to_string())
+        print("\nBefore (original) — value distribution:")
+        print(pd.Series(dist_before).round(3).to_string())
+
+        if T_yxl_after is not None:
+            print("\nAfter (corrected) — basic stats:")
+            print(pd.Series(basic_after).to_string())
+            print("\nAfter (corrected) — value distribution:")
+            print(pd.Series(dist_after).round(3).to_string())
+
+            # Quick improvement signal: fraction > 1 per channel
+            frac_before = df_before['above_1_count'] / (mask_yx.sum() if mask_yx is not None else (H*W))
+            frac_after  = df_after['above_1_count']  / (mask_yx.sum() if mask_yx is not None else (H*W))
+            print("\nChannels with >1 values (fraction):")
+            print(f"  median before={np.nanmedian(frac_before):.4%}, after={np.nanmedian(frac_after):.4%}")
+
+    # ---------- plots ----------
+    if show_plots:
+        if T_yxl_after is None:
+            # Simple 1x2: 2D hist + selected-channel histograms
+            fig, axes = plt.subplots(1, 2, figsize=figsize)
+            im = axes[0].imshow(
+                hist_before,
+                aspect='auto', origin='lower', cmap='viridis',
+                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+            )
+            axes[0].set_xlabel('TOF Channel')
+            axes[0].set_ylabel('Log10(Intensity)')
+            axes[0].set_title(f'{title_prefix}: 2D Histogram (Before)')
+            axes[0].axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.8, label='log10(1)=0')
+            axes[0].legend()
+            plt.colorbar(im, ax=axes[0], label='Pixel Count')
+            _plot_selected_channel_histograms(
+                axes[1],
+                cube=T_yxl_before,
+                mask=mask_yx,
+                selected_channels=selected_channels,
+                selected_channels_count=selected_channels_count,
+                percentile_clip=percentile_clip,
+                title=f'{title_prefix}: Intensity Distributions (Before)'
+            )
+            plt.tight_layout()
+            plt.show()
+        else:
+            # -------- three-row layout --------
+            fig = plt.figure(figsize=figsize)
+            gs = gridspec.GridSpec(
+                3, 3, height_ratios=[2, 1.2, 1.6], figure=fig
+            )
+
+            # Row 1: 2D histograms (before / after / diff)
+            ax0 = fig.add_subplot(gs[0, 0])
+            im0 = ax0.imshow(
+                hist_before, aspect='auto', origin='lower', cmap='viridis',
+                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+            )
+            ax0.set_title(f'{title_prefix}: 2D Hist (Before)')
+            ax0.set_xlabel('TOF Channel'); ax0.set_ylabel('Log10(Intensity)')
+            ax0.axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.8)
+            fig.colorbar(im0, ax=ax0, shrink=0.8, label='Pixel Count')
+
+            ax1 = fig.add_subplot(gs[0, 1])
+            im1 = ax1.imshow(
+                hist_after, aspect='auto', origin='lower', cmap='viridis',
+                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+            )
+            ax1.set_title(f'{title_prefix}: 2D Hist (After)')
+            ax1.set_xlabel('TOF Channel'); ax1.set_ylabel('Log10(Intensity)')
+            ax1.axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.8)
+            fig.colorbar(im1, ax=ax1, shrink=0.8, label='Pixel Count')
+
+            ax2 = fig.add_subplot(gs[0, 2])
+            vmax = np.nanpercentile(np.abs(hist_diff), 99.0)
+            im2 = ax2.imshow(
+                hist_diff, aspect='auto', origin='lower',
+                cmap='bwr', norm=colors.TwoSlopeNorm(vcenter=0.0, vmin=-vmax, vmax=vmax),
+                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+            )
+            ax2.set_title('Difference: After − Before')
+            ax2.set_xlabel('TOF Channel'); ax2.set_ylabel('Log10(Intensity)')
+            fig.colorbar(im2, ax=ax2, shrink=0.8, label='Δ Pixel Count')
+
+            # Row 2: Fraction > 1 per channel (before vs after)
+            ax3 = fig.add_subplot(gs[1, :])
+            frac_b = df_before['above_1_count'] / (mask_yx.sum() if mask_yx is not None else (H*W))
+            frac_a = df_after['above_1_count']  / (mask_yx.sum() if mask_yx is not None else (H*W))
+            ax3.plot(frac_b.values, label='before', linestyle='-')
+            ax3.plot(frac_a.values, label='after', linestyle='--')
+            ax3.set_xlabel('TOF Channel'); ax3.set_ylabel('Fraction > 1')
+            ax3.set_title('Fraction of Pixels above 1 (per Channel)')
+            ax3.grid(True, alpha=0.3); ax3.legend()
+
+            # Row 3: Distributions per selected channels (legend outside)
+            ax4 = fig.add_subplot(gs[2, :])
+            # before
+            _plot_selected_channel_histograms(
+                ax4,
+                cube=T_yxl_before, mask=mask_yx,
+                selected_channels=selected_channels,
+                selected_channels_count=selected_channels_count,
+                percentile_clip=percentile_clip,
+                title='Distributions per Channel (Before vs After)',
+                style='solid'
+            )
+            # after (overlay, same colors; dashed linestyle rendered by helper)
+            _plot_selected_channel_histograms(
+                ax4,
+                cube=T_yxl_after, mask=mask_yx,
+                selected_channels=selected_channels,
+                selected_channels_count=selected_channels_count,
+                percentile_clip=percentile_clip,
+                title='Distributions per Channel (Before vs After)',
+                style='dashed'
+            )
+            ax4.axvline(x=1, color='red', linestyle='--', linewidth=1.2, alpha=0.8)
+            ax4.set_yscale('log')
+            # push legend outside to the right
+            leg = ax4.legend(
+                ncol=1, frameon=True, fontsize='small',
+                loc='center left', bbox_to_anchor=(1.01, 0.5), borderaxespad=1.0
+            )
+            # make room for the outside legend
+            plt.subplots_adjust(right=0.82)
+
+            plt.tight_layout()
+            plt.show()
+
+    # ---------- return ----------
+    results = {
+        'basic_stats_before': basic_before,
+        'value_distribution_before': dist_before,
+        'hist_2d_before': hist_before,
+        'channel_stats_df_before': df_before,
+        'log_intensity_bins': log_intensity_bins,
+        'min_positive_val': min_positive_val,
+        'max_val': max_val,
+    }
+    if T_yxl_after is not None:
+        results.update({
+            'basic_stats_after': basic_after,
+            'value_distribution_after': dist_after,
+            'hist_2d_after': hist_after,
+            'hist_2d_diff': hist_diff,
+            'channel_stats_df_after': df_after,
+        })
+    return results
+
+
+def _plot_selected_channel_histograms(
+    ax: plt.Axes,
+    *,
+    cube: np.ndarray,
+    mask: Optional[np.ndarray],
+    selected_channels: Optional[Sequence[int]],
+    selected_channels_count: int,
+    percentile_clip: float,
+    title: str,
+    style: str = 'solid',
+) -> None:
+    """Internal: overlay histograms for selected channels on a given Axes."""
+    H, W, L = cube.shape
+    if selected_channels is None:
+        channels = np.linspace(0, L-1, selected_channels_count, dtype=int)
+    else:
+        channels = [ch for ch in selected_channels if 0 <= ch < L]
+        if not channels:
+            channels = np.linspace(0, L-1, selected_channels_count, dtype=int)
+
+    palette = plt.cm.tab10(np.linspace(0, 1, max(3, len(channels))))
+    for i, ch in enumerate(channels):
+        vec = cube[:, :, ch].reshape(-1) if mask is None else cube[:, :, ch][mask].reshape(-1)
+        # clip extreme upper tail for visualization
+        upper = np.nanpercentile(vec, percentile_clip)
+        vec = vec[vec <= upper]
+        ax.hist(
+            vec, bins=50, density=True, alpha=0.6,
+            histtype='step' if style == 'dashed' else 'bar',
+            linewidth=1.6 if style == 'dashed' else 1.0,
+            linestyle='--' if style == 'dashed' else '-',
+            color=palette[i], label=f'Channel {ch} ({style})'
+        )
+    ax.set_xlabel('Intensity'); ax.set_ylabel('Density'); ax.set_title(title)
+
+
+def visualize_hyperspectral_radiographs(hyperspectral_stack: np.ndarray, 
+                                       selected_indices: Optional[list[int]] = None, 
+                                       figsize: tuple[int, int] = (15, 7), 
+                                       cmap: str = "gray", 
+                                       percentile_range: tuple[float, float] = (2, 98)) -> plt.Figure:
+    """
+    Visualize selected radiographs from a hyperspectral stack.
+    
+    Parameters:
+    -----------
+    hyperspectral_stack : numpy.ndarray
+        3D array with shape (height, width, n_spectral_bins)
+    selected_indices : list of int, optional
+        Indices of radiographs to visualize. If None, uses beginning, middle, and end.
+    figsize : tuple, optional
+        Figure size (width, height). Default is (15, 7).
+    cmap : str, optional
+        Colormap for displaying images. Default is "gray".
+    percentile_range : tuple, optional
+        Percentile range for intensity scaling (min, max). Default is (2, 98).
+    
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        The created figure object
+    """
+    # Default to beginning, middle, and end if no indices provided
+    if selected_indices is None:
+        n_images = hyperspectral_stack.shape[-1]
+        selected_indices = [0, n_images//2, n_images-1]
+    
+    # Create figure with gridspec layout
+    fig = plt.figure(figsize=figsize)
+    gs = gridspec.GridSpec(2, len(selected_indices), height_ratios=[5, 0.3], hspace=0.01)
+    
+    # Calculate dynamic range from selected subset
+    sub_selection = hyperspectral_stack[..., selected_indices]
+    vmin = np.nanpercentile(sub_selection, percentile_range[0])
+    vmax = np.nanpercentile(sub_selection, percentile_range[1])
+    
+    # Create subplots for images in the top row
+    img = None  # Will store the last image for colorbar
+    for i, idx in enumerate(selected_indices):
+        ax = fig.add_subplot(gs[0, i])
+        ax.set_title(f"Radiograph {idx}")
+        img = ax.imshow(hyperspectral_stack[..., idx], cmap=cmap, origin="lower", 
+                       vmin=vmin, vmax=vmax)
+        ax.axis("off")
+    
+    # Create colorbar in the bottom row, spanning all columns
+    cbar_ax = fig.add_subplot(gs[1, :])
+    cbar = plt.colorbar(img, cax=cbar_ax, orientation='horizontal')
+    cbar.set_label('Intensity', fontsize=12)
+
+    return fig

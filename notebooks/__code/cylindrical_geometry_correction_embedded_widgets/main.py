@@ -25,7 +25,7 @@ matplotlib.rcParams["figure.figsize"] = (7, 7)
 
 from NeuNorm.normalization import Normalization
 
-# from __code._utilities.file import make_or_increment_folder_name, make_tiff
+from __code._utilities.file import make_or_increment_folder_name, make_tiff
 from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code._utilities import notebook_legend
 from __code.cylindrical_geometry_correction_embedded_widgets.cylindrical_geometry_correction import (
@@ -41,9 +41,13 @@ from __code.cylindrical_geometry_correction_embedded_widgets.handler import calc
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import display_chord_map
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import compute_correction_map_factor
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import apply_cylindrical_correction
-from __code.cylindrical_geometry_correction_embedded_widgets.handler import visualize_correction 
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import visualize_correction_for_white_beam
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import visualize_correction_for_tof 
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import export_config  
 from __code.cylindrical_geometry_correction_embedded_widgets.handler import export_images
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import display_compute_correction_map_factor
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import analyze_hyperspectral_comparison
+from __code.cylindrical_geometry_correction_embedded_widgets.handler import visualize_hyperspectral_radiographs
 from __code.file_folder_browser import FileFolderBrowser
 
 notebook_legend()
@@ -200,9 +204,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 list_of_images.append(os.path.join(folder_name, file))
         list_of_images.sort()
         
-        if self.debug:
-            logging.info("Debug mode is ON. Only loading a subset of images.")
-            list_of_images = list_of_images[:20]  # Load only the first 5 images for debugging
+        # if self.debug:
+        #     logging.info("Debug mode is ON. Only loading a subset of images.")
+        #     list_of_images = list_of_images[:20]  # Load only the first 5 images for debugging
         
         logging.info(f"Number of TIFF images found in the folder: {len(list_of_images)}")
         self.load_images(list_of_images)
@@ -542,20 +546,20 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         [x0, x1, y0, y1] = self.crop_ui.result
         def plot_checking(image_index, integrated_flag):
             fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10),
-                                    gridspec_kw={'hspace': 0},
+                                    # gridspec_kw={'hspace': 10},
                                     sharex=False)
 
             data = self.data[image_index] if not integrated_flag else self.integrated_image
             data = data[y0 : y1 + 1, x0 : x1 + 1]
             # rotate 90 degrees
-            data_rotated = np.rot90(data, k=3)
+            data_rotated = np.rot90(data, k=1)
             
             axs[0].imshow(data_rotated, cmap="viridis")
             axs[0].tick_params(labelbottom=False)
             axs[0].tick_params(labeltop=True)
             
             profile = np.sum(data, axis=1)
-            profile = profile[::-1]
+            # profile = profile[::-1]
             pixels = np.arange(len(profile))
             axs[1].plot(pixels, profile, "r")
             # limit x axis to the cropped region
@@ -564,10 +568,13 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             axs[1].set_ylabel("")
             axs[1].set_xlabel("Pixels")
             
+            plt.tight_layout()
+            plt.show()
+            
         v = interactive(
             plot_checking,
             image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0, layout=widgets.Layout(width="50%")),
-            integrated_flag=widgets.Checkbox(value=False, description="Integrate images", layout=widgets.Layout(width="50%")),
+            integrated_flag=widgets.Checkbox(value=True, description="Integrate images", layout=widgets.Layout(width="50%")),
         )
         display(v)
 
@@ -641,7 +648,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         images = replace_with_nans(self.cropped_data)
         detection_config = DetectionConfig()
         detection_config.diagnostics = True
-        geometry, diagnostics = detect_cylindrical_boundary(images[0], detection_config)
+        geometry, diagnostics = detect_cylindrical_boundary(self.integrated_cropped_image, detection_config)
         res = calculate_cylindrical_chord_map(
             image_shape=self.integrated_cropped_image.shape,
             center_x=geometry.center_x,
@@ -661,7 +668,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                       res)
         
         hyperspectral_stack = np.swapaxes(self.cropped_data, 0, 2)
-        hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 1) # "H, W, L"
+        hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 1) # "H, W, L or TOF"
         
         Tcorr = apply_cylindrical_correction(
             T_yxl=hyperspectral_stack,
@@ -676,15 +683,29 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             display_edges(geometry, diagnostics)
             display_detection(self.integrated_cropped_image, geometry, diagnostics)
             display_chord_map(res, geometry, background=self.integrated_cropped_image, figsize=(12, 8))
-            # display_compute_correction_map_factor(mu_disc, mu_iter)
-            visualize_correction(
-                T_yxl=hyperspectral_stack,
-                Tcorr_yxl=Tcorr,
-                mask_yx=res.mask,
-                lambda_indices=[int(0.1*mu_disc.size), int(0.5*mu_disc.size), int(0.9*mu_disc.size)],
-                )
+
+            if self.mode == "tof":
+                display_compute_correction_map_factor(mu_disc, mu_iter)
+                visualize_correction_for_tof(
+                    T_yxl=hyperspectral_stack,
+                    Tcorr_yxl=Tcorr,
+                    mask_yx=res.mask,
+                    lambda_indices=[int(0.1*mu_disc.size), int(0.5*mu_disc.size), int(0.9*mu_disc.size)],
+                    )
+            
+            else:
+            
+                visualize_correction_for_white_beam(
+                    T_yxl=hyperspectral_stack,
+                    Tcorr_yxl=Tcorr,
+                    mask_yx=res.mask,
+                    lambda_indices=[int(0.1*mu_disc.size), int(0.5*mu_disc.size), int(0.9*mu_disc.size)],
+                    )
         else:
             display(HTML('<span style="font-size: 12px; color:blue">Edges detected but not visualized!</span>'))
+
+        self.hyperspectral_stack = hyperspectral_stack
+        self.Tcorr = Tcorr
 
     def display_before_and_after_correction(self):
         def plot_before_after_correction(image_index):
@@ -709,6 +730,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                                                      layout=widgets.Layout(width="50%")))
         display(interactive_plot)
 
+    def analyze_hyperspectral_comparison(self):
+        cylindrical_corr_analysis_res = analyze_hyperspectral_comparison(
+            T_yxl_before=self.hyperspectral_stack,
+            T_yxl_after=self.Tcorr,
+            title_prefix="Cylindrical Correction",
+        )
+        _ = visualize_hyperspectral_radiographs(self.Tcorr)
+        
     def export(self):
         working_dir = os.path.dirname(self.working_dir)
         output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
