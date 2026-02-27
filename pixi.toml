@@ -45,3 +45,4 @@ sectorizedradialprofile = ">=1.1.2, <2"
 imagingreso = ">=1.8.0, <2"
 tdcsophiread = { path = "/SNS/VENUS/shared/zhangc/wheels/tdcsophiread-3.0.2-cp312-abi3-linux_x86_64.whl" }
 timepix-geometry-correction = { git = "https://github.com/ornlneutronimaging/timepix_geometry_correction.git", branch="main"}
+mbirjax = { version = ">=0.6.7, <0.7", extras = ["cuda12"] }
