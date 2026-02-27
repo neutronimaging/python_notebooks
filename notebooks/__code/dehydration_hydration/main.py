@@ -217,6 +217,15 @@ class DehydrationHydrationCorrection:
         )
         display(self.subspace_dimension_ui)
         
+        self.safety_factor_ui = widgets.IntSlider(
+            min=1,
+            max=5,
+            value=2,
+            description="Safety factor:",
+            style={"description_width": "150px"},
+            layout=widgets.Layout(width="50%"))
+        display(self.safety_factor_ui)
+        
         self.beta_loss_ui = widgets.Dropdown(
             options=["kullback-leibler", "frobenius"],
             value="frobenius",
@@ -241,12 +250,14 @@ class DehydrationHydrationCorrection:
         subspace_dimension = self.subspace_dimension_ui.value
         beta_loss = self.beta_loss_ui.value
         max_iterations = self.max_iterations_ui.value
+        safety_factor = self.safety_factor_ui.value
         
         logging.info(f"Performing correction with parameters:")
         logging.info(f"\tDataset type: {dataset_type}")
         logging.info(f"\tSubspace dimension: {subspace_dimension}")
         logging.info(f"\tBeta loss: {beta_loss}")
         logging.info(f"\tMax iterations: {max_iterations}")
+        logging.info(f"\tSafety factor: {safety_factor}")
         
         raw_data = self.data
         logging.info(f"before swapping axes, raw data shape: {raw_data.shape}")
@@ -263,6 +274,7 @@ class DehydrationHydrationCorrection:
             swap_data,
             verbose=False,
             dataset_type=dataset_type,
+            safety_factor=safety_factor,
             subspace_dimension=subspace_dimension,
             beta_loss=beta_loss,
             max_iter=max_iterations,
@@ -372,21 +384,63 @@ class DehydrationHydrationCorrection:
            
     def export(self):
         working_dir = os.path.dirname(self.working_dir)
-        output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
+        self.output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
                                                   ipts_folder=self.ipts_folder,
                                                   next_function=self.export_images_and_config,
                                                   )
-        output_folder_browser.select_output_folder_with_new()
+        self.output_folder_browser.select_output_folder_with_new()
         self.out = widgets.Output()
         display(self.out)
 
     def export_images_and_config(self, output_folder):
-        export_images(output_folder=output_folder, 
+        self.export_images(output_folder=output_folder, 
                       working_dir=self.working_dir,
                       stack_of_images=self.corrected_images,
                       out=self.out,
                       list_of_input_filenames=self.list_of_images,)
-        export_config(config_filename=os.path.join(output_folder, "config.json"), 
-                      config=self.config
-                      )    
         
+    def export_images(self, output_folder=None, working_dir=None, stack_of_images=None, out=None, list_of_input_filenames=None):
+        logging.info(f"Exporting images to folder: {output_folder}")
+        logging.info(f"\tworking_dir: {working_dir}")
+        logging.info(f"\tstack_of_images shape: {np.shape(stack_of_images)}")
+        logging.info(f"\tlist_of_input_filenames: {list_of_input_filenames}")
+        
+        self.output_folder_browser.list_output_folders_ui.shortcut_buttons.close()
+        
+        with self.out:
+            self.out.clear_output()
+        
+        output_folder = os.path.abspath(output_folder)
+        base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected")
+        base_working_dir = make_or_increment_folder_name(base_working_dir)
+
+        with self.out:
+            display(HTML('<span style="font-size: 12px; color:blue">Exporting to folder: ' + base_working_dir + " ...</span>"))
+        
+        # export images
+        list_of_images_corrected = stack_of_images
+
+        nbr_images = len(list_of_images_corrected)
+        progress_bar = widgets.IntProgress(min=0, max=nbr_images - 1)
+        with self.out:
+            display(progress_bar)
+
+        for index, image in enumerate(list_of_images_corrected):
+            logging.info(f"\tExporting image {index+1}/{nbr_images} to TIFF...")
+            logging.info(f"\t\t{list_of_input_filenames[index]= }")
+            _name = os.path.basename(list_of_input_filenames[index])
+            logging.info(f"\t\t{_name= }")
+            full_name = os.path.join(base_working_dir, _name)
+            # make sure the extension is .tif
+            if not full_name.lower().endswith(".tif"):
+                base_name_without_suffix = PurePosixPath(_name).stem
+                full_name = os.path.join(base_working_dir, base_name_without_suffix + ".tif")
+            make_tiff(filename=full_name, data=image)
+            with self.out:
+                progress_bar.value = index + 1
+
+            progress_bar.close()
+        
+        with self.out:
+            self.out.clear_output()
+            display(HTML('<span style="font-size: 12px; color:green">' + str(nbr_images) + " images created in " + base_working_dir + "  !</span>"))
