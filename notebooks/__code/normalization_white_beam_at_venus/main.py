@@ -5,8 +5,11 @@ from multiprocessing.util import debug
 import os
 from pathlib import Path
 from arrow import get
+from h11 import Data
+import notebook
 import numpy as np
 import pandas as pd
+import h5py
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
@@ -18,17 +21,17 @@ from PIL import Image
 
 from __code.normalization_tof import Roi
 from __code._utilities.list import extract_list_of_runs_from_string
-from __code._utilities.nexus import extract_file_path_from_nexus
+from __code._utilities.nexus import extract_data_file_path_from_nexus, extract_acquisition_time_from_nexus, extract_proton_charge_from_nexus, retrieve_file_path_from_nexus
 from __code.normalization_tof import DataType
 from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code._utilities.json import save_json, load_json
-
+from __code._utilities.is_it import is_it_a_folder, is_it_a_file
 from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
 
 # from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
 from __code.normalization_white_beam_at_venus.config import DEBUG_DATA
-from __code.normalization_white_beam_at_venus.__init__ import DataType, Roi, DetectorType
+from __code.normalization_white_beam_at_venus import DataType, Roi, DetectorType, DataDict, FolderPath
 
 # from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
     # load_data_using_multithreading,
@@ -39,19 +42,42 @@ from __code.normalization_white_beam_at_venus.__init__ import DataType, Roi, Det
 
 
 
-class FolderPath:
-    sample = None
-    ob = None
-    dc = None
-    output = None
-    shared = None
-    nexus = None
-    ipts = None
+# class FolderPath:
+#     sample = None
+#     ob = None
+#     dc = None
+#     output = None
+#     shared = None
+#     nexus = None
+#     ipts = None
+
+
+# class DataDict:
+#     full_path = None
+#     nexus_path = None
+#     data = None
+#     acquisition_time = None
+#     proton_charge = None
+    
+#     def __str__(self):
+#         return f"DataDict(full_path={self.full_path}, nexus_path={self.nexus_path}, acquisition_time={self.acquisition_time}, proton_charge={self.proton_charge})"
+    
+#     def __repr__(self):
+#         return self.__str__()
+
 
 
 class NormalizationWhiteBeamAtVenus:
     
     folder_path = FolderPath()
+    master_dict = {DataType.sample: None, 
+                    DataType.ob: None, 
+                    DataType.dc: None,
+        }
+    detector_type = None
+    
+    sample_selected = None # list of things selected for sample (bottom widget)
+    
     
     sample_folder = None
     sample_run_numbers = None
@@ -130,6 +156,12 @@ class NormalizationWhiteBeamAtVenus:
         )
         display(self.detector_type_widget)
  
+        # reset master dict
+        self.master_dict = {DataType.sample: None, 
+                            DataType.ob: None, 
+                            DataType.dc: None,
+        }
+        
     def reset_sample_dicts(self):
         self.dict_sample = {}
         self.dict_short_name_full_path["sample"] = {}
@@ -153,9 +185,9 @@ class NormalizationWhiteBeamAtVenus:
         notebook_logging.info("Setting up paths...")
         
         if debug:
-            self.folder_path.sample = DEBUG_DATA.working_dir + "/images/"
-            self.folder_path.ob = DEBUG_DATA.working_dir + "/images/"
-            self.folder_path.dc = DEBUG_DATA.working_dir + "/images/"
+            self.folder_path.sample = str(Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type) / Path("raw/radiography"))
+            self.folder_path.ob = str(Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type) / Path("raw/ob"))
+            self.folder_path.dc = str(Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type) / Path("raw/dc"))
             
         else:
             self.folder_path.sample = os.path.join(self.working_dir, "images")
@@ -184,6 +216,9 @@ class NormalizationWhiteBeamAtVenus:
         notebook_logging.info(f"Shared dir: {self.folder_path.shared}")
 
     def select_sample_run_numbers(self):
+        
+        self.detector_type = self.detector_type_widget.value
+        
         self.setup_paths()
 
         if self.debug:
@@ -216,51 +251,56 @@ class NormalizationWhiteBeamAtVenus:
         # self.sample_run_numbers_widget.focus()
 
         self.select_folder(
-            instruction="Browse sample runs to normalize",
-            next_function=self.save_sample_run_numbers_selected,
+            instruction="Select folder(s) to normalize all runs in those folder(s), or select individual images",
+            next_function=self.save_sample_selected,
             multiple=True,
             start_dir=self.folder_path.sample,
             newdir_toolbar_button=False,
         )
 
-    def save_sample_run_numbers_selected(self, runs_selected):
-        self.sample_run_numbers_selected = runs_selected
+    def save_sample_selected(self, runs_selected):
+        """ save the list of tiff, or list of folder selected for the sample"""
+        self.sample_selected = runs_selected
 
-    def retrieve_file_path_from_nexus(self, run_number):
+    def extract_metadata(self, run_number=None):
         """
-        Retrieve the full path to the NeXus file for the given run number.
-        This function should be implemented to read the NeXus file and extract the path.
+        Extract various metadata from the Nexus file
+        
+        return {'full_image_path': '', 'acquisition_time': '', 'proton_charge': ''}
         """
-        notebook_logging.info(f"Retrieving file path from NeXus for run number: {run_number}")
-        # Placeholder implementation, replace with actual logic to read NeXus file
-        nexus_file_path = Path(self.folder_path.nexus) / f"{self.instrument.upper()}_{run_number}.nxs.h5"
-        notebook_logging.info(f"\tNeXus file path: {nexus_file_path}")
-        if nexus_file_path.exists():
-            return extract_file_path_from_nexus(nexus_file_path)
-        else:
-            return None
+        notebook_logging.info(f"Extracting metadata for run number: {run_number}")
 
-    def extract_full_path(self, run_number=None):
-        """
-        Extract the full path to the run number based on the detector type.
-        """
-        notebook_logging.info(f"Extracting full path for run number: {run_number}")
+        _dict = DataDict()
 
         if run_number is None:
             raise ValueError("Run number must be provided")
 
         # retrieve the path from the NeXus file
-        file_path = self.retrieve_file_path_from_nexus(run_number)
+        nexus_path, file_path = retrieve_file_path_from_nexus(nexus_folder_path=Path(self.folder_path.nexus), 
+                                                             instrument=self.instrument,
+                                                             run_number=run_number)
+        logging.info(f"\tNexus path: {nexus_path}")
+        _dict.nexus_path = nexus_path
+        
+        if os.path.exists(nexus_path):
+            notebook_logging.info(f"\tNexus file found for run number {run_number}")
+            # retrieving proton charge and acquisition time from the NeXus file
+            _dict.proton_charge = extract_proton_charge_from_nexus(nexus_path)
+            _dict.acquisition_time = extract_acquisition_time_from_nexus(nexus_path)
+        
         logging.info(f"\tFile path retrieved from NeXus: {file_path}")
         full_path = os.path.join(self.folder_path.ipts, file_path) if file_path is not None else None
         logging.info(f"\t{full_path =}")
         path_of_that_run_in_that_file_path = glob.glob(os.path.join(full_path, f"*_Run_{run_number}_*"))
-  
+        
+        path_to_return = path_of_that_run_in_that_file_path[0] if len(path_of_that_run_in_that_file_path) > 0 else None
+        _dict.full_path = path_to_return
+        
         if file_path is None:
             raise ValueError(f"No full path file found for run number {run_number}")
         
         notebook_logging.info(f"\t{path_of_that_run_in_that_file_path = }")
-        return path_of_that_run_in_that_file_path[0] if len(path_of_that_run_in_that_file_path) > 0 else None
+        return _dict
 
     # def display_infos(self, input_full_path=None, spectra_file_found=True):
     #     if input_full_path is None:
@@ -294,45 +334,56 @@ class NormalizationWhiteBeamAtVenus:
 
         notebook_logging.info("Checking sample inputs...")
 
+        sample_dict = {}
+
         if self.sample_run_numbers_widget.value.strip() != "":
             list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
             notebook_logging.info(f"\t{list_of_runs = }")
 
             display(HTML(f"Sample run numbers selected: {list_of_runs}"))
 
-            list_of_sample_full_path = []
             for _run in list_of_runs:
+                
+                logging.info(f"\tChecking sample run number {_run}...")
+                o_sample = DataDict()
+                
                 try:
-                    _full_path = self.extract_full_path(run_number=_run)
-                    list_of_sample_full_path.append(_full_path)
-                    display(HTML(f"<span style='color:green'>Full path for run number {_run}: {_full_path}</span>"))
+                    _metadata_dict = self.extract_metadata(run_number=_run)
+                    # display(HTML(f"<span style='color:green'>Full path for run number {_run}: {_metadata_dict.full_path}</span>"))
+                    o_sample = _metadata_dict
+                    
                 except TypeError as e:
                     notebook_logging.error(f"Error extracting full path for run number {_run}: {e}")
-                    display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
+                    # display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
                     continue
 
-            logging.info(f"\t{list_of_sample_full_path = }")
-            for _file_full_path in list_of_sample_full_path:
-               
-                logging.info(f"\tChecking sample run number {_file_full_path}...")
-                if os.path.exists(_file_full_path):
-                    notebook_logging.info(f"\tSample run number {_file_full_path} - FOUND")
+                logging.info(f"\t{o_sample = }")
+                sample_dict[_run] = o_sample
 
-                    self.dict_sample[_file_full_path] = {}
-                    self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
-                         
-                    # self.display_infos(input_full_path=_file_full_path)
-
-
-        #         else:
-        #             notebook_logging.info(f"\tSample run number {_file_full_path} - NOT FOUND")
-        #             display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
-
-        # else:
-        #     notebook_logging.info(f"Sample run numbers selected: {self.sample_run_numbers_selected}")
-        #     if self.sample_run_numbers_selected is None:
-        #         display(HTML(f"<span style='color:red'>No sample runs selected!</span>"))
-        #         return
+        else:
+            notebook_logging.info(f"Sample selection: {self.sample_selected}")
+            if self.sample_selected is None:
+                display(HTML(f"<span style='color:red'>No sample runs/folders selected!</span>"))
+                return
+            
+            list_of_images = []
+            for _selection in self.sample_selected:
+                notebook_logging.info(f"\tworking with selection {_selection}:")
+            
+                if is_it_a_folder(_selection):
+                    notebook_logging.info(f"\t{_selection} is a folder, retrieving tiff files in that folder...")
+                    # concatenate list_of_images with the existing list_of_images
+                    list_of_images.extend(glob.glob(os.path.join(_selection, "*.tif*")))
+                    
+                else:
+                    notebook_logging.info(f"\t{_selection} is a file, checking if it's a tiff file...")
+                    if _selection.endswith(".tif") or _selection.endswith(".tiff"):
+                        notebook_logging.info(f"\t{_selection} is a tiff file, adding to the list of images...")
+                        list_of_images.append(_selection)
+            
+            logging.info(f"\tTotal number of tiff files found: {len(list_of_images)}")
+            for _image in list_of_images:
+                logging.info(f"\t{_image}") 
             
         #     for _run in self.sample_run_numbers_selected:
         #         _run = os.path.abspath(_run)
@@ -367,6 +418,29 @@ class NormalizationWhiteBeamAtVenus:
         # if len(set(self.check_nbr_tiff[DataType.sample])) > 1:
         #     display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected sample runs: {self.check_nbr_tiff[DataType.sample]}</span>"))
         #     notebook_logging.info(f"WARNING:Different number of TIFF files found in selected sample runs: {self.check_nbr_tiff[DataType.sample]}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def select_ob_folder(self):
         self.select_folder(instruction="Browse ob top folder", next_function=self.ob_folder_selected)
