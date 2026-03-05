@@ -3,6 +3,7 @@ import logging
 import os
 
 import numpy as np
+import logging as notebook_logging
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import ROI, Normalization
@@ -27,7 +28,22 @@ LIST_METADATA_NOT_INSTRUMENT_RELATED = ["filename", "time_stamp", "time_stamp_us
 class NormalizationWithSimplifySelection:
     working_dir = ""
 
+    def initialize(self):
+        LOG_PATH = "/SNS/VENUS/shared/log/"
+        file_name, ext = os.path.splitext(os.path.basename(__file__))
+        user_name = os.getlogin()  # add user name to the log file name
+        log_file_name = os.path.join(LOG_PATH, f"{file_name}_{user_name}.log")
+        notebook_logging.basicConfig(
+            filename=log_file_name,
+            filemode="w",
+            format="[%(levelname)s] - %(asctime)s - %(message)s",
+            level=notebook_logging.INFO,
+        )
+        notebook_logging.info(f"*** Starting a new script {file_name} ***")
+
     def __init__(self, working_dir=""):
+        self.initialize()
+        
         self.working_dir = working_dir
         self.list_of_images = []
         self.input_data_folder = []
@@ -797,6 +813,20 @@ class NormalizationWithSimplifySelection:
         table_ui = widgets.HTML(table)
         display(table_ui)
 
+    def normalization_settings(self):
+        # do we want to remove the gammas ?
+        remove_gamma_label = widgets.Label("Do you want to remove the gamma?", layout=widgets.Layout(width="50%"))
+        display(remove_gamma_label)
+        self.remove_gamma_ui = widgets.Checkbox(value=False, description="Remove gamma", layout=widgets.Layout(width="50%"))
+        display(self.remove_gamma_ui)
+        
+        display(HTML("<hr>"))
+        
+        log_conversion = widgets.Label("Do you want to convert to log scale the output data?", layout=widgets.Layout(width="50%"))
+        display(log_conversion)
+        self.log_conversion_ui = widgets.Checkbox(value=False, description="Convert to log scale", layout=widgets.Layout(width="50%"))
+        display(self.log_conversion_ui)
+
     def select_output_folder(self):
         #self.output_folder_ui = myfileselector.MyFileSelectorPanel(
         self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(
@@ -898,3 +928,14 @@ class NormalizationWithSimplifySelection:
             display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + "</span>"))
 
         print("Normalization is done!")
+        
+    @classmethod
+    def legend(cls) -> None:
+        display(HTML("<hr style='height:2px'/>"))
+        display(HTML("<h2>Legend</h2>"))
+        display(HTML("<ul>"
+                     "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data preparation and reconstruction.</li>"
+                     "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data preparation and reconstruction.</li>"
+                     "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your reconstruction.</li>"
+                     "</ul>"))
+        display(HTML("<hr style='height:2px'/>"))

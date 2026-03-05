@@ -353,10 +353,10 @@ def retrieve_time_stamp(list_images, label=""):
     else:
         raise ValueError
 
-    message = f"Retrieving time stamp of {label}" if label else "Retrieving time stamp"
+    message = f"Retrieving time stamp of {label}" if label else "Retrieving time stamp:"
     box = widgets.HBox(
         [
-            widgets.Label(message, layout=widgets.Layout(width="20%")),
+            widgets.Label(message, layout=widgets.Layout(width="25%")),
             widgets.IntProgress(min=0, max=len(list_images), value=0, layout=widgets.Layout(width="50%")),
         ]
     )
