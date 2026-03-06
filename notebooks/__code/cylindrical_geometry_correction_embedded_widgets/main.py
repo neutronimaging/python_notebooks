@@ -780,7 +780,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         )
         display(self.export_options)
         
-    def export(self):
+    def select_export_location(self):
         if self.export_options.value == ():
             display(HTML('<span style="font-size: 12px; color:red">Please select at least one option to export!</span>'))
             return
@@ -854,14 +854,16 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.how_to_run_batch_processing()
         
     def how_to_run_batch_processing(self):
-        display(HTML(f'<span style="font-size: 12px; color:black">Batch processing script prepared! Simply type the following command in the terminal:</span>'))
-        display(HTML(f'<span style="font-size: 12px; color:blue">{os.path.join(self.output_folder, "run_batch_processing.sh")}</span>'))
+        with self.out:
+            self.out.clear_output()
+            display(HTML(f'<span style="font-size: 12px; color:black">Batch processing script prepared! Simply type the following command in the terminal:</span>'))
+            display(HTML(f'<span style="font-size: 12px; color:blue">{os.path.join(self.output_folder, "run_batch_processing.sh")}</span>'))
         
         # create the run_batch_processing.sh file with the command to run the batch processing script with the exported config file
         run_script_path = os.path.join(self.output_folder, "run_batch_processing.sh")
         with open(run_script_path, "w") as f:
             f.write("#!/bin/bash\n")
             f.write(f'# Run the batch processing script with the exported config file\n')
-            f.write(f'pixi run --manifest-path /SNS/VENUS/shared/software/git/python_notebooks_development python /SNS/VENUS/shared/software/git/python_notebooks_development/notebooks/cylindrical_geometry_correction_cli.py "{os.path.join(self.output_folder, "config.json")}"\n')
+            f.write(f'pixi run --manifest-path /SNS/VENUS/shared/software/git/python_notebooks python /SNS/VENUS/shared/software/git/python_notebooks/notebooks/cylindrical_geometry_correction_cli.py "{os.path.join(self.output_folder, "config.json")}"\n')
 
         os.chmod(run_script_path, 0o755)  # make the script executable
