@@ -91,6 +91,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             "bottom": -1,
             "vertical_guide": -1,
         },
+        "c_disc": None,
+        "res_mask": None,
         "list_of_images": None,
         "output_folder": None,
     }
@@ -143,7 +145,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 list_files = glob.glob(os.path.join(data_dir, "*.tif*"))
                 logging.info(f"{os.path.join(data_dir, "*.tif*") = }")
                 logging.info(f"Found {len(list_files)} TIFF files in the debug data directory.")
-                list_files = list_files[:1]  # Load only the first 1 image for debugging
+                list_files = list_files[:4]  # Load only the first 4 images for debugging
                 self.out = widgets.Output()
                 display(self.out)
                 self.load_images(list_of_images=list_files)
@@ -667,6 +669,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def calculate_and_visualize(self):
         images = replace_with_nans(self.cropped_data)
+        self.integrated_cropped_image = np.sum(images, axis=0)
         detection_config = DetectionConfig()
         detection_config.diagnostics = True
         geometry, diagnostics = detect_cylindrical_boundary(self.integrated_cropped_image, detection_config)
@@ -683,10 +686,18 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         logging.info(f"Calculated cylindrical chord map with center_x={geometry.center_x}," \
                      f" top_edge={geometry.top_edge}, bottom_edge={geometry.bottom_edge}, radius={geometry.radius}")
         logging.info(f"res = {res.stats}")
+        
+        logging.info(f"DEBUGGING: {type(res.mask) = }")
+        logging.info(f"DEBUGGING: {np.shape(res.mask) = }")
+        self.config["res_mask"] = res.mask.tolist() # save the mask in the config file for export (convert to list for json serialization)
 
+        self.cropped_data = images ## TRYING THIS
         mu_disc, mu_iter, C_disc = compute_correction_map_factor(self.cropped_data,
                                       geometry,
                                       res)
+        logging.info(f"DEBUGGING: {type(C_disc) = }")
+        logging.info(f"DEBUGGING: {np.shape(C_disc) = }")
+        self.config["c_disc"] = C_disc[:,0].tolist() # save only the 1D version of the correction map factor for export in the config file
         
         hyperspectral_stack = np.swapaxes(self.cropped_data, 0, 2)
         hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 1) # "H, W, L or TOF"
@@ -843,6 +854,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         self.how_to_run_batch_processing()
         
     def how_to_run_batch_processing(self):
-        display(HTML(f'<span style="font-size: 12px; color:blue">Batch processing script prepared! You can run the batch processing with the exported config file by running the following command in the terminal:</span>'))
-        display(HTML(f'<span style="font-size: 12px; color:blue">python run_batch_processing.py --config "{os.path.join(self.output_folder, "config.json")}"</span>'))
+        display(HTML(f'<span style="font-size: 12px; color:black">Batch processing script prepared! Simply type the following command in the terminal:</span>'))
+        display(HTML(f'<span style="font-size: 12px; color:blue">{os.path.join(self.output_folder, "run_batch_processing.sh")}</span>'))
         
+        # create the run_batch_processing.sh file with the command to run the batch processing script with the exported config file
+        run_script_path = os.path.join(self.output_folder, "run_batch_processing.sh")
+        with open(run_script_path, "w") as f:
+            f.write("#!/bin/bash\n")
+            f.write(f'# Run the batch processing script with the exported config file\n')
+            f.write(f'pixi run --manifest-path /SNS/VENUS/shared/software/git/python_notebooks_development python /SNS/VENUS/shared/software/git/python_notebooks_development/notebooks/cylindrical_geometry_correction_cli.py "{os.path.join(self.output_folder, "config.json")}"\n')
+
+        os.chmod(run_script_path, 0o755)  # make the script executable

@@ -500,7 +500,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b8/cb/861b41341d6f1245e6ca80b1c1a8c4dfce43255b03df034429089ca2a2c5/scikit_learn-1.8.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/cd/13/26defed2eeee1d7f20b58e7eace7999adbf60e3faef995f98843afe799ba/sectorizedradialprofile-1.1.2-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/32/d5/f9a850d79b0851d1d4ef6456097579a9005b31fea68726a4ae5f2d82ddd9/threadpoolctl-3.6.0-py3-none-any.whl
-      - pypi: git+https://github.com/ornlneutronimaging/timepix_geometry_correction.git#608da7d953ce3ef53f19bfd235f24a001c45f242
+      - pypi: git+https://github.com/ornlneutronimaging/timepix_geometry_correction.git?branch=main#26c36c25614e53aa51e7c993bda00445c043f62d
       - pypi: https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bb/4a/2e5583e544bc437d5e8e54b47db87430df9031b29b48d17f26d129fa60c0/trove_classifiers-2026.1.14.14-py3-none-any.whl
       - pypi: /gpfs/neutronsfs/instruments/VENUS/shared/zhangc/wheels/tdcsophiread-3.0.2-cp312-abi3-linux_x86_64.whl
@@ -6648,9 +6648,9 @@ packages:
   - pkg:pypi/tifffile?source=compressed-mapping
   size: 191449
   timestamp: 1772014410843
-- pypi: git+https://github.com/ornlneutronimaging/timepix_geometry_correction.git#608da7d953ce3ef53f19bfd235f24a001c45f242
+- pypi: git+https://github.com/ornlneutronimaging/timepix_geometry_correction.git?branch=main#26c36c25614e53aa51e7c993bda00445c043f62d
   name: timepix-geometry-correction
-  version: 0.2.0.dev70
+  version: 0.2.0.dev80
   requires_dist:
   - hatchling
   - numpy>=2.2,<3

@@ -30,7 +30,7 @@ from scipy.signal import find_peaks, savgol_filter
 from tqdm.auto import tqdm
 
 from __code._utilities.file import make_or_increment_folder_name, make_tiff
-from notebooks.__code.cylindrical_geometry_correction_embedded_widgets.utilities import replace_nan_with_local_median
+from __code.cylindrical_geometry_correction_embedded_widgets.utilities import replace_nan_with_local_median
 
 
 class CylinderGeometry(BaseModel):
