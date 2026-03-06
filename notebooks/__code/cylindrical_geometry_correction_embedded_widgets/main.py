@@ -4,7 +4,7 @@ import sys
 from pathlib import PurePosixPath
 import logging
 from tkinter import Y
-
+import glob
 from click import style
 import pandas as pd
 from scipy.ndimage import rotate
@@ -136,11 +136,16 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def select_images(self):
         if self.debug:
-                data_dir = "/HFIR/CG1D/IPTS-26647/shared/analysis/2022_04_29_metals/"
-                fits_file = os.path.join(data_dir, "TI_Al_C_WC.fits")
+                data_dir = "/HFIR/CG1D/IPTS-34222/shared/processed_data/normalized/3_normalized_to_OB/2025_10_30_60s/"
+                logging.info(f"{os.path.exists(data_dir) = }")
+                list_files = glob.glob(os.path.join(data_dir, "*.tif*"))
+                logging.info(f"{os.path.join(data_dir, "*.tif*") = }")
+                logging.info(f"Found {len(list_files)} TIFF files in the debug data directory.")
+                list_files = list_files[:3]  # Load only the first 3 images for debugging
                 self.out = widgets.Output()
                 display(self.out)
-                self.load_images(list_of_images=[fits_file, fits_file])
+                self.load_images(list_of_images=list_files)
+                logging.info(f"{list_files = }")
                 return
             
         file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, 
@@ -249,6 +254,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         # fig.show()
 
         vmax = np.max(self.data)
+        vmin = np.min(self.data)
+        
+        default_vmin = float(np.percentile(self.data, 2))
+        default_vmax = float(np.percentile(self.data, 98))
 
         def plot(image_index, vrange):
             
@@ -266,9 +275,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                           value=0, 
                                           style={"description_width": "150px"},
                                           layout=widgets.Layout(width="50%")),
-            vrange=widgets.FloatRangeSlider(min=0,
+            vrange=widgets.FloatRangeSlider(min=vmin,
                                             max=vmax,
-                                            value=[0, vmax],
+                                            value=[default_vmin, default_vmax],
                                             style={"description_width": "150px"},
                                             layout=widgets.Layout(width="50%"))
         )
@@ -292,6 +301,10 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
         profile_margin = 100
         vmax = np.max(self.integrated_image)
+        vmin = np.min(self.integrated_image)
+        
+        default_vmin = float(np.percentile(self.integrated_image, 2))
+        default_vmax = float(np.percentile(self.integrated_image, 98))
 
         height, width = np.shape(self.integrated_image)
         if self.config["profiles_limit"]["top"] == -1:
@@ -413,9 +426,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                                          continuous_update=False, 
                                          value=default_profile2_h,
                                          layout=widgets.Layout(width="50%")),
-            vrange=widgets.FloatRangeSlider(min=0,
+            vrange=widgets.FloatRangeSlider(min=vmin,
                                             max=vmax,
-                                            value=[0, vmax],
+                                            value=[default_vmin, default_vmax],
                                             layout=widgets.Layout(width="50%")),
         )
 
@@ -436,13 +449,15 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
 
     def select_crop_region(self):
 
-        # fig.set_figheight(6)
-        # fig.set_figwidth(6)
-
         width = self.width
         height = self.height
 
         vmax = np.max(self.integrated_image)
+        vmin = np.min(self.integrated_image)
+        
+        default_vmin = float(np.percentile(self.integrated_image, 2))
+        default_vmax = float(np.percentile(self.integrated_image, 98))
+        
         fig_size = 10
 
         def plot(fig_size, left_right, top_bottom, profile_marker, vrange):
@@ -512,11 +527,13 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             left_right=widgets.IntRangeSlider(
                 min=0, 
                 max=width - 1, 
+                continueous_update=False,
                 value=[self.config["default_crop"]["x0"], self.config["default_crop"]["x1"]],
                 layout=widgets.Layout(width="50%")
             ),
             top_bottom=widgets.IntRangeSlider(
                 min=0, 
+                continuous_update=False,
                 max=height - 1, 
                 value=[self.config["default_crop"]["y0"], self.config["default_crop"]["y1"]],
                 style={"description_width": description_width},
@@ -524,14 +541,16 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             ),
             profile_marker=widgets.IntSlider(min=0, 
                                            max=height - 1, 
+                                           continuous_update=False,
                                            value=self.config["default_crop"]["marker"],
                                            layout=widgets.Layout(width="50%"),
                                            style={"description_width": description_width}
                                            ),
             vrange=widgets.FloatRangeSlider(
-                min=0,
+                min=vmin,
                 max=vmax,
-                value=[0, vmax],
+                continuous_update=False,
+                value=[default_vmin, default_vmax],
                 step=0.01,
                 layout=widgets.Layout(width="50%")
             )
@@ -738,6 +757,16 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         )
         _ = visualize_hyperspectral_radiographs(self.Tcorr)
         
+    def what_to_export(self):
+        display(HTML('<span style="font-size: 15px; color:blue">What do you want to export?</span>'))
+        self.export_options = widgets.SelectMultiple(
+            options=["Corrected images", "Config file"],
+            value=["Corrected images", "Config file"],
+            description="",
+            layout=widgets.Layout(width="50%"),
+        )
+        display(self.export_options)
+        
     def export(self):
         working_dir = os.path.dirname(self.working_dir)
         output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
@@ -749,12 +778,14 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         display(self.out)
 
     def export_images_and_config(self, output_folder):
-        export_images(output_folder=output_folder, 
-                      working_dir=self.working_dir,
-                      stack_of_images=self.corrected_images,
-                      out=self.out,
-                      list_of_input_filenames=self.list_of_images,)
-        export_config(config_filename=os.path.join(output_folder, "config.json"), 
+        if "Corrected images" in self.export_options.value:
+            export_images(output_folder=output_folder, 
+                            working_dir=self.working_dir,
+                            stack_of_images=self.corrected_images,
+                            out=self.out,
+                            list_of_input_filenames=self.list_of_images,)
+        if "Config file" in self.export_options.value:
+            export_config(config_filename=os.path.join(output_folder, "config.json"), 
                       config=self.config
                       )    
         
