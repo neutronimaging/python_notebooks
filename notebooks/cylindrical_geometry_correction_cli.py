@@ -40,10 +40,12 @@ if __name__ == "__main__":
     y1 = config["default_crop"]["y1"]
     logging.info(f"Default crop values: x0={x0}, y0={y0}, x1={x1}, y1={y1}")
         
-    c_disc = config["c_disc"]
-    logging.info(f"Loaded c_disc from config with length {len(c_disc)}, type(c_disc)={type(c_disc)}")
-    res_mask = config["res_mask"]
-    logging.info(f"Loaded res_mask from config with length {len(res_mask)}, type(res_mask)={type(res_mask)}")   
+    c_disc = np.array(config["c_disc"])
+    c_disc = c_disc[:, np.newaxis]
+    
+    logging.info(f"Loaded c_disc from config with shape {np.shape(c_disc)}, type(c_disc)={type(c_disc)}")
+    res_mask = np.array(config["res_mask"])
+    logging.info(f"Loaded res_mask from config with shape {np.shape(res_mask)}, type(res_mask)={type(res_mask)}")   
         
     # process one file at a time
     for _file in tqdm(list_of_files):
@@ -64,7 +66,7 @@ if __name__ == "__main__":
         logging.info(f"\tData shape after rotation: {data.shape}")
         
         # crop
-        data = data[y0:y1, x0:x1]
+        data = data[y0:y1+1, x0:x1+1]
         logging.info(f"\tData shape after cropping: {data.shape}")
         
         # detection of edges
