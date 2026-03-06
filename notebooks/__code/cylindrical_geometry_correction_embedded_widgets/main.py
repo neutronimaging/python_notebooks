@@ -845,8 +845,9 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                       config=config
                       )    
         # inform here how to run the batch processing script with the exported config file, e.g. by running a command in the terminal like:
-        # self.how_to_run_batch_processing()
-        self.run_from_notebook()
+        self.how_to_run_batch_processing()
+        self.create_batch_processing_script()
+        # self.run_from_notebook()
         
     def prepare_batch_processing_script_from_list_of_files(self, list_of_images):
         self.config["list_of_images"] = list_of_images
@@ -854,8 +855,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                       config=self.config
                       )    
         self.create_batch_processing_script()
-        # self.how_to_run_batch_processing()
-        self.run_from_notebook()
+        self.how_to_run_batch_processing()
+        # self.run_from_notebook()
         
     def run_from_notebook(self):
         with self.out:
@@ -868,7 +869,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         run_button.on_click(self.button_to_run_batch_processing_clicked)
         
     def button_to_run_batch_processing_clicked(self, b):
-        subprocess.Popen(["gnome-terminal", "--", "bash", "-c", f"bash {self.run_script_path}; exec bash"])
+        # subprocess.Popen(["gnome-terminal", "--", "bash", "-c", f"bash {self.run_script_path}; exec bash"])
+        subprocess.Popen(["xterm", "-hold", "-e", f"bash {self.run_script_path}"])
         
     def how_to_run_batch_processing(self):
         with self.out:
