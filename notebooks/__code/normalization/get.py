@@ -1,5 +1,6 @@
 import os
 
+from click import style
 from ipywidgets import widgets
 
 from __code import file_handler
@@ -129,9 +130,24 @@ class Get(TopGet):
         use_this_config_widget.observe(self.parent.update_use_this_config_widget, names="value")
         config_widgets_id_dict["use_this_config"] = use_this_config_widget
 
+        # remove_gamma
+        use_gamma_cleaner_widget = widgets.Checkbox(
+            description="Remove gamma spikes", value=False, layout=widgets.Layout(width="100%")
+        )
+        config_widgets_id_dict["remove_gamma"] = use_gamma_cleaner_widget   
+
+        # export -log
+        export_minus_log_widget = widgets.Checkbox(
+            description="Export -log10 of normalized data", value=False, layout=widgets.Layout(width="100%")
+        )
+        config_widgets_id_dict["log_conversion"] = export_minus_log_widget  
+
         # use custom time range check box
         check_box_user_time_range = widgets.Checkbox(
-            description="Use selected OB & DF from custom time range", value=False, layout=widgets.Layout(width="35%")
+            description="Use selected OB & DF from custom time range", 
+            value=False, 
+            layout=widgets.Layout(width="35%"),
+            style={"description_width": "initial"}
         )
         config_widgets_id_dict["use_custom_time_range_checkbox"] = check_box_user_time_range
         check_box_user_time_range.observe(self.parent.update_config_widgets, names="value")
@@ -320,6 +336,8 @@ class Get(TopGet):
         verti_layout = widgets.VBox(
             [
                 use_this_config_widget,
+                use_gamma_cleaner_widget,
+                export_minus_log_widget,
                 hori_layout1,
                 hori_layout2,
                 black_hr_line,

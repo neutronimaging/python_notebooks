@@ -29,6 +29,8 @@ def populate_normalization_recap_row(
     force_combine=True,
     roi=None,
     how_to_combine="median",
+    remove_gammas=False,
+    log_conversion=False,
 ):
     if not normalize_this_config.value:
         status_string = "<th style='color:black'>SKIP!</th>"
@@ -61,6 +63,8 @@ def populate_normalization_recap_row(
         f"<th>{combine_ob}</th>"
         f"<th>{how_to_combine_ob}</th>"
         f"<th>{roi}</th>"
+        f"<th>{remove_gammas}</th>"
+        f"<th>{log_conversion}</th>"
         f"{status_string}"
         "</tr>"
     )

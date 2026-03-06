@@ -17,6 +17,7 @@ from __code.normalization.metadata_handler import METADATA_KEYS, MetadataHandler
 from __code.roi_selection_ui import Interface
 
 from . import ROI_BUTTON_DESCRIPTION, ROI_ICON, TEMPORARY_ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_ICON
+from __code.normalization import default_sample_folder
 
 JSON_DEBUGGING = False
 
@@ -41,8 +42,9 @@ class NormalizationWithSimplifySelection:
         )
         notebook_logging.info(f"*** Starting a new script {file_name} ***")
 
-    def __init__(self, working_dir=""):
+    def __init__(self, working_dir="", debug=False):
         self.initialize()
+        self.debug = debug
         
         self.working_dir = working_dir
         self.list_of_images = []
@@ -100,6 +102,11 @@ class NormalizationWithSimplifySelection:
         logging.info("*** Starting new session ***")
 
     def select_sample_folder(self):
+        if self.debug:
+            folder_name = default_sample_folder 
+            self.retrieve_sample_metadata_from_sample_folder(sample_folder=folder_name)
+            return
+        
         folder_sample_widget = myfileselector.MyFileSelectorPanel(
             instruction="select folder of images to normalize",
             start_dir=self.working_dir,
@@ -712,6 +719,8 @@ class NormalizationWithSimplifySelection:
                 force_combine_disabled_state = this_config_tab_dict["force_combine"].disabled  # True or false
                 force_combine_value = this_config_tab_dict["force_combine"].value  # 'yes' or 'no'
                 how_to_combine_value = this_config_tab_dict["how_to_combine"].value
+                remove_gammas = this_config_tab_dict["remove_gamma"].value
+                log_conversion = this_config_tab_dict["log_conversion"].value
 
                 roi = this_config_tab_dict.get("roi_selected", None)
                 if roi == {}:
@@ -730,6 +739,8 @@ class NormalizationWithSimplifySelection:
                     "force_combine": force_combine,
                     "how_to_combine": how_to_combine_value,
                     "roi": roi,
+                    "remove_gammas": remove_gammas,
+                    "log_conversion": log_conversion,
                 }
 
             _final_json_dict[_acquisition] = _final_json_for_this_acquisition
@@ -780,6 +791,8 @@ class NormalizationWithSimplifySelection:
             "<th style='background-color: cyan'>Combined OBs?</th>"
             "<th style='background-color: cyan'>How to combine the OBs</th>"
             "<th style='background-color: cyan'>ROI</th>"
+            "<th style='background-color: cyan'>Remove Gammas</th>"
+            "<th style='background-color: cyan'>Log Conversion</th>"
             "<th style='background-color: cyan'>Status</th></tr>"
         )
 
@@ -796,6 +809,8 @@ class NormalizationWithSimplifySelection:
                 force_combine = _current_config_dict["force_combine"]
                 how_to_combine = _current_config_dict["how_to_combine"]
                 roi = _current_config_dict.get("roi", None)
+                remove_gammas = _current_config_dict.get("remove_gammas", False)
+                log_conversion = _current_config_dict.get("log_conversion", False)
 
                 table += utilities.populate_normalization_recap_row(
                     acquisition=_name_acquisition,
@@ -807,6 +822,8 @@ class NormalizationWithSimplifySelection:
                     force_combine=force_combine,
                     roi=roi,
                     how_to_combine=how_to_combine,
+                    remove_gammas=remove_gammas,
+                    log_conversion=log_conversion,
                 )
 
         table += "</table>"
@@ -887,12 +904,21 @@ class NormalizationWithSimplifySelection:
                 list_full_output_normalization_folder_name.append(full_output_normalization_folder_name)
                 list_df = _current_config["list_df"]
 
+                print(f"{_current_config =}")
+                remove_gammas = _current_config["remove_gammas"]
+
                 o_load = Normalization()
-                o_load.load(file=list(list_sample), notebook=True)
-                o_load.load(file=list(list_ob), data_type="ob")
+                o_load.load(file=list(list_sample), 
+                            auto_gamma_filter=remove_gammas, 
+                            notebook=True)
+                o_load.load(file=list(list_ob), 
+                            auto_gamma_filter=remove_gammas, 
+                            data_type="ob")
 
                 if len(list_df) > 0:
-                    o_load.load(file=list(list_df), data_type="df")
+                    o_load.load(file=list(list_df), 
+                                auto_gamma_filter=remove_gammas,
+                                data_type="df")
 
                 force_combine = _current_config["force_combine"]
                 how_to_combine = _current_config["how_to_combine"]
@@ -914,6 +940,12 @@ class NormalizationWithSimplifySelection:
                         o_load.normalization(force_mean_ob=True, roi=list_roi)
                     else:
                         o_load.normalization(force_median_ob=True, roi=list_roi)
+
+                log_conversion = _current_config.get("log_conversion", False)
+                if log_conversion:
+                    data = o_load.data["normalized"]
+                    data[data > 0] = np.log(data[data > 0])
+                    o_load.data["normalized"] = data
 
                 o_load.export(folder=full_output_normalization_folder_name, file_type="tif")
                 del o_load
