@@ -1,5 +1,6 @@
 import os
 from random import sample
+import subprocess
 import sys
 from pathlib import PurePosixPath
 import logging
@@ -844,23 +845,41 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                       config=config
                       )    
         # inform here how to run the batch processing script with the exported config file, e.g. by running a command in the terminal like:
-        self.how_to_run_batch_processing()
+        # self.how_to_run_batch_processing()
+        self.run_from_notebook()
         
     def prepare_batch_processing_script_from_list_of_files(self, list_of_images):
         self.config["list_of_images"] = list_of_images
         export_config(config_filename=os.path.join(self.output_folder, "config.json"), 
                       config=self.config
                       )    
-        self.how_to_run_batch_processing()
+        self.create_batch_processing_script()
+        # self.how_to_run_batch_processing()
+        self.run_from_notebook()
+        
+    def run_from_notebook(self):
+        with self.out:
+            self.out.clear_output()
+            
+        run_button = widgets.Button(description="Run batch processing from notebook", 
+                                    layout=widgets.Layout(width="50%"),
+                                    button_style="success")
+        display(run_button)
+        run_button.on_click(self.button_to_run_batch_processing_clicked)
+        
+    def button_to_run_batch_processing_clicked(self, b):
+        subprocess.Popen(["gnome-terminal", "--", "bash", "-c", f"bash {self.run_script_path}; exec bash"])
         
     def how_to_run_batch_processing(self):
         with self.out:
             self.out.clear_output()
             display(HTML(f'<span style="font-size: 12px; color:black">Batch processing script prepared! Simply type the following command in the terminal:</span>'))
-            display(HTML(f'<span style="font-size: 12px; color:blue">{os.path.join(self.output_folder, "run_batch_processing.sh")}</span>'))
+            display(HTML(f'<span style="font-size: 12px; color:blue">{self.run_script_path}</span>'))
         
+    def create_batch_processing_script(self):
         # create the run_batch_processing.sh file with the command to run the batch processing script with the exported config file
         run_script_path = os.path.join(self.output_folder, "run_batch_processing.sh")
+        self.run_script_path = run_script_path
         with open(run_script_path, "w") as f:
             f.write("#!/bin/bash\n")
             f.write(f'# Run the batch processing script with the exported config file\n')
