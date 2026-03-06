@@ -1198,14 +1198,9 @@ def export_config(config_filename=None, config=None):
         
 def export_images(output_folder=None, working_dir=None, stack_of_images=None, out=None, list_of_input_filenames=None):
     logging.info(f"Exporting images to folder: {output_folder}")
-    logging.info(f"\tworking_dir: {working_dir}")
     logging.info(f"\tstack_of_images shape: {np.shape(stack_of_images)}")
     logging.info(f"\tlist_of_input_filenames: {list_of_input_filenames}")
     
-    output_folder = os.path.abspath(output_folder)
-    base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected")
-    base_working_dir = make_or_increment_folder_name(base_working_dir)
-
     # export images
     list_of_images_corrected = stack_of_images
 
@@ -1219,18 +1214,18 @@ def export_images(output_folder=None, working_dir=None, stack_of_images=None, ou
         logging.info(f"\t\t{list_of_input_filenames[index]= }")
         _name = os.path.basename(list_of_input_filenames[index])
         logging.info(f"\t\t{_name= }")
-        full_name = os.path.join(base_working_dir, _name)
+        full_name = os.path.join(output_folder, _name)
         # make sure the extension is .tif
         if not full_name.lower().endswith(".tif"):
             base_name_without_suffix = PurePosixPath(_name).stem
-            full_name = os.path.join(base_working_dir, base_name_without_suffix + ".tif")
+            full_name = os.path.join(output_folder, base_name_without_suffix + ".tif")
         make_tiff(filename=full_name, data=image)
         progress_bar.value = index + 1
 
         progress_bar.close()
     
     with out:
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created in " + base_working_dir + "  !</span>"))
+        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created in " + output_folder + "  !</span>"))
 
 
 def analyze_hyperspectral_comparison(

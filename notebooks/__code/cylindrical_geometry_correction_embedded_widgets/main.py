@@ -91,6 +91,8 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
             "bottom": -1,
             "vertical_guide": -1,
         },
+        "list_of_images": None,
+        "output_folder": None,
     }
 
     default_crop = {"x0": 369, "x1": 522, "y0": 756, "y1": 1894}
@@ -141,7 +143,7 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
                 list_files = glob.glob(os.path.join(data_dir, "*.tif*"))
                 logging.info(f"{os.path.join(data_dir, "*.tif*") = }")
                 logging.info(f"Found {len(list_files)} TIFF files in the debug data directory.")
-                list_files = list_files[:3]  # Load only the first 3 images for debugging
+                list_files = list_files[:1]  # Load only the first 1 image for debugging
                 self.out = widgets.Output()
                 display(self.out)
                 self.load_images(list_of_images=list_files)
@@ -768,24 +770,79 @@ class CylindricalGeometryCorrectionEmbeddedWidgets:
         display(self.export_options)
         
     def export(self):
+        if self.export_options.value == ():
+            display(HTML('<span style="font-size: 12px; color:red">Please select at least one option to export!</span>'))
+            return
+        
         working_dir = os.path.dirname(self.working_dir)
-        output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
+        self.output_folder_browser = FileFolderBrowser(working_dir=working_dir, 
                                                   ipts_folder=self.ipts_folder,
                                                   next_function=self.export_images_and_config,
                                                   )
-        output_folder_browser.select_output_folder_with_new()
+        self.output_folder_browser.select_output_folder_with_new()
         self.out = widgets.Output()
         display(self.out)
 
     def export_images_and_config(self, output_folder):
+        
+        try:
+            self.output_folder_browser.list_output_folders_ui.shortcut_buttons.close() # close the jump to shared and home buttons 
+        except AttributeError:
+            pass
+        
+        # make folder that will contain the exported content
+        base_working_dir = os.path.join(output_folder, os.path.basename(self.working_dir) + "_cylindrical_geo_corrected")
+        base_working_dir = make_or_increment_folder_name(base_working_dir)
+        self.output_folder = base_working_dir
+        self.config["output_folder"] = self.output_folder
+        
         if "Corrected images" in self.export_options.value:
-            export_images(output_folder=output_folder, 
+            export_images(output_folder=self.output_folder, 
                             working_dir=self.working_dir,
                             stack_of_images=self.corrected_images,
                             out=self.out,
                             list_of_input_filenames=self.list_of_images,)
         if "Config file" in self.export_options.value:
-            export_config(config_filename=os.path.join(output_folder, "config.json"), 
+            export_config(config_filename=os.path.join(self.output_folder, "config.json"), 
                       config=self.config
                       )    
+        
+    def select_images_for_batch_processing(self):
+        if self.debug:
+            data_dir = "/HFIR/CG1D/IPTS-34222/shared/processed_data/normalized/3_normalized_to_OB/2025_10_30_60s/"
+            logging.info(f"{os.path.exists(data_dir) = }")
+            list_files = glob.glob(os.path.join(data_dir, "*.tif*"))
+            logging.info(f"{os.path.join(data_dir, '*.tif*') = }")
+            logging.info(f"Found {len(list_files)} TIFF files in the debug data directory.")
+            list_files = list_files[:20]  # Load only the first 20 images for debugging
+            self.out = widgets.Output()
+            display(self.out)
+            logging.info(f"{list_files = }")
+            self.config["list_of_images"] = list_files
+            self.prepare_batch_processing_script_from_config(config=self.config)
+            return
+        
+        file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, 
+                                                next_function=self.prepare_batch_processing_script_from_list_of_files)
+        file_folder_browser.select_images(filters={"TIFF": "*.tif?"})    
+        self.out = widgets.Output()
+        display(self.out)
+        
+    def prepare_batch_processing_script_from_config(self, config):
+        export_config(config_filename=os.path.join(self.output_folder, "config.json"), 
+                      config=config
+                      )    
+        # inform here how to run the batch processing script with the exported config file, e.g. by running a command in the terminal like:
+        self.how_to_run_batch_processing()
+        
+    def prepare_batch_processing_script_from_list_of_files(self, list_of_images):
+        self.config["list_of_images"] = list_of_images
+        export_config(config_filename=os.path.join(self.output_folder, "config.json"), 
+                      config=self.config
+                      )    
+        self.how_to_run_batch_processing()
+        
+    def how_to_run_batch_processing(self):
+        display(HTML(f'<span style="font-size: 12px; color:blue">Batch processing script prepared! You can run the batch processing with the exported config file by running the following command in the terminal:</span>'))
+        display(HTML(f'<span style="font-size: 12px; color:blue">python run_batch_processing.py --config "{os.path.join(self.output_folder, "config.json")}"</span>'))
         
