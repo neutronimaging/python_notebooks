@@ -36,6 +36,7 @@ ipysheet = ">=0.7.0,<0.8"
 python-dotenv = ">=1.2.1,<2"
 openssl = ">=3.6.1,<4"
 olefile = ">=0.47,<0.48"
+pytest = ">=9.0.2,<10"
 
 [pypi-dependencies]
 bem = ">=1.0.0, <2"

@@ -32,6 +32,7 @@ from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
 # from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
 from __code.normalization_white_beam_at_venus.config import DEBUG_DATA
 from __code.normalization_white_beam_at_venus import DataType, Roi, DetectorType, DataDict, FolderPath
+from __code.normalization_white_beam_at_venus.utilities import extract_run_number_from_file_name, extract_metadata
 
 # from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
     # load_data_using_multithreading,
@@ -262,46 +263,6 @@ class NormalizationWhiteBeamAtVenus:
         """ save the list of tiff, or list of folder selected for the sample"""
         self.sample_selected = runs_selected
 
-    def extract_metadata(self, run_number=None):
-        """
-        Extract various metadata from the Nexus file
-        
-        return {'full_image_path': '', 'acquisition_time': '', 'proton_charge': ''}
-        """
-        notebook_logging.info(f"Extracting metadata for run number: {run_number}")
-
-        _dict = DataDict()
-
-        if run_number is None:
-            raise ValueError("Run number must be provided")
-
-        # retrieve the path from the NeXus file
-        nexus_path, file_path = retrieve_file_path_from_nexus(nexus_folder_path=Path(self.folder_path.nexus), 
-                                                             instrument=self.instrument,
-                                                             run_number=run_number)
-        logging.info(f"\tNexus path: {nexus_path}")
-        _dict.nexus_path = nexus_path
-        
-        if os.path.exists(nexus_path):
-            notebook_logging.info(f"\tNexus file found for run number {run_number}")
-            # retrieving proton charge and acquisition time from the NeXus file
-            _dict.proton_charge = extract_proton_charge_from_nexus(nexus_path)
-            _dict.acquisition_time = extract_acquisition_time_from_nexus(nexus_path)
-        
-        logging.info(f"\tFile path retrieved from NeXus: {file_path}")
-        full_path = os.path.join(self.folder_path.ipts, file_path) if file_path is not None else None
-        logging.info(f"\t{full_path =}")
-        path_of_that_run_in_that_file_path = glob.glob(os.path.join(full_path, f"*_Run_{run_number}_*"))
-        
-        path_to_return = path_of_that_run_in_that_file_path[0] if len(path_of_that_run_in_that_file_path) > 0 else None
-        _dict.full_path = path_to_return
-        
-        if file_path is None:
-            raise ValueError(f"No full path file found for run number {run_number}")
-        
-        notebook_logging.info(f"\t{path_of_that_run_in_that_file_path = }")
-        return _dict
-
     # def display_infos(self, input_full_path=None, spectra_file_found=True):
     #     if input_full_path is None:
     #         return
@@ -334,56 +295,84 @@ class NormalizationWhiteBeamAtVenus:
 
         notebook_logging.info("Checking sample inputs...")
 
-        sample_dict = {}
-
-        if self.sample_run_numbers_widget.value.strip() != "":
-            list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
-            notebook_logging.info(f"\t{list_of_runs = }")
-
-            display(HTML(f"Sample run numbers selected: {list_of_runs}"))
-
-            for _run in list_of_runs:
-                
-                logging.info(f"\tChecking sample run number {_run}...")
-                o_sample = DataDict()
-                
-                try:
-                    _metadata_dict = self.extract_metadata(run_number=_run)
-                    # display(HTML(f"<span style='color:green'>Full path for run number {_run}: {_metadata_dict.full_path}</span>"))
-                    o_sample = _metadata_dict
-                    
-                except TypeError as e:
-                    notebook_logging.error(f"Error extracting full path for run number {_run}: {e}")
-                    # display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
-                    continue
-
-                logging.info(f"\t{o_sample = }")
-                sample_dict[_run] = o_sample
-
-        else:
+        if self.sample_run_numbers_widget.value.strip() == "":
+            
+            # we gonna retrieve the list of run numbers
+            list_of_runs = []
+            
             notebook_logging.info(f"Sample selection: {self.sample_selected}")
             if self.sample_selected is None:
                 display(HTML(f"<span style='color:red'>No sample runs/folders selected!</span>"))
                 return
             
-            list_of_images = []
+            list_of_full_path_images = []
             for _selection in self.sample_selected:
                 notebook_logging.info(f"\tworking with selection {_selection}:")
             
                 if is_it_a_folder(_selection):
                     notebook_logging.info(f"\t{_selection} is a folder, retrieving tiff files in that folder...")
-                    # concatenate list_of_images with the existing list_of_images
-                    list_of_images.extend(glob.glob(os.path.join(_selection, "*.tif*")))
+                    # concatenate list_of_full_path_images with the existing list_of_full_path_images
+                    list_of_full_path_images.extend(glob.glob(os.path.join(_selection, "*.tif*")))
                     
                 else:
                     notebook_logging.info(f"\t{_selection} is a file, checking if it's a tiff file...")
                     if _selection.endswith(".tif") or _selection.endswith(".tiff"):
                         notebook_logging.info(f"\t{_selection} is a tiff file, adding to the list of images...")
-                        list_of_images.append(_selection)
+                        list_of_full_path_images.append(_selection)
             
-            logging.info(f"\tTotal number of tiff files found: {len(list_of_images)}")
-            for _image in list_of_images:
-                logging.info(f"\t{_image}") 
+            logging.info(f"\tTotal number of tiff files found: {len(list_of_full_path_images)}")
+            logging.info(f"\tExtracting run numbers from the file names...")
+            list_of_images_rejected = []
+            for _full_path_image in list_of_full_path_images:
+                logging.info(f"\t\t{_full_path_image}") 
+                
+                run_number = extract_run_number_from_file_name(_full_path_image)
+                logging.info(f"\t\tExtracted run number: {run_number}")
+                if run_number is None:
+                    list_of_images_rejected.append(_full_path_image)
+                    
+                else:
+                    list_of_runs.append(run_number)
+                
+            if len(list_of_images_rejected) > 0:
+                display(HTML(f"<span style='color:orange'>List of images rejected (no run number found in the file name): {list_of_images_rejected}</span>"))
+            
+            logging.info(f"List of images rejected (no run number found in the file name): {list_of_images_rejected}")
+            logging.info(f"Sample run numbers extracted from the file names: {list_of_runs}")
+            
+        else:    
+         
+            list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
+            notebook_logging.info(f"\t{list_of_runs = }")
+
+        display(HTML(f"<span style='color:green'>Sample run numbers selected: {list_of_runs}</span>"))
+
+        o_sample = DataDict()
+
+        for _run in list_of_runs:
+            
+            logging.info(f"\tChecking sample run number {_run}...")
+            
+            try:
+                _metadata_dict = extract_metadata(run_number=_run)
+                # display(HTML(f"<span style='color:green'>Full path for run number {_run}: {_metadata_dict.full_path}</span>"))
+                o_sample[_run] = _metadata_dict
+                
+            except TypeError as e:
+                notebook_logging.error(f"Error extracting full path for run number {_run}: {e}")
+                # display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
+                continue
+
+
+
+
+
+
+
+
+
+
+
             
         #     for _run in self.sample_run_numbers_selected:
         #         _run = os.path.abspath(_run)
