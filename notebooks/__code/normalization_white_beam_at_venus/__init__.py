@@ -1,4 +1,8 @@
-class DataType:
+from enum import Enum
+from pathlib import Path 
+
+
+class DataType(Enum):
     sample = "sample"
     ob = "ob"
     dc = "dc"
@@ -15,7 +19,7 @@ class Roi:
         return f"Roi(left={self.left}, top={self.top}, width={self.width}, height={self.height})"
 
 
-class DetectorType:
+class DetectorType(Enum):
     ikonxl = "ikonxl"
     qhy600 = "qhy600"
     
@@ -34,11 +38,11 @@ class DataDict:
         return self.__str__()
     
     
-class FolderPath:
-    sample = None
-    ob = None
-    dc = None
-    output = None
-    shared = None
-    nexus = None
-    ipts = None
+class FolderPath(Enum):
+    sample = Path()
+    ob = Path()
+    dc = Path()
+    output = Path()
+    shared = Path()
+    nexus = Path()
+    ipts = Path()

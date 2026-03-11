@@ -13,9 +13,9 @@ distance_source_detector_m = {
 
 
 class DataType:
-    sample = "sample"
-    ob = "ob"
-    dc = "dc"
+    sample: str = "sample"
+    ob: str = "ob"
+    dc: str = "dc"
 
 class Roi:
 

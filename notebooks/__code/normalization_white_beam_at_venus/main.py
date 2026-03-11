@@ -191,21 +191,21 @@ class NormalizationWhiteBeamAtVenus:
         notebook_logging.info("Setting up paths...")
         
         if debug:
-            self.folder_path.sample = str(Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type) / Path("raw/radiography"))
-            self.folder_path.ob = str(Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type) / Path("raw/ob"))
-            self.folder_path.dc = str(Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type) / Path("raw/dc"))
+            self.folder_path.sample = Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type.value) / Path("raw/radiography")
+            self.folder_path.ob = Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type.value) / Path("raw/ob")
+            self.folder_path.dc = Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type.value) / Path("raw/dc")
             
         else:
-            self.folder_path.sample = os.path.join(self.working_dir, "images")
-            self.folder_path.ob = os.path.join(self.working_dir, "images")
-            self.folder_path.dc = os.path.join(self.working_dir, "images")
+            self.folder_path.sample = Path(self.working_dir) / Path("images")
+            self.folder_path.ob = Path(self.working_dir) / Path("images")
+            self.folder_path.dc = Path(self.working_dir) / Path("images")
         
         self.debug = debug
        
         notebook_logging.info(f"Working dir: {self.working_dir}")
         _, _facility, _beamline, ipts = self.working_dir.split("/")
         
-        self.folder_path.nexus = os.path.join(self.working_dir, "nexus")
+        self.folder_path.nexus = Path(self.working_dir) / Path("nexus")
         
         self.ipts = ipts
         self.instrument = _beamline.upper()
@@ -224,8 +224,7 @@ class NormalizationWhiteBeamAtVenus:
     def select_sample_run_numbers(self):
         self.select_run_numbers(data_type=DataType.sample)
 
-
-    def select_run_numbers(self, data_type: DataType = DataType.sample):
+    def select_run_numbers(self, data_type: DataType=DataType.sample):
         
         if data_type == DataType.sample:
             self.detector_type = self.detector_type_widget.value
@@ -250,7 +249,7 @@ class NormalizationWhiteBeamAtVenus:
             str_run_numbers = ""
 
         label = widgets.HTML(
-            value=f"<b><font color='green'>List of {data_type.value} run numbers (ex: 8702, 8704-8706)</font></b>"
+            value=f"<b><font color='green'>List of {data_type} run numbers (ex: 8702, 8704-8706)</font></b>"
         )
         display(label)
         

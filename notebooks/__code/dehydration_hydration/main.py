@@ -17,14 +17,12 @@ import json
 from mbirjax.hsnt import hyper_denoise
 
 import ipywidgets as widgets
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import plotly.express as px
 import numpy as np
 from IPython.display import HTML, display
 from ipywidgets import interactive
-
-matplotlib.rcParams["figure.figsize"] = (7, 7)
 
 from NeuNorm.normalization import Normalization
 
@@ -163,35 +161,69 @@ class DehydrationHydrationCorrection:
         self.load_images(list_of_images)
 
     def visualize_raw_images(self):
-        # fig, ax1 = plt.subplots(num="Raw Images")
-        # fig.show()
-
         vmax = np.max(self.data)
 
         def plot(image_index, vrange):
-            
             vmin, vmax = vrange
             
-            fig, axs = plt.subplots(num="Raw Images", ncols=2, nrows=1, figsize=(15, 10))
-            data = self.data[image_index]
-            im = axs[0].imshow(data, vmin=vmin, vmax=vmax)
-            axs[0].set_title(f"Raw image #{image_index}")
-            plt.colorbar(im, ax=axs[0], shrink=0.5)
+            # Create subplots using plotly
+            fig = make_subplots(
+                rows=1, cols=2,
+                subplot_titles=(f"Raw image #{image_index}", "Integrated image"),
+                horizontal_spacing=0.1
+            )
             
-            im1 = axs[1].imshow(self.integrated_image)
-            plt.colorbar(im1, ax=axs[1], shrink=0.5)
-            axs[1].set_title("Integrated image")
+            # Raw image plot
+            data = self.data[image_index]
+            fig.add_trace(
+                go.Heatmap(
+                    z=data,
+                    zmin=vmin,
+                    zmax=vmax,
+                    colorscale='viridis',
+                    showscale=True,
+                    colorbar=dict(x=0.45, len=0.5)
+                ),
+                row=1, col=1
+            )
+            
+            # Integrated image plot
+            fig.add_trace(
+                go.Heatmap(
+                    z=self.integrated_image,
+                    colorscale='viridis',
+                    showscale=True,
+                    colorbar=dict(x=1.02, len=0.5)
+                ),
+                row=1, col=2
+            )
+            
+            # Update layout
+            fig.update_layout(
+                title="Raw Images Visualization",
+                width=1000,
+                height=500,
+                showlegend=False
+            )
+            
+            # Update axes to remove ticks for cleaner look
+            fig.update_xaxes(showticklabels=False)
+            fig.update_yaxes(showticklabels=False)
+            
+            fig.show()
 
         v = interactive(
             plot,
             image_index=widgets.IntSlider(min=0, 
                                           max=len(self.data) - 1, 
                                           value=0, 
+                                          description="Image index:",
                                           style={"description_width": "150px"},
                                           layout=widgets.Layout(width="50%")),
             vrange=widgets.FloatRangeSlider(min=0,
                                             max=vmax,
                                             value=[0, vmax],
+                                            description="Value range:",
                                             style={"description_width": "150px"},
                                             layout=widgets.Layout(width="50%"))
         )
@@ -295,26 +327,67 @@ class DehydrationHydrationCorrection:
         def plot(image_index, vrange):
             vmin, vmax = vrange
             
-            fig, axs = plt.subplots(num="Corrected Images", ncols=2, nrows=1, figsize=(15, 10))
-            data = self.corrected_images[image_index]
-            im = axs[0].imshow(data, vmin=vmin, vmax=vmax)
-            axs[0].set_title(f"Corrected image #{image_index}")
-            plt.colorbar(im, ax=axs[0], shrink=0.5)
+            # Create subplots using plotly
+            fig = make_subplots(
+                rows=1, cols=2,
+                subplot_titles=(f"Corrected image #{image_index}", f"Uncorrected image #{image_index}"),
+                horizontal_spacing=0.1
+            )
             
-            im1 = axs[1].imshow(self.data[image_index], vmin=vmin, vmax=vmax)
-            plt.colorbar(im1, ax=axs[1], shrink=0.5)
-            axs[1].set_title(f"Uncorrected image #{image_index}")
+            # Corrected image plot
+            corrected_data = self.corrected_images[image_index]
+            fig.add_trace(
+                go.Heatmap(
+                    z=corrected_data,
+                    zmin=vmin,
+                    zmax=vmax,
+                    colorscale='viridis',
+                    showscale=True,
+                    colorbar=dict(x=0.45, len=0.5)
+                ),
+                row=1, col=1
+            )
+            
+            # Uncorrected image plot
+            uncorrected_data = self.data[image_index]
+            fig.add_trace(
+                go.Heatmap(
+                    z=uncorrected_data,
+                    zmin=vmin,
+                    zmax=vmax,
+                    colorscale='viridis',
+                    showscale=True,
+                    colorbar=dict(x=1.02, len=0.5)
+                ),
+                row=1, col=2
+            )
+            
+            # Update layout
+            fig.update_layout(
+                title="Corrected vs Uncorrected Images",
+                width=1000,
+                height=500,
+                showlegend=False
+            )
+            
+            # Update axes to remove ticks for cleaner look
+            fig.update_xaxes(showticklabels=False)
+            fig.update_yaxes(showticklabels=False)
+            
+            fig.show()
 
         v = interactive(
             plot,
             image_index=widgets.IntSlider(min=0, 
                                           max=len(self.corrected_images) - 1, 
                                           value=0, 
+                                          description="Image index:",
                                           style={"description_width": "150px"},
                                           layout=widgets.Layout(width="50%")),
             vrange=widgets.FloatRangeSlider(min=0,
                                             max=vmax,
                                             value=[0, vmax],
+                                            description="Value range:",
                                             style={"description_width": "150px"},
                                             layout=widgets.Layout(width="50%"))
         )
@@ -334,31 +407,84 @@ class DehydrationHydrationCorrection:
             bottom = 2*self.height//4
         
         def plot(left_right, top_bottom):
-            fig = plt.figure(num="Profiles for selected region", figsize=(15, 5))
-            
-            gs = gridspec.GridSpec(1, 3)
-            ax0 = plt.subplot(gs[0, 0])
-            ax1 = plt.subplot(gs[0, 1:])
-            
             top, bottom = top_bottom
             left, right = left_right
             
-            ax0.imshow(self.integrated_corrected_image, cmap='viridis')
-            ax0.add_patch(plt.Rectangle((left, top), right-left, bottom-top, edgecolor='red', facecolor='none', lw=2))
-            ax0.set_title("Integrated corrected image with selected region") 
+            # Create subplots with custom width ratios (1:2 like gridspec)
+            fig = make_subplots(
+                rows=1, cols=2,
+                column_widths=[0.33, 0.67],
+                subplot_titles=("Integrated corrected image with selected region", 
+                               f"Profiles for region ({top}:{bottom}, {left}:{right})"),
+                specs=[[{"secondary_y": False}, {"secondary_y": False}]]
+            )
             
+            # Left subplot: Integrated image with rectangle overlay
+            fig.add_trace(
+                go.Heatmap(
+                    z=self.integrated_corrected_image,
+                    colorscale='viridis',
+                    showscale=False,
+                    hovertemplate='x: %{x}<br>y: %{y}<br>intensity: %{z}<extra></extra>'
+                ),
+                row=1, col=1
+            )
+            
+            # Add rectangle shape to show selected region
+            fig.add_shape(
+                type="rect",
+                x0=left, y0=top, x1=right, y1=bottom,
+                line=dict(color="red", width=2),
+                fillcolor="rgba(0,0,0,0)",
+                row=1, col=1
+            )
+            
+            # Calculate profiles
             uncorrected_images = self.data[:, top: bottom, left: right]
-            uncorreced_profile = np.mean(uncorrected_images, axis=(1,2))
+            uncorrected_profile = np.mean(uncorrected_images, axis=(1,2))
             
             corrected_images = self.corrected_images[:, top: bottom, left: right]
             corrected_profile = np.mean(corrected_images, axis=(1,2))
             
-            ax1.plot(corrected_profile, label="Corrected profile", markersize=2, linestyle='', marker='o')
-            ax1.plot(uncorreced_profile, label="Uncorrected profile", markersize=2, linestyle='', marker='+')
-            ax1.set_title(f"Profiles for region ({top}:{bottom}, {left}:{right})")            
-            ax1.set_xlabel("Image index")
-            ax1.set_ylabel("Average intensity")
-            ax1.legend() 
+            # Right subplot: Profile plots
+            fig.add_trace(
+                go.Scatter(
+                    y=corrected_profile,
+                    mode='markers',
+                    marker=dict(symbol='circle', size=4),
+                    name="Corrected profile",
+                    hovertemplate='Image: %{x}<br>Intensity: %{y}<extra></extra>'
+                ),
+                row=1, col=2
+            )
+            
+            fig.add_trace(
+                go.Scatter(
+                    y=uncorrected_profile,
+                    mode='markers',
+                    marker=dict(symbol='cross', size=6),
+                    name="Uncorrected profile",
+                    hovertemplate='Image: %{x}<br>Intensity: %{y}<extra></extra>'
+                ),
+                row=1, col=2
+            )
+            
+            # Update layout
+            fig.update_layout(
+                title="Profiles for Selected Region",
+                width=1200,
+                height=400,
+                showlegend=True,
+                legend=dict(x=0.7, y=1)
+            )
+            
+            # Update x and y axes
+            fig.update_xaxes(title_text="", showticklabels=False, row=1, col=1)
+            fig.update_yaxes(title_text="", showticklabels=False, row=1, col=1)
+            fig.update_xaxes(title_text="Image index", row=1, col=2)
+            fig.update_yaxes(title_text="Average intensity", row=1, col=2)
+            
+            fig.show()
             
             self.profile_region = {'top': top, 'bottom': bottom, 'left': left, 'right': right}
             
