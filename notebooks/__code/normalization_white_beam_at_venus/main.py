@@ -78,6 +78,11 @@ class NormalizationWhiteBeamAtVenus:
     detector_type = None
     
     sample_selected = None # list of things selected for sample (bottom widget)
+    ob_selected = None
+    dc_selected = None
+    
+    
+    
     
     
     sample_folder = None
@@ -217,35 +222,52 @@ class NormalizationWhiteBeamAtVenus:
         notebook_logging.info(f"Shared dir: {self.folder_path.shared}")
 
     def select_sample_run_numbers(self):
+        self.select_run_numbers(data_type=DataType.sample)
+
+
+    def select_run_numbers(self, data_type: DataType = DataType.sample):
         
-        self.detector_type = self.detector_type_widget.value
-        
-        self.setup_paths()
+        if data_type == DataType.sample:
+            self.detector_type = self.detector_type_widget.value
+            self.setup_paths()
 
         if self.debug:
-            sample_runs = DEBUG_DATA.sample_runs_selected
-            sample_run_numbers_list = []
-            for _run in sample_runs:
+            if data_type == DataType.sample:
+                list_runs = DEBUG_DATA.sample_runs_selected
+            elif data_type == DataType.ob:
+                list_runs = DEBUG_DATA.ob_runs_selected
+            elif data_type == DataType.dc:
+                list_runs = DEBUG_DATA.dc_runs_selected
+            else:
+                raise ValueError(f"Invalid data type: {data_type}")
+                
+            run_numbers_list = []
+            for _run in list_runs:
                 _, number = _run.split("_")
-                sample_run_numbers_list.append(number)
-            str_sample_run_numbers = ", ".join(sample_run_numbers_list)
+                run_numbers_list.append(number)
+            str_run_numbers = ", ".join(run_numbers_list)
         else:
-            str_sample_run_numbers = ""
+            str_run_numbers = ""
 
-        sample_label = widgets.HTML(
-            value="<b><font color='green'>List of sample run numbers (ex: 8702, 8704-8706)</font></b>"
+        label = widgets.HTML(
+            value=f"<b><font color='green'>List of {data_type.value} run numbers (ex: 8702, 8704-8706)</font></b>"
         )
+        display(label)
+        
+        _widget = widgets.Textarea(
+                value=str_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+            )
+        display(_widget)
 
-        self.sample_run_numbers_widget = widgets.Textarea(
-            value=str_sample_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
-        )
-        vertical_layout = widgets.VBox(
-            [
-                sample_label,
-                self.sample_run_numbers_widget,
-            ]
-        )
-        display(vertical_layout)
+        if data_type == DataType.sample:    
+            self.sample_run_numbers_widget = _widget    
+            next_function = self.save_sample_selected
+        elif data_type == DataType.ob:
+            self.ob_run_numbers_widget = _widget
+            next_function = self.save_ob_selected
+        elif data_type == DataType.dc:
+            self.dc_run_numbers_widget = _widget
+            next_function = self.save_dc_selected
 
         display(HTML("<span style='font-size: 16px; color:red'>OR</span>"))
         # give focus to the widgets self.sample_run_numbers_widget
@@ -253,7 +275,7 @@ class NormalizationWhiteBeamAtVenus:
 
         self.select_folder(
             instruction="Select folder(s) to normalize all runs in those folder(s), or select individual images",
-            next_function=self.save_sample_selected,
+            next_function=next_function,
             multiple=True,
             start_dir=self.folder_path.sample,
             newdir_toolbar_button=False,
@@ -262,6 +284,14 @@ class NormalizationWhiteBeamAtVenus:
     def save_sample_selected(self, runs_selected):
         """ save the list of tiff, or list of folder selected for the sample"""
         self.sample_selected = runs_selected
+        
+    def save_ob_selected(self, runs_selected):
+        """ save the list of tiff, or list of folder selected for the ob"""
+        self.ob_selected = runs_selected
+        
+    def save_dc_selected(self, runs_selected):
+        """ save the list of tiff, or list of folder selected for the dc"""
+        self.dc_selected = runs_selected
 
     # def display_infos(self, input_full_path=None, spectra_file_found=True):
     #     if input_full_path is None:
@@ -292,21 +322,41 @@ class NormalizationWhiteBeamAtVenus:
         Check if the sample folder and runs are valid.
         """
         self.reset_sample_dicts()
+        self.check_data(data_type=DataType.sample,
+                        run_numbers_widget_value=self.sample_run_numbers_widget.value,
+                        files_or_folders_selected=self.sample_selected)
+        
+    def check_ob(self):
+        self.reset_ob_dicts()
+        self.check_data(data_type=DataType.ob,
+                        run_numbers_widget_value=self.ob_run_numbers_widget.value,
+                        files_or_folders_selected=self.ob_selected)
+        
+    def check_dc(self):
+        self.reset_dc_dicts()
+        self.check_data(data_type=DataType.dc,
+                        run_numbers_widget_value=self.dc_run_numbers_widget.value,
+                        files_or_folders_selected=self.dc_selected)
+        
+    def check_data(self, data_type: DataType, 
+                   run_numbers_widget_value: str = "",
+                   files_or_folders_selected: list = None):
 
-        notebook_logging.info("Checking sample inputs...")
+        notebook_logging.info(f"Checking {data_type.value} inputs...")
 
-        if self.sample_run_numbers_widget.value.strip() == "":
+        if run_numbers_widget_value.strip() == "":
             
             # we gonna retrieve the list of run numbers
             list_of_runs = []
             
-            notebook_logging.info(f"Sample selection: {self.sample_selected}")
-            if self.sample_selected is None:
-                display(HTML(f"<span style='color:red'>No sample runs/folders selected!</span>"))
+            notebook_logging.info(f"{data_type.value} selection: {run_numbers_widget_value}")
+            
+            if files_or_folders_selected is None:
+                display(HTML(f"<span style='color:red'>No {data_type.value} runs/folders selected!</span>"))
                 return
             
             list_of_full_path_images = []
-            for _selection in self.sample_selected:
+            for _selection in files_or_folders_selected:
                 notebook_logging.info(f"\tworking with selection {_selection}:")
             
                 if is_it_a_folder(_selection):
@@ -338,9 +388,16 @@ class NormalizationWhiteBeamAtVenus:
                 display(HTML(f"<span style='color:orange'>List of images rejected (no run number found in the file name): {list_of_images_rejected}</span>"))
             
             logging.info(f"List of images rejected (no run number found in the file name): {list_of_images_rejected}")
-            logging.info(f"Sample run numbers extracted from the file names: {list_of_runs}")
+            logging.info(f"{data_type} run numbers extracted from the file names: {list_of_runs}")
             
         else:    
+         
+         
+         
+         
+         
+         
+         
          
             list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
             notebook_logging.info(f"\t{list_of_runs = }")
