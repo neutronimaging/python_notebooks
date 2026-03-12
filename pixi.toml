@@ -2,7 +2,7 @@
 authors = ["Chen Zhang <zhangc@ornl.gov>"]
 channels = ["neutronimaging", "oncat", "conda-forge"]
 name = "python_notebooks_development"
-platforms = ["linux-64"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
 version = "0.1.0"
 
 [tasks]
@@ -44,6 +44,7 @@ changepy = { git = "https://github.com/JeanBilheux/changepy" }
 neutronbraggedge = ">=2.0.6, <3"
 sectorizedradialprofile = ">=1.1.2, <2"
 imagingreso = ">=1.8.0, <2"
-tdcsophiread = { path = "/SNS/VENUS/shared/zhangc/wheels/tdcsophiread-3.0.2-cp312-abi3-linux_x86_64.whl" }
 timepix-geometry-correction = { git = "https://github.com/ornlneutronimaging/timepix_geometry_correction.git", branch="main"}
+
+[target.linux-64.pypi-dependencies]
 mbirjax = { version = ">=0.6.7, <0.7", extras = ["cuda12"] }
