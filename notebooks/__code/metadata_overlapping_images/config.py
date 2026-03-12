@@ -1,0 +1,1 @@
+debug_input_folder = "/Users/j35/HFIR/CG1D/IPTS-35522/2026_03_06_3A_run2"

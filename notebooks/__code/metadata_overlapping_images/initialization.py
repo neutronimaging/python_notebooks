@@ -42,6 +42,8 @@ class Initializer:
             self.set_item_table(row=_row, col=1, value=_file)
             self.set_item_table(row=_row, col=2, value="N/A", editable=True)
             self.set_item_table(row=_row, col=3, value="N/A", editable=True)
+            self.set_item_table(row=_row, col=4, value="N/A", editable=True)
+            self.set_item_table(row=_row, col=5, value="N/A", editable=True)
         self.parent.ui.tableWidget.blockSignals(False)
 
     def set_scale_spinbox_max_value(self):

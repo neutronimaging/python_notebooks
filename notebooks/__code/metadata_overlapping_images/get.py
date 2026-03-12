@@ -85,8 +85,14 @@ class Get:
             return ""
         elif column_index == 2:
             return str(self.parent.ui.suffix_lineEdit_1.text())
-        else:
+        elif column_index == 3:
             return str(self.parent.ui.suffix_lineEdit_2.text())
+        elif column_index == 4:
+            return str(self.parent.ui.suffix_lineEdit_3.text())
+        elif column_index == 5:
+            return str(self.parent.ui.suffix_lineEdit_4.text())
+        else:
+            return ""
 
     def metadata_text(self, metadata_index=1):
         """return the text and value of the metadata to display"""
@@ -94,14 +100,22 @@ class Get:
         if metadata_index == 1:
             metadata_name = str(self.parent.ui.prefix_lineEdit_1.text())
             metadata_units = str(self.parent.ui.suffix_lineEdit_1.text())
-        else:
+        elif metadata_index == 2:
             metadata_name = str(self.parent.ui.prefix_lineEdit_2.text())
             metadata_units = str(self.parent.ui.suffix_lineEdit_2.text())
+        elif metadata_index == 3:
+            metadata_name = str(self.parent.ui.prefix_lineEdit_3.text())
+            metadata_units = str(self.parent.ui.suffix_lineEdit_3.text())
+        else:
+            metadata_name = str(self.parent.ui.prefix_lineEdit_4.text())
+            metadata_units = str(self.parent.ui.suffix_lineEdit_4.text())
 
         slider_index = self.parent.ui.file_slider.value()
 
-        index_of_y_axis = self.parent.y_axis_column_index
-        metadata_value = str(self.parent.ui.tableWidget.item(slider_index, index_of_y_axis).text())
+        # index_of_y_axis = self.parent.y_axis_column_index
+        # metadata_value = str(self.parent.ui.tableWidget.item(slider_index, index_of_y_axis).text())
+        metadata_value = str(self.parent.ui.tableWidget.item(slider_index, metadata_index+1).text()) # +1 because metadata start at column 1
+        
         if metadata_name.strip() == "":
             return f"{metadata_value} {metadata_units}"
         else:

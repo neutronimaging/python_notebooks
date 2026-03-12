@@ -151,6 +151,18 @@ class DisplayMetadataPyqtUi:
                 "position_y": self.parent.ui.metadata_position_y_2,
                 "enable_ui": self.parent.ui.checkBox_2,
             },
+            3: {
+                "font_size_slider": self.parent.ui.font_size_slider_3,
+                "position_x": self.parent.ui.metadata_position_x_3,
+                "position_y": self.parent.ui.metadata_position_y_3,
+                "enable_ui": self.parent.ui.checkBox_3,
+            },
+            4: {
+                "font_size_slider": self.parent.ui.font_size_slider_4,
+                "position_x": self.parent.ui.metadata_position_x_4,
+                "position_y": self.parent.ui.metadata_position_y_4,
+                "enable_ui": self.parent.ui.checkBox_4,
+            }
         }
 
     def clear_pyqt_items(self, view=None):
@@ -169,6 +181,12 @@ class DisplayMetadataPyqtUi:
         if self.parent.metadata2_pyqt_ui:
             view.removeItem(self.parent.metadata2_pyqt_ui)
 
+        if self.parent.metadata3_pyqt_ui:
+            view.removeItem(self.parent.metadata3_pyqt_ui)
+
+        if self.parent.metadata4_pyqt_ui:
+            view.removeItem(self.parent.metadata4_pyqt_ui)
+
         if self.parent.graph_pyqt_ui:
             view.removeItem(self.parent.graph_pyqt_ui)
 
@@ -180,9 +198,12 @@ class DisplayMetadataPyqtUi:
 
         self.display_text(save_it=save_it, metadata_index=1)
         self.display_text(save_it=save_it, metadata_index=2)
+        self.display_text(save_it=save_it, metadata_index=3)
+        self.display_text(save_it=save_it, metadata_index=4)
         self.display_graph(save_it=save_it)
 
     def display_text(self, save_it=True, metadata_index=1):
+        
         if not self.list_ui[metadata_index]["enable_ui"].isChecked():
             return
 
@@ -194,6 +215,8 @@ class DisplayMetadataPyqtUi:
 
         o_get = Get(parent=self.parent)
         metadata_text = o_get.metadata_text(metadata_index=metadata_index)
+
+        print(f"metadata_text: {metadata_text} for metadata_index: {metadata_index}")
 
         color = o_get.color(source="metadata", color_type="html")
         text = pg.TextItem(
@@ -215,8 +238,12 @@ class DisplayMetadataPyqtUi:
         if save_it:
             if metadata_index == 1:
                 self.parent.metadata1_pyqt_ui = text
-            else:
+            elif metadata_index == 2:
                 self.parent.metadata2_pyqt_ui = text
+            elif metadata_index == 3:
+                self.parent.metadata3_pyqt_ui = text
+            elif metadata_index == 4:
+                self.parent.metadata4_pyqt_ui = text
 
     def clean_and_format_x_axis(self, x_axis=None):
         x_axis_column_index = self.parent.x_axis_column_index

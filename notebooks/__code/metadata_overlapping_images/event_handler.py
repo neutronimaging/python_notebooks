@@ -21,7 +21,7 @@ class MetadataTableHandler:
         menu = QMenu(self.parent)
 
         _set_new_metadata = None
-        if column_selected in [2, 3]:
+        if column_selected in [2, 3, 4, 5]:
             _set_new_metadata = menu.addAction("Select metadata ...")
             menu.addSeparator()
 
