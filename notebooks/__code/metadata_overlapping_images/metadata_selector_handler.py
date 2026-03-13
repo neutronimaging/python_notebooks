@@ -100,7 +100,13 @@ class MetadataSelectorHandler(QDialog):
         else:
             result = self.ui.linear_operation_value_before.text()
 
-        self.ui.final_result_label.setText(result)
+        rounding_precision = self.ui.precision_spinBox.value()
+        try:
+            result = round(float(result), rounding_precision)
+        except ValueError:
+            pass
+
+        self.ui.final_result_label.setText(str(result))
 
     def ok_clicked(self):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -172,3 +178,6 @@ class MetadataSelectorHandler(QDialog):
             return False
         else:
             return True
+        
+    def precision_spinbox_changed(self, new_value=None):
+        self.update_final_result()

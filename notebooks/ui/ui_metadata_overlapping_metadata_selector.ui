@@ -197,6 +197,15 @@
              </color>
             </brush>
            </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="NoBrush">
+             <color alpha="128">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
           </active>
           <inactive>
            <colorrole role="WindowText">
@@ -211,6 +220,15 @@
            <colorrole role="Text">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="NoBrush">
+             <color alpha="128">
               <red>220</red>
               <green>0</green>
               <blue>14</blue>
@@ -234,6 +252,15 @@
               <red>127</red>
               <green>127</green>
               <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="NoBrush">
+             <color alpha="128">
+              <red>220</red>
+              <green>0</green>
+              <blue>14</blue>
              </color>
             </brush>
            </colorrole>
@@ -359,6 +386,57 @@
          <string>N/A</string>
         </property>
        </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Floats format</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Rounding precision:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="precision_spinBox">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -585,6 +663,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>precision_spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Dialog</receiver>
+   <slot>precision_spinbox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>180</x>
+     <y>264</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>463</x>
+     <y>282</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ok_clicked()</slot>
@@ -595,5 +689,6 @@
   <slot>list_of_metadata_changed()</slot>
   <slot>prefix_text_changed()</slot>
   <slot>suffix_text_changed()</slot>
+  <slot>precision_spinbox_changed()</slot>
  </slots>
 </ui>
