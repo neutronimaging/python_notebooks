@@ -124,8 +124,9 @@ class DehydrationHydrationCorrection:
         self.ipts_folder = self.working_dir
         self.working_dir = os.path.dirname(list_of_images[0])
 
-        o_norm = Normalization()
-        o_norm.load(file=list_of_images, notebook=True)
+        with self.out:
+            o_norm = Normalization()
+            o_norm.load(file=list_of_images, notebook=True)
         self.data = o_norm.data["sample"]["data"]
         # self.data = [np.rot90(_data) for _data in data]
 
