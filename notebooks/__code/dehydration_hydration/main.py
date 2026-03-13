@@ -239,24 +239,24 @@ class DehydrationHydrationCorrection:
         )
         display(self.dataset_type_ui)
         
-        self.subspace_dimension_ui = widgets.IntSlider(
+        self.num_materials_ui = widgets.IntSlider(
             min=1,
             max=10,
             value=2,
-            description="Subspace dimension:",
+            description="Number of materials:",
             style={"description_width": "150px"},
             layout=widgets.Layout(width="50%"),
         )
-        display(self.subspace_dimension_ui)
+        display(self.num_materials_ui)
         
-        self.safety_factor_ui = widgets.IntSlider(
-            min=1,
-            max=5,
-            value=2,
-            description="Safety factor:",
-            style={"description_width": "150px"},
-            layout=widgets.Layout(width="50%"))
-        display(self.safety_factor_ui)
+        # self.safety_factor_ui = widgets.IntSlider(
+        #     min=1,
+        #     max=5,
+        #     value=2,
+        #     description="Safety factor:",
+        #     style={"description_width": "150px"},
+        #     layout=widgets.Layout(width="50%"))
+        # display(self.safety_factor_ui)
         
         self.beta_loss_ui = widgets.Dropdown(
             options=["kullback-leibler", "frobenius"],
@@ -279,17 +279,17 @@ class DehydrationHydrationCorrection:
 
     def perform_correction(self):
         dataset_type = self.dataset_type_ui.value
-        subspace_dimension = self.subspace_dimension_ui.value
+        num_materials = self.num_materials_ui.value
         beta_loss = self.beta_loss_ui.value
         max_iterations = self.max_iterations_ui.value
-        safety_factor = self.safety_factor_ui.value
+        # safety_factor = self.safety_factor_ui.value
         
         logging.info(f"Performing correction with parameters:")
         logging.info(f"\tDataset type: {dataset_type}")
-        logging.info(f"\tSubspace dimension: {subspace_dimension}")
+        logging.info(f"\tNumber of materials: {num_materials}")
         logging.info(f"\tBeta loss: {beta_loss}")
         logging.info(f"\tMax iterations: {max_iterations}")
-        logging.info(f"\tSafety factor: {safety_factor}")
+        # logging.info(f"\tSafety factor: {safety_factor}")
         
         raw_data = self.data
         logging.info(f"before swapping axes, raw data shape: {raw_data.shape}")
@@ -306,8 +306,8 @@ class DehydrationHydrationCorrection:
             swap_data,
             verbose=False,
             dataset_type=dataset_type,
-            safety_factor=safety_factor,
-            subspace_dimension=subspace_dimension,
+            # safety_factor=safety_factor,
+            num_materials=num_materials,
             beta_loss=beta_loss,
             max_iter=max_iterations,
         )
@@ -449,10 +449,10 @@ class DehydrationHydrationCorrection:
             # Right subplot: Profile plots
             fig.add_trace(
                 go.Scatter(
-                    y=corrected_profile,
+                    y=uncorrected_profile,
                     mode='markers',
-                    marker=dict(symbol='circle', size=4),
-                    name="Corrected profile",
+                    marker=dict(symbol='cross', size=5),
+                    name="Uncorrected profile",
                     hovertemplate='Image: %{x}<br>Intensity: %{y}<extra></extra>'
                 ),
                 row=1, col=2
@@ -460,10 +460,10 @@ class DehydrationHydrationCorrection:
             
             fig.add_trace(
                 go.Scatter(
-                    y=uncorrected_profile,
+                    y=corrected_profile,
                     mode='markers',
-                    marker=dict(symbol='cross', size=6),
-                    name="Uncorrected profile",
+                    marker=dict(symbol='circle', size=3),
+                    name="Corrected profile",
                     hovertemplate='Image: %{x}<br>Intensity: %{y}<extra></extra>'
                 ),
                 row=1, col=2
