@@ -45,10 +45,7 @@ neutronbraggedge = ">=2.0.6, <3"
 sectorizedradialprofile = ">=1.1.2, <2"
 imagingreso = ">=1.8.0, <2"
 timepix-geometry-correction = { git = "https://github.com/ornlneutronimaging/timepix_geometry_correction.git", branch="main"}
-<<<<<<< HEAD
 
 [target.linux-64.pypi-dependencies]
-mbirjax = { version = ">=0.6.7, <0.7", extras = ["cuda12"] }
-=======
 mbirjax = { version = ">=0.6.14, <0.7", extras = ["cuda12"] }
->>>>>>> c036d4d0 (new version of API and improved plots. this refs #340)
+
