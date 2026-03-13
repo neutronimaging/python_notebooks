@@ -11,6 +11,10 @@ class MetadataTableHandler:
     def __init__(self, parent=None):
         self.parent = parent
 
+    def cell_clicked(self, row, column):
+        if column in [2, 3, 4, 5]:
+            self.parent.ui.toolBox.setCurrentIndex(column-2)
+            
     def right_click(self, position=None):
         o_get = Get(parent=self.parent)
         column_selected = o_get.metadata_column_selected()

@@ -8,6 +8,7 @@ from IPython.display import HTML, display
 from NeuNorm.normalization import Normalization
 from qtpy import QtGui
 from qtpy.QtWidgets import QFileDialog, QMainWindow
+import ipywidgets as widgets
 
 from __code import load_ui
 from __code.metadata_overlapping_images import HELP_PAGE
@@ -17,7 +18,7 @@ from .display import DisplayImages, DisplayMetadataPyqtUi, DisplayScalePyqtUi
 from .event_handler import MetadataTableHandler
 from .export_table import ExportTable
 from .initialization import Initializer
-from __code.metadata_overlapping_images.config import debug_input_folder
+from __code.metadata_overlapping_images.config import debug_input_folders
 
 
 class MetadataOverlappingImagesUi(QMainWindow):
@@ -150,11 +151,24 @@ class MetadataOverlappingImagesUi(QMainWindow):
         self.setWindowTitle("Metadata Overlapping Images")
 
         if debug:
-            assert os.path.exists(debug_input_folder), f"debug_input_folder {debug_input_folder} does not exist. Please update the path in config.py"
+            debug_input_folder = None
+            for _debug_input_folder in debug_input_folders:
+                
+                if os.path.exists(_debug_input_folder):
+                    debug_input_folder = _debug_input_folder
+                    break
+                
+            if debug_input_folder is None:
+                raise FileNotFoundError(f"Debug input folder not found: {_debug_input_folder}")
+
             list_images = glob(os.path.join(debug_input_folder, "*.tif*"))
             list_images.sort()
-            o_norm = Normalization()
-            o_norm.load(file=list_images, notebook=True, check_shape=False)
+            self.out = widgets.Output()
+            display(self.out)
+            
+            with self.out:
+                o_norm = Normalization()
+                o_norm.load(file=list_images, notebook=True, check_shape=False)
             data_dict = o_norm.data["sample"]
 
         self.working_dir = working_dir
@@ -189,6 +203,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
         o_metadata_table = MetadataTableHandler(parent=self)
         o_metadata_table.right_click(position)
 
+    def table_widget_cell_clicked(self, row, column):
+        o_metadata_table = MetadataTableHandler(parent=self)
+        o_metadata_table.cell_clicked(row, column)
+        
     def previous_image_button_clicked(self):
         self.change_slider(offset=-1)
         self.update_metadata_pyqt_ui()

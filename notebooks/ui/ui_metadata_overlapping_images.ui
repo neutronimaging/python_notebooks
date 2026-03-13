@@ -667,7 +667,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="currentIndex">
-                   <number>3</number>
+                   <number>2</number>
                   </property>
                   <widget class="QWidget" name="page">
                    <property name="geometry">
@@ -675,7 +675,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>420</height>
+                     <height>426</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -945,7 +945,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>420</height>
+                     <height>426</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -1224,7 +1224,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>420</height>
+                     <height>426</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -1494,7 +1494,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>420</height>
+                     <height>426</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -3447,6 +3447,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>suffix_lineEdit_4</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_4_suffix_prefix_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1698</x>
+     <y>704</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1112</x>
+     <y>605</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>suffix_lineEdit_3</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>metadata_3_suffix_prefix_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1698</x>
+     <y>670</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1112</x>
+     <y>605</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>cellClicked(int,int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_widget_cell_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1099</x>
+     <y>539</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1112</x>
+     <y>605</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -3503,5 +3551,6 @@
   <slot>metadata4_position_moved()</slot>
   <slot>metadata_3_suffix_prefix_changed()</slot>
   <slot>metadata_4_suffix_prefix_changed()</slot>
+  <slot>table_widget_cell_clicked()</slot>
  </slots>
 </ui>
