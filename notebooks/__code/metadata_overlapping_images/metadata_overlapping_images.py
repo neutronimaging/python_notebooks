@@ -207,6 +207,11 @@ class MetadataOverlappingImagesUi(QMainWindow):
         o_metadata_table = MetadataTableHandler(parent=self)
         o_metadata_table.cell_clicked(row, column)
         
+    def table_widget_selection_changed(self):
+        column = self.ui.tableWidget.currentColumn()
+        o_metadata_table = MetadataTableHandler(parent=self)
+        o_metadata_table.cell_clicked(-1, column)
+        
     def previous_image_button_clicked(self):
         self.change_slider(offset=-1)
         self.update_metadata_pyqt_ui()

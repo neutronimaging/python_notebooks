@@ -667,7 +667,7 @@
                    <bool>true</bool>
                   </property>
                   <property name="currentIndex">
-                   <number>2</number>
+                   <number>0</number>
                   </property>
                   <widget class="QWidget" name="page">
                    <property name="geometry">
@@ -688,7 +688,7 @@
                        <string>Enable</string>
                       </property>
                       <property name="checked">
-                       <bool>true</bool>
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
@@ -3495,6 +3495,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tableWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>table_widget_selection_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1099</x>
+     <y>539</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1112</x>
+     <y>605</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>help_button_clicked()</slot>
@@ -3552,5 +3568,6 @@
   <slot>metadata_3_suffix_prefix_changed()</slot>
   <slot>metadata_4_suffix_prefix_changed()</slot>
   <slot>table_widget_cell_clicked()</slot>
+  <slot>table_widget_selection_changed()</slot>
  </slots>
 </ui>
