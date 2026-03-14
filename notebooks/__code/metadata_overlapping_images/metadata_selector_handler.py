@@ -103,7 +103,6 @@ class MetadataSelectorHandler(QDialog):
         rounding_precision = self.ui.precision_spinBox.value()
         
         try:
-            print(f"Rounded result: {result} with precision: {rounding_precision}")
             result = round(float(result), rounding_precision)
         except ValueError:
             pass

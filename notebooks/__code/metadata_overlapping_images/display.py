@@ -63,8 +63,10 @@ class DisplayScalePyqtUi:
 
         if self.parent.scale_pyqt_ui:
             self.parent.ui.image_view.removeItem(self.parent.scale_pyqt_ui)
+            self.parent.scale_pyqt_ui = None
         if self.parent.scale_legend_pyqt_ui:
             self.parent.ui.image_view.removeItem(self.parent.scale_legend_pyqt_ui)
+            self.parent.scale_legend_pyqt_ui = None
 
     def run(self, save_it=True):
         view = self.parent.ui.image_view
@@ -114,9 +116,8 @@ class DisplayScalePyqtUi:
 
         scale = pg.GraphItem()
         view.addItem(scale)
-
-        scale.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMod=False)
-
+        
+        scale.setData(pos=pos, adj=adj, pen=lines)
         if save_it:
             self.parent.scale_pyqt_ui = scale
 
@@ -215,8 +216,6 @@ class DisplayMetadataPyqtUi:
 
         o_get = Get(parent=self.parent)
         metadata_text = o_get.metadata_text(metadata_index=metadata_index)
-
-        print(f"metadata_text: {metadata_text} for metadata_index: {metadata_index}")
 
         color = o_get.color(source="metadata", color_type="html")
         text = pg.TextItem(
