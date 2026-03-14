@@ -391,7 +391,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="precision_groupBox">
      <property name="title">
       <string>Floats format</string>
      </property>

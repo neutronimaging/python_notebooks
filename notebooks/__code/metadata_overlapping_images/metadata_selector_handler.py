@@ -101,7 +101,9 @@ class MetadataSelectorHandler(QDialog):
             result = self.ui.linear_operation_value_before.text()
 
         rounding_precision = self.ui.precision_spinBox.value()
+        
         try:
+            print(f"Rounded result: {result} with precision: {rounding_precision}")
             result = round(float(result), rounding_precision)
         except ValueError:
             pass
@@ -155,6 +157,7 @@ class MetadataSelectorHandler(QDialog):
     def check_if_before_linear_operation_valid(self):
         enable_linear_operation_widgets = self.is_before_linear_operation_is_valid()
         self.ui.linear_operation_groupBox.setEnabled(enable_linear_operation_widgets)
+        self.ui.precision_groupBox.setEnabled(enable_linear_operation_widgets)
 
     def is_linear_operation_valid(self):
         def result_of_checking_operation(ui=None):
