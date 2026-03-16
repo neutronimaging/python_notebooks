@@ -108,6 +108,9 @@
       </widget>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_6">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMaximumSize</enum>
+        </property>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
@@ -675,7 +678,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>426</height>
+                     <height>420</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -945,7 +948,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>426</height>
+                     <height>420</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -1224,7 +1227,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>426</height>
+                     <height>420</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -1494,7 +1497,7 @@
                      <x>0</x>
                      <y>0</y>
                      <width>354</width>
-                     <height>426</height>
+                     <height>420</height>
                     </rect>
                    </property>
                    <attribute name="label">
@@ -2212,7 +2215,24 @@
       <item>
        <widget class="QPushButton" name="export_button">
         <property name="text">
-         <string>Export Images and Video ...</string>
+         <string>Export Images and Video (avi, mp4) ...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_27">
+        <property name="text">
+         <string>Videos fps:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="frames_per_second_spinBox">
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="value">
+         <number>24</number>
         </property>
        </widget>
       </item>

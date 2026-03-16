@@ -192,16 +192,20 @@ class ExportImagesAndVideo:
         # Export video from TIFF stack
         print("Converting TIFF stack to MPEG video...")
         
+        # retrieving the frame rate
+        frame_rate = self.parent.ui.frames_per_second_spinBox.value()
+        print(f"Using frame rate: {frame_rate} fps")
+
         # Create both MP4 and AVI versions
-        mp4_path = self.create_mp4_from_tiff_stack(tiff_stack_path)
-        avi_path = self.create_avi_from_tiff_stack(tiff_stack_path)
+        mp4_path = self.create_mp4_from_tiff_stack(tiff_stack_path, fps=frame_rate)
+        avi_path = self.create_avi_from_tiff_stack(tiff_stack_path, fps=frame_rate)
         
         if mp4_path:
             display(HTML(f"Created MP4 video: {mp4_path}"))
         if avi_path:
             display(HTML(f"Created AVI video (ImageJ-style): {avi_path}"))
             
-        return {"mp4": mp4_path, "avi": avi_path}
+        # return {"mp4": mp4_path, "avi": avi_path}
 
     def create_avi_from_tiff_stack(self, tiff_stack_path, output_avi_path=None, fps=10, codec="MJPG", preserve_grayscale=True):
         """
