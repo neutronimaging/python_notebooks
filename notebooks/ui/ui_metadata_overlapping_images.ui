@@ -2212,7 +2212,7 @@
       <item>
        <widget class="QPushButton" name="export_button">
         <property name="text">
-         <string>Export Images ...</string>
+         <string>Export Images and Video ...</string>
         </property>
        </widget>
       </item>

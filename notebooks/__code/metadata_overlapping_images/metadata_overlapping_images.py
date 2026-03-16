@@ -12,7 +12,7 @@ import ipywidgets as widgets
 
 from __code import load_ui
 from __code.metadata_overlapping_images import HELP_PAGE
-from __code.metadata_overlapping_images.export_images import ExportImages
+from __code.metadata_overlapping_images.export_images_and_video import ExportImagesAndVideo
 
 from .display import DisplayImages, DisplayMetadataPyqtUi, DisplayScalePyqtUi
 from .event_handler import MetadataTableHandler
@@ -386,7 +386,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
         )
         QtGui.QGuiApplication.processEvents()
         if _export_folder:
-            o_export = ExportImages(parent=self, export_folder=_export_folder)
+            o_export = ExportImagesAndVideo(parent=self, export_folder=_export_folder)
             o_export.run()
 
     # def import_table_pressed(self):
