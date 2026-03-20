@@ -1,10 +1,10 @@
 import glob
 import logging
 import logging as notebook_logging
-from multiprocessing.util import debug
+# from multiprocessing.util import debug
 import os
 from pathlib import Path
-from arrow import get
+# from arrow import get
 import numpy as np
 import pandas as pd
 
@@ -18,9 +18,9 @@ from PIL import Image
 
 from __code.normalization_tof import Roi
 from __code._utilities.list import extract_list_of_runs_from_string
-from __code._utilities.nexus import extract_file_path_from_nexus
+# from __code._utilities.nexus import extract_data_file_path_from_nexus
 from __code.normalization_tof import DataType
-from __code._utilities.time import get_current_time_in_special_file_name_format
+# from __code._utilities.time import get_current_time_in_special_file_name_format
 from __code._utilities.json import save_json, load_json
 
 # from __code.ipywe.myfileselector import MyFileSelectorPanel
@@ -267,13 +267,16 @@ class NormalizationTof:
         else:
             raise ValueError(f"Unknown detector type: {self.detector_type}")
 
-    def display_infos(self, input_full_path=None, spectra_file_found=True):
+    def display_infos(self, input_full_path=None, spectra_file_found=True, correct_chips_alignment_flag=None):
         if input_full_path is None:
             return
 
         # retrieve the list of tiff files
         list_tiff = retrieve_list_of_tif(input_full_path)
         nbr_tiff = len(list_tiff)
+        
+        if correct_chips_alignment_flag is None:
+            correct_chips_alignment_flag = False
 
         # load the first tiff file to get the shape and dtype
         data = Image.open(list_tiff[0])
@@ -286,17 +289,28 @@ class NormalizationTof:
         display(HTML(f"""
                         <h3>Information for run: {os.path.basename(input_full_path)}</h3>
                     <table border="3px solid black" style="border-collapse:collapse;">
-                        <tr><th>Nbr TIFF</th><th>Images height</th><th>Images width</th><th>Data Type</th><th>Spectra File Found</th></tr>
-                        <tr><td>{nbr_tiff}</td><td>{shape[0]}</td><td>{shape[1]}</td><td>{dtype}</td><td style="color:{spectra_cell_color}">{spectra_file_found}</td></tr>
+                        <tr><th>Nbr TIFF</th><th>Images height</th><th>Images width</th><th>Data Type</th><th>Spectra File Found</th><th>Chips Alignment Correction</th></tr>
+                        <tr><td>{nbr_tiff}</td><td>{shape[0]}</td><td>{shape[1]}</td><td>{dtype}</td><td style="color:{spectra_cell_color}">{spectra_file_found}</td><td>{correct_chips_alignment_flag}</td></tr>
                     </table>
         """))
 
-    def _is_spectra_file_found_and_list(self, full_path):
+    @classmethod
+    def _is_spectra_file_found_and_list(full_path):
         list_files = glob.glob(os.path.join(full_path, "*_Spectra.txt"))
         if len(list_files) == 0:
             return False, None
         
         return os.path.exists(list_files[0]), list_files[0]
+
+    @classmethod
+    def _is_summary_json_file_found(full_path):
+        summary_json_file = os.path.join(full_path, "summary.json")
+        if not os.path.exists(summary_json_file):
+            return False, None
+        
+        # load json file summary_json_file
+        json_dict = load_json(summary_json_file)
+        return True, json_dict
 
     def check_sample(self):
         """
@@ -335,14 +349,20 @@ class NormalizationTof:
                         self.dict_sample[_file_full_path] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_file_full_path)] = _file_full_path
                        
-                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_file_full_path)
+                        _is_spectra_file_found, spectra_file_name = NormalizationTof._is_spectra_file_found_and_list(_file_full_path)
                         if not _is_spectra_file_found:
                             self.spectra_file_found = False
                         else:
                             self.list_spectra_file_found.append(spectra_file_name)
-                      
+ 
+                        _is_summary_json_file_found, _summary_dict = NormalizationTof._is_summary_json_file_found(_file_full_path)
+                        notebook_logging.info(f"\tSummary JSON file found: {_is_summary_json_file_found}")
+                        notebook_logging.info(f"\tSummary JSON content: {_summary_dict}")
+                        correct_chips_alignment_flag = _summary_dict.get("chips_alignment_correction", None) if _is_summary_json_file_found else None
+                        
                         self.display_infos(input_full_path=_file_full_path,
-                                           spectra_file_found=self.spectra_file_found)
+                                           spectra_file_found=self.spectra_file_found, 
+                                           correct_chips_alignment_flag=correct_chips_alignment_flag)
 
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
@@ -370,15 +390,26 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_sample[_run] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
-                                                                 
-                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_run)
+
+                        print(f"DEBUGGING")
+                        print(f"{type(_run)= }")
+                        print(f"{_run = }")
+                        print(f"{len(_run) = }")
+
+                        _is_spectra_file_found, spectra_file_name = NormalizationTof._is_spectra_file_found_and_list(_run)
                         if not _is_spectra_file_found:
                             self.spectra_file_found = False
                         else:
                             self.list_spectra_file_found.append(spectra_file_name)
                         
+                        _is_summary_json_file_found, _summary_dict = NormalizationTof._is_summary_json_file_found(_run)
+                        notebook_logging.info(f"\tSummary JSON file found: {_is_summary_json_file_found}")
+                        notebook_logging.info(f"\tSummary JSON content: {_summary_dict}")
+                        correct_chips_alignment_flag = _summary_dict.get("chips_alignment_correction", None) if _is_summary_json_file_found else None
+                       
                         self.display_infos(input_full_path=_run,
-                                           spectra_file_found=self.spectra_file_found)
+                                           spectra_file_found=self.spectra_file_found,
+                                           correct_chips_alignment_flag=correct_chips_alignment_flag)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
@@ -466,15 +497,21 @@ class NormalizationTof:
                         self.dict_ob[_file_full_path] = {}
                         self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
                     
-                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_file_full_path)
+                        _is_spectra_file_found, spectra_file_name = NormalizationTof._is_spectra_file_found_and_list(_file_full_path)
                         if not _is_spectra_file_found:
                             self.spectra_file_found = False
                         else:
                             self.list_spectra_file_found.append(spectra_file_name)
                       
+                        _is_summary_json_file_found, _summary_dict = NormalizationTof._is_summary_json_file_found(_file_full_path)
+                        notebook_logging.info(f"\tSummary JSON file found: {_is_summary_json_file_found}")
+                        notebook_logging.info(f"\tSummary JSON content: {_summary_dict}")
+                        correct_chips_alignment_flag = _summary_dict.get("chips_alignment_correction", None) if _is_summary_json_file_found else None
+                      
                         self.display_infos(input_full_path=_file_full_path,
-                                           spectra_file_found=self.spectra_file_found)
-                    
+                                           spectra_file_found=self.spectra_file_found,
+                                           correct_chips_alignment_flag=correct_chips_alignment_flag)
+
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
@@ -507,9 +544,15 @@ class NormalizationTof:
                         else:
                             self.list_spectra_file_found.append(spectra_file_name)
                         
+                        _is_summary_json_file_found, _summary_dict = NormalizationTof._is_summary_json_file_found(_run)
+                        notebook_logging.info(f"\tSummary JSON file found: {_is_summary_json_file_found}")
+                        notebook_logging.info(f"\tSummary JSON content: {_summary_dict}")
+                        correct_chips_alignment_flag = _summary_dict.get("chips_alignment_correction", None) if _is_summary_json_file_found else None
+                                                
                         self.display_infos(input_full_path=_run,
-                                           spectra_file_found=self.spectra_file_found)
-               
+                                           spectra_file_found=self.spectra_file_found,
+                                           correct_chips_alignment_flag=correct_chips_alignment_flag)
+
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
@@ -596,7 +639,15 @@ class NormalizationTof:
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_dc[_file_full_path] = {}
                         self.dict_short_name_full_path["dc"][os.path.basename(_file_full_path)] = _file_full_path
-                        self.display_infos(input_full_path=_file_full_path)
+
+                        _is_summary_json_file_found, _summary_dict = NormalizationTof._is_summary_json_file_found(_file_full_path)
+                        notebook_logging.info(f"\tSummary JSON file found: {_is_summary_json_file_found}")
+                        notebook_logging.info(f"\tSummary JSON content: {_summary_dict}")
+                        correct_chips_alignment_flag = _summary_dict.get("chips_alignment_correction", None) if _is_summary_json_file_found else None
+
+                        self.display_infos(input_full_path=_file_full_path,
+                                           correct_chips_alignment_flag=correct_chips_alignment_flag)
+
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
@@ -622,7 +673,14 @@ class NormalizationTof:
                         notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
                         self.dict_short_name_full_path["dc"][os.path.basename(_run)] = _run
                         self.dict_dc[_run] = {}
-                        self.display_infos(input_full_path=_run)
+                        
+                        _is_summary_json_file_found, _summary_dict = NormalizationTof._is_summary_json_file_found(_run)
+                        notebook_logging.info(f"\tSummary JSON file found: {_is_summary_json_file_found}")
+                        notebook_logging.info(f"\tSummary JSON content: {_summary_dict}")
+                        correct_chips_alignment_flag = _summary_dict.get("chips_alignment_correction", None) if _is_summary_json_file_found else None
+                                               
+                        self.display_infos(input_full_path=_run,
+                                           correct_chips_alignment_flag=correct_chips_alignment_flag)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
