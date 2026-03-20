@@ -1,16 +1,13 @@
 import glob
 import logging
 import logging as notebook_logging
-# from multiprocessing.util import debug
 import os
 from pathlib import Path
-# from arrow import get
 import numpy as np
 import pandas as pd
 
 import ipywidgets as widgets
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+import plotly.express as px
 
 from IPython.display import HTML, display
 from ipywidgets import interactive
@@ -18,13 +15,12 @@ from PIL import Image
 
 from __code.normalization_tof import Roi
 from __code._utilities.list import extract_list_of_runs_from_string
-# from __code._utilities.nexus import extract_data_file_path_from_nexus
+from __code._utilities.nexus import extract_file_path_from_nexus
 from __code.normalization_tof import DataType
-# from __code._utilities.time import get_current_time_in_special_file_name_format
-from __code._utilities.json import save_json, load_json
+from __code._utilities.json import load_json
 
-# from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
+from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders as MyFileSelectorPanelWithJumpFolders
 from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
 from __code.normalization_tof.config import DEBUG_DATA, timepix1_config, timepix3_config
 from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
@@ -118,12 +114,13 @@ class NormalizationTof:
             self.shared_dir = os.path.join(self.working_dir, "shared")
             self.output_dir = os.path.join(self.working_dir, "shared")
             self.detector_type = DetectorType.tpx1
-
+        
         self.nexus_folder = os.path.join(self.working_dir, "nexus")
         self.debug = debug
         _, _facility, _beamline, ipts, _ = self.shared_dir.split("/")
 
         self.ipts = ipts
+        self.ipts_folder = self.working_dir
         self.instrument = _beamline.upper()
 
         # self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
@@ -133,6 +130,7 @@ class NormalizationTof:
         notebook_logging.info(f"Instrument: {self.instrument}")
         notebook_logging.info(f"Working dir: {self.working_dir}")
         notebook_logging.info(f"IPTS: {self.ipts}")
+        notebook_logging.info(f"IPTS folder: {self.ipts_folder}")
         notebook_logging.info(f"facility: {_facility}")
         notebook_logging.info(f"nexus folder: {self.nexus_folder}")
         notebook_logging.info(f"Shared dir: {self.shared_dir}")
@@ -294,7 +292,7 @@ class NormalizationTof:
                     </table>
         """))
 
-    @classmethod
+    @staticmethod
     def _is_spectra_file_found_and_list(full_path):
         list_files = glob.glob(os.path.join(full_path, "*_Spectra.txt"))
         if len(list_files) == 0:
@@ -302,7 +300,7 @@ class NormalizationTof:
         
         return os.path.exists(list_files[0]), list_files[0]
 
-    @classmethod
+    @staticmethod
     def _is_summary_json_file_found(full_path):
         summary_json_file = os.path.join(full_path, "summary.json")
         if not os.path.exists(summary_json_file):
@@ -703,6 +701,7 @@ class NormalizationTof:
         This function is a placeholder and should be implemented to load the actual data.
         """
         notebook_logging.info(f"Loading integrated OB data for {full_path}")
+        display(HTML(f"<span style='color:blue'>Loading integrated OB data for {os.path.basename(full_path)} ... </span>"))
         # Here you would load the integrated OB data, for example using a specific library
         # For now, we will just return a dummy value
         if self.dict_ob[full_path].get("data") is None:
@@ -717,6 +716,7 @@ class NormalizationTof:
                 return None
             data = load_data_using_multithreading(list_tiff, combine_tof=True)
             self.dict_ob[full_path]["data"] = data
+        display(HTML(f"<span style='color:green'>Integrated OB data loaded for {os.path.basename(full_path)}!</span>"))
 
         return self.dict_ob[full_path]["data"]
 
@@ -745,12 +745,17 @@ class NormalizationTof:
                     )
                 )
                 return
-            fig, ax = plt.subplots(figsize=(10, 10))
-            im = ax.imshow(integrated_ob, cmap="viridis", aspect="auto")
-            ax.set_aspect("equal")
-            ax.set_title(f"Integrated OB run: {list_ob_short_runs[0]}")
-            fig.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.8)
-            plt.show()
+            # Calculate 2-98% percentile range to remove outliers
+            vmin, vmax = np.percentile(integrated_ob, [2, 98])
+            fig = px.imshow(integrated_ob, 
+                           color_continuous_scale="viridis", 
+                           aspect="equal",
+                           title=f"Integrated OB run: {list_ob_short_runs[0]}",
+                           labels={"color": "Intensity"},
+                           zmin=vmin,
+                           zmax=vmax)
+            fig.update_layout(width=800, height=800)
+            fig.show()
 
         else:
             notebook_logging.info(f"Multiple OB runs to display: {len(list_ob_key)}")
@@ -768,11 +773,17 @@ class NormalizationTof:
                         )
                     )
                     return
-                fig, ax = plt.subplots(figsize=(10, 6))
-                im = ax.imshow(integrated_ob, cmap="viridis", aspect="auto")
-                ax.set_title(f"Integrated OB run: {os.path.basename(full_path)}")
-                fig.colorbar(im, ax=ax, orientation="vertical", label="Intensity")
-                plt.show()
+                # Calculate 2-98% percentile range to remove outliers
+                vmin, vmax = np.percentile(integrated_ob, [2, 98])
+                fig = px.imshow(integrated_ob, 
+                               color_continuous_scale="viridis", 
+                               aspect="auto",
+                               title=f"Integrated OB run: {os.path.basename(full_path)}",
+                               labels={"color": "Intensity"},
+                               zmin=vmin,
+                               zmax=vmax)
+                fig.update_layout(width=800, height=500)
+                fig.show()
 
             list_ob_key = list(self.dict_short_name_full_path["ob"].keys())
             _display = interactive(
@@ -861,6 +872,7 @@ class NormalizationTof:
             self.output_folder_selected(DEBUG_DATA.output_folder)
         else:
             self.select_folder(
+                ipts_folder=self.ipts_folder,
                 instruction="Select output folder", 
                 start_dir=self.output_dir, 
                 next_function=self.output_folder_selected,
@@ -1041,8 +1053,8 @@ class NormalizationTof:
         )
         self.correct_chips_alignment_flag = widgets.Checkbox(
             description="Correct chips alignment", 
-            disabled=False,         
-            value=True             
+            disabled=True,         
+            value=False             
         )
 
         vertical_layout = widgets.VBox(
@@ -1178,18 +1190,36 @@ class NormalizationTof:
     
         def container_roi_selection(vrange, left_right, top_bottom):
             
-            fig, ax = plt.subplots(figsize=(10, 10))
-            im = ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vrange[0], vmax=vrange[1])
-            cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
-
-            logging.info("Updating rectangle ...")
-            if self.rect_container:
-                self.rect_container.remove()
-        
-            self.rect_container = patches.Rectangle((left_right[0], top_bottom[0]), left_right[1]-left_right[0], top_bottom[1]-top_bottom[0], linewidth=1, edgecolor='r', facecolor='none')
-            ax.add_patch(self.rect_container)
-            ax.set_title(f"Select ROI containing only the container")
+            import plotly.graph_objects as go
+            from plotly.subplots import make_subplots
             
+            # Create plotly figure with rectangle overlay
+            fig = go.Figure()
+            fig.add_trace(go.Heatmap(
+                z=integrated_data,
+                colorscale="viridis",
+                zmin=vrange[0],
+                zmax=vrange[1],
+                colorbar=dict(title="Intensity")
+            ))
+            
+            # Add rectangle overlay
+            fig.add_shape(
+                type="rect",
+                x0=left_right[0], y0=top_bottom[0],
+                x1=left_right[1], y1=top_bottom[1],
+                line=dict(color="red", width=2),
+                fillcolor="rgba(0,0,0,0)"
+            )
+            
+            fig.update_layout(
+                title="Select ROI containing only the container",
+                width=800, height=800,
+                yaxis=dict(autorange="reversed")  # Match imshow y-axis orientation
+            )
+            fig.show()
+            
+            logging.info("Updating rectangle ...")
             self.container_roi = Roi(left=left_right[0], top=top_bottom[0], width=left_right[1]-left_right[0], height=top_bottom[1]-top_bottom[0])
 
         widgets_width = "800px"
@@ -1251,12 +1281,34 @@ class NormalizationTof:
             
             vmin, vmax = vrange
             
-            fig, ax = plt.subplots(figsize=(10, 10))
-            ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
-            rect = patches.Rectangle((left, top), width, height, linewidth=1, edgecolor='r', facecolor='none')
-            ax.add_patch(rect)
-            ax.set_title(f"Select ROI for full spectrum normalization")
-            plt.show()
+            import plotly.graph_objects as go
+            
+            # Create plotly figure with rectangle overlay
+            fig = go.Figure()
+            fig.add_trace(go.Heatmap(
+                z=integrated_data,
+                colorscale="viridis",
+                zmin=vmin,
+                zmax=vmax,
+                colorbar=dict(title="Intensity")
+            ))
+            
+            # Add rectangle overlay
+            fig.add_shape(
+                type="rect",
+                x0=left, y0=top,
+                x1=right, y1=bottom,
+                line=dict(color="red", width=2),
+                fillcolor="rgba(0,0,0,0)"
+            )
+            
+            fig.update_layout(
+                title="Select ROI for full spectrum normalization",
+                width=800, height=800,
+                yaxis=dict(autorange="reversed")  # Match imshow y-axis orientation
+            )
+            fig.show()
+            
             logging.info(f"Selected ROI - left: {left}, top: {top}, width: {width}, height: {height}")
             self.roi = Roi(left=left, top=top, width=width, height=height)
 
@@ -1323,17 +1375,37 @@ class NormalizationTof:
 
                 integrated_data = self.container_integrated_image
 
-                fig, ax = plt.subplots(figsize=(5, 5))
-                im = ax.imshow(integrated_data, cmap="viridis", aspect="auto")
-                cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
-
-                rect = patches.Rectangle((self.container_roi.left, self.container_roi.top), 
-                                        self.container_roi.width, 
-                                        self.container_roi.height, 
-                                        linewidth=1, edgecolor='r', facecolor='none')
-                ax.add_patch(rect)
-                ax.set_title(f"Loaded ROI containing only the container from file")
-                plt.show()
+                import plotly.graph_objects as go
+                
+                # Create plotly figure with rectangle overlay
+                fig = go.Figure()
+                # Calculate 2-98% percentile range to remove outliers
+                vmin, vmax = np.percentile(integrated_data, [2, 98])
+                fig.add_trace(go.Heatmap(
+                    z=integrated_data,
+                    colorscale="viridis",
+                    zmin=vmin,
+                    zmax=vmax,
+                    colorbar=dict(title="Intensity")
+                ))
+                
+                # Add rectangle overlay for ROI
+                fig.add_shape(
+                    type="rect",
+                    x0=self.container_roi.left, 
+                    y0=self.container_roi.top,
+                    x1=self.container_roi.left + self.container_roi.width, 
+                    y1=self.container_roi.top + self.container_roi.height,
+                    line=dict(color="red", width=2),
+                    fillcolor="rgba(0,0,0,0)"
+                )
+                
+                fig.update_layout(
+                    title="Loaded ROI containing only the container from file",
+                    width=400, height=400,
+                    yaxis=dict(autorange="reversed")  # Match imshow y-axis orientation
+                )
+                fig.show()
                 
             else:
                 display(HTML("<span style='font-size: 14px; color:blue'>ROI container selected within that notebook (no need to preview again)!</span>"))
@@ -1482,17 +1554,23 @@ class NormalizationTof:
         self.dc_run_numbers_selected = folder_selected
         
     def output_folder_selected(self, folder_selected):
-        self.output_folder = folder_selected
-        display(HTML("Output folder selected:"))
-        if os.path.exists(folder_selected):
-            display(HTML(f"<span style='color:green'>{folder_selected} - FOUND!</span>"))
-            notebook_logging.info(f"Output folder selected: {folder_selected} - FOUND")
-        else:
-            display(HTML(f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"))
-            notebook_logging.info(f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!")
+
+        # close shared and home buttons
+        self.list_input_folders_ui.shortcut_buttons.close()
+
+        with self.list_input_folders_ui.out:
+            self.output_folder = folder_selected
+            display(HTML("Output folder selected:"))
+            if os.path.exists(folder_selected):
+                display(HTML(f"<span style='color:green'>{folder_selected} - FOUND!</span>"))
+                notebook_logging.info(f"Output folder selected: {folder_selected} - FOUND")
+            else:
+                display(HTML(f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"))
+                notebook_logging.info(f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!")
 
     def select_folder(self, instruction="Select a folder",
                        next_function=None, 
+                       ipts_folder=None,
                        start_dir=None, 
                        multiple=False,
                        newdir_toolbar_button=False):
@@ -1503,17 +1581,30 @@ class NormalizationTof:
         while not os.path.exists(start_dir):
             start_dir = os.path.dirname(start_dir)
 
-        self.list_input_folders_ui = MyFileSelectorPanel(
-            instruction=instruction,
-            start_dir=start_dir,
-            type="directory",
-            newdir_toolbar_button=newdir_toolbar_button,
-            multiple=multiple,
-            sort_in_reverse=True,
-            # sort_increasing=False,
-            next=next_function,
-        )
-        self.list_input_folders_ui.show()
+        if ipts_folder is None:
+            self.list_input_folders_ui = MyFileSelectorPanel(
+                instruction=instruction,
+                start_dir=start_dir,
+                type="directory",
+                newdir_toolbar_button=newdir_toolbar_button,
+                multiple=multiple,
+                sort_in_reverse=True,
+                # sort_increasing=False,
+                next=next_function,
+            )
+            self.list_input_folders_ui.show()
+            
+        else:
+            self.list_input_folders_ui = MyFileSelectorPanelWithJumpFolders(
+                instruction=instruction,
+                start_dir=start_dir,
+                type="directory",
+                ipts_folder=self.ipts_folder,
+                newdir_toolbar_button=newdir_toolbar_button,
+                next=next_function,
+                show_jump_to_share=True,
+                show_jump_to_home=True,
+            )
 
     # calling main code
     def run_normalization_with_list_of_runs(self, preview=False):
@@ -1616,25 +1707,67 @@ class NormalizationTof:
             _normalized_data = normalized_data[index]
             _integrated = np.nanmean(_normalized_data, axis=0)
             _profile = np.nanmean(_normalized_data[:, top : top + height, left : left + width], axis=0)
-            fig, axs = plt.subplots(ncols=2, nrows=2,figsize=(10, 6))
-            im = axs[0,0].imshow(_integrated, cmap="viridis")
-            axs[0,0].add_patch(
-                patches.Rectangle(
-                    (left, top),
-                    width,
-                    height,
-                    linewidth=1,
-                    edgecolor="r",
-                    facecolor="none",
-                )
+            
+            from plotly.subplots import make_subplots
+            import plotly.graph_objects as go
+            
+            # Create subplots
+            fig = make_subplots(
+                rows=2, cols=2,
+                subplot_titles=[f"Integrated normalized data - {index}", "", f"Profile of ROI - {index}", ""],
+                specs=[[{"type": "heatmap"}, {"type": "xy"}], 
+                       [{"type": "xy"}, {"type": "xy"}]]
             )
-
-            axs[0,0].set_title(f"Integrated normalized data - {index}")
-            fig.colorbar(im, ax=axs[0,0], orientation="vertical", label="Intensity")
-            axs[1,0].plot(lambda_array, _profile)
-            axs[1,0].set_title(f"Profile of ROI - {index}")
-            axs[1,0].set_xlabel("lambda_array")
-            axs[1,0].set_ylabel("Intensity (a.u.)")
+            
+            # Add heatmap for integrated data
+            # Calculate 2-98% percentile range to remove outliers
+            vmin, vmax = np.percentile(_integrated, [2, 98])
+            fig.add_trace(
+                go.Heatmap(
+                    z=_integrated,
+                    colorscale="viridis",
+                    zmin=vmin,
+                    zmax=vmax,
+                    colorbar=dict(title="Intensity", x=0.45)
+                ),
+                row=1, col=1
+            )
+            
+            # Add rectangle overlay for ROI
+            fig.add_shape(
+                type="rect",
+                x0=left, y0=top,
+                x1=left + width, y1=top + height,
+                line=dict(color="red", width=2),
+                fillcolor="rgba(0,0,0,0)",
+                row=1, col=1
+            )
+            
+            # Add line plot for profile
+            fig.add_trace(
+                go.Scatter(
+                    x=lambda_array,
+                    y=_profile,
+                    mode='lines',
+                    name='Profile'
+                ),
+                row=2, col=1
+            )
+            
+            # Update layout
+            fig.update_layout(
+                height=600, width=800,
+                showlegend=False
+            )
+            
+            # Update y-axis for heatmap to match imshow orientation
+            fig.update_yaxes(autorange="reversed", row=1, col=1)
+            
+            # Update x and y axis labels for profile plot
+            fig.update_xaxes(title_text="lambda_array", row=2, col=1)
+            fig.update_yaxes(title_text="Intensity (a.u.)", row=2, col=1)
+            
+            fig.show()
 
         _plot_normalized = interactive(widgets.Dropdown(options=list(normalized_data.keys()), 
                                                        description="Sample run:",

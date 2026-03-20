@@ -21,6 +21,10 @@ def extract_data_file_path_from_nexus(nexus_file_path):
     return Path(file_path)
 
 
+def extract_file_path_from_nexus(nexus_file_path):
+    return extract_data_file_path_from_nexus(nexus_file_path)
+
+
 def extract_proton_charge_from_nexus(nexus_path):
     """
     Extract the proton charge from the NeXus file.

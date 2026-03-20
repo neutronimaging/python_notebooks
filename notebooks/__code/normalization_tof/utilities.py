@@ -9,8 +9,10 @@ from sqlite3 import Time
 from typing import Tuple
 
 import h5py
-from matplotlib import container
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+from plotly.offline import iplot
 import numpy as np
 import pandas as pd
 from IPython.display import HTML, display
@@ -23,7 +25,7 @@ from timepix_geometry_correction.correct import TimepixGeometryCorrection
 from __code.normalization_tof import Roi
 from __code._utilities.json import load_json, save_json
 
-MARKERSIZE = 2
+MARKERSIZE = 6
 
 class NormalizedData:
     data= {}
@@ -246,121 +248,203 @@ def preview_normalized_data(_sample_data, ob_data_combined, dc_data_combined,
     """preview normalized data"""
 
     # display preview of normalized data
-    fig, axs1 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+    fig = make_subplots(rows=1, cols=2, 
+                       subplot_titles=["Integrated Sample data", "Sample Profile"],
+                       horizontal_spacing=0.15)
     sample_data_integrated = np.nanmean(_sample_data, axis=0)
-    im0 = axs1[0].imshow(sample_data_integrated, cmap="gray")
-    plt.colorbar(im0, ax=axs1[0])
+    
+    # Calculate 2-98% percentile range for better contrast
+    vmin, vmax = np.percentile(sample_data_integrated, [2, 98])
+    fig.add_trace(go.Heatmap(z=sample_data_integrated, 
+                           colorscale="gray",
+                           zmin=vmin,
+                           zmax=vmax,
+                           showscale=True,
+                           showlegend=False,
+                           colorbar=dict(x=0.45)), row=1, col=1)
 
     display(HTML(f"<h3>Preview of run {_sample_run_number}</h3>"))
     display(HTML(f"detector delay: {detector_delay_us:.2f} us"))
-    
-    axs1[0].set_title(f"Integrated Sample data")
 
     sample_integrated1 = np.nansum(_sample_data, axis=1)
     sample_integrated = np.nansum(sample_integrated1, axis=1)
-    axs1[1].plot(sample_integrated, 'o')
-    axs1[1].set_xlabel("File image index")
-    axs1[1].set_ylabel("Transmission (a.u.)")
-    plt.tight_layout()
+    fig.add_trace(go.Scatter(y=sample_integrated, 
+                           mode='markers',
+                           marker=dict(size=MARKERSIZE),
+                           name="Sample"), row=1, col=2)
+    fig.update_xaxes(title_text="File image index", row=1, col=2)
+    fig.update_yaxes(title_text="Transmission (a.u.)", row=1, col=2)
+    # Ensure equal aspect ratio for heatmap (square pixels)
+    fig.update_yaxes(scaleanchor="x", scaleratio=1, row=1, col=1)
+    fig.update_layout(height=600, width=1200, margin=dict(l=50, r=50, t=80, b=50))
+    fig.show()
 
-    fig, axs2 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+    fig2 = make_subplots(rows=1, cols=2, 
+                        subplot_titles=["OB integrated data", "OB Profile"],
+                        horizontal_spacing=0.15)
     ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
-    im1 = axs2[0].imshow(ob_data_integrated, cmap="gray")
-    plt.colorbar(im1, ax=axs2[0])
-    axs2[0].set_title("OB integrated data ")
+    
+    # Calculate 2-98% percentile range for better contrast
+    vmin, vmax = np.percentile(ob_data_integrated, [2, 98])
+    fig2.add_trace(go.Heatmap(z=ob_data_integrated, 
+                            colorscale="gray",
+                            zmin=vmin,
+                            zmax=vmax,
+                            showscale=True,
+                            showlegend=False,
+                            colorbar=dict(x=0.45)), row=1, col=1)
 
     ob_integrated1 = np.nansum(ob_data_combined, axis=1)
     ob_integrated = np.nansum(ob_integrated1, axis=1)
-    axs2[1].plot(ob_integrated, 'o')
-    axs2[1].set_xlabel("File image index")
-    axs2[1].set_ylabel("Transmission (a.u.)")
-    plt.tight_layout()
+    fig2.add_trace(go.Scatter(y=ob_integrated, 
+                            mode='markers',
+                            marker=dict(size=MARKERSIZE),
+                            name="OB"), row=1, col=2)
+    fig2.update_xaxes(title_text="File image index", row=1, col=2)
+    fig2.update_yaxes(title_text="Transmission (a.u.)", row=1, col=2)
+    # Ensure equal aspect ratio for heatmap (square pixels)
+    fig2.update_yaxes(scaleanchor="x", scaleratio=1, row=1, col=1)
+    fig2.update_layout(height=600, width=1200, margin=dict(l=50, r=50, t=80, b=50))
+    fig2.show()
 
     if dc_data_combined is not None:
-        fig, axs_dc = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+        fig3 = make_subplots(rows=1, cols=2, 
+                           subplot_titles=["DC integrated data", "DC Profile"],
+                           horizontal_spacing=0.15)
         dc_data_integrated = np.nanmean(dc_data_combined, axis=0)
-        im_dc = axs_dc[0].imshow(dc_data_integrated, cmap="gray")
-        plt.colorbar(im_dc, ax=axs_dc[0])
-        axs_dc[0].set_title("DC integrated data ")
+        
+        # Calculate 2-98% percentile range for better contrast
+        vmin, vmax = np.percentile(dc_data_integrated, [2, 98])
+        fig3.add_trace(go.Heatmap(z=dc_data_integrated, 
+                                colorscale="gray",
+                                zmin=vmin,
+                                zmax=vmax,
+                                showscale=True,
+                                showlegend=False,
+                                colorbar=dict(x=0.45)), row=1, col=1)
 
         dc_integrated1 = np.nansum(dc_data_combined, axis=1)
         dc_integrated = np.nansum(dc_integrated1, axis=1)
-        axs_dc[1].plot(dc_integrated, 'o')
-        axs_dc[1].set_xlabel("File image index")
-        axs_dc[1].set_ylabel("Transmission (a.u.)")
-        plt.tight_layout()
+        fig3.add_trace(go.Scatter(y=dc_integrated, 
+                                mode='markers',
+                                marker=dict(size=MARKERSIZE),
+                                name="DC"), row=1, col=2)
+        fig3.update_xaxes(title_text="File image index", row=1, col=2)
+        fig3.update_yaxes(title_text="Transmission (a.u.)", row=1, col=2)
+        # Ensure equal aspect ratio for heatmap (square pixels)
+        fig3.update_yaxes(scaleanchor="x", scaleratio=1, row=1, col=1)
+        fig3.update_layout(height=600, width=1200, margin=dict(l=50, r=50, t=80, b=50))
+        fig3.show()
 
     # if not combine_samples:
-    fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-    normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
-    im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray", vmin=0, vmax=1)
-    plt.colorbar(im2, ax=axs3[0])
-    axs3[0].set_title(f"Integrated Normalized data")
-
+    # Determine the profile label first
     if roi is not None:
         x0 = roi.left
         y0 = roi.top
         width = roi.width
         height = roi.height
-        axs3[0].add_patch(plt.Rectangle((x0, y0), width, height, fill=False, color="red", lw=2))
+        _label = "pixel by pixel normalization profile of ROI"
+    else:
+        _label = "pixel by pixel normalization profile of full image"
+    
+    fig4 = make_subplots(rows=1, cols=2, 
+                        subplot_titles=["Integrated Normalized data", _label],
+                        horizontal_spacing=0.15)
+    normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
+    
+    # Use fixed range for normalized data (0-1) but apply percentile for better visualization
+    vmin, vmax = np.percentile(normalized_data_integrated[~np.isnan(normalized_data_integrated)], [2, 98])
+    vmin = max(vmin, 0)  # Keep lower bound at 0
+    vmax = min(vmax, 1)  # Keep upper bound at 1
+    
+    fig4.add_trace(go.Heatmap(z=normalized_data_integrated, 
+                            colorscale="gray",
+                            zmin=vmin,
+                            zmax=vmax,
+                            showscale=True,
+                            showlegend=False,
+                            colorbar=dict(x=0.45)), row=1, col=1)
+
+    if roi is not None:
+        # Add rectangle overlay for ROI
+        fig4.add_shape(type="rect",
+                      x0=x0, y0=y0,
+                      x1=x0+width, y1=y0+height,
+                      line=dict(color="red", width=2),
+                      fillcolor="rgba(0,0,0,0)",
+                      row=1, col=1)
 
         profile_step1 = np.nanmean(normalized_data[_sample_run_number][:, y0:y0+height, x0:x0+width], axis=1)
         profile = np.nanmean(profile_step1, axis=1)
-        _label = "pixel by pixel normalization profile of ROI"
 
     else:
         profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
         profile = np.nanmean(profile_step1, axis=1)
-        _label = "pixel by pixel normalization profile of full image"
 
-    axs3[1].plot(profile, 'o', label=_label)
-    axs3[1].set_xlabel("File image index")
-    axs3[1].set_ylabel("Transmission (a.u.)")
-    axs3[1].legend()
-    plt.tight_layout()
+    fig4.add_trace(go.Scatter(y=profile, 
+                            mode='markers',
+                            marker=dict(size=MARKERSIZE),
+                            showlegend=False), row=1, col=2)
+    fig4.update_xaxes(title_text="File image index", row=1, col=2)
+    fig4.update_yaxes(title_text="Transmission (a.u.)", row=1, col=2)
+    # Ensure equal aspect ratio for heatmap (square pixels)
+    fig4.update_yaxes(scaleanchor="x", scaleratio=1, row=1, col=1)
+    fig4.update_layout(height=600, width=1200, margin=dict(l=50, r=50, t=80, b=50))
+    fig4.show()
 
     if lambda_array is not None:
-        fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+        fig5 = make_subplots(rows=1, cols=2, 
+                           subplot_titles=[f"{_label.split('profile of ')[-1]} counts vs Lambda", 
+                                           f"{_label.split('profile of ')[-1]} counts vs energy"],
+                           horizontal_spacing=0.15)
         logging.info(f"{np.shape(profile) = }")
 
-        axs4[0].plot(lambda_array, profile, "*", label=_label)
-        axs4[0].set_xlabel("Lambda (A)")
-        axs4[0].set_ylabel("Transmission (a.u.)")
-        axs4[0].legend()
+        # Lambda plot
+        fig5.add_trace(go.Scatter(x=lambda_array, y=profile, 
+                                mode='markers',
+                                marker=dict(symbol='star', size=MARKERSIZE),
+                                showlegend=False), row=1, col=1)
+        fig5.update_xaxes(title_text="Lambda (A)", row=1, col=1)
+        fig5.update_yaxes(title_text="Transmission (a.u.)", row=1, col=1)
 
-        axs4[1].plot(energy_array, profile, "*", label=_label)
-        axs4[1].set_xlabel("Energy (eV)")
-        axs4[1].set_ylabel("Transmission (a.u.)")
-        axs4[1].set_xscale("log")
-        axs4[1].legend()
-
-        plt.tight_layout()
+        # Energy plot
+        fig5.add_trace(go.Scatter(x=energy_array, y=profile, 
+                                mode='markers',
+                                marker=dict(symbol='star', size=MARKERSIZE),
+                                showlegend=False), row=1, col=2)
+        fig5.update_xaxes(title_text="Energy (eV)", type="log", row=1, col=2)
+        fig5.update_yaxes(title_text="Transmission (a.u.)", row=1, col=2)
+        fig5.update_layout(height=600, width=1200, margin=dict(l=50, r=50, t=80, b=50))
+        fig5.show()
 
         if _spectrum_normalized_data is not None:
 
-            fig, axs6 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+            fig6 = make_subplots(rows=1, cols=2, 
+                               subplot_titles=["Lambda vs ROI Spectrum", "Energy vs ROI Spectrum"],
+                               horizontal_spacing=0.15)
             logging.info(f"{np.shape(profile) = }")
 
-            axs6[0].plot(lambda_array, _spectrum_normalized_data, "r*", 
-                            markersize=MARKERSIZE, 
-                            label="spectrum normalization of ROI")
-            axs6[0].set_xlabel("Lambda (A)")
-            axs6[0].set_ylabel("Transmission (a.u.)")
-            axs6[0].legend()
+            # Lambda plot
+            fig6.add_trace(go.Scatter(x=lambda_array, y=_spectrum_normalized_data, 
+                                    mode='markers',
+                                    marker=dict(symbol='star', size=MARKERSIZE, color='red'),
+                                    name="spectrum normalization of ROI"), row=1, col=1)
+            fig6.update_xaxes(title_text="Lambda (A)", row=1, col=1)
+            fig6.update_yaxes(title_text="Transmission (a.u.)", row=1, col=1)
             logging.info(f"{lambda_array = }")
 
-            axs6[1].plot(energy_array, _spectrum_normalized_data, "r*", 
-                            markersize=MARKERSIZE, 
-                            label="spectrum normalization of ROI")
-            axs6[1].set_xlabel("Energy (eV)")
-            axs6[1].set_ylabel("Transmission (a.u.)")
-            axs6[1].set_xscale("log")
-            axs6[1].legend()
+            # Energy plot
+            fig6.add_trace(go.Scatter(x=energy_array, y=_spectrum_normalized_data, 
+                                    mode='markers',
+                                    marker=dict(symbol='star', size=MARKERSIZE, color='red'),
+                                    name="spectrum normalization of ROI", showlegend=False), row=1, col=2)
+            fig6.update_xaxes(title_text="Energy (eV)", type="log", row=1, col=2)
+            fig6.update_yaxes(title_text="Transmission (a.u.)", row=1, col=2)
             logging.info(f"{energy_array = }")
+            fig6.update_layout(height=600, width=1200, margin=dict(l=50, r=50, t=80, b=50))
+            fig6.show()
 
-            plt.tight_layout()
 
-    plt.show()
 
 def get_detector_offset_from_nexus(nexus_path: str) -> float:
     """get the detector offset from the nexus file"""

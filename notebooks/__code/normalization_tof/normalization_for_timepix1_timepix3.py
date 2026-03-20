@@ -10,7 +10,10 @@ from typing import Tuple
 
 from annotated_types import Not
 import h5py
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+from plotly.offline import iplot
 import numpy as np
 import pandas as pd
 from IPython.display import HTML, display
@@ -24,7 +27,7 @@ from __code.normalization_tof.utilities import *
 # from scipy.constants import h, c, electron_volt, m_n
 # from timepix_geometry_correction.correct import TimepixGeometryCorrection
 
-MARKERSIZE = 2
+MARKERSIZE = 6
 
 class NormalizedData:
     data= {}
@@ -85,46 +88,49 @@ def normalization_with_list_of_full_path(
     roi = None,
     container_roi = None,
     container_roi_file = None) -> NormalizedData:
-    """normalize the sample data with ob data using proton charge and shutter counts
+     
+    # """
+    # normalize the sample data with ob data using proton charge and shutter counts
     
-    Args:
-        sample_dict (dict): dictionary with sample run numbers and their data
-            {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
-             base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
+    # Args:
+    #     sample_dict (dict): dictionary with sample run numbers and their data
+    #         {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
+    #          base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
 
-        ob_dict (dict): dictionary with ob run numbers and their data
-            {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
-             base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
+    #     ob_dict (dict): dictionary with ob run numbers and their data
+    #         {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
+    #          base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
 
-        dc_dict (dict): dictionary with dc run numbers and their data
-            {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
-             base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
+    #     dc_dict (dict): dictionary with dc run numbers and their data
+    #         {base_name_run1: {'full_path': full_path, 'nexus': nexus_path},
+    #          base_name_run2: {'full_path': full_path, 'nexus': nexus_path}, ...}
 
-                     output_folder (str): folder to save the output data
-        verbose (bool): if True, display additional information
-        combine_samples (bool): if True, combine sample runs
-        proton_charge_flag (bool): if True, normalize by proton charge
-        monitor_counts_flag (bool): if True, normalize by monitor counts
-        shutter_counts_flag (bool): if True, normalize by shutter counts
-        replace_ob_zeros_by_nan_flag (bool): if True, replace OB zeros by NaN
-        replace_ob_zeros_by_local_median_flag (bool): if True, replace OB zeros by local median
-        kernel_size_for_local_median (Tuple[int, int, int]): kernel size for local median (y, x, tof)
-        max_iterations (int): maximum number of iterations for local median
-        output_tif (bool): if True, export the data as tif files
-        instrument (str): instrument name
-        detector_delay_us (float): detector delay in microseconds
-        preview (bool): if True, display preview of the data
-        distance_source_detector_m (float): distance from source to detector in meters
-        correct_chips_alignment_flag (bool): if True, correct chips alignment
-        correct_chips_alignment_config (dict): configuration for chips alignment correction
-        export_mode (dict): dictionary with export options
-        roi (Roi): region of interest for full spectrum normalization
-        container_roi (Roi): region of interest for container only normalization 
-        container_roi_file (str): file path to container ROI file (scitiff format) (will take precedence over container_roi if both are provided)
+    #                  output_folder (str): folder to save the output data
+    #     verbose (bool): if True, display additional information
+    #     combine_samples (bool): if True, combine sample runs
+    #     proton_charge_flag (bool): if True, normalize by proton charge
+    #     monitor_counts_flag (bool): if True, normalize by monitor counts
+    #     shutter_counts_flag (bool): if True, normalize by shutter counts
+    #     replace_ob_zeros_by_nan_flag (bool): if True, replace OB zeros by NaN
+    #     replace_ob_zeros_by_local_median_flag (bool): if True, replace OB zeros by local median
+    #     kernel_size_for_local_median (Tuple[int, int, int]): kernel size for local median (y, x, tof)
+    #     max_iterations (int): maximum number of iterations for local median
+    #     output_tif (bool): if True, export the data as tif files
+    #     instrument (str): instrument name
+    #     detector_delay_us (float): detector delay in microseconds
+    #     preview (bool): if True, display preview of the data
+    #     distance_source_detector_m (float): distance from source to detector in meters
+    #     correct_chips_alignment_flag (bool): if True, correct chips alignment
+    #     correct_chips_alignment_config (dict): configuration for chips alignment correction
+    #     export_mode (dict): dictionary with export options
+    #     roi (Roi): region of interest for full spectrum normalization
+    #     container_roi (Roi): region of interest for container only normalization 
+    #     container_roi_file (str): file path to container ROI file (scitiff format) (will take precedence over container_roi if both are provided)
 
-    Returns:
-        normalized_data | np.ndarray: normalized data
-    """
+    # Returns:
+    #     normalized_data | np.ndarray: normalized data
+    
+    # """
 
     initialize_logging()
 
@@ -615,98 +621,6 @@ def normalization_with_list_of_full_path(
                     spectra_array=spectra_array,
                     spectra_file=sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name])
           
-    # if combine_samples:
-
-    #     # combine all normalized data
-    #     array_of_normalized_data = []
-    #     for _key in normalized_data.keys():
-    #         array_of_normalized_data.append(normalized_data[_key])
-
-    #     combined_normalized_data = np.nanmean(np.array(array_of_normalized_data), axis=0)
-    #     combined_spectrum_normalized_data = np.nanmean(np.array(list(spectrum_normalized_data.values())), axis=0)
-    #     dict_to_return.data['combined'] = combined_normalized_data
-
-    #     # if preview, display the combined normalized data
-    #     if preview:
-            
-    #         fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-    #         normalized_data_integrated = np.nanmean(combined_normalized_data, axis=0)
-    #         im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
-    #         plt.colorbar(im2, ax=axs3[0])
-    #         axs3[0].set_title(f"Integrated combined Normalized data")
-
-    #         _label = "pixel by pixel normalization profile of full image"
-    #         if roi is not None:
-    #             profile_step1 = np.nanmean(combined_normalized_data[:, roi.top:roi.top+roi.height, roi.left:roi.left+roi.width], axis=1)
-    #             profile = np.nanmean(profile_step1, axis=1)
-    #         else:
-    #             profile_step1 = np.nanmean(combined_normalized_data, axis=1)
-    #             profile = np.nanmean(profile_step1, axis=1)
-        
-    #         axs3[1].plot(profile, 'o', markersize=MARKERSIZE, label=_label)
-    #         axs3[1].set_xlabel("File image index")
-    #         axs3[1].set_ylabel("Transmission (a.u.)")
-    #         axs3[1].legend()
-
-    #         plt.tight_layout()
-
-    #         if lambda_array is not None:
-
-    #             fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-    #             logging.info(f"{np.shape(profile) = }")
-
-    #             axs4[0].plot(lambda_array, profile, "*", markersize=MARKERSIZE, label=_label)
-    #             #axs4[0].plot(lambda_array, combined_spectrum_normalized_data, label="spectrum normalization")
-    #             axs4[0].set_xlabel("Lambda (A)")
-    #             axs4[0].set_ylabel("mean of full image")
-    #             axs4[0].legend()
-
-    #             axs4[1].plot(energy_array, profile, "*", markersize=MARKERSIZE, label=_label)
-    #             #axs4[1].plot(energy_array, combined_spectrum_normalized_data, label="spectrum normalization")
-    #             axs4[1].set_xlabel("Energy (eV)")
-    #             axs4[1].set_ylabel("Transmission (a.u.)")
-    #             axs4[1].set_xscale("log")
-    #             axs4[1].legend()
-
-    #             plt.tight_layout()
-
-    #             if combined_spectrum_normalized_data is not None:
-    #                 fig, axs5 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-    #                 logging.info(f"{np.shape(profile) = }")
-
-    #                 axs5[0].plot(lambda_array, combined_spectrum_normalized_data, "r*", 
-    #                              markersize=MARKERSIZE, 
-    #                              label="spectrum normalization of ROI")
-    #                 axs5[0].set_xlabel("Lambda (A)")
-    #                 axs5[0].set_ylabel("mean of full image")
-    #                 axs5[0].legend()
-
-    #                 axs5[1].plot(energy_array, combined_spectrum_normalized_data, "r*",
-    #                               markersize=MARKERSIZE, 
-    #                               label="spectrum normalization of ROI")
-    #                 axs5[1].set_xlabel("Energy (eV)")
-    #                 axs5[1].set_ylabel("Transmission (a.u.)")
-    #                 axs5[1].set_xscale("log")
-    #                 axs5[1].legend()
-
-    #                 plt.tight_layout()
-
-    #     if export_corrected_integrated_combined_normalized_data or export_corrected_stack_of_combined_normalized_data:
-
-    #         export_corrected_normalized_data(sample_master_dict=sample_master_dict,
-    #                                   ob_master_dict=ob_master_dict,
-    #                                   dc_master_dict=dc_master_dict,
-    #                                    combined_normalized_data=combined_normalized_data,
-    #                                    export_corrected_integrated_combined_normalized_data=export_corrected_integrated_combined_normalized_data,
-    #                                    export_corrected_stack_of_combined_normalized_data=export_corrected_stack_of_combined_normalized_data,
-    #                                    lambda_array=lambda_array,
-    #                                    energy_array=energy_array,
-    #                                    output_folder=output_folder, 
-    #                                    spectra_array=spectra_array)
-            
-    # else:
-    #     dict_to_return.data = normalized_data
-
     dict_to_return.data = normalized_data
 
     logging.info("Normalization and export is done!")
@@ -714,4 +628,3 @@ def normalization_with_list_of_full_path(
         display(HTML("Normalization and export is done!"))
 
     return dict_to_return
-
