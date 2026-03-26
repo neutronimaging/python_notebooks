@@ -389,11 +389,6 @@ class NormalizationTof:
                         self.dict_sample[_run] = {}
                         self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
 
-                        print(f"DEBUGGING")
-                        print(f"{type(_run)= }")
-                        print(f"{_run = }")
-                        print(f"{len(_run) = }")
-
                         _is_spectra_file_found, spectra_file_name = NormalizationTof._is_spectra_file_found_and_list(_run)
                         if not _is_spectra_file_found:
                             self.spectra_file_found = False
@@ -562,10 +557,16 @@ class NormalizationTof:
             display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}</span>"))
             notebook_logging.info(f"WARNING: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}")
 
+        elif len(self.check_nbr_tiff[DataType.ob]) == 0:  # check_nbr_tiff[DataType.ob] is not empty
+            display(HTML(f"<span style='color:red'>Empty OB run selected!</span>"))
+            notebook_logging.info("WARNING: Not valid OB runs found!")
+                        
         else:
-            if self.check_nbr_tiff[DataType.ob][0] != self.check_nbr_tiff[DataType.sample][0]:
-                display(HTML(f"<span style='color:red'>Not valid OB runs found (different number of OB and sample TIFF files)!</span>"))
-                notebook_logging.info("WARNING: Not valid OB runs found!")
+            
+            if len(self.check_nbr_tiff[DataType.sample]) > 0 and len(self.check_nbr_tiff[DataType.ob]) > 0:
+                if self.check_nbr_tiff[DataType.ob][0] != self.check_nbr_tiff[DataType.sample][0]:
+                    display(HTML(f"<span style='color:red'>Not valid OB runs found (different number of OB and sample TIFF files)!</span>"))
+                    notebook_logging.info("WARNING: Not valid OB runs found!")
 
     def select_dc_run_numbers(self):
         self.select_folder(instruction="Browse dc top folder", next_function=self.dc_folder_selected)
@@ -1549,6 +1550,7 @@ class NormalizationTof:
 
     def save_ob_run_numbers_selected(self, folder_selected):
         self.ob_run_numbers_selected = folder_selected
+        self.ob_dir = os.path.dirname(folder_selected[0])
      
     def save_dc_run_numbers_selected(self, folder_selected):
         self.dc_run_numbers_selected = folder_selected
