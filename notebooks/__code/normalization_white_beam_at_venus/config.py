@@ -5,12 +5,13 @@ class DEBUG_DATA:
     ipts = "IPTS-25778"
     working_dir = f"/SNS/VENUS/{ipts}"
     output_folder = f"{working_dir}/shared/processed_data/jean_test"
-    sample_runs_selected = [] # "Run_15242", "Run_15241", "Run_15243"
+    sample_runs_selected = []  # "Run_15242", "Run_15241", "Run_15243"
     ob_runs_selected = ["Run_14640", "Run_14641"]
     dc_runs_selected = []
     roi = [154, 156, 180, 17]
     container_roi = [150, 150, 40, 40]
     detector_type = DetectorType.tpx1  # timepix1 or timepix3
+
 
 ## timepix3
 # class DEBUG_DATA:

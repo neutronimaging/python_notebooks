@@ -1,11 +1,7 @@
 # Standard library
 from dataclasses import dataclass
-from glob import glob
 import os
-from pathlib import Path
-from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Tuple
-from pprint import pprint
-from ipywidgets import interactive
+from typing import Any, Dict, Literal, Optional, Sequence, Tuple
 from IPython.display import display
 import ipywidgets as widgets
 import logging
@@ -16,21 +12,21 @@ import pandas as pd
 # Third-party libraries
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import matplotlib.patches as patches
 from matplotlib import colors
 import numpy as np
 from IPython.display import HTML
-from pydantic import BaseModel, Field, field_validator, model_validator
-from scipy import ndimage, stats
-from scipy.ndimage import gaussian_filter1d, median_filter
-from scipy.signal import find_peaks, savgol_filter
+from pydantic import BaseModel, Field, model_validator
+from scipy import ndimage
+from scipy.ndimage import gaussian_filter1d
+from scipy.signal import find_peaks
 # from tifffile import imread
 # from astropy.io import fits
 
-from tqdm.auto import tqdm
 
-from __code._utilities.file import make_or_increment_folder_name, make_tiff
-from __code.cylindrical_geometry_correction_embedded_widgets.utilities import replace_nan_with_local_median
+from __code._utilities.file import make_tiff
+from __code.cylindrical_geometry_correction_embedded_widgets.utilities import (
+    replace_nan_with_local_median,
+)
 
 
 class CylinderGeometry(BaseModel):
@@ -38,6 +34,7 @@ class CylinderGeometry(BaseModel):
     Cylindrical geometry in pixel coordinates (origin: top-left).
     Only store primitives; derive the rest via properties.
     """
+
     left_edge: int = Field(..., ge=0)
     right_edge: int = Field(..., ge=0)
     top_edge: int = Field(..., ge=0)
@@ -74,24 +71,24 @@ class CylinderGeometry(BaseModel):
             f"  Dimensions: width={self.width}, height={self.height}, radius={self.radius}\n"
             ")"
         )
-        
-        
+
+
 @dataclass(frozen=True, slots=True)
 class ChordResult:
     # Vectorized chord length along x (same for all rows inside the cylinder’s vertical span)
-    Lx: np.ndarray                 # shape: (width,)
+    Lx: np.ndarray  # shape: (width,)
     # 2D chord map (broadcasted along y only within cylinder vertical extent)
-    chord_map: np.ndarray          # shape: (height, width)
+    chord_map: np.ndarray  # shape: (height, width)
     # Boolean mask where chord_map is valid (inside cylinder’s vertical span and |x-center_x|<=radius)
-    mask: np.ndarray               # shape: (height, width)
+    mask: np.ndarray  # shape: (height, width)
     # Simple stats for quick logging
-    stats: dict   
-        
-        
+    stats: dict
+
+
 @dataclass(slots=True)
 class DetectionConfig:
     # horizontal (left/right)
-    peak_threshold: float = 0.30   # fraction of max
+    peak_threshold: float = 0.30  # fraction of max
     peak_distance: int = 20
     smooth_sigma: float = 2.0
     # vertical (top/bottom)
@@ -116,14 +113,13 @@ class DetectionDiagnostics:
 @dataclass(frozen=True)
 class MuEstimationConfig:
     # Common
-    exclude_edge_frac: float = 0.1     # drop columns where L(x) < frac * max(L)
+    exclude_edge_frac: float = 0.1  # drop columns where L(x) < frac * max(L)
     # Discrete (two-column, local-pairs)
-    window: int = 7                    # half-width for local neighborhoods
+    window: int = 7  # half-width for local neighborhoods
     # Iterative (global fit with smooth baseline)
-    baseline_order: int = 3            # polynomial order for b(x); 0=constant
-    robust: bool = True                # Huber-like weighting toggle (simple)
-    max_iter: int = 5     
-
+    baseline_order: int = 3  # polynomial order for b(x); 0=constant
+    robust: bool = True  # Huber-like weighting toggle (simple)
+    max_iter: int = 5
 
 
 def detect_cylindrical_boundary(
@@ -173,7 +169,9 @@ def detect_cylindrical_boundary(
 
     # --- left/right via horizontal profile ---
     horizontal_profile = np.sum(np.abs(edges_x), axis=0)
-    horizontal_profile_smooth = gaussian_filter1d(horizontal_profile, sigma=config.smooth_sigma)
+    horizontal_profile_smooth = gaussian_filter1d(
+        horizontal_profile, sigma=config.smooth_sigma
+    )
     peak_height = float(horizontal_profile_smooth.max()) * config.peak_threshold
     peaks, _ = find_peaks(
         horizontal_profile_smooth, height=peak_height, distance=config.peak_distance
@@ -236,12 +234,13 @@ def detect_cylindrical_boundary(
 
 
 def replace_with_nans(images):
-    logging.info(f"Checking for NaN values in the hyperspectral stack of shape {images.shape} and dtype {images.dtype}")
-# Check for NaN values and replace with local median if found
+    logging.info(
+        f"Checking for NaN values in the hyperspectral stack of shape {images.shape} and dtype {images.dtype}"
+    )
+    # Check for NaN values and replace with local median if found
     cleaned_images = np.empty_like(images)
-    
+
     for _index, _image in enumerate(images):
-        
         logging.info(f"\tProcessing image {_index + 1}/{len(images)}")
         if np.isnan(_image).any():
             logging.info("\\ttWarning: NaN values found in the hyperspectral stack.")
@@ -252,14 +251,16 @@ def replace_with_nans(images):
             # You can adjust the kernel size based on your data characteristics
             # Larger kernels will provide more smoothing but may blur fine details
             _image = replace_nan_with_local_median(
-                _image, 
-                kernel_size=(3, 3, 3)  # (height, width, spectral_dimension)
+                _image,
+                kernel_size=(3, 3, 3),  # (height, width, spectral_dimension)
             )
             # Verify replacement
             num_nan_final = np.sum(np.isnan(_image))
-            logging.info(f"\t\tFinal verification: {num_nan_final} NaN values remaining")
+            logging.info(
+                f"\t\tFinal verification: {num_nan_final} NaN values remaining"
+            )
             cleaned_images[_index] = _image
-            
+
         else:
             logging.info("\tNo NaN values found in the hyperspectral stack.")
 
@@ -268,34 +269,38 @@ def replace_with_nans(images):
     return cleaned_images
 
 
-def display_edges(geometry: CylinderGeometry, diagnostics: Optional[DetectionDiagnostics] = None):
-   
+def display_edges(
+    geometry: CylinderGeometry, diagnostics: Optional[DetectionDiagnostics] = None
+):
+
     display(HTML("<hr style='border:1px solid blue'>"))
-    display(HTML(f"<h3 style='color:blue'>Edges calculated</h3>"))
-   
+    display(HTML("<h3 style='color:blue'>Edges calculated</h3>"))
+
     fig, ax = plt.subplots(ncols=2, nrows=3, figsize=(10, 10))
     # ax.plot(diagnostics.edges_x[50, :])
-    ax[0, 0].imshow(diagnostics.edges_x, cmap='gray', aspect='auto')
-    ax[0, 0].set_title('Edges X')
+    ax[0, 0].imshow(diagnostics.edges_x, cmap="gray", aspect="auto")
+    ax[0, 0].set_title("Edges X")
     # ax[0, 1].imshow(diagnostics.edges_y, cmap='gray', aspect='auto')
     # ax[0, 1].set_title('Edges Y')
-    ax[0, 1].imshow(diagnostics.edges_mag, cmap='gray', aspect='auto')
-    ax[0, 1].set_title('Edges Magnitude')
+    ax[0, 1].imshow(diagnostics.edges_mag, cmap="gray", aspect="auto")
+    ax[0, 1].set_title("Edges Magnitude")
 
     horizontal_profile = np.sum(np.abs(diagnostics.edges_x), axis=0)
-    ax[1, 0].plot(horizontal_profile, label='Raw Profile')  
+    ax[1, 0].plot(horizontal_profile, label="Raw Profile")
     horizontal_profile_smooth = gaussian_filter1d(horizontal_profile, sigma=2.0)
-    ax[1, 1].plot(horizontal_profile_smooth, label='Smoothed Profile', color='orange')
+    ax[1, 1].plot(horizontal_profile_smooth, label="Smoothed Profile", color="orange")
 
-    ax[2, 0].plot(diagnostics.vertical_edge_profile, label='Vertical Edge Profile')
-    ax[2, 0].set_title('Vertical Edge Profile')
-    ax[2, 1].plot(diagnostics.vertical_edge_count, label='Vertical Edge Count', color='green')  
-    ax[2, 1].set_title('Vertical Edge Count')
+    ax[2, 0].plot(diagnostics.vertical_edge_profile, label="Vertical Edge Profile")
+    ax[2, 0].set_title("Vertical Edge Profile")
+    ax[2, 1].plot(
+        diagnostics.vertical_edge_count, label="Vertical Edge Count", color="green"
+    )
+    ax[2, 1].set_title("Vertical Edge Count")
 
     plt.tight_layout()
     plt.show()
-    
-    
+
+
 def display_detection(
     image: np.ndarray,
     geometry: CylinderGeometry,
@@ -304,19 +309,23 @@ def display_detection(
     figsize: Tuple[int, int] = (12, 10),
 ) -> None:
     """Optional visualization kept separate from detection logic."""
-    
+
     display(HTML("<hr style='border:1px solid blue'>"))
-    display(HTML(f"<h3 style='color:blue'>Detection results (edge, verticality</h3>"))
-    
+    display(HTML("<h3 style='color:blue'>Detection results (edge, verticality</h3>"))
+
     fig, axes = plt.subplots(2, 2, figsize=figsize)
 
     # 1) Original with bounds
     ax = axes[0, 0]
     ax.imshow(image, cmap="gray")
     ax.axvline(geometry.left_edge, color="r", linestyle="--", linewidth=2, label="Left")
-    ax.axvline(geometry.right_edge, color="g", linestyle="--", linewidth=2, label="Right")
+    ax.axvline(
+        geometry.right_edge, color="g", linestyle="--", linewidth=2, label="Right"
+    )
     ax.axhline(geometry.top_edge, color="b", linestyle="--", linewidth=2, label="Top")
-    ax.axhline(geometry.bottom_edge, color="y", linestyle="--", linewidth=2, label="Bottom")
+    ax.axhline(
+        geometry.bottom_edge, color="y", linestyle="--", linewidth=2, label="Bottom"
+    )
     ax.plot(geometry.center_x, geometry.center_y, "ro", markersize=8, label="Center")
     ax.set_title("Detected Cylinder Geometry")
     ax.legend(loc="upper right")
@@ -330,7 +339,10 @@ def display_detection(
             (geometry.left_edge, geometry.top_edge),
             geometry.width,
             geometry.height,
-            fill=False, color="c", linewidth=2, label="Detected Region",
+            fill=False,
+            color="c",
+            linewidth=2,
+            label="Detected Region",
         )
         ax.add_patch(rect)
         ax.set_title("Edge Magnitude + Region")
@@ -364,10 +376,24 @@ def display_detection(
             ax.plot(
                 (vcount / vcount.max()) * (vprof.max() if vprof.max() > 0 else 1.0),
                 np.arange(len(vcount)),
-                "r--", alpha=0.7, label="Edge Count (scaled)",
+                "r--",
+                alpha=0.7,
+                label="Edge Count (scaled)",
             )
-        ax.axhline(geometry.top_edge, color="b", linestyle=":", linewidth=2, label=f"Top ({geometry.top_edge})")
-        ax.axhline(geometry.bottom_edge, color="y", linestyle=":", linewidth=2, label=f"Bottom ({geometry.bottom_edge})")
+        ax.axhline(
+            geometry.top_edge,
+            color="b",
+            linestyle=":",
+            linewidth=2,
+            label=f"Top ({geometry.top_edge})",
+        )
+        ax.axhline(
+            geometry.bottom_edge,
+            color="y",
+            linestyle=":",
+            linewidth=2,
+            label=f"Bottom ({geometry.bottom_edge})",
+        )
         ax.set_ylabel("Y (pixels)")
         ax.set_xlabel("Edge strength / count")
         ax.set_title("Vertical Edge Analysis")
@@ -379,8 +405,8 @@ def display_detection(
 
     plt.tight_layout()
     plt.show()
-    
-    
+
+
 def chord_length_profile_x(
     width: int,
     center_x: int,
@@ -525,7 +551,7 @@ def calculate_cylindrical_chord_map(
 
     col_mask = Lx > 0.0
     row_mask = np.zeros(height, dtype=bool)
-    row_mask[max(0, top_edge):min(height, bottom_edge + 1)] = True
+    row_mask[max(0, top_edge) : min(height, bottom_edge + 1)] = True
 
     mask = np.outer(row_mask, col_mask)
 
@@ -583,10 +609,10 @@ def display_chord_map(
     figsize : tuple of int, optional
         Figure size for the plot. Default is (14, 8).
     """
-    
+
     display(HTML("<hr style='border:1px solid blue'>"))
-    display(HTML(f"<h3 style='color:blue'>Cylindrical chord map</h3>"))
-    
+    display(HTML("<h3 style='color:blue'>Cylindrical chord map</h3>"))
+
     fig = plt.figure(figsize=figsize)
     gs = gridspec.GridSpec(
         2, 3, height_ratios=[2, 1], figure=fig
@@ -598,8 +624,12 @@ def display_chord_map(
         ax0.imshow(background, cmap="gray")
     else:
         ax0.imshow(np.zeros_like(result.chord_map), cmap="gray")
-    ax0.axvline(geometry.center_x - geometry.radius, color="r", linestyle="--", label="Left")
-    ax0.axvline(geometry.center_x + geometry.radius, color="g", linestyle="--", label="Right")
+    ax0.axvline(
+        geometry.center_x - geometry.radius, color="r", linestyle="--", label="Left"
+    )
+    ax0.axvline(
+        geometry.center_x + geometry.radius, color="g", linestyle="--", label="Right"
+    )
     ax0.axhline(geometry.top_edge, color="b", linestyle="--", label="Top")
     ax0.axhline(geometry.bottom_edge, color="y", linestyle="--", label="Bottom")
     ax0.plot(geometry.center_x, geometry.center_y, "ro", ms=6, label="Center")
@@ -629,7 +659,7 @@ def display_chord_map(
 
     plt.tight_layout()
     plt.show()
-    
+
 
 def estimate_mu(
     T_yxl: np.ndarray,
@@ -667,7 +697,7 @@ def estimate_mu(
     H, W, L = T_yxl.shape
     # Build a 1D in-cylinder mask over x using Lx and edge exclusion
     Lmax = float(np.nanmax(Lx))
-    x_use = (Lx > cfg.exclude_edge_frac * Lmax)
+    x_use = Lx > cfg.exclude_edge_frac * Lmax
 
     # Reduce over y using the cylinder mask → get a robust 1D profile in x
     # We take the masked geometric mean along y to reduce speckle:
@@ -694,17 +724,20 @@ def estimate_mu(
     # Valid x indices for regression
     valid_x = np.where(np.isfinite(Tbar_xl).all(axis=1) & x_use)[0]
     if valid_x.size < 2:
-        raise ValueError("Not enough valid columns inside the cylinder to estimate μ(λ).")
+        raise ValueError(
+            "Not enough valid columns inside the cylinder to estimate μ(λ)."
+        )
 
     # Common transformation
     y_xl = -np.log(np.clip(Tbar_xl[valid_x, :], eps, None))  # shape: (Xv, L)
-    L_vec = Lx[valid_x]                                      # shape: (Xv,)
+    L_vec = Lx[valid_x]  # shape: (Xv,)
 
     if method == "discrete":
         mu = _estimate_mu_discrete(y_xl, L_vec, window=cfg.window)
     elif method == "iterative":
         mu = _estimate_mu_iterative(
-            y_xl, L_vec,
+            y_xl,
+            L_vec,
             baseline_order=cfg.baseline_order,
             robust=cfg.robust,
             max_iter=cfg.max_iter,
@@ -773,15 +806,15 @@ def _estimate_mu_iterative(
 
     mu = np.zeros(L, dtype=np.float64)
     # Initialize baseline and weights
-    b_xl = np.zeros_like(y_xl)     # baseline per (x,λ)
-    W_xl = np.ones_like(y_xl)      # weights for robust fitting
+    b_xl = np.zeros_like(y_xl)  # baseline per (x,λ)
+    W_xl = np.ones_like(y_xl)  # weights for robust fitting
 
     for _ in range(max_iter):
         # Step 1: fit μ(λ) via weighted least squares over x
         # y ≈ μ L + b  => μ = argmin Σ_x w (y - b - μL)^2
         # closed-form per λ:
         num = np.sum(W_xl * L_vec[:, None] * (y_xl - b_xl), axis=0)
-        den = np.sum(W_xl * (L_vec[:, None]**2), axis=0) + 1e-12
+        den = np.sum(W_xl * (L_vec[:, None] ** 2), axis=0) + 1e-12
         mu = num / den
         mu = np.maximum(0.0, mu)
 
@@ -789,9 +822,9 @@ def _estimate_mu_iterative(
         r_xl = y_xl - (L_vec[:, None] * mu[None, :])
         # Per λ polynomial regression in closed form
         # b(·,λ) = Phi * beta_λ ; beta_λ = (Phi^T Phi)^-1 Phi^T r_·λ
-        G = np.linalg.pinv(Phi)   # (P, Xv)
-        beta_l = G @ r_xl         # (P, L)
-        b_xl = Phi @ beta_l       # (Xv, L)
+        G = np.linalg.pinv(Phi)  # (P, Xv)
+        beta_l = G @ r_xl  # (P, L)
+        b_xl = Phi @ beta_l  # (Xv, L)
 
         # Optional robust weights (Huber-like)
         if robust:
@@ -856,49 +889,51 @@ def compute_correction_map_factor(hyperspectral_stack, geometry, res):
     logging.info("Starting correction factor computation...")
     logging.info(f"\tbefore swapping axis {np.shape(hyperspectral_stack)= }")
     hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 2)
-    hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 1) # "H, W, L"
+    hyperspectral_stack = np.swapaxes(hyperspectral_stack, 0, 1)  # "H, W, L"
     logging.info(f"\tafter swapping axis {np.shape(hyperspectral_stack)= }")
-    
+
     # Compute the correction factors
     mu_config = MuEstimationConfig(
-    window=9,  # larger window size leads to smoother discrete estimates
+        window=9,  # larger window size leads to smoother discrete estimates
     )
-    
+
     # Discrete method
     mu_disc, C_disc = compute_correction(
-    T_yxl=hyperspectral_stack,
-    Lx=res.Lx,
-    mask_yx=res.mask,
-    D=geometry.right_edge - geometry.left_edge,
-    method="discrete",
-    cfg=mu_config
+        T_yxl=hyperspectral_stack,
+        Lx=res.Lx,
+        mask_yx=res.mask,
+        D=geometry.right_edge - geometry.left_edge,
+        method="discrete",
+        cfg=mu_config,
     )
-   
+
     # Iterative method
     mu_iter, C_iter = compute_correction(
-    T_yxl=hyperspectral_stack,
-    Lx=res.Lx,
-    mask_yx=res.mask,
-    D=geometry.right_edge - geometry.left_edge,
-    method="iterative",
-    cfg=mu_config
+        T_yxl=hyperspectral_stack,
+        Lx=res.Lx,
+        mask_yx=res.mask,
+        D=geometry.right_edge - geometry.left_edge,
+        method="iterative",
+        cfg=mu_config,
     )
-    
+
     return mu_disc, mu_iter, C_disc
 
 
 def display_compute_correction_map_factor(mu_disc, mu_iter):
     display(HTML("<hr style='border:1px solid blue'>"))
-    display(HTML(f"<h3 style='color:blue'>Computer correction map factor</h3>"))
-    
-    plt.figure(figsize=(8,3))
+    display(HTML("<h3 style='color:blue'>Computer correction map factor</h3>"))
+
+    plt.figure(figsize=(8, 3))
     plt.plot(mu_disc, label="discrete method")
     plt.plot(mu_iter, label="iterative method", alpha=0.7)
-    plt.xlabel("λ bin"); plt.ylabel(r"$\mu(\lambda)$"); plt.title("Estimator agreement")
+    plt.xlabel("λ bin")
+    plt.ylabel(r"$\mu(\lambda)$")
+    plt.title("Estimator agreement")
     plt.grid(True, alpha=0.3)
     plt.legend(loc="best")
     plt.show()
-    
+
 
 def apply_cylindrical_correction(
     T_yxl: np.ndarray,
@@ -942,9 +977,11 @@ def apply_cylindrical_correction(
         raise ValueError(f"`T_yxl` must be 3D (H,W,L), got shape {T_yxl.shape}.")
     H, W, L = T_yxl.shape
     if C_xl.shape != (W, L):
-        raise ValueError(f"`C_xl` must have shape (W,L)={(W,L)}, got {C_xl.shape}.")
+        raise ValueError(f"`C_xl` must have shape (W,L)={(W, L)}, got {C_xl.shape}.")
     if mask_yx.shape != (H, W):
-        raise ValueError(f"`mask_yx` must have shape (H,W)={(H,W)}, got {mask_yx.shape}.")
+        raise ValueError(
+            f"`mask_yx` must have shape (H,W)={(H, W)}, got {mask_yx.shape}."
+        )
 
     Tcorr = T_yxl.copy() if copy else T_yxl
 
@@ -988,9 +1025,9 @@ def visualize_correction_for_white_beam(
     - T̄ is the geometric mean across y within the cylinder mask.
     - Air (columns outside cylinder support) are shown in light gray.
     """
-    
+
     H, W, nbr_images = T_yxl.shape
-    
+
     if T_yxl.shape != Tcorr_yxl.shape:
         raise ValueError("`T_yxl` and `Tcorr_yxl` must have the same shape.")
     if mask_yx.shape != T_yxl.shape[:2]:
@@ -1015,27 +1052,43 @@ def visualize_correction_for_white_beam(
     for x in np.where(xmask)[0]:
         ymask = M_sub[:, x]
         # geometric means over y
-        Tbar_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(T_sub[ymask, x, :], eps, None)), axis=0))
-        Tbar_corr_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(Tc_sub[ymask, x, :], eps, None)), axis=0))
-  
+        Tbar_xl[x, :] = np.exp(
+            np.nanmean(np.log(np.clip(T_sub[ymask, x, :], eps, None)), axis=0)
+        )
+        Tbar_corr_xl[x, :] = np.exp(
+            np.nanmean(np.log(np.clip(Tc_sub[ymask, x, :], eps, None)), axis=0)
+        )
+
     list_images_indices = []
     if nbr_images >= 3:
-        list_images_indices = [0, nbr_images-1, nbr_images//2]
+        list_images_indices = [0, nbr_images - 1, nbr_images // 2]
     else:
         list_images_indices = list(range(nbr_images))
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
-    list_color = ['blue', 'green', 'orange']
+    list_color = ["blue", "green", "orange"]
 
     for idx, li in enumerate(list_images_indices):
         xgrid = np.arange(W)
         Tb = np.ma.masked_where(~xmask, Tbar_xl[:, li])
         Ta = np.ma.masked_where(~xmask, Tbar_corr_xl[:, li])
-        ax.plot(xgrid, Tb, color=list_color[idx], linestyle='-', label=f"profile of image {idx} before")
-        ax.plot(xgrid, Ta, color=list_color[idx], linestyle='--', label=f"profile of image {idx} after")
+        ax.plot(
+            xgrid,
+            Tb,
+            color=list_color[idx],
+            linestyle="-",
+            label=f"profile of image {idx} before",
+        )
+        ax.plot(
+            xgrid,
+            Ta,
+            color=list_color[idx],
+            linestyle="--",
+            label=f"profile of image {idx} after",
+        )
         ax.set_xlabel("x (pixels)")
         ax.set_ylabel(r"$\bar{T}(x)$")
-        ax.set_title(f"x-profiles of various images index")
+        ax.set_title("x-profiles of various images index")
         ax.grid(True, alpha=0.3)
         ax.legend()
 
@@ -1102,12 +1155,16 @@ def visualize_correction_for_tof(
     for x in np.where(xmask)[0]:
         ymask = M_sub[:, x]
         # geometric means over y
-        Tbar_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(T_sub[ymask, x, :], eps, None)), axis=0))
-        Tbar_corr_xl[x, :] = np.exp(np.nanmean(np.log(np.clip(Tc_sub[ymask, x, :], eps, None)), axis=0))
+        Tbar_xl[x, :] = np.exp(
+            np.nanmean(np.log(np.clip(T_sub[ymask, x, :], eps, None)), axis=0)
+        )
+        Tbar_corr_xl[x, :] = np.exp(
+            np.nanmean(np.log(np.clip(Tc_sub[ymask, x, :], eps, None)), axis=0)
+        )
 
-    A_before = -np.log(np.clip(Tbar_xl, eps, None))       # (W, L)
-    A_after  = -np.log(np.clip(Tbar_corr_xl, eps, None))  # (W, L)
-    A_delta  = A_after - A_before
+    A_before = -np.log(np.clip(Tbar_xl, eps, None))  # (W, L)
+    A_after = -np.log(np.clip(Tbar_corr_xl, eps, None))  # (W, L)
+    A_delta = A_after - A_before
 
     # Colormaps: set 'bad' (NaN) → light gray for air/out-of-ROI
     cmap_seq = plt.cm.viridis.copy()
@@ -1130,21 +1187,23 @@ def visualize_correction_for_tof(
 
     # Top row: heatmaps
     ax0 = fig.add_subplot(gs[0, 0])
-    im0 = ax0.imshow(np.ma.masked_invalid(A_before), aspect='auto', cmap=cmap_seq)
+    im0 = ax0.imshow(np.ma.masked_invalid(A_before), aspect="auto", cmap=cmap_seq)
     ax0.set_title(r"Before: $-\ln \bar{T}(x,\lambda)$")
     ax0.set_xlabel("λ bin")
     ax0.set_ylabel("x")
     fig.colorbar(im0, ax=ax0, shrink=0.8)
 
     ax1 = fig.add_subplot(gs[0, 1])
-    im1 = ax1.imshow(np.ma.masked_invalid(A_after), aspect='auto', cmap=cmap_seq)
+    im1 = ax1.imshow(np.ma.masked_invalid(A_after), aspect="auto", cmap=cmap_seq)
     ax1.set_title(r"After: $-\ln \bar{T}^D(x,\lambda)$")
     ax1.set_xlabel("λ bin")
     ax1.set_ylabel("x")
     fig.colorbar(im1, ax=ax1, shrink=0.8)
 
     ax2 = fig.add_subplot(gs[0, 2])
-    im2 = ax2.imshow(np.ma.masked_invalid(A_delta), aspect='auto', cmap=cmap_div, norm=norm_div)
+    im2 = ax2.imshow(
+        np.ma.masked_invalid(A_delta), aspect="auto", cmap=cmap_div, norm=norm_div
+    )
     ax2.set_title(r"Difference: After − Before")
     ax2.set_xlabel("λ bin")
     ax2.set_ylabel("x")
@@ -1156,7 +1215,7 @@ def visualize_correction_for_tof(
     if air_rows.size:
         for ax in (ax0, ax1, ax2):
             for r in air_rows:
-                ax.axhspan(r-0.5, r+0.5, color="lightgray", alpha=0.15, lw=0)
+                ax.axhspan(r - 0.5, r + 0.5, color="lightgray", alpha=0.15, lw=0)
 
     # Bottom row: x-profiles — color=λ, linestyle=before/after
     ax3 = fig.add_subplot(gs[1, :])
@@ -1168,26 +1227,30 @@ def visualize_correction_for_tof(
         # Use masked arrays so air columns plot as gaps
         Tb = np.ma.masked_where(~xmask, Tbar_xl[:, li])
         Ta = np.ma.masked_where(~xmask, Tbar_corr_xl[:, li])
-        ax3.plot(xgrid, Tb, color=col, linestyle='-', label=f"λ={li} (before)")
-        ax3.plot(xgrid, Ta, color=col, linestyle='--', label=f"λ={li} (after)")
+        ax3.plot(xgrid, Tb, color=col, linestyle="-", label=f"λ={li} (before)")
+        ax3.plot(xgrid, Ta, color=col, linestyle="--", label=f"λ={li} (after)")
     ax3.set_xlabel("x (pixels)")
     ax3.set_ylabel(r"$\bar{T}(x,\lambda)$")
     ax3.set_title("x-profiles at selected λ bins")
     ax3.grid(True, alpha=0.3)
-    ax3.legend(ncol=min(3, 2*len(lambda_indices)))
+    ax3.legend(ncol=min(3, 2 * len(lambda_indices)))
 
     plt.tight_layout()
     plt.show()
 
     # Quantitative flatness summary (unchanged)
     if np.any(xmask):
+
         def cov_across_x(A):
             m = np.nanmean(A[xmask, :], axis=0)
             s = np.nanstd(A[xmask, :], axis=0)
             return s / np.maximum(m, 1e-12)
+
         cov_b = cov_across_x(A_before)
         cov_a = cov_across_x(A_after)
-        print(f"Flatness CoV across x — median over λ: before={np.nanmedian(cov_b):.4g}, after={np.nanmedian(cov_a):.4g}")  
+        print(
+            f"Flatness CoV across x — median over λ: before={np.nanmedian(cov_b):.4g}, after={np.nanmedian(cov_a):.4g}"
+        )
 
 
 def export_config(config_filename=None, config=None):
@@ -1195,12 +1258,18 @@ def export_config(config_filename=None, config=None):
     with open(config_filename, "w") as outfile:
         json.dump(config, outfile)
 
-        
-def export_images(output_folder=None, working_dir=None, stack_of_images=None, out=None, list_of_input_filenames=None):
+
+def export_images(
+    output_folder=None,
+    working_dir=None,
+    stack_of_images=None,
+    out=None,
+    list_of_input_filenames=None,
+):
     logging.info(f"Exporting images to folder: {output_folder}")
     logging.info(f"\tstack_of_images shape: {np.shape(stack_of_images)}")
     logging.info(f"\tlist_of_input_filenames: {list_of_input_filenames}")
-    
+
     # export images
     list_of_images_corrected = stack_of_images
 
@@ -1210,7 +1279,7 @@ def export_images(output_folder=None, working_dir=None, stack_of_images=None, ou
         display(progress_bar)
 
     for index, image in enumerate(list_of_images_corrected):
-        logging.info(f"\tExporting image {index+1}/{nbr_images} to TIFF...")
+        logging.info(f"\tExporting image {index + 1}/{nbr_images} to TIFF...")
         logging.info(f"\t\t{list_of_input_filenames[index]= }")
         _name = os.path.basename(list_of_input_filenames[index])
         logging.info(f"\t\t{_name= }")
@@ -1223,9 +1292,17 @@ def export_images(output_folder=None, working_dir=None, stack_of_images=None, ou
         progress_bar.value = index + 1
 
         progress_bar.close()
-    
+
     with out:
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created in " + output_folder + "  !</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 12px; color:blue">'
+                + str(nbr_images)
+                + " images created in "
+                + output_folder
+                + "  !</span>"
+            )
+        )
 
 
 def analyze_hyperspectral_comparison(
@@ -1297,6 +1374,7 @@ def analyze_hyperspectral_comparison(
         - 'min_positive_val' : float intensity lower bound used
         - 'max_val' : float intensity upper bound used
     """
+
     # ---------- helpers ----------
     def _flatten_data(T, M):
         if M is None:
@@ -1322,38 +1400,42 @@ def analyze_hyperspectral_comparison(
         count_negative = int(np.sum(flat < 0))
         return (
             {
-                'min_value': min_val,
-                'max_value': max_val,
-                'mean_value': mean_val,
-                'median_value': median_val,
-                'total_pixels': total_pixels,
+                "min_value": min_val,
+                "max_value": max_val,
+                "mean_value": mean_val,
+                "median_value": median_val,
+                "total_pixels": total_pixels,
             },
             {
-                'normal_count': count_normal,
-                'above_1_count': count_above_1,
-                'negative_count': count_negative,
-                'total_pixels': total_pixels,
-                'normal_percentage': 100.0 * count_normal / max(total_pixels, 1),
-                'above_1_percentage': 100.0 * count_above_1 / max(total_pixels, 1),
-                'negative_percentage': 100.0 * count_negative / max(total_pixels, 1),
+                "normal_count": count_normal,
+                "above_1_count": count_above_1,
+                "negative_count": count_negative,
+                "total_pixels": total_pixels,
+                "normal_percentage": 100.0 * count_normal / max(total_pixels, 1),
+                "above_1_percentage": 100.0 * count_above_1 / max(total_pixels, 1),
+                "negative_percentage": 100.0 * count_negative / max(total_pixels, 1),
             },
         )
 
     def _per_channel_stats(T, M):
         recs = []
         for ch, vec in _per_channel_iter(T, M):
-            recs.append({
-                'channel': ch,
-                'min_val': float(np.nanmin(vec)),
-                'max_val': float(np.nanmax(vec)),
-                'mean_val': float(np.nanmean(vec)),
-                'median_val': float(np.nanmedian(vec)),
-                'std_val': float(np.nanstd(vec)),
-                'above_1_count': int(np.sum(vec > 1)),
-                'above_1_percentage': float(100.0 * np.sum(vec > 1) / max(vec.size, 1)),
-                'negative_count': int(np.sum(vec < 0)),
-                'zero_count': int(np.sum(vec == 0)),
-            })
+            recs.append(
+                {
+                    "channel": ch,
+                    "min_val": float(np.nanmin(vec)),
+                    "max_val": float(np.nanmax(vec)),
+                    "mean_val": float(np.nanmean(vec)),
+                    "median_val": float(np.nanmedian(vec)),
+                    "std_val": float(np.nanstd(vec)),
+                    "above_1_count": int(np.sum(vec > 1)),
+                    "above_1_percentage": float(
+                        100.0 * np.sum(vec > 1) / max(vec.size, 1)
+                    ),
+                    "negative_count": int(np.sum(vec < 0)),
+                    "zero_count": int(np.sum(vec == 0)),
+                }
+            )
         return pd.DataFrame.from_records(recs)
 
     def _2d_histogram_log(T, M, log_bins):
@@ -1361,7 +1443,11 @@ def analyze_hyperspectral_comparison(
         hist = np.zeros((log_bins.size - 1, L), dtype=np.float64)
         Tlog = np.log10(np.clip(T, min_positive_val, None))
         for ch in range(L):
-            vec = Tlog[:, :, ch].reshape(-1) if M is None else Tlog[:, :, ch][M].reshape(-1)
+            vec = (
+                Tlog[:, :, ch].reshape(-1)
+                if M is None
+                else Tlog[:, :, ch][M].reshape(-1)
+            )
             h, _ = np.histogram(vec, bins=log_bins)
             hist[:, ch] = h
         return hist
@@ -1388,17 +1474,27 @@ def analyze_hyperspectral_comparison(
         raise ValueError("No positive values in 'before' data to define log bins.")
 
     if T_yxl_after is None:
-        min_positive_val = float(np.nanmin(pos_before)) if min_positive_val is None else min_positive_val
+        min_positive_val = (
+            float(np.nanmin(pos_before))
+            if min_positive_val is None
+            else min_positive_val
+        )
         max_val = float(np.nanmax(flat_before))
     else:
         pos_after = flat_after[flat_after > 0]
         if pos_after.size == 0:
             raise ValueError("No positive values in 'after' data to define log bins.")
-        min_positive_val = float(np.nanmin([np.nanmin(pos_before), np.nanmin(pos_after)])) if min_positive_val is None else min_positive_val
+        min_positive_val = (
+            float(np.nanmin([np.nanmin(pos_before), np.nanmin(pos_after)]))
+            if min_positive_val is None
+            else min_positive_val
+        )
         max_val = float(np.nanmax([np.nanmax(flat_before), np.nanmax(flat_after)]))
 
     # Log-spaced intensity bins and corresponding log bins
-    log_intensity_bins = np.logspace(np.log10(min_positive_val), np.log10(max_val), n_intensity_bins)
+    log_intensity_bins = np.logspace(
+        np.log10(min_positive_val), np.log10(max_val), n_intensity_bins
+    )
     log_bins = np.log10(log_intensity_bins)
 
     # ---------- stats ----------
@@ -1416,7 +1512,9 @@ def analyze_hyperspectral_comparison(
 
     # ---------- reporting ----------
     if show_statistics:
-        print(f"{title_prefix} (scope: {'masked ROI' if mask_yx is not None else 'full image'})")
+        print(
+            f"{title_prefix} (scope: {'masked ROI' if mask_yx is not None else 'full image'})"
+        )
         print(f"Cube shape: {T_yxl_before.shape}, dtype: {T_yxl_before.dtype}")
         print(f"Log-binning intensity range: [{min_positive_val:.3g}, {max_val:.3g}]")
         print("\nBefore (original) — basic stats:")
@@ -1431,10 +1529,16 @@ def analyze_hyperspectral_comparison(
             print(pd.Series(dist_after).round(3).to_string())
 
             # Quick improvement signal: fraction > 1 per channel
-            frac_before = df_before['above_1_count'] / (mask_yx.sum() if mask_yx is not None else (H*W))
-            frac_after  = df_after['above_1_count']  / (mask_yx.sum() if mask_yx is not None else (H*W))
+            frac_before = df_before["above_1_count"] / (
+                mask_yx.sum() if mask_yx is not None else (H * W)
+            )
+            frac_after = df_after["above_1_count"] / (
+                mask_yx.sum() if mask_yx is not None else (H * W)
+            )
             print("\nChannels with >1 values (fraction):")
-            print(f"  median before={np.nanmedian(frac_before):.4%}, after={np.nanmedian(frac_after):.4%}")
+            print(
+                f"  median before={np.nanmedian(frac_before):.4%}, after={np.nanmedian(frac_after):.4%}"
+            )
 
     # ---------- plots ----------
     if show_plots:
@@ -1443,15 +1547,24 @@ def analyze_hyperspectral_comparison(
             fig, axes = plt.subplots(1, 2, figsize=figsize)
             im = axes[0].imshow(
                 hist_before,
-                aspect='auto', origin='lower', cmap='viridis',
-                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+                aspect="auto",
+                origin="lower",
+                cmap="viridis",
+                extent=[0, L - 1, np.log10(min_positive_val), np.log10(max_val)],
             )
-            axes[0].set_xlabel('TOF Channel')
-            axes[0].set_ylabel('Log10(Intensity)')
-            axes[0].set_title(f'{title_prefix}: 2D Histogram (Before)')
-            axes[0].axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.8, label='log10(1)=0')
+            axes[0].set_xlabel("TOF Channel")
+            axes[0].set_ylabel("Log10(Intensity)")
+            axes[0].set_title(f"{title_prefix}: 2D Histogram (Before)")
+            axes[0].axhline(
+                y=0,
+                color="red",
+                linestyle="--",
+                linewidth=1.5,
+                alpha=0.8,
+                label="log10(1)=0",
+            )
             axes[0].legend()
-            plt.colorbar(im, ax=axes[0], label='Pixel Count')
+            plt.colorbar(im, ax=axes[0], label="Pixel Count")
             _plot_selected_channel_histograms(
                 axes[1],
                 cube=T_yxl_before,
@@ -1459,87 +1572,109 @@ def analyze_hyperspectral_comparison(
                 selected_channels=selected_channels,
                 selected_channels_count=selected_channels_count,
                 percentile_clip=percentile_clip,
-                title=f'{title_prefix}: Intensity Distributions (Before)'
+                title=f"{title_prefix}: Intensity Distributions (Before)",
             )
             plt.tight_layout()
             plt.show()
         else:
             # -------- three-row layout --------
             fig = plt.figure(figsize=figsize)
-            gs = gridspec.GridSpec(
-                3, 3, height_ratios=[2, 1.2, 1.6], figure=fig
-            )
+            gs = gridspec.GridSpec(3, 3, height_ratios=[2, 1.2, 1.6], figure=fig)
 
             # Row 1: 2D histograms (before / after / diff)
             ax0 = fig.add_subplot(gs[0, 0])
             im0 = ax0.imshow(
-                hist_before, aspect='auto', origin='lower', cmap='viridis',
-                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+                hist_before,
+                aspect="auto",
+                origin="lower",
+                cmap="viridis",
+                extent=[0, L - 1, np.log10(min_positive_val), np.log10(max_val)],
             )
-            ax0.set_title(f'{title_prefix}: 2D Hist (Before)')
-            ax0.set_xlabel('TOF Channel'); ax0.set_ylabel('Log10(Intensity)')
-            ax0.axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.8)
-            fig.colorbar(im0, ax=ax0, shrink=0.8, label='Pixel Count')
+            ax0.set_title(f"{title_prefix}: 2D Hist (Before)")
+            ax0.set_xlabel("TOF Channel")
+            ax0.set_ylabel("Log10(Intensity)")
+            ax0.axhline(y=0, color="red", linestyle="--", linewidth=1.5, alpha=0.8)
+            fig.colorbar(im0, ax=ax0, shrink=0.8, label="Pixel Count")
 
             ax1 = fig.add_subplot(gs[0, 1])
             im1 = ax1.imshow(
-                hist_after, aspect='auto', origin='lower', cmap='viridis',
-                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+                hist_after,
+                aspect="auto",
+                origin="lower",
+                cmap="viridis",
+                extent=[0, L - 1, np.log10(min_positive_val), np.log10(max_val)],
             )
-            ax1.set_title(f'{title_prefix}: 2D Hist (After)')
-            ax1.set_xlabel('TOF Channel'); ax1.set_ylabel('Log10(Intensity)')
-            ax1.axhline(y=0, color='red', linestyle='--', linewidth=1.5, alpha=0.8)
-            fig.colorbar(im1, ax=ax1, shrink=0.8, label='Pixel Count')
+            ax1.set_title(f"{title_prefix}: 2D Hist (After)")
+            ax1.set_xlabel("TOF Channel")
+            ax1.set_ylabel("Log10(Intensity)")
+            ax1.axhline(y=0, color="red", linestyle="--", linewidth=1.5, alpha=0.8)
+            fig.colorbar(im1, ax=ax1, shrink=0.8, label="Pixel Count")
 
             ax2 = fig.add_subplot(gs[0, 2])
             vmax = np.nanpercentile(np.abs(hist_diff), 99.0)
             im2 = ax2.imshow(
-                hist_diff, aspect='auto', origin='lower',
-                cmap='bwr', norm=colors.TwoSlopeNorm(vcenter=0.0, vmin=-vmax, vmax=vmax),
-                extent=[0, L-1, np.log10(min_positive_val), np.log10(max_val)]
+                hist_diff,
+                aspect="auto",
+                origin="lower",
+                cmap="bwr",
+                norm=colors.TwoSlopeNorm(vcenter=0.0, vmin=-vmax, vmax=vmax),
+                extent=[0, L - 1, np.log10(min_positive_val), np.log10(max_val)],
             )
-            ax2.set_title('Difference: After − Before')
-            ax2.set_xlabel('TOF Channel'); ax2.set_ylabel('Log10(Intensity)')
-            fig.colorbar(im2, ax=ax2, shrink=0.8, label='Δ Pixel Count')
+            ax2.set_title("Difference: After − Before")
+            ax2.set_xlabel("TOF Channel")
+            ax2.set_ylabel("Log10(Intensity)")
+            fig.colorbar(im2, ax=ax2, shrink=0.8, label="Δ Pixel Count")
 
             # Row 2: Fraction > 1 per channel (before vs after)
             ax3 = fig.add_subplot(gs[1, :])
-            frac_b = df_before['above_1_count'] / (mask_yx.sum() if mask_yx is not None else (H*W))
-            frac_a = df_after['above_1_count']  / (mask_yx.sum() if mask_yx is not None else (H*W))
-            ax3.plot(frac_b.values, label='before', linestyle='-')
-            ax3.plot(frac_a.values, label='after', linestyle='--')
-            ax3.set_xlabel('TOF Channel'); ax3.set_ylabel('Fraction > 1')
-            ax3.set_title('Fraction of Pixels above 1 (per Channel)')
-            ax3.grid(True, alpha=0.3); ax3.legend()
+            frac_b = df_before["above_1_count"] / (
+                mask_yx.sum() if mask_yx is not None else (H * W)
+            )
+            frac_a = df_after["above_1_count"] / (
+                mask_yx.sum() if mask_yx is not None else (H * W)
+            )
+            ax3.plot(frac_b.values, label="before", linestyle="-")
+            ax3.plot(frac_a.values, label="after", linestyle="--")
+            ax3.set_xlabel("TOF Channel")
+            ax3.set_ylabel("Fraction > 1")
+            ax3.set_title("Fraction of Pixels above 1 (per Channel)")
+            ax3.grid(True, alpha=0.3)
+            ax3.legend()
 
             # Row 3: Distributions per selected channels (legend outside)
             ax4 = fig.add_subplot(gs[2, :])
             # before
             _plot_selected_channel_histograms(
                 ax4,
-                cube=T_yxl_before, mask=mask_yx,
+                cube=T_yxl_before,
+                mask=mask_yx,
                 selected_channels=selected_channels,
                 selected_channels_count=selected_channels_count,
                 percentile_clip=percentile_clip,
-                title='Distributions per Channel (Before vs After)',
-                style='solid'
+                title="Distributions per Channel (Before vs After)",
+                style="solid",
             )
             # after (overlay, same colors; dashed linestyle rendered by helper)
             _plot_selected_channel_histograms(
                 ax4,
-                cube=T_yxl_after, mask=mask_yx,
+                cube=T_yxl_after,
+                mask=mask_yx,
                 selected_channels=selected_channels,
                 selected_channels_count=selected_channels_count,
                 percentile_clip=percentile_clip,
-                title='Distributions per Channel (Before vs After)',
-                style='dashed'
+                title="Distributions per Channel (Before vs After)",
+                style="dashed",
             )
-            ax4.axvline(x=1, color='red', linestyle='--', linewidth=1.2, alpha=0.8)
-            ax4.set_yscale('log')
+            ax4.axvline(x=1, color="red", linestyle="--", linewidth=1.2, alpha=0.8)
+            ax4.set_yscale("log")
             # push legend outside to the right
             leg = ax4.legend(
-                ncol=1, frameon=True, fontsize='small',
-                loc='center left', bbox_to_anchor=(1.01, 0.5), borderaxespad=1.0
+                ncol=1,
+                frameon=True,
+                fontsize="small",
+                loc="center left",
+                bbox_to_anchor=(1.01, 0.5),
+                borderaxespad=1.0,
             )
             # make room for the outside legend
             plt.subplots_adjust(right=0.82)
@@ -1549,22 +1684,24 @@ def analyze_hyperspectral_comparison(
 
     # ---------- return ----------
     results = {
-        'basic_stats_before': basic_before,
-        'value_distribution_before': dist_before,
-        'hist_2d_before': hist_before,
-        'channel_stats_df_before': df_before,
-        'log_intensity_bins': log_intensity_bins,
-        'min_positive_val': min_positive_val,
-        'max_val': max_val,
+        "basic_stats_before": basic_before,
+        "value_distribution_before": dist_before,
+        "hist_2d_before": hist_before,
+        "channel_stats_df_before": df_before,
+        "log_intensity_bins": log_intensity_bins,
+        "min_positive_val": min_positive_val,
+        "max_val": max_val,
     }
     if T_yxl_after is not None:
-        results.update({
-            'basic_stats_after': basic_after,
-            'value_distribution_after': dist_after,
-            'hist_2d_after': hist_after,
-            'hist_2d_diff': hist_diff,
-            'channel_stats_df_after': df_after,
-        })
+        results.update(
+            {
+                "basic_stats_after": basic_after,
+                "value_distribution_after": dist_after,
+                "hist_2d_after": hist_after,
+                "hist_2d_diff": hist_diff,
+                "channel_stats_df_after": df_after,
+            }
+        )
     return results
 
 
@@ -1577,41 +1714,53 @@ def _plot_selected_channel_histograms(
     selected_channels_count: int,
     percentile_clip: float,
     title: str,
-    style: str = 'solid',
+    style: str = "solid",
 ) -> None:
     """Internal: overlay histograms for selected channels on a given Axes."""
     H, W, L = cube.shape
     if selected_channels is None:
-        channels = np.linspace(0, L-1, selected_channels_count, dtype=int)
+        channels = np.linspace(0, L - 1, selected_channels_count, dtype=int)
     else:
         channels = [ch for ch in selected_channels if 0 <= ch < L]
         if not channels:
-            channels = np.linspace(0, L-1, selected_channels_count, dtype=int)
+            channels = np.linspace(0, L - 1, selected_channels_count, dtype=int)
 
     palette = plt.cm.tab10(np.linspace(0, 1, max(3, len(channels))))
     for i, ch in enumerate(channels):
-        vec = cube[:, :, ch].reshape(-1) if mask is None else cube[:, :, ch][mask].reshape(-1)
+        vec = (
+            cube[:, :, ch].reshape(-1)
+            if mask is None
+            else cube[:, :, ch][mask].reshape(-1)
+        )
         # clip extreme upper tail for visualization
         upper = np.nanpercentile(vec, percentile_clip)
         vec = vec[vec <= upper]
         ax.hist(
-            vec, bins=50, density=True, alpha=0.6,
-            histtype='step' if style == 'dashed' else 'bar',
-            linewidth=1.6 if style == 'dashed' else 1.0,
-            linestyle='--' if style == 'dashed' else '-',
-            color=palette[i], label=f'Channel {ch} ({style})'
+            vec,
+            bins=50,
+            density=True,
+            alpha=0.6,
+            histtype="step" if style == "dashed" else "bar",
+            linewidth=1.6 if style == "dashed" else 1.0,
+            linestyle="--" if style == "dashed" else "-",
+            color=palette[i],
+            label=f"Channel {ch} ({style})",
         )
-    ax.set_xlabel('Intensity'); ax.set_ylabel('Density'); ax.set_title(title)
+    ax.set_xlabel("Intensity")
+    ax.set_ylabel("Density")
+    ax.set_title(title)
 
 
-def visualize_hyperspectral_radiographs(hyperspectral_stack: np.ndarray, 
-                                       selected_indices: Optional[list[int]] = None, 
-                                       figsize: tuple[int, int] = (15, 7), 
-                                       cmap: str = "gray", 
-                                       percentile_range: tuple[float, float] = (2, 98)) -> plt.Figure:
+def visualize_hyperspectral_radiographs(
+    hyperspectral_stack: np.ndarray,
+    selected_indices: Optional[list[int]] = None,
+    figsize: tuple[int, int] = (15, 7),
+    cmap: str = "gray",
+    percentile_range: tuple[float, float] = (2, 98),
+) -> plt.Figure:
     """
     Visualize selected radiographs from a hyperspectral stack.
-    
+
     Parameters:
     -----------
     hyperspectral_stack : numpy.ndarray
@@ -1624,7 +1773,7 @@ def visualize_hyperspectral_radiographs(hyperspectral_stack: np.ndarray,
         Colormap for displaying images. Default is "gray".
     percentile_range : tuple, optional
         Percentile range for intensity scaling (min, max). Default is (2, 98).
-    
+
     Returns:
     --------
     fig : matplotlib.figure.Figure
@@ -1633,29 +1782,36 @@ def visualize_hyperspectral_radiographs(hyperspectral_stack: np.ndarray,
     # Default to beginning, middle, and end if no indices provided
     if selected_indices is None:
         n_images = hyperspectral_stack.shape[-1]
-        selected_indices = [0, n_images//2, n_images-1]
-    
+        selected_indices = [0, n_images // 2, n_images - 1]
+
     # Create figure with gridspec layout
     fig = plt.figure(figsize=figsize)
-    gs = gridspec.GridSpec(2, len(selected_indices), height_ratios=[5, 0.3], hspace=0.01)
-    
+    gs = gridspec.GridSpec(
+        2, len(selected_indices), height_ratios=[5, 0.3], hspace=0.01
+    )
+
     # Calculate dynamic range from selected subset
     sub_selection = hyperspectral_stack[..., selected_indices]
     vmin = np.nanpercentile(sub_selection, percentile_range[0])
     vmax = np.nanpercentile(sub_selection, percentile_range[1])
-    
+
     # Create subplots for images in the top row
     img = None  # Will store the last image for colorbar
     for i, idx in enumerate(selected_indices):
         ax = fig.add_subplot(gs[0, i])
         ax.set_title(f"Radiograph {idx}")
-        img = ax.imshow(hyperspectral_stack[..., idx], cmap=cmap, origin="lower", 
-                       vmin=vmin, vmax=vmax)
+        img = ax.imshow(
+            hyperspectral_stack[..., idx],
+            cmap=cmap,
+            origin="lower",
+            vmin=vmin,
+            vmax=vmax,
+        )
         ax.axis("off")
-    
+
     # Create colorbar in the bottom row, spanning all columns
     cbar_ax = fig.add_subplot(gs[1, :])
-    cbar = plt.colorbar(img, cax=cbar_ax, orientation='horizontal')
-    cbar.set_label('Intensity', fontsize=12)
+    cbar = plt.colorbar(img, cax=cbar_ax, orientation="horizontal")
+    cbar.set_label("Intensity", fontsize=12)
 
     return fig

@@ -5,7 +5,9 @@ import shutil
 import numpy as np
 
 
-def get_list_of_folders_with_specified_file_type(list_of_folders_to_check=None, file_extension=["tiff", "tif"]):
+def get_list_of_folders_with_specified_file_type(
+    list_of_folders_to_check=None, file_extension=["tiff", "tif"]
+):
     """
     check in the list of folder given (list_of_folders_to_check) if files of the type specified are there.
     If no file can be found in that folder with that type, the folder name is removed from the list

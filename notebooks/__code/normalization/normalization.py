@@ -35,9 +35,8 @@ class ListFiles:
 
 
 class Normalization:
-
     sample_runs = []
-    ob_runs = []    
+    ob_runs = []
     dc_runs = []
 
     data_array = None
@@ -45,7 +44,9 @@ class Normalization:
     def __init__(self, working_dir="."):
         self.working_dir = working_dir
 
-        notebook_logging.info(f"Normalization object created with working directory: {self.working_dir}")
+        notebook_logging.info(
+            f"Normalization object created with working directory: {self.working_dir}"
+        )
 
     def select_sample_runs(self):
         self.select_data(
@@ -59,7 +60,11 @@ class Normalization:
     def sample_next_function(self, b):
         notebook_logging.info(f"Sample files selected: {b}")
         self.sample_runs = b
-        display(HTML(f"<span style='font-size:16px; color:blue'>{len(b)} Sample files selected</span>"))
+        display(
+            HTML(
+                f"<span style='font-size:16px; color:blue'>{len(b)} Sample files selected</span>"
+            )
+        )
         print(f"{len(b)} sample files selected")
 
     def select_ob_runs(self):
@@ -74,7 +79,11 @@ class Normalization:
     def ob_next_function(self, b):
         notebook_logging.info(f"OB files selected: {b}")
         self.ob_runs = b
-        display(HTML(f"<span style='font-size:16px; color:blue'>{len(b)} OB files selected</span>"))
+        display(
+            HTML(
+                f"<span style='font-size:16px; color:blue'>{len(b)} OB files selected</span>"
+            )
+        )
         print(f"{len(b)} OB files selected")
 
     def select_dc_runs(self):
@@ -89,15 +98,22 @@ class Normalization:
     def dc_next_function(self, b):
         notebook_logging.info(f"DC files selected: {b}")
         self.dc_runs = b
-        display(HTML(f"<span style='font-size:16px; color:blue'>{len(b)} DC files selected</span>"))
+        display(
+            HTML(
+                f"<span style='font-size:16px; color:blue'>{len(b)} DC files selected</span>"
+            )
+        )
         print(f"{len(b)} DC files selected")
 
-    def select_data(self, instruction="Select data runs",
-                       next_function=None, 
-                       start_dir=None, 
-                       multiple=True,
-                       newdir_toolbar_button=False):
-        
+    def select_data(
+        self,
+        instruction="Select data runs",
+        next_function=None,
+        start_dir=None,
+        multiple=True,
+        newdir_toolbar_button=False,
+    ):
+
         self.list_input_folders_ui = MyFileSelectorPanel(
             instruction=instruction,
             start_dir=start_dir,
@@ -139,9 +155,11 @@ class Normalization:
         list_files.ob = self.ob_runs
         list_files.df = self.dc_runs
 
-        self.o_norm_handler = NormalizationHandler(list_files=list_files, 
-                                             working_dir=self.working_dir,
-                                             sample_data=self.data_array)
+        self.o_norm_handler = NormalizationHandler(
+            list_files=list_files,
+            working_dir=self.working_dir,
+            sample_data=self.data_array,
+        )
         self.o_norm_handler.load_data()
         self.o_norm_handler.settings()
 
@@ -161,7 +179,11 @@ class Normalization:
 
     def normalized_and_export(self, output_folder):
         notebook_logging.info(f"Output folder selected: {output_folder}")
-        display(HTML(f"<span style='font-size:16px; color:blue'>Output folder selected: {output_folder}</span>"))
+        display(
+            HTML(
+                f"<span style='font-size:16px; color:blue'>Output folder selected: {output_folder}</span>"
+            )
+        )
         self.output_folder = output_folder
 
     def export_normalized_data(self):
@@ -181,20 +203,16 @@ class Normalization:
     def legend(cls) -> None:
         display(HTML("<hr style='height:2px'/>"))
         display(HTML("<h2>Legend</h2>"))
-        display(HTML("<ul>"
-                        "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data processing.</li>"
-                        "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data processing.</li>"
-                        "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your data processing.</li>"
-                        "</ul>"))
+        display(
+            HTML(
+                "<ul>"
+                "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data processing.</li>"
+                "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data processing.</li>"
+                "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your data processing.</li>"
+                "</ul>"
+            )
+        )
         display(HTML("<hr style='height:2px'/>"))
-
-
-
-
-
-
-
-
 
 
 class NormalizationHandler:
@@ -205,16 +223,19 @@ class NormalizationHandler:
 
     normalized_data_array = []
 
-    def __init__(self, list_files: ListFiles = None, 
-                 working_dir: str = "", 
-                 gamma_threshold: float = 0.9,
-                 sample_data: list = None):
-        
+    def __init__(
+        self,
+        list_files: ListFiles = None,
+        working_dir: str = "",
+        gamma_threshold: float = 0.9,
+        sample_data: list = None,
+    ):
+
         self.files = list_files
         self.working_dir = working_dir
         self.data = Data()
         if sample_data is not None:
-            self.data.sample = sample_data  
+            self.data.sample = sample_data
 
         self.gamma_threshold = gamma_threshold
 
@@ -379,7 +400,11 @@ class NormalizationHandler:
                 self.how_to_ui.disabled = False
             else:
                 accordion_children = [self.force_ui, self.how_to_ui, table]
-                accordion_title = [force_combine_title, how_to_combine_title, table_title]
+                accordion_title = [
+                    force_combine_title,
+                    how_to_combine_title,
+                    table_title,
+                ]
                 self.how_to_ui.disabled = False
             table.value = get_html_table()
             accordion.children = accordion_children
@@ -392,9 +417,13 @@ class NormalizationHandler:
             how_to_combine = self.how_to_ui.value
 
             if force_combine == "yes":
-                description = f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
+                description = (
+                    f"OBs <b>will be combined</b> using <b>{how_to_combine}</b>"
+                )
             else:
-                description = "OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
+                description = (
+                    "OBs <b>won't be combined</b>! Each sample will use <b>1 OB</b>"
+                )
 
             html_table = (
                 f"<table style='width:800px'>"
@@ -418,13 +447,18 @@ class NormalizationHandler:
         accordion_title = list()
 
         self.force_ui = widgets.RadioButtons(
-            options=["yes", "no"], value="yes", disabled=False, layout=widgets.Layout(width="200px")
+            options=["yes", "no"],
+            value="yes",
+            disabled=False,
+            layout=widgets.Layout(width="200px"),
         )
         accordion_children.append(self.force_ui)
         self.force_ui.observe(force_combining_changed, names="value")
 
         self.how_to_ui = widgets.RadioButtons(
-            options=["median", "mean"], value="median", layout=widgets.Layout(width="200px")
+            options=["median", "mean"],
+            value="median",
+            layout=widgets.Layout(width="200px"),
         )
         accordion_children.append(self.how_to_ui)
         self.how_to_ui.observe(how_to_combine_changed, names="value")
@@ -445,7 +479,9 @@ class NormalizationHandler:
 
         table.value = get_html_table()
 
-        accordion = widgets.Accordion(children=accordion_children, title=accordion_title)
+        accordion = widgets.Accordion(
+            children=accordion_children, title=accordion_title
+        )
 
         for _index, _title in enumerate(accordion_title):
             accordion.set_title(_index, _title)
@@ -465,13 +501,18 @@ class NormalizationHandler:
             elif how_to_combine == "median":
                 force_median_ob = True
             else:
-                raise NotImplementedError(f"How to combine OB algorithm ({how_to_combine}) not implemented!")
+                raise NotImplementedError(
+                    f"How to combine OB algorithm ({how_to_combine}) not implemented!"
+                )
 
         if dict_roi is None:
             # try:
             self.o_norm.df_correction()
             self.o_norm.normalization(
-                notebook=True, force_median_ob=force_median_ob, force_mean_ob=force_mean_ob, force=True
+                notebook=True,
+                force_median_ob=force_median_ob,
+                force_mean_ob=force_mean_ob,
+                force=True,
             )
             self.normalized_data_array = self.o_norm.get_normalized_data()
             self.normalized_metadata_array = self.o_norm.data["sample"]["metadata"]
@@ -514,7 +555,7 @@ class NormalizationHandler:
                     force_median_ob=force_median_ob,
                     force_mean_ob=force_mean_ob,
                     force=True,
-                    )
+                )
                 # except ValueError:
                 #     display(
                 #         HTML(
@@ -551,9 +592,15 @@ class NormalizationHandler:
         hbox = widgets.HBox(
             [
                 widgets.Button(
-                    description=f"Jump to {ipts} Shared Folder", button_style="success", layout=button_layout
+                    description=f"Jump to {ipts} Shared Folder",
+                    button_style="success",
+                    layout=button_layout,
                 ),
-                widgets.Button(description="Jump to My Home Folder", button_style="success", layout=button_layout),
+                widgets.Button(
+                    description="Jump to My Home Folder",
+                    button_style="success",
+                    layout=button_layout,
+                ),
             ]
         )
         go_to_shared_button_ui = hbox.children[0]
@@ -568,12 +615,17 @@ class NormalizationHandler:
 
     def display_file_selector(self, start_dir=""):
         self.output_folder_ui = fileselector.FileSelectorPanel(
-            instruction="Select Output Folder", start_dir=start_dir, multiple=False, type="directory"
+            instruction="Select Output Folder",
+            start_dir=start_dir,
+            multiple=False,
+            type="directory",
         )
         self.output_folder_ui.show()
 
     def export(self, output_folder):
-        base_folder = os.path.basename(os.path.dirname(self.list_file_names[0])) + "_normalized"
+        base_folder = (
+            os.path.basename(os.path.dirname(self.list_file_names[0])) + "_normalized"
+        )
         output_folder = os.path.join(output_folder, base_folder)
         output_folder = make_or_increment_folder_name(output_folder)
 
@@ -609,7 +661,10 @@ class GammaCoefficient:
             [
                 widgets.Label("Gamma Coefficient:", layout=widgets.Layout(width="20%")),
                 widgets.FloatSlider(
-                    value=gamma_filtering_coefficient, min=0, max=1, layout=widgets.Layout(width="50%")
+                    value=gamma_filtering_coefficient,
+                    min=0,
+                    max=1,
+                    layout=widgets.Layout(width="50%"),
                 ),
             ]
         )
@@ -617,16 +672,6 @@ class GammaCoefficient:
 
     def get_coefficient(self):
         return self.gamma_coeff_ui.children[1].value
-
-
-
-
-
-
-
-
-
-
 
 
 def close(w):
@@ -754,7 +799,10 @@ class Panel:
         title_ui = widgets.HBox(
             [
                 widgets.Label("Instructions:", layout=widgets.Layout(width="20%")),
-                widgets.Label("Select Samples Images and click NEXT", layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Select Samples Images and click NEXT",
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
 
@@ -764,7 +812,9 @@ class Panel:
         #         widgets.Label("None", layout=widgets.Layout(width="50%")),
         #     ]
         # )
-        self.title = title_ui.children[1]  # "Select [Samples/OB/DF] Images [and click NEXT]
+        self.title = title_ui.children[
+            1
+        ]  # "Select [Samples/OB/DF] Images [and click NEXT]
         # self.label = label_ui.children[1]  # number of samples selected
 
         # self.top_panel = widgets.VBox(children=[title_ui, label_ui], layout=self.layout)
@@ -789,7 +839,9 @@ class Panel:
             self.prev_button_ui.on_click(self.prev_button_clicked)
             list_ui.append(self.prev_button_ui)
 
-        self.current_state_label_ui = widgets.Label("         ", layout=widgets.Layout(width="70%"))
+        self.current_state_label_ui = widgets.Label(
+            "         ", layout=widgets.Layout(width="70%")
+        )
         list_ui.append(self.current_state_label_ui)
 
         if self.next_button:
@@ -826,7 +878,9 @@ class Panel:
 
 
 class WizardPanel:
-    label_layout = Layout(border="1px lighgray solide", height="35px", padding="8px", width="300px")
+    label_layout = Layout(
+        border="1px lighgray solide", height="35px", padding="8px", width="300px"
+    )
     sample_panel = None
 
     def __init__(self, sample_panel=None):
@@ -900,6 +954,3 @@ class WizardPanel:
 #         o_norm_handler.load_data()
 #         self.top_object.o_norm_handler = o_norm_handler
 #         self.top_object.o_norm = o_norm_handler.o_norm
-
-
-

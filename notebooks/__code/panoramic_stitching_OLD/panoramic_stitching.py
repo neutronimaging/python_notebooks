@@ -61,7 +61,9 @@ class Interface(QMainWindow):
         self.o_norm = o_norm
 
         self.list_files = self.o_norm.data["sample"]["file_name"]
-        self.basename_list_files = [os.path.basename(_file) for _file in self.list_files]
+        self.basename_list_files = [
+            os.path.basename(_file) for _file in self.list_files
+        ]
 
         self.list_data = self.o_norm.data["sample"]["data"]
 
@@ -121,7 +123,12 @@ class Interface(QMainWindow):
         height = np.max([y0, y1]) - y0
 
         o_utilities.set_roi_to_master_dict(
-            row=row_selected, data_type=data_type, x0=x0, y0=y0, width=width, height=height
+            row=row_selected,
+            data_type=data_type,
+            x0=x0,
+            y0=y0,
+            width=width,
+            height=height,
         )
 
         # we need to make sure the target roi has the proper size
@@ -141,8 +148,12 @@ class Interface(QMainWindow):
         row_selected = o_utilities.get_reference_selected(key="index")
 
         # +1 because the target file starts at the second file
-        target_file_index_selected = o_utilities.get_target_index_selected_from_row(row=row_selected)
-        reference_file_index_selected = o_utilities.get_reference_index_selected_from_row(row=row_selected)
+        target_file_index_selected = o_utilities.get_target_index_selected_from_row(
+            row=row_selected
+        )
+        reference_file_index_selected = (
+            o_utilities.get_reference_index_selected_from_row(row=row_selected)
+        )
 
         reference_data = self.list_reference["data"][reference_file_index_selected]
         target_data = self.list_target["data"][target_file_index_selected]
@@ -183,7 +194,9 @@ class Interface(QMainWindow):
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.histogram_level[data_type][0], self.histogram_level[data_type][1])
+            _histo_widget.setLevels(
+                self.histogram_level[data_type][0], self.histogram_level[data_type][1]
+            )
 
     def display_roi(self, data_type="reference"):
         o_utilities = Utilities(parent=self)
@@ -231,7 +244,9 @@ class Interface(QMainWindow):
                 continue
 
             if _target_file in list_target_file:
-                o_utilities.set_status_of_this_row_to_message(row=_row, message="Already used!")
+                o_utilities.set_status_of_this_row_to_message(
+                    row=_row, message="Already used!"
+                )
             list_target_file.add(_target_file)
 
         if len(list_target_file) == len(self.list_target["files"]) - 1:

@@ -36,7 +36,9 @@ class Initialization:
         area.moveDock(d2, "above", d2h)
 
         # raw image
-        self.parent.ui.raw_image_view = pg.ImageView(view=pg.PlotItem(), name="raw_image")
+        self.parent.ui.raw_image_view = pg.ImageView(
+            view=pg.PlotItem(), name="raw_image"
+        )
         self.parent.ui.raw_image_view.ui.roiBtn.hide()
         self.parent.ui.raw_image_view.ui.menuBtn.hide()
         self.parent.ui.raw_image_view.view.setAutoVisible(y=True)
@@ -58,13 +60,19 @@ class Initialization:
         d1h.addWidget(self.parent.ui.raw_histogram_plot)
 
         # filtered image
-        self.parent.ui.filtered_image_view = pg.ImageView(view=pg.PlotItem(), name="filtered_image")
+        self.parent.ui.filtered_image_view = pg.ImageView(
+            view=pg.PlotItem(), name="filtered_image"
+        )
         self.parent.ui.filtered_image_view.ui.roiBtn.hide()
         self.parent.ui.filtered_image_view.ui.menuBtn.hide()
         self.parent.filtered_vLine = pg.InfiniteLine(angle=90, movable=False)
         self.parent.filtered_hLine = pg.InfiniteLine(angle=0, movable=False)
-        self.parent.ui.filtered_image_view.addItem(self.parent.filtered_vLine, ignoreBounds=True)
-        self.parent.ui.filtered_image_view.addItem(self.parent.filtered_hLine, ignoreBounds=True)
+        self.parent.ui.filtered_image_view.addItem(
+            self.parent.filtered_vLine, ignoreBounds=True
+        )
+        self.parent.ui.filtered_image_view.addItem(
+            self.parent.filtered_hLine, ignoreBounds=True
+        )
         self.parent.filtered_vLine.setPos([1000, 1000])
         self.parent.filtered_hLine.setPos([1000, 1000])
         self.parent.filtered_proxy = pg.SignalProxy(

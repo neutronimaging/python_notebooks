@@ -14,8 +14,12 @@ from __code import load_ui
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code._utilities.string import format_html_message
 from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns
-from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import ExcelTableHandler as TableHandler
-from __code.group_images_by_cycle_for_grating_experiment.repeat_widget_change_dialog import RepeatWidgetChangeDialog
+from __code.group_images_by_cycle_for_grating_experiment.excel_table_handler import (
+    ExcelTableHandler as TableHandler,
+)
+from __code.group_images_by_cycle_for_grating_experiment.repeat_widget_change_dialog import (
+    RepeatWidgetChangeDialog,
+)
 
 ROW_HEIGHT = 40
 
@@ -39,22 +43,33 @@ class ExcelHandler:
         df = pd.read_excel(excel_file, sheet_name="Tabelle1", header=0)
 
         nbr_excel_row = len(df)
-        nbr_notebook_row = len(self.parent.first_last_run_of_each_group_dictionary.keys())
-        data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
+        nbr_notebook_row = len(
+            self.parent.first_last_run_of_each_group_dictionary.keys()
+        )
+        data_type_to_populate_with_notebook_data = (
+            self.parent.sample_or_ob_radio_buttons.value
+        )
 
         # if we want to populate the sample column, we need to have the same number of sample and ob
-        if (nbr_excel_row != nbr_notebook_row) and (data_type_to_populate_with_notebook_data == "sample"):
+        if (nbr_excel_row != nbr_notebook_row) and (
+            data_type_to_populate_with_notebook_data == "sample"
+        ):
             display(
                 HTML(
                     "<font color='red'>Number of rows in Excel document selected and number of group <b>DO NOT "
                     "MATCH!</b></font>"
                 )
             )
-            display(HTML("<font color='blue'><b>SOLUTION</b>: create a new Excel document!</font>"))
+            display(
+                HTML(
+                    "<font color='blue'><b>SOLUTION</b>: create a new Excel document!</font>"
+                )
+            )
 
         else:
             new_df = self._populate_pandas_object(
-                df=df, data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data
+                df=df,
+                data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data,
             )
 
             o_interface = Interface(
@@ -71,10 +86,14 @@ class ExcelHandler:
         with open(config_file) as json_file:
             return json.load(json_file)
 
-    def _populate_pandas_object(self, df=None, data_type_to_populate_with_notebook_data="sample"):
+    def _populate_pandas_object(
+        self, df=None, data_type_to_populate_with_notebook_data="sample"
+    ):
         logging.info("Entering _populate_pandas_object!")
 
-        def get_matching_ob_group_index(sample_outer_value=None, dict_group_outer_value=None):
+        def get_matching_ob_group_index(
+            sample_outer_value=None, dict_group_outer_value=None
+        ):
             """
             Using the sample_outer_value as a reference, this method will go over all the keys in ob_outer_value
             and look at the corresponding value.
@@ -92,14 +111,19 @@ class ExcelHandler:
             return list_keys[-1]
 
         output_folder = os.path.abspath(self.parent.output_folder)
-        first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
+        first_last_run_of_each_group_dictionary = (
+            self.parent.first_last_run_of_each_group_dictionary
+        )
 
         if data_type_to_populate_with_notebook_data == "sample":
             logging.info("working with Sample")
 
-            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+            for _row_index, _key in enumerate(
+                first_last_run_of_each_group_dictionary.keys()
+            ):
                 df.iloc[_row_index, 0] = os.path.join(
-                    output_folder, first_last_run_of_each_group_dictionary[_key]["first"]
+                    output_folder,
+                    first_last_run_of_each_group_dictionary[_key]["first"],
                 )
                 df.iloc[_row_index, 1] = os.path.join(
                     output_folder, first_last_run_of_each_group_dictionary[_key]["last"]
@@ -118,15 +142,18 @@ class ExcelHandler:
                 sample_outer_value = df.iloc[_row, IndexOfColumns.sample_information]
                 logging.info(f"-> sample_outer_value: {sample_outer_value}")
                 ob_group_index = get_matching_ob_group_index(
-                    sample_outer_value=sample_outer_value, dict_group_outer_value=dict_group_outer_value
+                    sample_outer_value=sample_outer_value,
+                    dict_group_outer_value=dict_group_outer_value,
                 )
                 # logging.info(f"-> ob_group_index: {ob_group_index}")
 
                 df.iloc[_row, 2] = os.path.join(
-                    output_folder, first_last_run_of_each_group_dictionary[ob_group_index]["first"]
+                    output_folder,
+                    first_last_run_of_each_group_dictionary[ob_group_index]["first"],
                 )
                 df.iloc[_row, 3] = os.path.join(
-                    output_folder, first_last_run_of_each_group_dictionary[ob_group_index]["last"]
+                    output_folder,
+                    first_last_run_of_each_group_dictionary[ob_group_index]["last"],
                 )
 
         return df
@@ -148,27 +175,43 @@ class ExcelHandler:
                 return f"{int(str_angle_value):03d}"
 
         output_folder = os.path.abspath(self.parent.output_folder)
-        first_last_run_of_each_group_dictionary = self.parent.first_last_run_of_each_group_dictionary
+        first_last_run_of_each_group_dictionary = (
+            self.parent.first_last_run_of_each_group_dictionary
+        )
         dict_group_outer_value = self.parent.dict_group_outer_value
         excel_config = self.get_excel_config()
 
         df_dict = {}
         if data_type_to_populate_with_notebook_data == "sample":
-            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+            for _row_index, _key in enumerate(
+                first_last_run_of_each_group_dictionary.keys()
+            ):
                 if _row_index == 0:
                     df_dict["first_data_file"] = [
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["first"],
+                        )
                     ]
                     df_dict["last_data_file"] = [
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["last"],
+                        )
                     ]
                     df_dict["sample_information"] = [dict_group_outer_value[_key]]
                 else:
                     df_dict["first_data_file"].append(
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["first"],
+                        )
                     )
                     df_dict["last_data_file"].append(
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["last"],
+                        )
                     )
                     df_dict["sample_information"].append(dict_group_outer_value[_key])
 
@@ -177,31 +220,47 @@ class ExcelHandler:
             df_dict["last_ob_file"] = ["None" for _ in np.arange(nbr_row)]
 
         else:  # ob
-            for _row_index, _key in enumerate(first_last_run_of_each_group_dictionary.keys()):
+            for _row_index, _key in enumerate(
+                first_last_run_of_each_group_dictionary.keys()
+            ):
                 nbr_row = len(first_last_run_of_each_group_dictionary.keys())
                 df_dict["first_sample_file"] = ["None" for _ in np.arange(nbr_row)]
                 df_dict["last_sample_file"] = ["None" for _ in np.arange(nbr_row)]
 
                 if _row_index == 0:
                     df_dict["first_ob_file"] = [
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["first"],
+                        )
                     ]
                     df_dict["last_ob_file"] = [
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["last"],
+                        )
                     ]
                 else:
                     df_dict["first_ob_file"].append(
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["first"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["first"],
+                        )
                     )
                     df_dict["last_ob_file"].append(
-                        os.path.join(output_folder, first_last_run_of_each_group_dictionary[_key]["last"])
+                        os.path.join(
+                            output_folder,
+                            first_last_run_of_each_group_dictionary[_key]["last"],
+                        )
                     )
 
         # default file_id
         dict_group_outer_value = self.parent.dict_group_outer_value
 
         for _row_index, _key in enumerate(dict_group_outer_value):
-            angle_value_formatted = formatting_angle_value(str_angle_value=dict_group_outer_value[_key])
+            angle_value_formatted = formatting_angle_value(
+                str_angle_value=dict_group_outer_value[_key]
+            )
             _file_id = f"sample_{angle_value_formatted}"
             if _row_index == 0:
                 df_dict["file_id"] = [_file_id]
@@ -231,7 +290,9 @@ class ExcelHandler:
 
     def new_excel(self):
         self.parent.excel_info_widget.value = "<b>Working with new excel file!"
-        data_type_to_populate_with_notebook_data = self.parent.sample_or_ob_radio_buttons.value
+        data_type_to_populate_with_notebook_data = (
+            self.parent.sample_or_ob_radio_buttons.value
+        )
 
         pandas_object = self._create_pandas_object(
             data_type_to_populate_with_notebook_data=data_type_to_populate_with_notebook_data
@@ -267,7 +328,9 @@ class Interface(QMainWindow):
             )
         )
         self.grand_parent = grand_parent
-        self.data_type_to_populate_with_notebook_data = data_type_to_populate_with_notebook_data
+        self.data_type_to_populate_with_notebook_data = (
+            data_type_to_populate_with_notebook_data
+        )
         self.output_folder = self.grand_parent.output_folder
 
         self.pandas_object = pandas_object
@@ -295,11 +358,15 @@ class Interface(QMainWindow):
         self.repeat_widget_changed_or_not_dialog(row_changed=row, column_changed=column)
 
     def repeat_widget_changed_or_not_dialog(self, row_changed=0, column_changed=0):
-        o_dialog = RepeatWidgetChangeDialog(parent=self, input_row=row_changed, input_column=column_changed)
+        o_dialog = RepeatWidgetChangeDialog(
+            parent=self, input_row=row_changed, input_column=column_changed
+        )
         o_dialog.show()
 
     @staticmethod
-    def add_output_folder_to_dictionary(first_last_run_of_each_group_dictionary=None, output_folder=None):
+    def add_output_folder_to_dictionary(
+        first_last_run_of_each_group_dictionary=None, output_folder=None
+    ):
         for _key in first_last_run_of_each_group_dictionary.keys():
             first_last_run_of_each_group_dictionary[_key]["first"] = os.path.join(
                 output_folder, first_last_run_of_each_group_dictionary[_key]["first"]
@@ -374,7 +441,9 @@ class Interface(QMainWindow):
         def is_roi_correct_format(roi):
             """check if roi has the format [##,##,##,##] where ## are integers"""
             roi = roi.strip()
-            result = re.search(r"\[\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*\]", roi)
+            result = re.search(
+                r"\[\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*,\s*(\d*)\s*\]", roi
+            )
             try:
                 if len(result.groups()) != 4:
                     return False
@@ -461,7 +530,8 @@ class Interface(QMainWindow):
         if self.at_least_one_error_found:
             show_status_message(
                 parent=self,
-                message="At least one issue found in table! Angel will not be able to execute this " "excel!",
+                message="At least one issue found in table! Angel will not be able to execute this "
+                "excel!",
                 status=StatusMessageStatus.warning,
                 duration_s=15,
             )
@@ -502,7 +572,10 @@ class Interface(QMainWindow):
             )
         else:
             show_status_message(
-                parent=self, message="Created a new Excel file!", status=StatusMessageStatus.ready, duration_s=10
+                parent=self,
+                message="Created a new Excel file!",
+                status=StatusMessageStatus.ready,
+                duration_s=10,
             )
 
     def fill_table(self):
@@ -535,22 +608,34 @@ class Interface(QMainWindow):
             o_table.set_last_ob_file(pandas_entry_for_this_row[3])
             o_table.set_first_dc_file(pandas_entry_for_this_row[4])
             o_table.set_last_dc_file(pandas_entry_for_this_row[5])
-            o_table.set_period(pandas_entry_for_this_row[6], method=self.widget_state_changed)
-            o_table.set_images_per_step(pandas_entry_for_this_row[7], method=self.widget_state_changed)
+            o_table.set_period(
+                pandas_entry_for_this_row[6], method=self.widget_state_changed
+            )
+            o_table.set_images_per_step(
+                pandas_entry_for_this_row[7], method=self.widget_state_changed
+            )
             o_table.set_rotation(pandas_entry_for_this_row[8])
-            o_table.set_fit_procedure(pandas_entry_for_this_row[9], method=self.widget_state_changed)
+            o_table.set_fit_procedure(
+                pandas_entry_for_this_row[9], method=self.widget_state_changed
+            )
             o_table.set_roi(pandas_entry_for_this_row[10])
-            o_table.set_gamma_filter_data_ob(pandas_entry_for_this_row[11], method=self.widget_state_changed)
+            o_table.set_gamma_filter_data_ob(
+                pandas_entry_for_this_row[11], method=self.widget_state_changed
+            )
             o_table.set_data_threshold_3x3(pandas_entry_for_this_row[12])
             o_table.set_data_threshold_5x5(pandas_entry_for_this_row[13])
             o_table.set_data_threshold_7x7(pandas_entry_for_this_row[14])
             o_table.set_data_sigma_log(pandas_entry_for_this_row[15])
-            o_table.set_gamma_filter_dc(pandas_entry_for_this_row[16], method=self.widget_state_changed)
+            o_table.set_gamma_filter_dc(
+                pandas_entry_for_this_row[16], method=self.widget_state_changed
+            )
             o_table.set_dc_threshold_3x3(pandas_entry_for_this_row[17])
             o_table.set_dc_threshold_5x5(pandas_entry_for_this_row[18])
             o_table.set_dc_threshold_7x7(pandas_entry_for_this_row[19])
             o_table.set_dc_log(pandas_entry_for_this_row[20])
-            o_table.set_dc_outlier_removal(pandas_entry_for_this_row[21], method=self.widget_state_changed)
+            o_table.set_dc_outlier_removal(
+                pandas_entry_for_this_row[21], method=self.widget_state_changed
+            )
             o_table.set_dc_outlier_value(pandas_entry_for_this_row[22])
             o_table.set_result_directory(pandas_entry_for_this_row[23])
             o_table.set_file_id(pandas_entry_for_this_row[24])
@@ -572,7 +657,9 @@ class Interface(QMainWindow):
         working_dir = self.grand_parent.working_dir
         folder_selected = self.grand_parent.folder_selected
         base_folder_name = os.path.basename(folder_selected)
-        default_file_name = os.path.join(working_dir, base_folder_name + "_angel_excel.xls")
+        default_file_name = os.path.join(
+            working_dir, base_folder_name + "_angel_excel.xls"
+        )
         file_and_extension_name = QFileDialog.getSaveFileName(
             self, "Select or define file name", default_file_name, "Excel (*.xls)"
         )
@@ -732,7 +819,9 @@ class Interface(QMainWindow):
 
         if show_copy_content_to_rest_of_column:
             menu.addSeparator()
-            copy_content_to_rest_of_column = menu.addAction("Sync column with this value")
+            copy_content_to_rest_of_column = menu.addAction(
+                "Sync column with this value"
+            )
         else:
             copy_content_to_rest_of_column = None
 
@@ -764,36 +853,56 @@ class Interface(QMainWindow):
             )
 
         elif action == copy_content_to_rest_of_column:
-            self.copy_content_to_rest_of_column(current_row=row_selected, current_column=column_selected)
+            self.copy_content_to_rest_of_column(
+                current_row=row_selected, current_column=column_selected
+            )
             self.check_table_content_pushed()
 
     def copy_content_to_rest_of_column(self, current_row=0, current_column=0):
         o_table = TableHandler(table_ui=self.ui.tableWidget)
-        value_to_copy = o_table.get_item_str_from_cell(row=current_row, column=current_column)
+        value_to_copy = o_table.get_item_str_from_cell(
+            row=current_row, column=current_column
+        )
         nbr_row = o_table.row_count()
         for _row in np.arange(nbr_row):
-            o_table.set_item_with_str(row=_row, column=current_column, cell_str=value_to_copy)
+            o_table.set_item_with_str(
+                row=_row, column=current_column, cell_str=value_to_copy
+            )
 
-    def browse(self, show_browse_for_folder=False, show_browse_for_file=True, row_selected=[0], column_selected=0):
+    def browse(
+        self,
+        show_browse_for_folder=False,
+        show_browse_for_file=True,
+        row_selected=[0],
+        column_selected=0,
+    ):
         folder_selected = self.grand_parent.folder_selected
 
         if show_browse_for_file:
-            file_and_extension_name = QFileDialog.getOpenFileName(self, "Select file ...", folder_selected)
+            file_and_extension_name = QFileDialog.getOpenFileName(
+                self, "Select file ...", folder_selected
+            )
 
             file_selected = file_and_extension_name[0]
             if file_selected:
                 o_table = TableHandler(table_ui=self.ui.tableWidget)
                 for _row in row_selected:
-                    o_table.set_item_with_str(row=_row, column=column_selected, cell_str=file_selected)
+                    o_table.set_item_with_str(
+                        row=_row, column=column_selected, cell_str=file_selected
+                    )
 
         elif show_browse_for_folder:
             folder_name = os.path.dirname(folder_selected)
-            folder = QFileDialog.getExistingDirectory(self, "Select output folder ...", folder_name)
+            folder = QFileDialog.getExistingDirectory(
+                self, "Select output folder ...", folder_name
+            )
 
             if folder:
                 o_table = TableHandler(table_ui=self.ui.tableWidget)
                 for _row in row_selected:
-                    o_table.set_item_with_str(row=_row, column=column_selected, cell_str=folder)
+                    o_table.set_item_with_str(
+                        row=_row, column=column_selected, cell_str=folder
+                    )
 
         self.check_table_content_pushed()
 

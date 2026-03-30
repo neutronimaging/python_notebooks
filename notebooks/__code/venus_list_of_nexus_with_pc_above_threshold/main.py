@@ -34,7 +34,9 @@ class VenusNexusListPCAboveThreshold:
     def proton_charge_threshold(self):
         pc_ui = widgets.VBox(
             [
-                widgets.Label("Proton charge threshold (C):", layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Proton charge threshold (C):", layout=widgets.Layout(width="50%")
+                ),
                 widgets.FloatText(1, layout=widgets.Layout(width="200px")),
             ]
         )

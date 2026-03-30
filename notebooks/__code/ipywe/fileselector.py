@@ -21,11 +21,18 @@ class FileSelectorPanel:
     # statement should change the width of the file selector. "width="
     # doesn't appear to work in earlier versions.
     select_layout = ipyw.Layout(width="99%", height="260px")
-    select_multiple_layout = ipyw.Layout(width="99%", height="360px")  # , display="flex", flex_flow="column")
+    select_multiple_layout = ipyw.Layout(
+        width="99%", height="360px"
+    )  # , display="flex", flex_flow="column")
     button_layout = ipyw.Layout(margin="5px 40px", border="1px solid gray")
-    toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px", border="1px solid gray")
+    toolbar_button_layout = ipyw.Layout(
+        margin="5px 10px", width="100px", border="1px solid gray"
+    )
     toolbar_box_layout = ipyw.Layout(
-        border="1px solid lightgrey", padding="3px", margin="5px 50px 5px 5px", width="100%"
+        border="1px solid lightgrey",
+        padding="3px",
+        margin="5px 50px 5px 5px",
+        width="100%",
     )
     label_layout = ipyw.Layout(width="100%")
     layout = ipyw.Layout()
@@ -136,7 +143,9 @@ class FileSelectorPanel:
         left_vbox = ipyw.VBox(left_widgets, layout=ipyw.Layout(width="80%"))
         # right
         # change directory button
-        self.changedir = ipyw.Button(description="Change directory", layout=self.button_layout)
+        self.changedir = ipyw.Button(
+            description="Change directory", layout=self.button_layout
+        )
         self.changedir.on_click(self.handle_changedir)
         # select button
         ok_layout = cloneLayout(self.button_layout)
@@ -147,7 +156,9 @@ class FileSelectorPanel:
         right_vbox = ipyw.VBox(children=[self.changedir, self.ok])
         select_panel = ipyw.HBox(
             children=[left_vbox, right_vbox],
-            layout=ipyw.Layout(border="1px solid lightgrey", margin="5px", padding="10px"),
+            layout=ipyw.Layout(
+                border="1px solid lightgrey", margin="5px", padding="10px"
+            ),
         )
         body = ipyw.VBox(children=[toolbar, select_panel], layout=self.layout)
         self.footer.value = ""
@@ -158,20 +169,34 @@ class FileSelectorPanel:
         # "jump to"
         curdir = self.curdir
         self.jumpto_input = jumpto_input = ipyw.Text(
-            value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width="100%")
+            value=curdir,
+            placeholder="",
+            description="Location: ",
+            layout=ipyw.Layout(width="100%"),
         )
-        jumpto_button = ipyw.Button(description="Jump", layout=self.toolbar_button_layout)
+        jumpto_button = ipyw.Button(
+            description="Jump", layout=self.toolbar_button_layout
+        )
         jumpto_button.on_click(self.handle_jumpto)
-        jumpto = ipyw.HBox(children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout)
+        jumpto = ipyw.HBox(
+            children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout
+        )
         self.jumpto_button = jumpto_button
         if self.newdir_toolbar_button:
             # "new dir"
             self.newdir_input = newdir_input = ipyw.Text(
-                value="", placeholder="new dir name", description="New subdir: ", layout=ipyw.Layout(width="180px")
+                value="",
+                placeholder="new dir name",
+                description="New subdir: ",
+                layout=ipyw.Layout(width="180px"),
             )
-            newdir_button = ipyw.Button(description="Create", layout=self.toolbar_button_layout)
+            newdir_button = ipyw.Button(
+                description="Create", layout=self.toolbar_button_layout
+            )
             newdir_button.on_click(self.handle_newdir)
-            newdir = ipyw.HBox(children=[newdir_input, newdir_button], layout=self.toolbar_box_layout)
+            newdir = ipyw.HBox(
+                children=[newdir_input, newdir_button], layout=self.toolbar_box_layout
+            )
             toolbar = ipyw.HBox(children=[jumpto, newdir])
         else:
             toolbar = ipyw.HBox(children=[jumpto])
@@ -185,7 +210,9 @@ class FileSelectorPanel:
             entries_files = self.getFilteredEntries()
         else:
             entries_files = sorted(os.listdir(curdir))
-            entries_files = [_f for _f in entries_files if (self.searching_string in _f)]
+            entries_files = [
+                _f for _f in entries_files if (self.searching_string in _f)
+            ]
         #
 
         # if self.sort_by_alphabetical:
@@ -212,11 +239,19 @@ class FileSelectorPanel:
         if self.multiple:
             value = []
             self.select = ipyw.SelectMultiple(
-                value=value, options=entries, description="Select", layout=self.select_multiple_layout
+                value=value,
+                options=entries,
+                description="Select",
+                layout=self.select_multiple_layout,
             )
         else:
             value = entries[0]
-            self.select = ipyw.Select(value=value, options=entries, description="Select", layout=self.select_layout)
+            self.select = ipyw.Select(
+                value=value,
+                options=entries,
+                description="Select",
+                layout=self.select_layout,
+            )
         """When ipywidgets 7.0 is released, the old way that the select or select multiple
            widget was set up (see below) should work so long as self.select_layout is changed
            to include the display="flex" and flex_flow="column" statements. In ipywidgets 6.0,
@@ -231,13 +266,17 @@ class FileSelectorPanel:
 
     def createSearchWidget(self):
         label = ipyw.Label("Search:")
-        self.search_text = ipyw.Text(self.searching_string, layout=ipyw.Layout(width="50%"))
+        self.search_text = ipyw.Text(
+            self.searching_string, layout=ipyw.Layout(width="50%")
+        )
         self.search_text.on_submit(self.handle_search_changed)
         elements = [label, self.search_text]
 
         if self.filter_widget:
             elements.append(self.filter_widget)
-        self.search = ipyw.HBox(elements, layout=ipyw.Layout(justify_content="flex-end"))
+        self.search = ipyw.HBox(
+            elements, layout=ipyw.Layout(justify_content="flex-end")
+        )
 
     def handle_search_changed(self, sender):
         self.searching_string = sender.value.strip()
@@ -249,7 +288,9 @@ class FileSelectorPanel:
             self.filters.update(All=["*.*"])
         self.cur_filter = self.cur_filter or self.filters[self.default_filter or "All"]
         self.filter_widget = ipyw.Dropdown(
-            options=self.filters, value=self.cur_filter, layout=ipyw.Layout(align_self="flex-end", width="15%")
+            options=self.filters,
+            value=self.cur_filter,
+            layout=ipyw.Layout(align_self="flex-end", width="15%"),
         )
         self.filter_widget.observe(self.handle_filter_changed, names="value")
         return
@@ -266,7 +307,9 @@ class FileSelectorPanel:
         # filter out dirs, they will be added below
         list_files = filter(lambda o: not os.path.isdir(o), list_files)
         list_files = list(map(os.path.basename, list_files))
-        list_dirs = [o for o in os.listdir(curdir) if os.path.isdir(os.path.join(curdir, o))]
+        list_dirs = [
+            o for o in os.listdir(curdir) if os.path.isdir(os.path.join(curdir, o))
+        ]
         self.footer.value += "<p>" + " ".join(list_dirs) + "</p>"
         entries = list_dirs + list_files
         entries.sort()

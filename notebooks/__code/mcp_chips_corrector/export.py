@@ -25,8 +25,12 @@ class Export:
         QGuiApplication.processEvents()  # to close QFileDialog
 
         if export_folder:
-            base_input_folder = os.path.basename(os.path.abspath(self.parent.o_corrector.input_working_folder))
-            export_folder = os.path.join(export_folder, base_input_folder + "_corrected")
+            base_input_folder = os.path.basename(
+                os.path.abspath(self.parent.o_corrector.input_working_folder)
+            )
+            export_folder = os.path.join(
+                export_folder, base_input_folder + "_corrected"
+            )
             make_or_reset_folder(export_folder)
 
             logging.info("exporting all corrected images:")
@@ -48,12 +52,18 @@ class Export:
                 short_file_name = os.path.basename(working_list_files[_index_file])
                 file_extension = get_file_extension(short_file_name)
                 o_norm.data["sample"]["file_name"] = [short_file_name]
-                o_norm.export(folder=export_folder, data_type="sample", file_type=file_extension)
+                o_norm.export(
+                    folder=export_folder, data_type="sample", file_type=file_extension
+                )
 
                 self.parent.eventProgress.setValue(_index_file + 1)
                 QGuiApplication.processEvents()
-                logging.info(f"-> exported file: {self.parent.o_corrector.working_list_files[_index_file]}")
+                logging.info(
+                    f"-> exported file: {self.parent.o_corrector.working_list_files[_index_file]}"
+                )
 
-            self.parent.ui.statusbar.showMessage(f"Corrected images are in folder {export_folder}", 10000)
+            self.parent.ui.statusbar.showMessage(
+                f"Corrected images are in folder {export_folder}", 10000
+            )
             self.parent.ui.statusbar.setStyleSheet("color: blue")
             self.parent.eventProgress.setVisible(False)

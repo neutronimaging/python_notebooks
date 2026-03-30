@@ -4,11 +4,15 @@ import numpy as np
 from qtpy.QtWidgets import QMainWindow
 
 from __code import load_ui
-from __code.hfir_reactor_element_analysis.all_peaks_found_event_handler import AllPeaksFoundEventHandler
+from __code.hfir_reactor_element_analysis.all_peaks_found_event_handler import (
+    AllPeaksFoundEventHandler,
+)
 from __code.hfir_reactor_element_analysis.event_handler import EventHandler
 from __code.hfir_reactor_element_analysis.export_data import ExportData
 from __code.hfir_reactor_element_analysis.initialization import Initialization
-from __code.hfir_reactor_element_analysis.missing_peaks_event_handler import MissingPeaksEventHandler
+from __code.hfir_reactor_element_analysis.missing_peaks_event_handler import (
+    MissingPeaksEventHandler,
+)
 
 
 class InterfaceHandler:
@@ -21,7 +25,9 @@ class InterfaceHandler:
 class Interface(QMainWindow):
     NUMBER_OF_FUEL_ELEMENTS = 369
     MINIMUM_NUMBER_OF_ANGLE_DATA_POINTS = 50
-    ELEMENTS_POSITION_OUTLIERS = 10  # number of data points to remove before calculating mean x position
+    ELEMENTS_POSITION_OUTLIERS = (
+        10  # number of data points to remove before calculating mean x position
+    )
 
     profiles_plot = None
     elements_position_plot = None
@@ -39,7 +45,9 @@ class Interface(QMainWindow):
         self.o_pandas = o_selection.pandas_obj
         self.working_dir = working_dir
         self.list_angles = self.o_pandas.index
-        self.list_of_images = [_image.strip() for _image in o_selection.column_labels[1:]]
+        self.list_of_images = [
+            _image.strip() for _image in o_selection.column_labels[1:]
+        ]
 
         super(Interface, self).__init__(parent)
 

@@ -32,14 +32,24 @@ class MetadataSelectorHandler(QDialog):
         self.ui.select_metadata_combobox.addItems(list_metadata)
 
         metadata_operation = self.parent.metadata_operation[self.column]
-        self.ui.select_metadata_combobox.setCurrentIndex(metadata_operation["index_of_metadata"])
-        self.ui.first_part_lineEdit.setText(metadata_operation["first_part_of_string_to_remove"])
-        self.ui.second_part_lineEdit.setText(metadata_operation["last_part_of_string_to_remove"])
+        self.ui.select_metadata_combobox.setCurrentIndex(
+            metadata_operation["index_of_metadata"]
+        )
+        self.ui.first_part_lineEdit.setText(
+            metadata_operation["first_part_of_string_to_remove"]
+        )
+        self.ui.second_part_lineEdit.setText(
+            metadata_operation["last_part_of_string_to_remove"]
+        )
         self.ui.linear_operation_lineEdit_1.setText(metadata_operation["value_1"])
         self.ui.linear_operation_lineEdit_2.setText(metadata_operation["value_2"])
-        math_1_index = self.ui.linear_operation_comboBox_1.findText(metadata_operation["math_1"])
+        math_1_index = self.ui.linear_operation_comboBox_1.findText(
+            metadata_operation["math_1"]
+        )
         self.ui.linear_operation_comboBox_1.setCurrentIndex(math_1_index)
-        math_2_index = self.ui.linear_operation_comboBox_2.findText(metadata_operation["math_2"])
+        math_2_index = self.ui.linear_operation_comboBox_2.findText(
+            metadata_operation["math_2"]
+        )
         self.ui.linear_operation_comboBox_2.setCurrentIndex(math_2_index)
 
     def string_cleaning_changed(self, new_text=None):
@@ -74,7 +84,9 @@ class MetadataSelectorHandler(QDialog):
             self.ui.linear_operation_value_after.setText("N/A")
             return
 
-        input_parameter = float(str(self.ui.linear_operation_value_before.text()).strip())
+        input_parameter = float(
+            str(self.ui.linear_operation_value_before.text()).strip()
+        )
         math_1 = str(self.ui.linear_operation_comboBox_1.currentText())
         value_1 = str(self.ui.linear_operation_lineEdit_1.text()).strip()
         math_2 = str(self.ui.linear_operation_comboBox_2.currentText())
@@ -95,13 +107,16 @@ class MetadataSelectorHandler(QDialog):
         self.update_final_result()
 
     def update_final_result(self):
-        if self.is_before_linear_operation_is_valid() and self.is_linear_operation_valid():
+        if (
+            self.is_before_linear_operation_is_valid()
+            and self.is_linear_operation_valid()
+        ):
             result = self.ui.linear_operation_value_after.text()
         else:
             result = self.ui.linear_operation_value_before.text()
 
         rounding_precision = self.ui.precision_spinBox.value()
-        
+
         try:
             result = round(float(result), rounding_precision)
         except ValueError:
@@ -169,8 +184,12 @@ class MetadataSelectorHandler(QDialog):
                     is_error_in_operation = True
             return is_error_in_operation
 
-        is_error_operation_1 = result_of_checking_operation(ui=self.ui.linear_operation_lineEdit_1)
-        is_error_operation_2 = result_of_checking_operation(ui=self.ui.linear_operation_lineEdit_2)
+        is_error_operation_1 = result_of_checking_operation(
+            ui=self.ui.linear_operation_lineEdit_1
+        )
+        is_error_operation_2 = result_of_checking_operation(
+            ui=self.ui.linear_operation_lineEdit_2
+        )
 
         self.ui.error_label_1.setVisible(is_error_operation_1)
         self.ui.error_label_2.setVisible(is_error_operation_2)
@@ -180,6 +199,6 @@ class MetadataSelectorHandler(QDialog):
             return False
         else:
             return True
-        
+
     def precision_spinbox_changed(self, new_value=None):
         self.update_final_result()

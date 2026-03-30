@@ -21,7 +21,10 @@ from __code._utilities.file import make_ascii_file
 from __code._utilities.folder import make_folder
 from __code.file_folder_browser import FileFolderBrowser
 
-from .cylindrical_geometry_correction import number_of_pixel_at_that_position2, number_of_pixels_at_that_position1
+from .cylindrical_geometry_correction import (
+    number_of_pixel_at_that_position2,
+    number_of_pixels_at_that_position1,
+)
 
 
 class IPTS_28402:
@@ -55,7 +58,9 @@ class IPTS_28402:
             list_of_images = glob.glob(os.path.join(self.working_dir, "*.tif*"))
             self.load_images(list_of_images=list_of_images)
         else:
-            file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, next_function=self.load_images)
+            file_folder_browser = FileFolderBrowser(
+                working_dir=self.working_dir, next_function=self.load_images
+            )
             file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
 
     def load_images(self, list_of_images):
@@ -75,7 +80,11 @@ class IPTS_28402:
         if self.data:
             [self.height, self.width] = np.shape(np.squeeze(self.data[0]))
 
-        display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
+        display(
+            HTML(
+                "<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"
+            )
+        )
 
     def visualize_raw_images(self):
         fig, ax1 = plt.subplots(num="Raw Images after 90degrees rotation")
@@ -86,7 +95,12 @@ class IPTS_28402:
 
         v = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=len(self.data) - 1, value=0, layout=widgets.Layout(width="50%")),
+            image_index=widgets.IntSlider(
+                min=0,
+                max=len(self.data) - 1,
+                value=0,
+                layout=widgets.Layout(width="50%"),
+            ),
         )
         display(v)
 
@@ -111,11 +125,21 @@ class IPTS_28402:
 
         self.crop_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            left=widgets.IntSlider(min=0, max=width, value=self.config["default_crop"]["x0"]),
-            right=widgets.IntSlider(min=0, max=width, value=self.config["default_crop"]["x1"]),
-            top=widgets.IntSlider(min=0, max=height, value=self.config["default_crop"]["y0"]),
-            bottom=widgets.IntSlider(min=0, max=height, value=self.config["default_crop"]["y1"]),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
+            left=widgets.IntSlider(
+                min=0, max=width, value=self.config["default_crop"]["x0"]
+            ),
+            right=widgets.IntSlider(
+                min=0, max=width, value=self.config["default_crop"]["x1"]
+            ),
+            top=widgets.IntSlider(
+                min=0, max=height, value=self.config["default_crop"]["y0"]
+            ),
+            bottom=widgets.IntSlider(
+                min=0, max=height, value=self.config["default_crop"]["y1"]
+            ),
         )
         display(self.crop_ui)
 
@@ -133,7 +157,12 @@ class IPTS_28402:
             ax1 = plt.imshow(data, vmin=0, vmax=1)
             plt.tight_layout()
 
-        v = interactive(plot, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
+        v = interactive(
+            plot,
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
+        )
         display(v)
 
     def selection_of_profiles_limit(self):
@@ -154,7 +183,9 @@ class IPTS_28402:
 
         self.profile_limit_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
             top=widgets.IntSlider(min=0, max=height - 1, value=default_top),
             bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom),
         )
@@ -183,7 +214,12 @@ class IPTS_28402:
             ax1.plot(data, ".")
             plt.tight_layout()
 
-        v = interactive(plot, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
+        v = interactive(
+            plot,
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
+        )
         display(v)
 
     def cylinders_positions(self):
@@ -246,10 +282,16 @@ class IPTS_28402:
 
         self.cylinders_positions_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
             center=widgets.IntSlider(min=0, max=width, value=default_center),
-            inner_radius=widgets.IntSlider(min=0, max=width, value=default_inner_radius),
-            outer_radius=widgets.IntSlider(min=0, max=width, value=default_outer_radius),
+            inner_radius=widgets.IntSlider(
+                min=0, max=width, value=default_inner_radius
+            ),
+            outer_radius=widgets.IntSlider(
+                min=0, max=width, value=default_outer_radius
+            ),
         )
         display(self.cylinders_positions_ui)
 
@@ -266,7 +308,9 @@ class IPTS_28402:
         self.config["profiles_plot"]["left_inner_cylinder"] = left_inner_edge
         self.config["profiles_plot"]["right_inner_cylinder"] = right_inner_edge
 
-        profiles_cleaned = [_profile[left_outer:right_outer] for _profile in self.profiles]
+        profiles_cleaned = [
+            _profile[left_outer:right_outer] for _profile in self.profiles
+        ]
         self.profiles_cleaned = profiles_cleaned
 
         fig, ax1 = plt.subplots(num="Outer and Inner cylinders profiles")
@@ -277,16 +321,23 @@ class IPTS_28402:
             plt.axhline(y=1, color="green")
 
         plot_cleaning_edges_ui = interactive(
-            plot_profiles_cleaned, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0)
+            plot_profiles_cleaned,
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
         )
         display(plot_cleaning_edges_ui)
 
     def switching_to_attenuation_mode(self):
         threshold_value = 1
-        profiles_attenuation_mode = [(threshold_value - _profile) for _profile in self.profiles_cleaned]
+        profiles_attenuation_mode = [
+            (threshold_value - _profile) for _profile in self.profiles_cleaned
+        ]
         self.profiles_attenuation_mode = profiles_attenuation_mode
 
-        fig_attenuation, ax_attenuation = plt.subplots(num="Profiles in attenuation mode")
+        fig_attenuation, ax_attenuation = plt.subplots(
+            num="Profiles in attenuation mode"
+        )
 
         def plot_profiles_attenuation(image_index):
             ax_attenuation.cla()
@@ -294,7 +345,10 @@ class IPTS_28402:
             plt.axhline(y=1, color="green")
 
         plot_attenuation_ui = interactive(
-            plot_profiles_attenuation, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0)
+            plot_profiles_attenuation,
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
         )
         display(plot_attenuation_ui)
 
@@ -363,22 +417,30 @@ class IPTS_28402:
             intensity_of_left_ring_array = []
             for x in x_axis_of_left_ring_array:
                 measure = _profile[x]
-                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x, radius=outer_radius)
+                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(
+                    position=x, radius=outer_radius
+                )
                 value = measure / number_of_pixels_through_thickness
                 intensity_of_left_ring_array.append(value)
                 intensity_of_ring_array.append(value)
 
-            intensity_of_left_ring_array_for_all_images.append(intensity_of_left_ring_array)
+            intensity_of_left_ring_array_for_all_images.append(
+                intensity_of_left_ring_array
+            )
 
             intensity_of_right_ring_array = []
             for x in x_axis_of_right_ring_array:
                 measure = _profile[x]
-                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(position=x, radius=outer_radius)
+                number_of_pixels_through_thickness = number_of_pixels_at_that_position1(
+                    position=x, radius=outer_radius
+                )
                 value = measure / number_of_pixels_through_thickness
                 intensity_of_right_ring_array.append(value)
                 intensity_of_ring_array.append(value)
 
-            intensity_of_right_ring_array_for_all_images.append(intensity_of_right_ring_array)
+            intensity_of_right_ring_array_for_all_images.append(
+                intensity_of_right_ring_array
+            )
 
             median_intensity_for_all_images.append(np.median(intensity_of_ring_array))
 
@@ -389,12 +451,18 @@ class IPTS_28402:
 
         def plot_profiles_with_outer_cylinder_corrected(image_index):
             ax_outer.cla()
-            plt.plot(x_axis_of_left_ring_array, intensity_of_left_ring_array_for_all_images[image_index], ".r")
+            plt.plot(
+                x_axis_of_left_ring_array,
+                intensity_of_left_ring_array_for_all_images[image_index],
+                ".r",
+            )
             plt.plot(x_axis_of_right_ring_array, intensity_of_right_ring_array, ".r")
 
         plot_profile_outer_ui = interactive(
             plot_profiles_with_outer_cylinder_corrected,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
         )
         display(plot_profile_outer_ui)
 
@@ -415,15 +483,23 @@ class IPTS_28402:
                     position=x, inner_circle_r=inner_radius, outer_circle_r=outer_radius
                 )
 
-                shape_of_ring_signal.append(nbr_pixels * median_intensity_for_all_images[_profile_index])
+                shape_of_ring_signal.append(
+                    nbr_pixels * median_intensity_for_all_images[_profile_index]
+                )
 
-            full_shape_of_ring_signal = np.concatenate((shape_of_ring_signal[::-1], shape_of_ring_signal[:-1:]))
+            full_shape_of_ring_signal = np.concatenate(
+                (shape_of_ring_signal[::-1], shape_of_ring_signal[:-1:])
+            )
             shape_of_ring_signal_for_all_images.append(full_shape_of_ring_signal)
 
             # new profile with outer cylinder removed
-            new_profile_with_outer_cylinder_removed.append(_profile - full_shape_of_ring_signal)
+            new_profile_with_outer_cylinder_removed.append(
+                _profile - full_shape_of_ring_signal
+            )
 
-        self.profile_with_outer_cylinder_removed = new_profile_with_outer_cylinder_removed
+        self.profile_with_outer_cylinder_removed = (
+            new_profile_with_outer_cylinder_removed
+        )
 
         def plot_shape_ring_signal(image_index):
             trace = go.Scatter(y=shape_of_ring_signal_for_all_images[image_index])
@@ -442,14 +518,19 @@ class IPTS_28402:
                 marker=dict(color="Blue", line=dict(color="Red", width=1)),
             )
             layout = go.Layout(
-                title="shape of ring with outside cylinder corrected", xaxis=dict(title=""), yaxis=dict(title="")
+                title="shape of ring with outside cylinder corrected",
+                xaxis=dict(title=""),
+                yaxis=dict(title=""),
             )
 
             figure = go.Figure(data=[trace], layout=layout)
             iplot(figure)
 
         plot_shape_ring_signal_ui = interactive(
-            plot_shape_ring_signal, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0)
+            plot_shape_ring_signal,
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
         )
         display(plot_shape_ring_signal_ui)
 
@@ -475,9 +556,19 @@ class IPTS_28402:
 
         self.plot_crop_inner_ui = interactive(
             plot_crop_inner,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            left_edge=widgets.IntSlider(min=0, max=len(self.profile_with_outer_cylinder_removed[0]), value=left_edge),
-            right_edge=widgets.IntSlider(min=0, max=len(self.profile_with_outer_cylinder_removed[0]), value=right_edge),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
+            left_edge=widgets.IntSlider(
+                min=0,
+                max=len(self.profile_with_outer_cylinder_removed[0]),
+                value=left_edge,
+            ),
+            right_edge=widgets.IntSlider(
+                min=0,
+                max=len(self.profile_with_outer_cylinder_removed[0]),
+                value=right_edge,
+            ),
         )
         display(self.plot_crop_inner_ui)
 
@@ -527,13 +618,17 @@ class IPTS_28402:
 
         self.plot_final_inner_ui = interactive(
             plot_final_inner,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
         )
         display(self.plot_final_inner_ui)
 
     def export_profiles(self):
         working_dir = self.working_dir
-        output_folder_browser = FileFolderBrowser(working_dir=working_dir, next_function=self.export)
+        output_folder_browser = FileFolderBrowser(
+            working_dir=working_dir, next_function=self.export
+        )
         output_folder_browser.select_output_folder()
 
     def export(self, output_folder):
@@ -550,8 +645,12 @@ class IPTS_28402:
 
             base_name = os.path.basename(_image)
             base_name_without_suffix = PurePosixPath(base_name).stem
-            base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
-            full_name_of_ascii_file = os.path.join(output_folder, base_name_of_ascii_file)
+            base_name_of_ascii_file = (
+                str(base_name_without_suffix) + "_profile_corrected.csv"
+            )
+            full_name_of_ascii_file = os.path.join(
+                output_folder, base_name_of_ascii_file
+            )
             list_of_ascii_file_created.append(full_name_of_ascii_file)
 
             metadata = [f"# input working file: {_image}"]
@@ -580,9 +679,17 @@ class IPTS_28402:
 
             metadata.append("# pixel, counts per pixels")
 
-            data_array = [f"{x}, {y}" for (x, y) in zip(pixel_index, array_for_this_image, strict=False)]
+            data_array = [
+                f"{x}, {y}"
+                for (x, y) in zip(pixel_index, array_for_this_image, strict=False)
+            ]
 
-            make_ascii_file(metadata=metadata, data=data_array, output_file_name=full_name_of_ascii_file, dim="1d")
+            make_ascii_file(
+                metadata=metadata,
+                data=data_array,
+                output_file_name=full_name_of_ascii_file,
+                dim="1d",
+            )
 
         display(
             HTML(
@@ -591,4 +698,10 @@ class IPTS_28402:
             )
         )
         for _ascii_file in list_of_ascii_file_created:
-            display(HTML('<span style="font-size: 20px; color:blue"> - ' + _ascii_file + "</span>"))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:blue"> - '
+                    + _ascii_file
+                    + "</span>"
+                )
+            )

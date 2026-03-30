@@ -27,7 +27,9 @@ class FrederickIpts:
     def select_file_help(self, value):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile"
+        )
 
     def select_files(self):
         help_ui = widgets.Button(description="HELP", button_style="info")
@@ -35,7 +37,10 @@ class FrederickIpts:
         display(help_ui)
 
         self.files_ui = fileselector.FileSelectorPanel(
-            instruction="Select Images ...", start_dir=self.working_dir, next=self.load_and_sort, multiple=True
+            instruction="Select Images ...",
+            start_dir=self.working_dir,
+            next=self.load_and_sort,
+            multiple=True,
         )
 
         self.files_ui.show()
@@ -48,7 +53,9 @@ class FrederickIpts:
         self.__calculate_all_working_images()
 
     def __sort_files_using_metadata_in_name(self):
-        my_re = r"\w*_(?P<temperature>\w+)_(?P<pressure>\w+)_\d{4}_(?P<digit>\d{4}).tiff$"
+        my_re = (
+            r"\w*_(?P<temperature>\w+)_(?P<pressure>\w+)_\d{4}_(?P<digit>\d{4}).tiff$"
+        )
         exp_dict = OrderedDict()
         _new_exp = {
             "list_of_files": [],
@@ -131,7 +138,9 @@ class FrederickIpts:
 
         hbox = widgets.HBox(
             [
-                widgets.IntProgress(description="FUll Progress", layout=progress_bar_layout),
+                widgets.IntProgress(
+                    description="FUll Progress", layout=progress_bar_layout
+                ),
                 widgets.Label(value="", layout=widgets.Layout(width="10%")),
             ]
         )
@@ -155,7 +164,7 @@ class FrederickIpts:
             self.exp_dict[_key] = _item
 
             w.value = _index + 1
-            label.value = f"{_index+1}/{nbr_groups}"
+            label.value = f"{_index + 1}/{nbr_groups}"
 
         hbox.close()
         display(widgets.Label(value="Done!"))
@@ -165,7 +174,9 @@ class FrederickIpts:
 
         list_files = dict_time_stamp["list_files"].copy()
         list_time_stamp = dict_time_stamp["list_time_stamp"].copy()
-        list_time_stamp_user_format = dict_time_stamp["list_time_stamp_user_format"].copy()
+        list_time_stamp_user_format = dict_time_stamp[
+            "list_time_stamp_user_format"
+        ].copy()
 
         list_files = np.array(list_files)
         time_stamp = np.array(list_time_stamp)
@@ -206,6 +217,8 @@ class FrederickIpts:
             else:
                 _list_images = _group["list_of_images"]
 
-                _result_working_image = self.__calculate_group_working_image(_list_images)
+                _result_working_image = self.__calculate_group_working_image(
+                    _list_images
+                )
                 _group["working_image"] = _result_working_image
             self.exp_dict[_group_number] = _group
