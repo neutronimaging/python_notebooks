@@ -50,7 +50,7 @@ class EventHandler(Parent):
         self.parent.ui.file_index_value_label.setText(str(slider_value))
 
         boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
-        self.parent.ui.use_this_file_checkBox.setChecked(boolean_list_of_files_to_use[slider_value])
+        # self.parent.ui.use_this_file_checkBox.setChecked(boolean_list_of_files_to_use[slider_value])
 
     def use_this_file_clicked(self):
         file_index = self.parent.ui.file_index_horizontalSlider.value()
@@ -67,7 +67,7 @@ class EventHandler(Parent):
     def check_state_of_prepare_data_plot(self):
         boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
         file_index = self.parent.ui.file_index_horizontalSlider.value()
-        self.parent.ui.prepare_data_widget.setEnabled(boolean_list_of_files_to_use[file_index])
+        # self.parent.ui.prepare_data_widget.setEnabled(boolean_list_of_files_to_use[file_index])
 
     def calculate_edge_position(self):
         o_get = Get(parent=self.parent)
