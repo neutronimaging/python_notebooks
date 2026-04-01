@@ -1,5 +1,5 @@
 from enum import Enum
-from pathlib import Path 
+from pathlib import Path
 
 
 class DataType(Enum):
@@ -22,22 +22,22 @@ class Roi:
 class DetectorType(Enum):
     ikonxl = "ikonxl"
     qhy600 = "qhy600"
-    
-    
+
+
 class DataDict:
     full_path = None
     nexus_path = None
     data = None
     acquisition_time = None
     proton_charge = None
-    
+
     def __str__(self):
         return f"DataDict(full_path={self.full_path}, nexus_path={self.nexus_path}, acquisition_time={self.acquisition_time}, proton_charge={self.proton_charge})"
-    
+
     def __repr__(self):
         return self.__str__()
-    
-    
+
+
 class FolderPath(Enum):
     sample = Path()
     ob = Path()

@@ -18,4 +18,3 @@ default = {
     "chip3": {"xoffset": 0, "yoffset": 0, "description": "bottom left chip"},
     "chip4": {"xoffset": 0, "yoffset": 0, "description": "bottom right chip"},
 }
-    

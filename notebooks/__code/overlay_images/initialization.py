@@ -20,9 +20,13 @@ class Initialization:
 
     def dictionaries(self):
         list_high_res_files = self.parent.o_norm_high_res.data["sample"]["file_name"]
-        list_high_res_files_basename = [os.path.basename(_file) for _file in list_high_res_files]
+        list_high_res_files_basename = [
+            os.path.basename(_file) for _file in list_high_res_files
+        ]
         list_low_res_files = self.parent.o_norm_low_res.data["sample"]["file_name"]
-        list_low_res_files_basename = [os.path.basename(_file) for _file in list_low_res_files]
+        list_low_res_files_basename = [
+            os.path.basename(_file) for _file in list_low_res_files
+        ]
 
         dict_offsets = OrderedDict()
         for _index, _filename in enumerate(list_high_res_files_basename):
@@ -42,8 +46,12 @@ class Initialization:
         list_high_res_files = self.parent.o_norm_high_res.data["sample"]["file_name"]
         list_low_res_files = self.parent.o_norm_low_res.data["sample"]["file_name"]
 
-        list_high_res_files_basename = [os.path.basename(_file) for _file in list_high_res_files]
-        list_low_res_files_basename = [os.path.basename(_file) for _file in list_low_res_files]
+        list_high_res_files_basename = [
+            os.path.basename(_file) for _file in list_high_res_files
+        ]
+        list_low_res_files_basename = [
+            os.path.basename(_file) for _file in list_low_res_files
+        ]
 
         resize_and_overlay_modes = []
 
@@ -53,7 +61,9 @@ class Initialization:
             list_high_res_files_basename, list_low_res_files_basename, strict=False
         ):
             o_table.insert_empty_row(row=_row)
-            o_table.insert_item(row=_row, column=0, value=_high_res_file, editable=False)
+            o_table.insert_item(
+                row=_row, column=0, value=_high_res_file, editable=False
+            )
             o_table.insert_item(row=_row, column=1, value=_low_res_file, editable=False)
             o_table.insert_item(row=_row, column=2, value="None")
             resize_and_overlay_modes.append("None")
@@ -116,7 +126,14 @@ class Initialization:
         image_layout.addWidget(self.parent.image_view["overlay"])
         self.parent.ui.overlay_widget.setLayout(image_layout)
 
-    def _design_marker(self, image_resolution=None, target_index=None, pen=None, image_view=None, method=None):
+    def _design_marker(
+        self,
+        image_resolution=None,
+        target_index=None,
+        pen=None,
+        image_view=None,
+        method=None,
+    ):
         x = self.parent.markers[image_resolution][target_index]["x"]
         y = self.parent.markers[image_resolution][target_index]["y"]
         image_view = self.parent.image_view[image_resolution]
@@ -139,19 +156,31 @@ class Initialization:
         blue_pen.setWidthF(0.05)
 
         self.parent.markers["high_res"]["1"]["ui"] = self._design_marker(
-            image_resolution="high_res", target_index="1", pen=red_pen, method=self.parent.markers_changed
+            image_resolution="high_res",
+            target_index="1",
+            pen=red_pen,
+            method=self.parent.markers_changed,
         )
 
         self.parent.markers["high_res"]["2"]["ui"] = self._design_marker(
-            image_resolution="high_res", target_index="2", pen=blue_pen, method=self.parent.markers_changed
+            image_resolution="high_res",
+            target_index="2",
+            pen=blue_pen,
+            method=self.parent.markers_changed,
         )
 
         self.parent.markers["low_res"]["1"]["ui"] = self._design_marker(
-            image_resolution="low_res", target_index="1", pen=red_pen, method=self.parent.markers_changed
+            image_resolution="low_res",
+            target_index="1",
+            pen=red_pen,
+            method=self.parent.markers_changed,
         )
 
         self.parent.markers["low_res"]["2"]["ui"] = self._design_marker(
-            image_resolution="low_res", target_index="2", pen=blue_pen, method=self.parent.markers_changed
+            image_resolution="low_res",
+            target_index="2",
+            pen=blue_pen,
+            method=self.parent.markers_changed,
         )
 
         o_event = EventHandler(parent=self.parent)

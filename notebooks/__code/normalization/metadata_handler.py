@@ -58,14 +58,21 @@ class MetadataHandler:
         _dict = file_handler.retrieve_time_stamp(list_of_files, label=label)
         _time_metadata_dict = MetadataHandler._reformat_dict(dictionary=_dict)
 
-        _beamline_metadata_dict = MetadataHandler.retrieve_beamline_metadata(list_of_files)
+        _beamline_metadata_dict = MetadataHandler.retrieve_beamline_metadata(
+            list_of_files
+        )
         _metadata_dict = combine_dictionaries(
-            master_dictionary=_time_metadata_dict, servant_dictionary=_beamline_metadata_dict
+            master_dictionary=_time_metadata_dict,
+            servant_dictionary=_beamline_metadata_dict,
         )
 
         if display_infos:
             display(
-                HTML('<span style="font-size: 20px; color:blue">Nbr of images: ' + str(len(_metadata_dict)) + "</span")
+                HTML(
+                    '<span style="font-size: 20px; color:blue">Nbr of images: '
+                    + str(len(_metadata_dict))
+                    + "</span"
+                )
             )
             display(
                 HTML(

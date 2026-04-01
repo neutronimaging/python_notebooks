@@ -28,7 +28,9 @@ class Get(TopGet):
         return list_of_files_to_extract
 
     def renamed_basename_list_of_files(self, prefix):
-        list_of_files_to_extract = self.parent.basename_list_of_files_that_will_be_extracted
+        list_of_files_to_extract = (
+            self.parent.basename_list_of_files_that_will_be_extracted
+        )
         if prefix:
             prefix += "_"
 

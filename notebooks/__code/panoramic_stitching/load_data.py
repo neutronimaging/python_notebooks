@@ -30,7 +30,7 @@ class MetadataData:
                 metadata_to_keep[_name] = float(_value)
             except KeyError:
                 continue
-        
+
         self.metadata = metadata_to_keep
 
 
@@ -72,14 +72,18 @@ class LoadData:
 
             # record size of images
             if _folder_index == 0:
-                self.parent.image_height, self.parent.image_width = np.shape(o_norm.data["sample"]["data"][0])
+                self.parent.image_height, self.parent.image_width = np.shape(
+                    o_norm.data["sample"]["data"][0]
+                )
 
             local_dict = OrderedDict()
             for _index, _file in enumerate(list_files):
                 _metadatadata = MetadataData()
                 _metadatadata.data = o_norm.data["sample"]["data"][_index]
                 _metadatadata.metadata = o_norm.data["sample"]["metadata"][_index]
-                _metadatadata.keep_only_metadata_defined_in_config(list_key=self.metadata_key_to_keep)
+                _metadatadata.keep_only_metadata_defined_in_config(
+                    list_key=self.metadata_key_to_keep
+                )
 
                 local_dict[_file] = _metadatadata
 

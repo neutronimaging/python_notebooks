@@ -13,17 +13,30 @@ from __code import file_handler
 from __code.ipywe import myfileselector
 from __code.normalization import utilities
 from __code.normalization.get import Get
-from __code.normalization.metadata_handler import METADATA_KEYS, MetadataHandler, MetadataName
+from __code.normalization.metadata_handler import (
+    METADATA_KEYS,
+    MetadataHandler,
+    MetadataName,
+)
 from __code.roi_selection_ui import Interface
 
-from . import ROI_BUTTON_DESCRIPTION, ROI_ICON, TEMPORARY_ROI_BUTTON_DESCRIPTION, TEMPORARY_ROI_ICON
+from . import (
+    ROI_BUTTON_DESCRIPTION,
+    ROI_ICON,
+    TEMPORARY_ROI_BUTTON_DESCRIPTION,
+    TEMPORARY_ROI_ICON,
+)
 from __code.normalization import default_sample_folder
 
 JSON_DEBUGGING = False
 
 MAX_DF_COUNTS_ALLOWED = 900
 METADATA_ERROR_ALLOWED = 1
-LIST_METADATA_NOT_INSTRUMENT_RELATED = ["filename", "time_stamp", "time_stamp_user_format"]
+LIST_METADATA_NOT_INSTRUMENT_RELATED = [
+    "filename",
+    "time_stamp",
+    "time_stamp_user_format",
+]
 
 
 class NormalizationWithSimplifySelection:
@@ -45,7 +58,7 @@ class NormalizationWithSimplifySelection:
     def __init__(self, working_dir="", debug=False):
         self.initialize()
         self.debug = debug
-        
+
         self.working_dir = working_dir
         self.list_of_images = []
         self.input_data_folder = []
@@ -103,10 +116,10 @@ class NormalizationWithSimplifySelection:
 
     def select_sample_folder(self):
         if self.debug:
-            folder_name = default_sample_folder 
+            folder_name = default_sample_folder
             self.retrieve_sample_metadata_from_sample_folder(sample_folder=folder_name)
             return
-        
+
         folder_sample_widget = myfileselector.MyFileSelectorPanel(
             instruction="select folder of images to normalize",
             start_dir=self.working_dir,
@@ -118,14 +131,22 @@ class NormalizationWithSimplifySelection:
 
     def retrieve_sample_metadata_from_sample_folder(self, sample_folder):
         logging.info(f"select sample folder: {sample_folder}")
-        [list_of_images, _] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=sample_folder)
+        [list_of_images, _] = (
+            file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+                folder=sample_folder
+            )
+        )
         can_we_continue = self.images_files_found_in_list(list_of_images)
         if can_we_continue:
             logging.info(f"-> number of images found: {len(list_of_images)}")
             self.retrieve_sample_metadata(list_of_images)
         else:
             logging.info("-> No images found!")
-            display(HTML('<span style="font-size: 20px; color:Red">No images found in the folder selected!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:Red">No images found in the folder selected!</span>'
+                )
+            )
 
     def images_files_found_in_list(self, list_of_images):
         for _file in list_of_images:
@@ -150,19 +171,27 @@ class NormalizationWithSimplifySelection:
         # self.display_time_range_selection_widgets()
 
     def select_ob_folder(self):
-        self.select_folder(message="open beam", next_function=self.retrieve_ob_metadata())
+        self.select_folder(
+            message="open beam", next_function=self.retrieve_ob_metadata()
+        )
 
     def retrieve_ob_metadata(self, selected_folder):
         list_of_ob_files = Get.list_of_tiff_files(folder=selected_folder)
-        self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files)
+        self.ob_metadata_dict = MetadataHandler.retrieve_metadata(
+            list_of_files=list_of_ob_files
+        )
 
     def auto_retrieve_ob_metadata(self):
         logging.info("> auto_retrieve_ob_metadata")
         folder = os.path.join(self.working_dir, "raw", "ob")
         logging.info(f"-> folder: {folder}")
-        list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder, extensions=["tiff", "tif"])
+        list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(
+            folder=folder, extensions=["tiff", "tif"]
+        )
         logging.info(f"-> nbr of ob files found: {len(list_of_ob_files)}")
-        self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files, label="ob")
+        self.ob_metadata_dict = MetadataHandler.retrieve_metadata(
+            list_of_files=list_of_ob_files, label="ob"
+        )
 
     # logging.info(f"ob metadata dict")
     # logging.info(f"-> {self.ob_metadata_dict}")
@@ -178,11 +207,15 @@ class NormalizationWithSimplifySelection:
         folder_widget.show()
 
     def select_df_folder(self):
-        self.select_folder(message="dark current", next_function=self.retrieve_df_metadata())
+        self.select_folder(
+            message="dark current", next_function=self.retrieve_df_metadata()
+        )
 
     def retrieve_df_metadata(self, selected_folder):
         list_of_df_files = Get.list_of_tiff_files(folder=selected_folder)
-        self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files)
+        self.df_metadata_dict = MetadataHandler.retrieve_metadata(
+            list_of_files=list_of_df_files
+        )
 
     def auto_retrieve_df_metadata(self):
         folder_df = os.path.join(self.working_dir, "raw", "df")
@@ -195,7 +228,9 @@ class NormalizationWithSimplifySelection:
         )
         list_of_files = list_of_df_files + list_of_dc_files
         logging.info(f"-> nbr of dc files found: {len(list_of_files)}")
-        self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_files, label="df")
+        self.df_metadata_dict = MetadataHandler.retrieve_metadata(
+            list_of_files=list_of_files, label="df"
+        )
 
     def match_files(self):
         """This is where the files will be associated with their respective OB, DC by using the metadata"""
@@ -224,14 +259,26 @@ class NormalizationWithSimplifySelection:
         list_of_sample_acquisition = final_full_master_dict.keys()
 
         for _index_ob in list_ob_dict.keys():
-            _all_ob_instrument_metadata = Get.get_instrument_metadata_only(list_ob_dict[_index_ob])
-            _ob_instrument_metadata = utilities.isolate_instrument_metadata(_all_ob_instrument_metadata)
-            _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME.value]["value"]
+            _all_ob_instrument_metadata = Get.get_instrument_metadata_only(
+                list_ob_dict[_index_ob]
+            )
+            _ob_instrument_metadata = utilities.isolate_instrument_metadata(
+                _all_ob_instrument_metadata
+            )
+            _acquisition_time = _all_ob_instrument_metadata[
+                MetadataName.EXPOSURE_TIME.value
+            ]["value"]
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
-                    _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]["metadata_infos"]
-                    if utilities.all_metadata_match(_sample_metadata_infos, _ob_instrument_metadata):
-                        final_full_master_dict[_acquisition_time][_config_id]["list_ob"].append(list_ob_dict[_index_ob])
+                    _sample_metadata_infos = final_full_master_dict[_acquisition_time][
+                        _config_id
+                    ]["metadata_infos"]
+                    if utilities.all_metadata_match(
+                        _sample_metadata_infos, _ob_instrument_metadata
+                    ):
+                        final_full_master_dict[_acquisition_time][_config_id][
+                            "list_ob"
+                        ].append(list_ob_dict[_index_ob])
 
         self.final_full_master_dict = final_full_master_dict
 
@@ -247,20 +294,30 @@ class NormalizationWithSimplifySelection:
         list_of_sample_acquisition = final_full_master_dict.keys()
 
         for _index_df in list_df_dict.keys():
-            _all_df_instrument_metadata = Get.get_instrument_metadata_only(list_df_dict[_index_df])
-            _df_instrument_metadata = utilities.isolate_instrument_metadata(_all_df_instrument_metadata)
-            _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME.value]["value"]
+            _all_df_instrument_metadata = Get.get_instrument_metadata_only(
+                list_df_dict[_index_df]
+            )
+            _df_instrument_metadata = utilities.isolate_instrument_metadata(
+                _all_df_instrument_metadata
+            )
+            _acquisition_time = _all_df_instrument_metadata[
+                MetadataName.EXPOSURE_TIME.value
+            ]["value"]
 
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
-                    _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]["metadata_infos"]
+                    _sample_metadata_infos = final_full_master_dict[_acquisition_time][
+                        _config_id
+                    ]["metadata_infos"]
 
                     if utilities.all_metadata_match(
                         _sample_metadata_infos,
                         _df_instrument_metadata,
                         list_key_to_check=[METADATA_KEYS["df"][1].value],
                     ):
-                        final_full_master_dict[_acquisition_time][_config_id]["list_df"].append(list_df_dict[_index_df])
+                        final_full_master_dict[_acquisition_time][_config_id][
+                            "list_df"
+                        ].append(list_df_dict[_index_df])
 
         self.final_full_master_dict = final_full_master_dict
 
@@ -276,8 +333,12 @@ class NormalizationWithSimplifySelection:
             _dict_file_index = sample_metadata_dict[_file_index]
             _sample_file = _dict_file_index["filename"]
 
-            _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME.value]["value"]
-            _instrument_metadata = utilities.isolate_instrument_metadata(_dict_file_index)
+            _acquisition_time = _dict_file_index[MetadataName.EXPOSURE_TIME.value][
+                "value"
+            ]
+            _instrument_metadata = utilities.isolate_instrument_metadata(
+                _dict_file_index
+            )
             _sample_time_stamp = _dict_file_index["time_stamp"]
 
             # find which image was first and which image was last
@@ -287,7 +348,9 @@ class NormalizationWithSimplifySelection:
                 last_sample_image = _dict_file_index
 
             # first entry or first time seeing that acquisition time
-            if (len(final_full_master_dict) == 0) or _acquisition_time not in final_full_master_dict.keys():
+            if (
+                len(final_full_master_dict) == 0
+            ) or _acquisition_time not in final_full_master_dict.keys():
                 _first_images_dict = {"sample": first_sample_image, "ob": {}, "df": {}}
                 _last_images_dict = {"sample": last_sample_image, "ob": {}, "df": {}}
                 _temp_dict = {
@@ -298,7 +361,9 @@ class NormalizationWithSimplifySelection:
                     "list_df": [],
                     "time_range_s_selected": {"before": np.nan, "after": np.nan},
                     "time_range_s": {"before": np.nan, "after": np.nan},
-                    "metadata_infos": Get.get_instrument_metadata_only(_instrument_metadata),
+                    "metadata_infos": Get.get_instrument_metadata_only(
+                        _instrument_metadata
+                    ),
                 }
                 final_full_master_dict[_acquisition_time] = {}
                 final_full_master_dict[_acquisition_time]["config0"] = _temp_dict
@@ -306,25 +371,44 @@ class NormalizationWithSimplifySelection:
                 # check that all the metadata_infos match for the first group of that acquisition time,
                 # otherwise check the next one or create a group
                 if _acquisition_time in final_full_master_dict.keys():
-                    _dict_for_this_acquisition_time = final_full_master_dict[_acquisition_time]
+                    _dict_for_this_acquisition_time = final_full_master_dict[
+                        _acquisition_time
+                    ]
                     _found_a_match = False
                     for _config_key in _dict_for_this_acquisition_time.keys():
                         _config = _dict_for_this_acquisition_time[_config_key]
                         if utilities.all_metadata_match(
-                            metadata_1=_config["metadata_infos"], metadata_2=_instrument_metadata
+                            metadata_1=_config["metadata_infos"],
+                            metadata_2=_instrument_metadata,
                         ):
                             _config["list_sample"].append(_dict_file_index)
 
-                            _first_images_dict = {"sample": first_sample_image, "ob": {}, "df": {}}
-                            _last_images_dict = {"sample": last_sample_image, "ob": {}, "df": {}}
+                            _first_images_dict = {
+                                "sample": first_sample_image,
+                                "ob": {},
+                                "df": {},
+                            }
+                            _last_images_dict = {
+                                "sample": last_sample_image,
+                                "ob": {},
+                                "df": {},
+                            }
 
                             _config["first_images"] = _first_images_dict
                             _config["last_images"] = _last_images_dict
                             _found_a_match = True
 
                     if not _found_a_match:
-                        _first_images_dict = {"sample": first_sample_image, "ob": {}, "df": {}}
-                        _last_images_dict = {"sample": last_sample_image, "ob": {}, "df": {}}
+                        _first_images_dict = {
+                            "sample": first_sample_image,
+                            "ob": {},
+                            "df": {},
+                        }
+                        _last_images_dict = {
+                            "sample": last_sample_image,
+                            "ob": {},
+                            "df": {},
+                        }
 
                         _temp_dict = {
                             "list_sample": [_dict_file_index],
@@ -332,16 +416,31 @@ class NormalizationWithSimplifySelection:
                             "last_images": _last_images_dict,
                             "list_ob": [],
                             "list_df": [],
-                            "time_range_s_selected": {"before": np.nan, "after": np.nan},
+                            "time_range_s_selected": {
+                                "before": np.nan,
+                                "after": np.nan,
+                            },
                             "time_range_s": {"before": np.nan, "after": np.nan},
-                            "metadata_infos": Get.get_instrument_metadata_only(_instrument_metadata),
+                            "metadata_infos": Get.get_instrument_metadata_only(
+                                _instrument_metadata
+                            ),
                         }
                         nbr_config = len(_dict_for_this_acquisition_time.keys())
-                        _dict_for_this_acquisition_time[f"config{nbr_config}"] = _temp_dict
+                        _dict_for_this_acquisition_time[f"config{nbr_config}"] = (
+                            _temp_dict
+                        )
 
                 else:
-                    _first_images_dict = {"sample": first_sample_image, "ob": {}, "df": {}}
-                    _last_images_dict = {"sample": last_sample_image, "ob": {}, "df": {}}
+                    _first_images_dict = {
+                        "sample": first_sample_image,
+                        "ob": {},
+                        "df": {},
+                    }
+                    _last_images_dict = {
+                        "sample": last_sample_image,
+                        "ob": {},
+                        "df": {},
+                    }
 
                     _temp_dict = {
                         "list_sample": [_dict_file_index],
@@ -351,7 +450,9 @@ class NormalizationWithSimplifySelection:
                         "list_df": [],
                         "time_range_s_selected": {"before": np.nan, "after": np.nan},
                         "time_range_s": {"before": np.nan, "after": np.nan},
-                        "metadata_infos": Get.get_instrument_metadata_only(_instrument_metadata),
+                        "metadata_infos": Get.get_instrument_metadata_only(
+                            _instrument_metadata
+                        ),
                     }
                     final_full_master_dict[_acquisition_time] = {}
                     final_full_master_dict[_acquisition_time]["config0"] = _temp_dict
@@ -398,19 +499,29 @@ class NormalizationWithSimplifySelection:
             for _config in current_acquisition_dict.keys():
                 current_acquisition_config_dict = current_acquisition_dict[_config]
 
-            first_sample_image = current_acquisition_config_dict["first_images"]["sample"]
+            first_sample_image = current_acquisition_config_dict["first_images"][
+                "sample"
+            ]
             first_ob_image = current_acquisition_config_dict["first_images"]["ob"]
 
-            delta_time_before = first_sample_image.get("time_stamp", 0) - first_ob_image.get("time_stamp", 0)
+            delta_time_before = first_sample_image.get(
+                "time_stamp", 0
+            ) - first_ob_image.get("time_stamp", 0)
             _time_range_s_before = delta_time_before if delta_time_before > 0 else 0
 
             last_sample_image = current_acquisition_config_dict["last_images"]["sample"]
             last_ob_image = current_acquisition_config_dict["last_images"]["ob"]
-            delta_time_after = last_ob_image.get("time_stamp", 0) - last_sample_image.get("time_stamp", 0)
+            delta_time_after = last_ob_image.get(
+                "time_stamp", 0
+            ) - last_sample_image.get("time_stamp", 0)
             _time_range_s_after = delta_time_after if delta_time_after > 0 else 0
 
-            _final_full_master_dict[_acquisition][_config]["time_range_s"]["before"] = _time_range_s_before
-            _final_full_master_dict[_acquisition][_config]["time_range_s"]["after"] = _time_range_s_after
+            _final_full_master_dict[_acquisition][_config]["time_range_s"]["before"] = (
+                _time_range_s_before
+            )
+            _final_full_master_dict[_acquisition][_config]["time_range_s"]["after"] = (
+                _time_range_s_after
+            )
 
     def display_time_range_selection_widgets(self):
         _final_full_master_dict = self.final_full_master_dict
@@ -419,7 +530,9 @@ class NormalizationWithSimplifySelection:
 
         o_get = Get(parent=self)
 
-        for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
+        for _acquisition_index, _acquisition in enumerate(
+            _final_full_master_dict.keys()
+        ):
             _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
 
             _config_tab = widgets.Tab()
@@ -434,8 +547,12 @@ class NormalizationWithSimplifySelection:
                 _current_acquisition_tab_widgets_id[_index] = _config_widgets_id_dict
             _config_tab_dict[_acquisition_index] = _current_acquisition_tab_widgets_id
 
-            _acquisition_tabs.children += (_config_tab,)  # add all the config tab to top acquisition tab
-            _acquisition_tabs.set_title(_acquisition_index, f"Acquisition: {_acquisition}s")
+            _acquisition_tabs.children += (
+                _config_tab,
+            )  # add all the config tab to top acquisition tab
+            _acquisition_tabs.set_title(
+                _acquisition_index, f"Acquisition: {_acquisition}s"
+            )
             _config_tab
 
         display(_acquisition_tabs)
@@ -446,8 +563,12 @@ class NormalizationWithSimplifySelection:
     def calculate_max_time_before_and_after_exp_for_this_config(self, dict_config):
         max_time_before = 0
 
-        first_sample_image_time_stamp = dict_config["first_images"]["sample"]["time_stamp"]
-        first_ob_image_time_stamp = dict_config["first_images"]["ob"].get("time_stamp", 0)
+        first_sample_image_time_stamp = dict_config["first_images"]["sample"][
+            "time_stamp"
+        ]
+        first_ob_image_time_stamp = dict_config["first_images"]["ob"].get(
+            "time_stamp", 0
+        )
 
         if first_ob_image_time_stamp > first_sample_image_time_stamp:
             max_time_before = 0
@@ -456,7 +577,9 @@ class NormalizationWithSimplifySelection:
 
         max_time_after = 0
 
-        last_sample_image_time_stamp = dict_config["last_images"]["sample"]["time_stamp"]
+        last_sample_image_time_stamp = dict_config["last_images"]["sample"][
+            "time_stamp"
+        ]
         last_ob_image_time_stamp = dict_config["last_images"]["ob"].get("time_stamp", 0)
 
         if last_ob_image_time_stamp < last_sample_image_time_stamp:
@@ -468,11 +591,16 @@ class NormalizationWithSimplifySelection:
 
     def populate_metadata_table(self, current_config):
         metadata_config = current_config["metadata_infos"]
-        table_label = widgets.Label("List of Metadata used to match data set", layout=widgets.Layout(width="30%"))
+        table_label = widgets.Label(
+            "List of Metadata used to match data set",
+            layout=widgets.Layout(width="30%"),
+        )
 
         table_value = "<table style='width:50%;background-color:#eee'>"
         for _key, _value in metadata_config.items():
-            table_value += "<tr><th>{}</th><th>{}</th></tr>".format(_value["name"], _value["value"])
+            table_value += "<tr><th>{}</th><th>{}</th></tr>".format(
+                _value["name"], _value["value"]
+            )
         table_value += "</table>"
 
         table = widgets.HTML(value=table_value)
@@ -493,7 +621,9 @@ class NormalizationWithSimplifySelection:
             visibility = "visible"
 
         o_get = Get(parent=self)
-        [time_before_selected_ui, time_after_selected_ui] = o_get.time_before_and_after_ui_of_this_config()
+        [time_before_selected_ui, time_after_selected_ui] = (
+            o_get.time_before_and_after_ui_of_this_config()
+        )
         experiment_label_ui = o_get.experiment_label_ui_of_this_config()
         experiment_label_ui.layout.visibility = visibility
 
@@ -512,10 +642,16 @@ class NormalizationWithSimplifySelection:
             self.calculate_max_time_before_and_after_exp_for_this_config(current_config)
         )
 
-        slider_before_visibility = "visible" if max_time_elapse_before_experiment > 0 else "hidden"
-        slider_after_visibility = "visible" if max_time_elapse_after_experiment > 0 else "hidden"
+        slider_before_visibility = (
+            "visible" if max_time_elapse_before_experiment > 0 else "hidden"
+        )
+        slider_after_visibility = (
+            "visible" if max_time_elapse_after_experiment > 0 else "hidden"
+        )
 
-        [time_before_selected_ui, time_after_selected_ui] = o_get.time_before_and_after_ui_of_this_config()
+        [time_before_selected_ui, time_after_selected_ui] = (
+            o_get.time_before_and_after_ui_of_this_config()
+        )
         time_before_selected_ui.layout.visibility = slider_before_visibility
         time_after_selected_ui.layout.visibility = slider_after_visibility
 
@@ -538,7 +674,9 @@ class NormalizationWithSimplifySelection:
 
         # retrieve list of ob and df for this config for this acquisition
         final_full_master_dict = self.final_full_master_dict
-        dict_for_this_config = final_full_master_dict[float(acquisition_key)][config_key]
+        dict_for_this_config = final_full_master_dict[float(acquisition_key)][
+            config_key
+        ]
         list_ob = dict_for_this_config["list_ob"]
 
         # no need to do anything more if user wants to use all the files
@@ -547,22 +685,30 @@ class NormalizationWithSimplifySelection:
 
         else:
             # retrieve first and last sample file for this config and for this acquisition
-            first_sample_image_time_stamp = dict_for_this_config["first_images"]["sample"]["time_stamp"]
-            last_sample_images_time_stamp = dict_for_this_config["last_images"]["sample"]["time_stamp"]
+            first_sample_image_time_stamp = dict_for_this_config["first_images"][
+                "sample"
+            ]["time_stamp"]
+            last_sample_images_time_stamp = dict_for_this_config["last_images"][
+                "sample"
+            ]["time_stamp"]
 
             # retrieve time before and after selected
-            [time_before_selected, time_after_selected] = o_get.time_before_and_after_of_this_config()
+            [time_before_selected, time_after_selected] = (
+                o_get.time_before_and_after_of_this_config()
+            )
 
             # calculate list of ob that are within that time range
             list_ob_to_keep = []
             for _ob_file in list_ob:
                 _ob_time_stamp = _ob_file["time_stamp"]
                 if (_ob_time_stamp < first_sample_image_time_stamp) and (
-                    (first_sample_image_time_stamp - _ob_time_stamp) <= np.abs(time_before_selected)
+                    (first_sample_image_time_stamp - _ob_time_stamp)
+                    <= np.abs(time_before_selected)
                 ):
                     list_ob_to_keep.append(_ob_file["filename"])
                 elif (_ob_time_stamp > last_sample_images_time_stamp) and (
-                    (_ob_time_stamp - last_sample_images_time_stamp) <= np.abs(time_after_selected)
+                    (_ob_time_stamp - last_sample_images_time_stamp)
+                    <= np.abs(time_after_selected)
                 ):
                     list_ob_to_keep.append(_ob_file["filename"])
 
@@ -572,9 +718,13 @@ class NormalizationWithSimplifySelection:
         o_get = Get(parent=self)
         [active_acquisition, active_config] = o_get.active_tabs()
         # short_version_list_ob = NormalizationWithSimplifySelection.keep_basename_only(list_files=list_ob)
-        self.config_tab_dict[active_acquisition][active_config]["list_of_ob"].options = list_ob
+        self.config_tab_dict[active_acquisition][active_config][
+            "list_of_ob"
+        ].options = list_ob
         # select everything by default
-        self.config_tab_dict[active_acquisition][active_config]["list_of_ob"].value = list_ob
+        self.config_tab_dict[active_acquisition][active_config][
+            "list_of_ob"
+        ].value = list_ob
 
     def update_time_range_message(self, value):
         o_get = Get(parent=self)
@@ -587,7 +737,9 @@ class NormalizationWithSimplifySelection:
         #            "<font color='black'>OBs and DFs " \
         #            "matching the samples images</font>"
         else:
-            [time_before_selected, time_after_selected] = o_get.time_before_and_after_of_this_config()
+            [time_before_selected, time_after_selected] = (
+                o_get.time_before_and_after_of_this_config()
+            )
 
             time_before_selected = np.abs(time_before_selected)
 
@@ -608,7 +760,9 @@ class NormalizationWithSimplifySelection:
             str_time_before = _format_time(time_before_selected)
             str_time_after = _format_time(time_after_selected)
 
-            logging.info(f"str_time_before: {time_before_selected} -> {str_time_before}")
+            logging.info(
+                f"str_time_before: {time_before_selected} -> {str_time_before}"
+            )
 
             _message = (
                 "Use OB taken up to <b><font color='red'>" + str_time_before + "</b> "
@@ -617,7 +771,9 @@ class NormalizationWithSimplifySelection:
                 "<font color='black'>after experiment!</font>"
             )
 
-        time_before_and_after_message_ui = o_get.time_before_and_after_message_ui_of_this_config()
+        time_before_and_after_message_ui = (
+            o_get.time_before_and_after_message_ui_of_this_config()
+        )
         time_before_and_after_message_ui.value = _message
 
     def do_you_want_to_combine_changed(self, value):
@@ -629,7 +785,9 @@ class NormalizationWithSimplifySelection:
 
         o_get = Get(parent=self)
         [active_acquisition, active_config] = o_get.active_tabs()
-        self.config_tab_dict[active_acquisition][active_config]["how_to_combine"].disabled = disabled_how_to_combine
+        self.config_tab_dict[active_acquisition][active_config][
+            "how_to_combine"
+        ].disabled = disabled_how_to_combine
         self.update_this_config_table()
 
     def how_to_combine_changed(self, value):
@@ -640,20 +798,44 @@ class NormalizationWithSimplifySelection:
         [active_acquisition, active_config] = o_get.active_tabs()
         table_ui = self.config_tab_dict[active_acquisition][active_config]["table"]
 
-        nbr_ob = len(self.config_tab_dict[active_acquisition][active_config]["list_of_ob"].value)
-        nbr_sample = len(self.config_tab_dict[active_acquisition][active_config]["list_of_sample_runs"].options)
-        nbr_df = len(self.config_tab_dict[active_acquisition][active_config]["list_of_df"].value)
+        nbr_ob = len(
+            self.config_tab_dict[active_acquisition][active_config]["list_of_ob"].value
+        )
+        nbr_sample = len(
+            self.config_tab_dict[active_acquisition][active_config][
+                "list_of_sample_runs"
+            ].options
+        )
+        nbr_df = len(
+            self.config_tab_dict[active_acquisition][active_config]["list_of_df"].value
+        )
 
-        force_combine_disabled_state = self.config_tab_dict[active_acquisition][active_config]["force_combine"].disabled
-        force_combine_value = self.config_tab_dict[active_acquisition][active_config]["force_combine"].value
-        how_to_combine_value = self.config_tab_dict[active_acquisition][active_config]["how_to_combine"].value
+        force_combine_disabled_state = self.config_tab_dict[active_acquisition][
+            active_config
+        ]["force_combine"].disabled
+        force_combine_value = self.config_tab_dict[active_acquisition][active_config][
+            "force_combine"
+        ].value
+        how_to_combine_value = self.config_tab_dict[active_acquisition][active_config][
+            "how_to_combine"
+        ].value
 
         if force_combine_value == "yes":
-            description = "OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
+            description = (
+                "OBs <b>will be combined</b> using <b>"
+                + how_to_combine_value
+                + "</b> method!"
+            )
         elif force_combine_disabled_state:
-            description = "OBs <b>will be combined</b> using <b>" + how_to_combine_value + "</b> method!"
+            description = (
+                "OBs <b>will be combined</b> using <b>"
+                + how_to_combine_value
+                + "</b> method!"
+            )
         else:
-            description = "OBs <b>won't be combined</b>! Each sample will use only <b>1 OB</b>!"
+            description = (
+                "OBs <b>won't be combined</b>! Each sample will use only <b>1 OB</b>!"
+            )
 
         html_table = (
             f"<table style='width:100%'>"
@@ -679,15 +861,25 @@ class NormalizationWithSimplifySelection:
         nbr_ob = len(list_ob_selected)
         o_get = Get(parent=self)
         [active_acquisition, active_config] = o_get.active_tabs()
-        list_sample = self.config_tab_dict[active_acquisition][active_config]["list_of_sample_runs"].options
+        list_sample = self.config_tab_dict[active_acquisition][active_config][
+            "list_of_sample_runs"
+        ].options
         nbr_sample = len(list_sample)
 
         if nbr_sample == nbr_ob:
-            self.config_tab_dict[active_acquisition][active_config]["force_combine"].disabled = False
-            self.config_tab_dict[active_acquisition][active_config]["force_combine_message"].value = ""
+            self.config_tab_dict[active_acquisition][active_config][
+                "force_combine"
+            ].disabled = False
+            self.config_tab_dict[active_acquisition][active_config][
+                "force_combine_message"
+            ].value = ""
         else:
-            self.config_tab_dict[active_acquisition][active_config]["force_combine"].disabled = True
-            self.config_tab_dict[active_acquisition][active_config]["force_combine_message"].value = (
+            self.config_tab_dict[active_acquisition][active_config][
+                "force_combine"
+            ].disabled = True
+            self.config_tab_dict[active_acquisition][active_config][
+                "force_combine_message"
+            ].value = (
                 "<font color='blue'>INFO</font>: the option to combine or not is disabled as the number of "
                 "<b>sample</b> "
                 "and "
@@ -704,20 +896,28 @@ class NormalizationWithSimplifySelection:
         _config_tab_dict = self.config_tab_dict
         _final_json_dict = {}
 
-        for _acquisition_index, _acquisition in enumerate(_final_full_master_dict.keys()):
+        for _acquisition_index, _acquisition in enumerate(
+            _final_full_master_dict.keys()
+        ):
             _final_json_for_this_acquisition = {}
             _config_of_this_acquisition = _config_tab_dict[_acquisition_index]
             _dict_of_this_acquisition = _final_full_master_dict[_acquisition]
             for _config_index, _config in enumerate(_dict_of_this_acquisition.keys()):
-                this_config_tab_dict = _config_tab_dict[_acquisition_index][_config_index]
+                this_config_tab_dict = _config_tab_dict[_acquisition_index][
+                    _config_index
+                ]
                 normalize_flag = this_config_tab_dict["use_this_config"]
 
                 list_sample = this_config_tab_dict["list_of_sample_runs"].options
                 list_ob = this_config_tab_dict["list_of_ob"].value
                 list_df = this_config_tab_dict["list_of_df"].value
 
-                force_combine_disabled_state = this_config_tab_dict["force_combine"].disabled  # True or false
-                force_combine_value = this_config_tab_dict["force_combine"].value  # 'yes' or 'no'
+                force_combine_disabled_state = this_config_tab_dict[
+                    "force_combine"
+                ].disabled  # True or false
+                force_combine_value = this_config_tab_dict[
+                    "force_combine"
+                ].value  # 'yes' or 'no'
                 how_to_combine_value = this_config_tab_dict["how_to_combine"].value
                 remove_gammas = this_config_tab_dict["remove_gamma"].value
                 log_conversion = this_config_tab_dict["log_conversion"].value
@@ -750,16 +950,24 @@ class NormalizationWithSimplifySelection:
     def roi_button_clicked(self, value):
         o_get = Get(parent=self)
         [active_acquisition, active_config] = o_get.active_tabs()
-        list_sample = self.config_tab_dict[active_acquisition][active_config]["list_of_sample_runs"].options
+        list_sample = self.config_tab_dict[active_acquisition][active_config][
+            "list_of_sample_runs"
+        ].options
 
         self.config_tab_dict[active_acquisition][active_config][
             "select_roi_button"
         ].description = TEMPORARY_ROI_BUTTON_DESCRIPTION
-        self.config_tab_dict[active_acquisition][active_config]["select_roi_button"].icon = TEMPORARY_ROI_ICON
-        self.config_tab_dict[active_acquisition][active_config]["select_roi_button"].disabled = True
+        self.config_tab_dict[active_acquisition][active_config][
+            "select_roi_button"
+        ].icon = TEMPORARY_ROI_ICON
+        self.config_tab_dict[active_acquisition][active_config][
+            "select_roi_button"
+        ].disabled = True
 
         o_gui = Interface(
-            list_of_files=list_sample, callback=self.returning_from_roi_selection, display_info_message=False
+            list_of_files=list_sample,
+            callback=self.returning_from_roi_selection,
+            display_info_message=False,
         )
         o_gui.show()
         QtGui.QGuiApplication.processEvents()
@@ -767,12 +975,18 @@ class NormalizationWithSimplifySelection:
     def returning_from_roi_selection(self, roi_selected):
         o_get = Get(parent=self)
         [active_acquisition, active_config] = o_get.active_tabs()
-        self.config_tab_dict[active_acquisition][active_config]["roi_selected"] = roi_selected
+        self.config_tab_dict[active_acquisition][active_config]["roi_selected"] = (
+            roi_selected
+        )
         self.config_tab_dict[active_acquisition][active_config][
             "select_roi_button"
         ].description = ROI_BUTTON_DESCRIPTION
-        self.config_tab_dict[active_acquisition][active_config]["select_roi_button"].icon = ROI_ICON
-        self.config_tab_dict[active_acquisition][active_config]["select_roi_button"].disabled = False
+        self.config_tab_dict[active_acquisition][active_config][
+            "select_roi_button"
+        ].icon = ROI_ICON
+        self.config_tab_dict[active_acquisition][active_config][
+            "select_roi_button"
+        ].disabled = False
 
     def normalization_recap(self):
         """this will show all the config that will be run and if they have the minimum requirements or not,
@@ -832,20 +1046,31 @@ class NormalizationWithSimplifySelection:
 
     def normalization_settings(self):
         # do we want to remove the gammas ?
-        remove_gamma_label = widgets.Label("Do you want to remove the gamma?", layout=widgets.Layout(width="50%"))
+        remove_gamma_label = widgets.Label(
+            "Do you want to remove the gamma?", layout=widgets.Layout(width="50%")
+        )
         display(remove_gamma_label)
-        self.remove_gamma_ui = widgets.Checkbox(value=False, description="Remove gamma", layout=widgets.Layout(width="50%"))
+        self.remove_gamma_ui = widgets.Checkbox(
+            value=False, description="Remove gamma", layout=widgets.Layout(width="50%")
+        )
         display(self.remove_gamma_ui)
-        
+
         display(HTML("<hr>"))
-        
-        log_conversion = widgets.Label("Do you want to convert to log scale the output data?", layout=widgets.Layout(width="50%"))
+
+        log_conversion = widgets.Label(
+            "Do you want to convert to log scale the output data?",
+            layout=widgets.Layout(width="50%"),
+        )
         display(log_conversion)
-        self.log_conversion_ui = widgets.Checkbox(value=False, description="Convert to log scale", layout=widgets.Layout(width="50%"))
+        self.log_conversion_ui = widgets.Checkbox(
+            value=False,
+            description="Convert to log scale",
+            layout=widgets.Layout(width="50%"),
+        )
         display(self.log_conversion_ui)
 
     def select_output_folder(self):
-        #self.output_folder_ui = myfileselector.MyFileSelectorPanel(
+        # self.output_folder_ui = myfileselector.MyFileSelectorPanel(
         self.output_folder_ui = myfileselector.FileSelectorPanelWithJumpFolders(
             instruction="select where to create the " + "normalized folders",
             start_dir=self.working_dir,
@@ -856,7 +1081,7 @@ class NormalizationWithSimplifySelection:
             newdir_toolbar_button=True,
         )
         # display(self.output_folder_ui)
-        
+
     def normalization(self, output_folder):
         display(
             HTML(
@@ -872,8 +1097,14 @@ class NormalizationWithSimplifySelection:
 
         horizontal_layout = widgets.HBox(
             [
-                widgets.Label("Normalization progress", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=number_of_normalization + 1, value=0, layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Normalization progress", layout=widgets.Layout(width="20%")
+                ),
+                widgets.IntProgress(
+                    max=number_of_normalization + 1,
+                    value=0,
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
         normalization_progress = horizontal_layout.children[1]
@@ -895,30 +1126,38 @@ class NormalizationWithSimplifySelection:
                     continue
 
                 list_sample = _current_config["list_sample"]
-                full_output_normalization_folder_name = utilities.make_full_output_normalization_folder_name(
-                    output_folder=output_folder,
-                    first_sample_file_name=list_sample[0],
-                    name_acquisition=_name_acquisition,
-                    name_config=_name_config,
+                full_output_normalization_folder_name = (
+                    utilities.make_full_output_normalization_folder_name(
+                        output_folder=output_folder,
+                        first_sample_file_name=list_sample[0],
+                        name_acquisition=_name_acquisition,
+                        name_config=_name_config,
+                    )
                 )
-                list_full_output_normalization_folder_name.append(full_output_normalization_folder_name)
+                list_full_output_normalization_folder_name.append(
+                    full_output_normalization_folder_name
+                )
                 list_df = _current_config["list_df"]
 
                 print(f"{_current_config =}")
                 remove_gammas = _current_config["remove_gammas"]
 
                 o_load = Normalization()
-                o_load.load(file=list(list_sample), 
-                            auto_gamma_filter=remove_gammas, 
-                            notebook=True)
-                o_load.load(file=list(list_ob), 
-                            auto_gamma_filter=remove_gammas, 
-                            data_type="ob")
+                o_load.load(
+                    file=list(list_sample),
+                    auto_gamma_filter=remove_gammas,
+                    notebook=True,
+                )
+                o_load.load(
+                    file=list(list_ob), auto_gamma_filter=remove_gammas, data_type="ob"
+                )
 
                 if len(list_df) > 0:
-                    o_load.load(file=list(list_df), 
-                                auto_gamma_filter=remove_gammas,
-                                data_type="df")
+                    o_load.load(
+                        file=list(list_df),
+                        auto_gamma_filter=remove_gammas,
+                        data_type="df",
+                    )
 
                 force_combine = _current_config["force_combine"]
                 how_to_combine = _current_config["how_to_combine"]
@@ -928,7 +1167,12 @@ class NormalizationWithSimplifySelection:
                     list_roi = []
                     for _key in roi.keys():
                         _roi_item = roi[_key]
-                        _roi = ROI(x0=_roi_item["x0"], y0=_roi_item["y0"], x1=_roi_item["x1"], y1=_roi_item["y1"])
+                        _roi = ROI(
+                            x0=_roi_item["x0"],
+                            y0=_roi_item["y0"],
+                            x1=_roi_item["x1"],
+                            y1=_roi_item["y1"],
+                        )
                         list_roi.append(_roi)
                 else:
                     list_roi = None
@@ -947,27 +1191,43 @@ class NormalizationWithSimplifySelection:
                     data[data > 0] = np.log(data[data > 0])
                     o_load.data["normalized"] = data
 
-                o_load.export(folder=full_output_normalization_folder_name, file_type="tif")
+                o_load.export(
+                    folder=full_output_normalization_folder_name, file_type="tif"
+                )
                 del o_load
 
                 normalization_progress.value += 1
 
         horizontal_layout.close()
 
-        display(HTML('<span style="font-size: 20px; color:blue">The following folders have been created:</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">The following folders have been created:</span>'
+            )
+        )
         for _folder in list_full_output_normalization_folder_name:
             _folder = _folder if _folder else "None"
-            display(HTML('<span style="font-size: 15px; color:blue"> -> ' + _folder + "</span>"))
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:blue"> -> '
+                    + _folder
+                    + "</span>"
+                )
+            )
 
         print("Normalization is done!")
-        
+
     @classmethod
     def legend(cls) -> None:
         display(HTML("<hr style='height:2px'/>"))
         display(HTML("<h2>Legend</h2>"))
-        display(HTML("<ul>"
-                     "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data preparation and reconstruction.</li>"
-                     "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data preparation and reconstruction.</li>"
-                     "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your reconstruction.</li>"
-                     "</ul>"))
+        display(
+            HTML(
+                "<ul>"
+                "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data preparation and reconstruction.</li>"
+                "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data preparation and reconstruction.</li>"
+                "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your reconstruction.</li>"
+                "</ul>"
+            )
+        )
         display(HTML("<hr style='height:2px'/>"))

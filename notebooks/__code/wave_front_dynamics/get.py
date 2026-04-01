@@ -27,7 +27,9 @@ class Get(Parent):
         elif self.parent.ui.edge_calculation_all.isChecked():
             return ListAlgorithm.all
         else:
-            raise NotImplementedError("edge calculation algorithms not implemented yet!")
+            raise NotImplementedError(
+                "edge calculation algorithms not implemented yet!"
+            )
 
     def edge_calculation_file_index_selected(self):
         return self.parent.ui.edge_calculation_file_index_slider.value()

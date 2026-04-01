@@ -17,7 +17,9 @@ class FixImages(FileFolderBrowser):
     data = []
     full_statistics = {}
 
-    Statistics = namedtuple("Statistics", "nbr_pixel_modified percentage_pixel_modified total_pixels")
+    Statistics = namedtuple(
+        "Statistics", "nbr_pixel_modified percentage_pixel_modified total_pixels"
+    )
 
     def __init__(self, working_dir=""):
         super(FixImages, self).__init__(working_dir=working_dir)
@@ -57,7 +59,12 @@ class FixImages(FileFolderBrowser):
         _ = widgets.interact(
             _plot_images,
             index=widgets.IntSlider(
-                min=0, max=len(self.list_files) - 1, step=1, value=0, description="File Index", continuous_update=False
+                min=0,
+                max=len(self.list_files) - 1,
+                step=1,
+                value=0,
+                description="File Index",
+                continuous_update=False,
             ),
         )
 
@@ -93,7 +100,9 @@ class FixImages(FileFolderBrowser):
         percentage_in_roi = (nbr_negative_in_roi / total) * 100
 
         stat = self.Statistics(
-            nbr_pixel_modified=nbr_negative_in_roi, percentage_pixel_modified=percentage_in_roi, total_pixels=total
+            nbr_pixel_modified=nbr_negative_in_roi,
+            percentage_pixel_modified=percentage_in_roi,
+            total_pixels=total,
         )
         return stat
 
@@ -107,20 +116,36 @@ class FixImages(FileFolderBrowser):
 
         def _plot_images(index, x_left, y_top, width, height):
             _file_name = _files[index]
-            fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(10, 5), num=os.path.basename(_file_name))
+            fig, (ax0, ax1) = plt.subplots(
+                ncols=2, figsize=(10, 5), num=os.path.basename(_file_name)
+            )
             _stat = _full_statistics[index]
 
             # plt.title(os.path.basename(_files[index]))
             cax0 = ax0.imshow(_data[index], cmap="viridis", interpolation=None)
             ax0.set_title("Before Correction")
             tmp1 = fig.colorbar(cax0, ax=ax0)  # colorbar
-            _rectangle1 = patches.Rectangle((x_left, y_top), width, height, edgecolor="white", linewidth=2, fill=False)
+            _rectangle1 = patches.Rectangle(
+                (x_left, y_top),
+                width,
+                height,
+                edgecolor="white",
+                linewidth=2,
+                fill=False,
+            )
             ax1.add_patch(_rectangle1)
 
             cax1 = ax1.imshow(_clean_data[index], cmap="viridis", interpolation=None)
             ax1.set_title("After Correction")
             tmp2 = fig.colorbar(cax1, ax=ax1)  # colorbar
-            _rectangle2 = patches.Rectangle((x_left, y_top), width, height, edgecolor="white", linewidth=2, fill=False)
+            _rectangle2 = patches.Rectangle(
+                (x_left, y_top),
+                width,
+                height,
+                edgecolor="white",
+                linewidth=2,
+                fill=False,
+            )
             ax0.add_patch(_rectangle2)
 
             fig.tight_layout()
@@ -128,32 +153,63 @@ class FixImages(FileFolderBrowser):
             print("STATISTICS of FULL REGION")
             print(f"-> Number of pixels corrected: {_stat.nbr_pixel_modified}")
             print(f"-> Total number of pixels: {_stat.total_pixels}")
-            print(f"-> Percentage of pixels corrected: {_stat.percentage_pixel_modified:.3}%")
+            print(
+                f"-> Percentage of pixels corrected: {_stat.percentage_pixel_modified:.3}%"
+            )
             print("")
 
-            _stat_roi = self.get_statistics_of_roi_cleaned(x_left, y_top, height, width, _data[index])
+            _stat_roi = self.get_statistics_of_roi_cleaned(
+                x_left, y_top, height, width, _data[index]
+            )
 
             print("STATISTICS of SELECTED REGION")
             print(f"-> Number of pixels corrected: {_stat_roi.nbr_pixel_modified}")
             print(f"-> Total number of pixels: {_stat_roi.total_pixels}")
-            print(f"-> Percentage of pixels corrected: {_stat_roi.percentage_pixel_modified:.3}%")
+            print(
+                f"-> Percentage of pixels corrected: {_stat_roi.percentage_pixel_modified:.3}%"
+            )
 
         tmp3 = widgets.interact(
             _plot_images,
             index=widgets.IntSlider(
-                min=0, max=len(self.list_files) - 1, step=1, value=0, description="File Index", continuous_update=False
+                min=0,
+                max=len(self.list_files) - 1,
+                step=1,
+                value=0,
+                description="File Index",
+                continuous_update=False,
             ),
             x_left=widgets.IntSlider(
-                min=0, max=width - 1, step=1, value=0, description="X Left", continuous_update=False
+                min=0,
+                max=width - 1,
+                step=1,
+                value=0,
+                description="X Left",
+                continuous_update=False,
             ),
             y_top=widgets.IntSlider(
-                min=0, max=height - 1, value=0, step=1, description="Y Top", continuous_update=False
+                min=0,
+                max=height - 1,
+                value=0,
+                step=1,
+                description="Y Top",
+                continuous_update=False,
             ),
             width=widgets.IntSlider(
-                min=0, max=width - 1, step=1, value=60, description="Width", continuous_update=False
+                min=0,
+                max=width - 1,
+                step=1,
+                value=60,
+                description="Width",
+                continuous_update=False,
             ),
             height=widgets.IntSlider(
-                min=0, max=height - 1, step=1, value=100, description="Height", continuous_update=False
+                min=0,
+                max=height - 1,
+                step=1,
+                value=100,
+                description="Height",
+                continuous_update=False,
             ),
         )
 
@@ -178,14 +234,21 @@ class FixImages(FileFolderBrowser):
         tmp3 = widgets.interact(
             _plot_images,
             index=widgets.IntSlider(
-                min=0, max=len(self.list_files) - 1, step=1, value=0, description="File Index", continuous_update=False
+                min=0,
+                max=len(self.list_files) - 1,
+                step=1,
+                value=0,
+                description="File Index",
+                continuous_update=False,
             ),
         )
 
     def export(self):
         output_folder = os.path.abspath(self.list_output_folders_ui.selected)
 
-        base_input_folder = os.path.basename(os.path.dirname(os.path.abspath(self.list_files[0])))
+        base_input_folder = os.path.basename(
+            os.path.dirname(os.path.abspath(self.list_files[0]))
+        )
         new_folder_name = base_input_folder + "_cleaned"
         output_folder = os.path.join(output_folder, new_folder_name)
         make_folder(output_folder)
@@ -199,5 +262,9 @@ class FixImages(FileFolderBrowser):
             save_data(data=_data, filename=_full_output_file_name)
 
         display(
-            HTML('<span style="font-size: 20px; color:blue">Files have been created in ' + output_folder + "</span>")
+            HTML(
+                '<span style="font-size: 20px; color:blue">Files have been created in '
+                + output_folder
+                + "</span>"
+            )
         )

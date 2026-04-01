@@ -19,14 +19,23 @@ class Export(Parent):
             options=QFileDialog.ShowDirsOnly,
         )
         if output_folder:
-            output_file_name = self.make_up_output_file_name(output_folder=output_folder)
+            output_file_name = self.make_up_output_file_name(
+                output_folder=output_folder
+            )
 
             o_get = Get(parent=self.parent)
-            list_edge_calculation_algorithm = o_get.edge_calculation_algorithms_to_plot()
+            list_edge_calculation_algorithm = (
+                o_get.edge_calculation_algorithms_to_plot()
+            )
 
             metadata = self.retrieving_metadata(list_edge_calculation_algorithm)
             data = self.retrieve_data(list_edge_calculation_algorithm)
-            make_ascii_file(output_file_name=output_file_name, data=data, metadata=metadata, dim="1d")
+            make_ascii_file(
+                output_file_name=output_file_name,
+                data=data,
+                metadata=metadata,
+                dim="1d",
+            )
 
             show_status_message(
                 parent=self.parent,
@@ -63,7 +72,9 @@ class Export(Parent):
         for edge_calculation_algorithm in list_edge_calculation_algorithm:
             list_algo.append(edge_calculation_algorithm + " (pixels number)")
 
-        metadata = ["# Position of wave edge in nbr of pixels from center of profile using various algorithms"]
+        metadata = [
+            "# Position of wave edge in nbr of pixels from center of profile using various algorithms"
+        ]
         metadata.append("# list of image files")
         for _file in self.parent.list_of_original_image_files_to_use:
             _str = "# " + _file

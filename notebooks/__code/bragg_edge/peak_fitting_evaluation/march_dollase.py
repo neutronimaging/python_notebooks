@@ -98,13 +98,17 @@ class MarchDollase:
         :param to_row_offset: +1 means moving row to the next row, -1 means moving up by one row
         """
         row_selected = self.get_row_selected()
-        march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
+        march_dollase_fitting_history_table = (
+            self.parent.march_dollase_fitting_history_table
+        )
         row_to_move = march_dollase_fitting_history_table.pop(row_selected)
 
         new_row = row_selected + to_row_offset
 
         march_dollase_fitting_history_table.insert(new_row, row_to_move)
-        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+        self.parent.march_dollase_fitting_history_table = (
+            march_dollase_fitting_history_table
+        )
 
         o_gui = GuiUtility(parent=self.parent)
         o_gui.fill_march_dollase_table(
@@ -167,42 +171,60 @@ class MarchDollase:
         march_dollase_fitting_history_table = list()
         new_entry = self.parent.march_dollase_fitting_history_table_default_new_row
         march_dollase_fitting_history_table.insert(0, new_entry)
-        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+        self.parent.march_dollase_fitting_history_table = (
+            march_dollase_fitting_history_table
+        )
         self.update_table_after_changing_row(changing_row=0)
 
     def insert_row_above(self):
         o_table = TableHandler(table_ui=self.parent.ui.march_dollase_user_input_table)
         row_selected = o_table.get_row_selected()
-        march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
+        march_dollase_fitting_history_table = (
+            self.parent.march_dollase_fitting_history_table
+        )
         new_entry = [False for _entry in march_dollase_fitting_history_table[0]]
         march_dollase_fitting_history_table.insert(row_selected, new_entry)
-        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+        self.parent.march_dollase_fitting_history_table = (
+            march_dollase_fitting_history_table
+        )
         self.update_table_after_changing_row(changing_row=row_selected + 1)
 
     def insert_row_below(self):
         o_table = TableHandler(table_ui=self.parent.ui.march_dollase_user_input_table)
         row_selected = o_table.get_row_selected()
-        march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
+        march_dollase_fitting_history_table = (
+            self.parent.march_dollase_fitting_history_table
+        )
         new_entry = [False for _entry in march_dollase_fitting_history_table[0]]
         march_dollase_fitting_history_table.insert(row_selected + 1, new_entry)
-        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+        self.parent.march_dollase_fitting_history_table = (
+            march_dollase_fitting_history_table
+        )
         self.update_table_after_changing_row(changing_row=row_selected + 2)
 
     def duplicate_row(self):
         o_table = TableHandler(table_ui=self.parent.ui.march_dollase_user_input_table)
         row_selected = o_table.get_row_selected()
-        march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
+        march_dollase_fitting_history_table = (
+            self.parent.march_dollase_fitting_history_table
+        )
         new_entry = march_dollase_fitting_history_table[row_selected]
         march_dollase_fitting_history_table.insert(row_selected, new_entry)
-        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+        self.parent.march_dollase_fitting_history_table = (
+            march_dollase_fitting_history_table
+        )
         self.update_table_after_changing_row(changing_row=row_selected + 1)
 
     def delete_row(self):
         o_table = TableHandler(table_ui=self.parent.ui.march_dollase_user_input_table)
         row_selected = o_table.get_row_selected()
-        march_dollase_fitting_history_table = self.parent.march_dollase_fitting_history_table
+        march_dollase_fitting_history_table = (
+            self.parent.march_dollase_fitting_history_table
+        )
         march_dollase_fitting_history_table.pop(row_selected)
-        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
+        self.parent.march_dollase_fitting_history_table = (
+            march_dollase_fitting_history_table
+        )
         self.update_table_after_changing_row(changing_row=row_selected)
 
     def full_reset(self):
@@ -226,13 +248,19 @@ class MarchDollase:
         self.table_clicked(row=changing_row)
 
     def advanced_mode_clicked(self):
-        hide_advanced = not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+        hide_advanced = (
+            not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+        )
         o_gui = GuiUtility(parent=self.parent)
         o_gui.set_columns_hidden(
-            table_ui=self.parent.ui.march_dollase_user_input_table, list_of_columns=[5, 6], state=hide_advanced
+            table_ui=self.parent.ui.march_dollase_user_input_table,
+            list_of_columns=[5, 6],
+            state=hide_advanced,
         )
         o_gui.set_columns_hidden(
-            table_ui=self.parent.ui.march_dollase_result_table, list_of_columns=[6, 7, 13, 14], state=hide_advanced
+            table_ui=self.parent.ui.march_dollase_result_table,
+            list_of_columns=[6, 7, 13, 14],
+            state=hide_advanced,
         )
 
     def update_fitting_plot(self):
@@ -277,7 +305,11 @@ class MarchDollase:
         if self.parent.march_dollase_fitting_peak_ui:
             self.parent.ui.fitting.removeItem(self.parent.march_dollase_fitting_peak_ui)
         self.parent.march_dollase_fitting_peak_ui = pg.LinearRegionItem(
-            values=local_peak_range, orientation="vertical", brush=None, movable=move_bragg_peak_range, bounds=None
+            values=local_peak_range,
+            orientation="vertical",
+            brush=None,
+            movable=move_bragg_peak_range,
+            bounds=None,
         )
         self.parent.march_dollase_fitting_peak_ui.sigRegionChanged.connect(
             self.parent.march_dollase_fitting_range_changed
@@ -289,7 +321,9 @@ class MarchDollase:
 
     def save_table_history_and_initial_parameters(self):
         march_dollase_fitting_history_table = list()
-        march_dollase_fitting_initial_parameters = self.parent.march_dollase_fitting_initial_parameters
+        march_dollase_fitting_initial_parameters = (
+            self.parent.march_dollase_fitting_initial_parameters
+        )
         nbr_row = self.history_table_ui.rowCount()
         nbr_column = self.history_table_ui.columnCount()
         for _row in np.arange(nbr_row):
@@ -311,8 +345,12 @@ class MarchDollase:
 
             march_dollase_fitting_history_table.append(_row_history)
 
-        self.parent.march_dollase_fitting_history_table = march_dollase_fitting_history_table
-        self.parent.march_dollase_fitting_initial_parameters = march_dollase_fitting_initial_parameters
+        self.parent.march_dollase_fitting_history_table = (
+            march_dollase_fitting_history_table
+        )
+        self.parent.march_dollase_fitting_initial_parameters = (
+            march_dollase_fitting_initial_parameters
+        )
 
     def fill_tables_with_fitting_information(self):
         self.fill_history_table_with_fitting_information()
@@ -329,7 +367,9 @@ class MarchDollase:
             for _col, _col_name in enumerate(list_columns):
                 _arg_value = _march_entry.get(_col_name)
                 if _arg_value is not None:
-                    self.result_table_ui.item(_row, _col + 1).setText(f"{_arg_value:4.2f}")
+                    self.result_table_ui.item(_row, _col + 1).setText(
+                        f"{_arg_value:4.2f}"
+                    )
 
     def fill_history_table_with_fitting_information(self):
         o_gui = GuiUtility(parent=self.parent)
@@ -345,7 +385,9 @@ class MarchDollase:
     def update_roi_labels(self):
         logging.info("> marche-dollase | update_roi_labels")
         [global_left_range, global_right_range] = self.parent.bragg_edge_range
-        [left_range, right_range] = list(self.parent.march_dollase_fitting_peak_ui.getRegion())
+        [left_range, right_range] = list(
+            self.parent.march_dollase_fitting_peak_ui.getRegion()
+        )
 
         o_get = Get(parent=self.parent)
         x_axis_selected = o_get.x_axis_checked()
@@ -359,11 +401,13 @@ class MarchDollase:
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
         self.parent.march_dollase_fitting_range_selected = [left_index, right_index]
-        logging.info(f"-> march_dollase_fitting_range_selected: {self.parent.march_dollase_fitting_range_selected}")
+        logging.info(
+            f"-> march_dollase_fitting_range_selected: {self.parent.march_dollase_fitting_range_selected}"
+        )
 
-        xaxis_in_selected_axis = self.parent.fitting_input_dictionary["xaxis"][x_axis_selected][0][
-            global_left_range:global_right_range
-        ]
+        xaxis_in_selected_axis = self.parent.fitting_input_dictionary["xaxis"][
+            x_axis_selected
+        ][0][global_left_range:global_right_range]
         real_left_value = xaxis_in_selected_axis[left_index]
         real_right_value = xaxis_in_selected_axis[right_index]
         if x_axis_selected == "lambda":
@@ -376,8 +420,12 @@ class MarchDollase:
         real_right_value = str_format.format(real_right_value)
 
         units = Get.units(name=x_axis_selected)
-        self.parent.ui.march_dollase_bragg_peak_range_from_value.setText(str(real_left_value))
-        self.parent.ui.march_dollase_bragg_peak_range_to_value.setText(str(real_right_value))
+        self.parent.ui.march_dollase_bragg_peak_range_from_value.setText(
+            str(real_left_value)
+        )
+        self.parent.ui.march_dollase_bragg_peak_range_to_value.setText(
+            str(real_right_value)
+        )
         self.parent.ui.march_dollase_from_bragg_peak_range_units.setText(units)
         self.parent.ui.march_dollase_to_bragg_peak_range_units.setText(units)
 
@@ -402,7 +450,9 @@ class MarchDollase:
 
             str_list_of_rows_selected = [str(_row) for _row in list_of_rows_selected]
             str_rows = "_".join(str_list_of_rows_selected)
-            output_file_name = os.path.join(str(_export_folder), f"march_dollase_result_fitting_row{str_rows}.txt")
+            output_file_name = os.path.join(
+                str(_export_folder), f"march_dollase_result_fitting_row{str_rows}.txt"
+            )
 
             fitting_input_dictionary = self.parent.fitting_input_dictionary
 
@@ -413,13 +463,17 @@ class MarchDollase:
 
             # metadata
             metadata = ["#Marche Dollase Result of Fitting"]
-            is_advance_mode = self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+            is_advance_mode = (
+                self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+            )
             metadata.append(f"#Using advanced fitting mode: {is_advance_mode}")
 
             data_label = "#image index, TOF(micros), Lambda(Angstroms)"
             temp_data = []
             for _row in list_of_rows_selected:
-                _entry = fitting_input_dictionary["rois"][_row]["fitting"]["march_dollase"]
+                _entry = fitting_input_dictionary["rois"][_row]["fitting"][
+                    "march_dollase"
+                ]
                 _top_entry = fitting_input_dictionary["rois"][_row]
                 _line = (
                     "#-> row {}: x0: {}, y0:{}, width:{}, height:{}, "
@@ -457,7 +511,12 @@ class MarchDollase:
                     str_data += f", {temp_data[_col_index][_index]}"
                 data.append(str_data)
 
-            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim="1d")
+            make_ascii_file(
+                metadata=metadata,
+                data=data,
+                output_file_name=output_file_name,
+                dim="1d",
+            )
 
             message = f"{output_file_name} has been created!"
             self.parent.ui.statusbar.showMessage(message, 10000)  # 10s

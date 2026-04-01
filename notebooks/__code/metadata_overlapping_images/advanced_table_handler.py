@@ -38,7 +38,9 @@ class AdvancedTableHandler(QMainWindow):
             try:
                 value = float(value_str)
             except ValueError:
-                self.ui.statusbar.showMessage("This metadata can not be used - not a float value!", 10000)
+                self.ui.statusbar.showMessage(
+                    "This metadata can not be used - not a float value!", 10000
+                )
                 self.ui.statusbar.setStyleSheet("color: red")
                 return
         else:
@@ -59,7 +61,9 @@ class AdvancedTableHandler(QMainWindow):
     def update_tableWidget(self):
         list_metadata_index_selected = self.list_metatata_index_selected
         list_files = self.parent.data_dict["file_name"]
-        list_lineedit_ui_in_formula_tableWidget = self.list_lineedit_ui_in_formula_tableWidget
+        list_lineedit_ui_in_formula_tableWidget = (
+            self.list_lineedit_ui_in_formula_tableWidget
+        )
 
         o_table = TableHandler(table_ui=self.ui.tableWidget)
         for _row, _file in enumerate(list_files):
@@ -79,21 +83,29 @@ class AdvancedTableHandler(QMainWindow):
                     try:
                         value = float(value_str)
                     except ValueError:
-                        self.ui.statusbar.showMessage("This metadata can not be used - not a float value!", 10000)
+                        self.ui.statusbar.showMessage(
+                            "This metadata can not be used - not a float value!", 10000
+                        )
                         self.ui.statusbar.setStyleSheet("color: red")
                         return
                 value = float(value)
 
                 try:
-                    coefficient = float(list_lineedit_ui_in_formula_tableWidget[_column].text())
+                    coefficient = float(
+                        list_lineedit_ui_in_formula_tableWidget[_column].text()
+                    )
                 except ValueError:
-                    self.ui.statusbar.showMessage(f"Coefficient in column {_column} is wrong!", 10000)
+                    self.ui.statusbar.showMessage(
+                        f"Coefficient in column {_column} is wrong!", 10000
+                    )
                     self.ui.statusbar.setStyleSheet("color: red")
                     return
                 global_value += coefficient * value
 
             if there_is_at_least_one_column:
-                o_table.insert_item(row=_row, column=1, value=global_value, editable=False)
+                o_table.insert_item(
+                    row=_row, column=1, value=global_value, editable=False
+                )
 
         self.ui.statusbar.showMessage("Table refreshed with new formula!", 10000)
         self.ui.statusbar.setStyleSheet("color: green")
@@ -174,7 +186,9 @@ class Initialization:
     def file_name_value_table(self):
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         list_files_full_name = self.top_parent.data_dict["file_name"]
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+        list_files_short_name = [
+            os.path.basename(_file) for _file in list_files_full_name
+        ]
 
         o_table.insert_empty_column(0)
         o_table.insert_empty_column(1)

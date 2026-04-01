@@ -80,10 +80,17 @@ class Get:
                 x_axis_other_chip = x_axis[0 : where_is_gap - delta]
                 y_axis_other_chip = profile_data[0 : where_is_gap - delta]
 
-        return x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip
+        return (
+            x_axis_other_chip,
+            x_axis_working_chip,
+            y_axis_other_chip,
+            y_axis_working_chip,
+        )
 
     @staticmethod
-    def get_color_of_pen(gap_index=0, index_of_chip=0, profile_type="horizontal", x0=0, y0=0, x_axis=None):
+    def get_color_of_pen(
+        gap_index=0, index_of_chip=0, profile_type="horizontal", x0=0, y0=0, x_axis=None
+    ):
         """
         This method will give the color of the pen to use 'w' (white) or 'r' (red) according to the position of
         the profile.

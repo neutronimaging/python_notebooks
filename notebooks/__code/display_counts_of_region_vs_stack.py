@@ -19,7 +19,10 @@ class DisplayCountsVsStack:
 
     def select_input_folder(self):
         self.input_folder_ui = ipywe.fileselector.FileSelectorPanel(
-            instruction="Select Input Folder", type="directory", start_dir=self.working_dir, multiple=False
+            instruction="Select Input Folder",
+            type="directory",
+            start_dir=self.working_dir,
+            multiple=False,
         )
         self.input_folder_ui.show()
 
@@ -40,7 +43,8 @@ class ImageWindow(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
 
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), os.path.join("ui", "ui_display_counts_of_region_vs_stack.ui")
+            os.path.dirname(os.path.dirname(__file__)),
+            os.path.join("ui", "ui_display_counts_of_region_vs_stack.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Select ROI to display profile over all images.")
@@ -110,7 +114,9 @@ class ImageWindow(QMainWindow):
         self.ui.image_view.ui.roiBtn.hide()
 
         # default ROI
-        self.ui.roi = pg.ROI([0, 0], [20, 20], pen=(62, 13, 244), scaleSnap=True)  # blue
+        self.ui.roi = pg.ROI(
+            [0, 0], [20, 20], pen=(62, 13, 244), scaleSnap=True
+        )  # blue
         self.ui.roi.addScaleHandle([1, 1], [0, 0])
         self.ui.image_view.addItem(self.ui.roi)
         self.ui.roi.sigRegionChanged.connect(self.roi_changed)
@@ -126,7 +132,9 @@ class ImageWindow(QMainWindow):
         self.ui.widget.setLayout(vertical_layout)
 
     def roi_changed(self):
-        region = self.ui.roi.getArraySlice(self.integrated_stack, self.ui.image_view.imageItem)
+        region = self.ui.roi.getArraySlice(
+            self.integrated_stack, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop - 1
         y0 = region[0][1].start
@@ -171,7 +179,9 @@ class ImageWindow(QMainWindow):
             x_axis_selected = "file_index"
             b_enable_only_file_index_button = True
 
-        self.radio_buttons_status(b_enable_only_file_index_button=b_enable_only_file_index_button)
+        self.radio_buttons_status(
+            b_enable_only_file_index_button=b_enable_only_file_index_button
+        )
 
         self.x_axis["type"] = x_axis_selected
         if x_axis_selected == "file_index":
@@ -208,7 +218,9 @@ class ImageWindow(QMainWindow):
 
     def time_spectra_file_browse_button_clicked(self):
         spectra_file = QFileDialog.getOpenFileName(
-            caption="Select Time Spectra", directory=self.working_folder, filter="txt (*_Spectra.txt);;All (*.*)"
+            caption="Select Time Spectra",
+            directory=self.working_folder,
+            filter="txt (*_Spectra.txt);;All (*.*)",
         )
         spectra_file = spectra_file[0]
         if spectra_file:

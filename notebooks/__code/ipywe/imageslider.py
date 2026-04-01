@@ -163,7 +163,11 @@ class ImageSlider(base.DOMWidget):
         # apply intensity range
         self.curr_img_data[self.curr_img_data < self._img_min] = self._img_min
         self.curr_img_data[self.curr_img_data > self._img_max] = self._img_max
-        img = ((self.curr_img_data - self._img_min) / (self._img_max - self._img_min) * (2**8 - 1)).astype("uint8")
+        img = (
+            (self.curr_img_data - self._img_min)
+            / (self._img_max - self._img_min)
+            * (2**8 - 1)
+        ).astype("uint8")
         size = np.max(img.shape)
         view_size = np.max((self.width, self.height))
         # resample if necessary
@@ -323,7 +327,9 @@ class ImageSlider(base.DOMWidget):
             self._extracols = 0
             extrarows_top = np.full((addtop, self._ncols), 1)
             extrarows_bottom = np.full((addbottom, self._ncols), 1)
-            self.curr_img_data = np.vstack((extrarows_top, self.curr_img_data, extrarows_bottom))
+            self.curr_img_data = np.vstack(
+                (extrarows_top, self.curr_img_data, extrarows_bottom)
+            )
         else:
             diff = self._nrows - self._ncols
             if diff % 2 == 0:
@@ -340,8 +346,14 @@ class ImageSlider(base.DOMWidget):
             self._extracols = diff
             extrarows_left = np.full((self._nrows, addleft), 1)
             extrarows_right = np.full((self._nrows, addright), 1)
-            self.curr_img_data = np.hstack((extrarows_left, self.curr_img_data, extrarows_right))
-        self._xcoord_max_roi = self._xcoord_absolute + self._ncols_currimg - self._extracols
-        self._ycoord_max_roi = self._ycoord_absolute + self._nrows_currimg - self._extrarows
+            self.curr_img_data = np.hstack(
+                (extrarows_left, self.curr_img_data, extrarows_right)
+            )
+        self._xcoord_max_roi = (
+            self._xcoord_absolute + self._ncols_currimg - self._extracols
+        )
+        self._ycoord_max_roi = (
+            self._ycoord_absolute + self._nrows_currimg - self._extrarows
+        )
         self._b64value = self.getimg_bytes()
         return

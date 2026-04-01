@@ -58,11 +58,19 @@ class Display(Parent):
         )
         lines = np.array(
             [line_color for n in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
 
         line_view_binning = pg.GraphItem()
         self.parent.ui.image_view.addItem(line_view_binning)
-        line_view_binning.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+        line_view_binning.setData(
+            pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False
+        )
 
         self.parent.line_view_binning = line_view_binning

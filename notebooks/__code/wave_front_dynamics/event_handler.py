@@ -34,7 +34,9 @@ class EventHandler(Parent):
             if not boolean_list_of_files_to_use[_index]:
                 continue
             _data = o_get.working_range_of_data(data=_data)
-            prepared_data = Algorithms.bin_data(data=_data, bin_size=bin_size, bin_type=bin_type)
+            prepared_data = Algorithms.bin_data(
+                data=_data, bin_size=bin_size, bin_type=bin_type
+            )
             list_of_data_prepared.append(prepared_data)
             self.parent.event_progress.setValue(_index + 1)
             QtGui.QGuiApplication.processEvents()
@@ -55,7 +57,9 @@ class EventHandler(Parent):
     def use_this_file_clicked(self):
         file_index = self.parent.ui.file_index_horizontalSlider.value()
         boolean_list_of_files_to_use = self.parent.boolean_list_of_files_to_use
-        boolean_list_of_files_to_use[file_index] = self.parent.ui.use_this_file_checkBox.isChecked()
+        boolean_list_of_files_to_use[file_index] = (
+            self.parent.ui.use_this_file_checkBox.isChecked()
+        )
         self.parent.boolean_list_of_files_to_use = boolean_list_of_files_to_use
 
     def prepare_data_bin_size_changed(self, slider_value=None):
@@ -78,7 +82,11 @@ class EventHandler(Parent):
             o_display.clear_plots()
             self.reset_peak_value_arrays()
 
-            list_algo = [ListAlgorithm.sliding_average, ListAlgorithm.error_function, ListAlgorithm.change_point]
+            list_algo = [
+                ListAlgorithm.sliding_average,
+                ListAlgorithm.error_function,
+                ListAlgorithm.change_point,
+            ]
             for _algo in list_algo:
                 self.running_algo(algorithm=_algo)
                 # self.check_status_of_edge_calculation_checkboxes()
@@ -90,7 +98,11 @@ class EventHandler(Parent):
     def running_algo(self, algorithm=None):
         list_of_data_prepared = self.parent.list_of_data_prepared
 
-        show_status_message(parent=self.parent, message=f"Running {algorithm} ...", status=StatusMessageStatus.working)
+        show_status_message(
+            parent=self.parent,
+            message=f"Running {algorithm} ...",
+            status=StatusMessageStatus.working,
+        )
 
         o_algo = Algorithms(
             list_data=list_of_data_prepared,
@@ -98,11 +110,18 @@ class EventHandler(Parent):
             algorithm_selected=algorithm,
             progress_bar_ui=self.parent.event_progress,
         )
-        self.parent.peak_value_arrays[algorithm] = o_algo.get_peak_value_array(algorithm_selected=algorithm)
-        self.parent.data_have_been_reversed_in_calculation = o_algo.data_have_been_reversed_in_calculation
+        self.parent.peak_value_arrays[algorithm] = o_algo.get_peak_value_array(
+            algorithm_selected=algorithm
+        )
+        self.parent.data_have_been_reversed_in_calculation = (
+            o_algo.data_have_been_reversed_in_calculation
+        )
 
         show_status_message(
-            parent=self.parent, message=f"Running {algorithm}: Done", status=StatusMessageStatus.ready, duration_s=10
+            parent=self.parent,
+            message=f"Running {algorithm}: Done",
+            status=StatusMessageStatus.ready,
+            duration_s=10,
         )
 
     def edge_calculation_file_index_slider_changed(self, slider_value=None):
@@ -123,9 +142,15 @@ class EventHandler(Parent):
         if self.parent.peak_value_arrays[ListAlgorithm.error_function] is None:
             enable_error_function_button = False
 
-        self.parent.ui.plot_edge_calculation_sliding_average.setEnabled(enable_sliding_average_button)
-        self.parent.ui.plot_edge_calculation_error_function.setEnabled(enable_error_function_button)
-        self.parent.ui.plot_edge_calculation_change_point.setEnabled(enable_change_point_button)
+        self.parent.ui.plot_edge_calculation_sliding_average.setEnabled(
+            enable_sliding_average_button
+        )
+        self.parent.ui.plot_edge_calculation_error_function.setEnabled(
+            enable_error_function_button
+        )
+        self.parent.ui.plot_edge_calculation_change_point.setEnabled(
+            enable_change_point_button
+        )
 
         if enable_sliding_average_button:
             self.parent.ui.plot_edge_calculation_sliding_average.setChecked(True)
@@ -169,7 +194,9 @@ class EventHandler(Parent):
                     relative_time = float(list_timestamp[_index]) - t0
                     list_of_timestamp_of_data_prepared.append(relative_time)
 
-        self.parent.list_of_timestamp_of_data_prepared = list_of_timestamp_of_data_prepared
+        self.parent.list_of_timestamp_of_data_prepared = (
+            list_of_timestamp_of_data_prepared
+        )
 
     def update_list_of_original_image_files_to_use(self):
         list_of_original_image_files = self.parent.list_of_original_image_files
@@ -178,6 +205,10 @@ class EventHandler(Parent):
         list_of_original_image_files_to_use = []
         for _index, _state in enumerate(boolean_list_of_files_to_use):
             if _state:
-                list_of_original_image_files_to_use.append(list_of_original_image_files[_index])
+                list_of_original_image_files_to_use.append(
+                    list_of_original_image_files[_index]
+                )
 
-        self.parent.list_of_original_image_files_to_use = list_of_original_image_files_to_use
+        self.parent.list_of_original_image_files_to_use = (
+            list_of_original_image_files_to_use
+        )

@@ -20,7 +20,9 @@ def _init_arr_from_stack(list_files, ext=".tiff", slc=None):
         _arr = dxchange.read_tiff(first_file)
         f_type = "tif"
     else:
-        raise ValueError(f"'{first_file}', only '.tif/.tiff' and '.fits' are supported.")
+        raise ValueError(
+            f"'{first_file}', only '.tif/.tiff' and '.fits' are supported."
+        )
     size = (number_of_files, _arr.shape[0], _arr.shape[1])
     return np.empty(size, dtype=_arr.dtype), f_type
 
@@ -50,7 +52,9 @@ def _worker(fl):
     return (imread(fl).astype(np.float32)).swapaxes(0, 1)
 
 
-def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = False) -> np.ndarray:
+def load_data_using_multithreading(
+    list_tif: list = None, combine_tof: bool = False
+) -> np.ndarray:
     """load data using multithreading"""
     with mp.Pool(processes=40) as pool:
         data = pool.map(_worker, list_tif)
@@ -59,7 +63,7 @@ def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = Fa
         return np.array(data).sum(axis=0)
     else:
         return np.array(data, dtype=np.float32)
-    
+
 
 def make_tiff(data=[], filename="", metadata=None):
     new_image = Image.fromarray(data)
@@ -71,4 +75,3 @@ def make_tiff(data=[], filename="", metadata=None):
 
 def make_fits(data=[], filename=""):
     fits.writeto(filename, data, clobber=True)
-    
