@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 from IPython.display import HTML, display
+
 # from NeuNorm.normalization import Normalization
 from __code._utilities.images import load_data_using_multithreading
 from __code.ipywe import fileselector
@@ -31,7 +32,9 @@ class McpChipsCorrector:
         full_list_files = glob.glob(os.path.join(folder_selected, "*.tif*"))
         full_list_files.sort()
 
-        working_list_files = [file for file in full_list_files if "_SummedImg.fits" not in file]
+        working_list_files = [
+            file for file in full_list_files if "_SummedImg.fits" not in file
+        ]
 
         self.working_data = load_data_using_multithreading(list_tif=working_list_files)
         self.input_working_folder = folder_selected

@@ -8,10 +8,16 @@ from IPython.display import display
 from __code import file_handler
 from __code._utilities.string import format_html_message
 from __code.file_folder_browser import FileFolderBrowser
-from __code.group_images_by_cycle_for_grating_experiment.combine_and_move_files import CombineAndMoveFiles
+from __code.group_images_by_cycle_for_grating_experiment.combine_and_move_files import (
+    CombineAndMoveFiles,
+)
 from __code.group_images_by_cycle_for_grating_experiment.get import Get
-from __code.group_images_by_cycle_for_grating_experiment.group_images_by_cycle import GroupImagesByCycle
-from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import NotebookWidgets
+from __code.group_images_by_cycle_for_grating_experiment.group_images_by_cycle import (
+    GroupImagesByCycle,
+)
+from __code.group_images_by_cycle_for_grating_experiment.notebook_widgets import (
+    NotebookWidgets,
+)
 from __code.ipywe import myfileselector
 
 from .utilities import make_dictionary_of_groups_new_names
@@ -70,9 +76,13 @@ class GroupImages:
         self.config = config
 
     def select_data_to_sort(self):
-        o_file_broswer = FileFolderBrowser(working_dir=self.working_dir, next_function=self.info_files_selected)
+        o_file_broswer = FileFolderBrowser(
+            working_dir=self.working_dir, next_function=self.info_files_selected
+        )
         self.files_list_widget = o_file_broswer.select_images_with_search(
-            instruction="Select Images to Sort ...", multiple_flag=True, filters={"TIFF": "*.tif*"}
+            instruction="Select Images to Sort ...",
+            multiple_flag=True,
+            filters={"TIFF": "*.tif*"},
         )
 
     def info_files_selected(self, selected):
@@ -88,7 +98,11 @@ class GroupImages:
         display(format_html_message("Input folder ", selected))
         display(format_html_message("Nbr files ", str(len(self.list_images))))
         if "tif" not in self.file_extension:
-            display(format_html_message("This notebook only works with TIFF images!", is_error=True))
+            display(
+                format_html_message(
+                    "This notebook only works with TIFF images!", is_error=True
+                )
+            )
             return
 
     def define_type_of_data(self):
@@ -134,7 +148,9 @@ class GroupImages:
         o_group.run()
 
         self.master_outer_inner_dictionary = o_group.master_outer_inner_dictionary
-        self.dictionary_of_groups_sorted = self.format_into_dictionary_of_groups(self.master_outer_inner_dictionary)
+        self.dictionary_of_groups_sorted = self.format_into_dictionary_of_groups(
+            self.master_outer_inner_dictionary
+        )
         dict_new_names = make_dictionary_of_groups_new_names(
             self.dictionary_of_groups_sorted, self.dict_group_outer_value
         )
@@ -195,7 +211,9 @@ class GroupImages:
                 "first": _list_for_this_group[0],
                 "last": _list_for_this_group[-1],
             }
-        self.first_last_run_of_each_group_dictionary = first_last_run_of_each_group_dictionary
+        self.first_last_run_of_each_group_dictionary = (
+            first_last_run_of_each_group_dictionary
+        )
 
     def _get_group_number_selected(self):
         group_string = self.select_group_ui.value
@@ -229,7 +247,9 @@ class GroupImages:
         return dictionary_of_groups_old_names
 
     def copy_combine_and_rename_files(self, output_folder):
-        o_combine_and_move_files = CombineAndMoveFiles(parent=self, output_folder=output_folder, debug=DEBUG)
+        o_combine_and_move_files = CombineAndMoveFiles(
+            parent=self, output_folder=output_folder, debug=DEBUG
+        )
         o_combine_and_move_files.run()
 
     def generate_angel_configuration_file(self):

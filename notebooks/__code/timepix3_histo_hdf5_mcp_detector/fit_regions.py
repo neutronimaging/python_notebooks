@@ -140,7 +140,10 @@ class FitRegions:
 
         self.fit_dict["a0"] = {"value": a0_value, "error": a0_error}
         self.fit_dict["b0"] = {"value": b0_value, "error": b0_error}
-        self.fit_dict[FittingRegions.high_lambda] = {"xaxis": xaxis, "yaxis": yaxis_fitted}
+        self.fit_dict[FittingRegions.high_lambda] = {
+            "xaxis": xaxis,
+            "yaxis": yaxis_fitted,
+        }
 
     def low_lambda(self):
         logging.info("fitting low lambda:")
@@ -181,12 +184,19 @@ class FitRegions:
         logging.info(f"\t{bhkl_error =}")
 
         yaxis_fitted = kropff_low_lambda(
-            xaxis, self.fit_dict["a0"]["value"], self.fit_dict["b0"]["value"], ahkl_value, bhkl_value
+            xaxis,
+            self.fit_dict["a0"]["value"],
+            self.fit_dict["b0"]["value"],
+            ahkl_value,
+            bhkl_value,
         )
 
         self.fit_dict["ahkl"] = {"value": ahkl_value, "error": ahkl_error}
         self.fit_dict["bhkl"] = {"value": bhkl_value, "error": bhkl_error}
-        self.fit_dict[FittingRegions.low_lambda] = {"xaxis": xaxis, "yaxis": yaxis_fitted}
+        self.fit_dict[FittingRegions.low_lambda] = {
+            "xaxis": xaxis,
+            "yaxis": yaxis_fitted,
+        }
 
     def bragg_peak(self):
         self.bragg_peak_fix_lambda()
@@ -285,7 +295,9 @@ class FitRegions:
     def bragg_peak_fix_lambda(self):
         logging.info("Fitting bragg peak with a fixed initial lambda_hkl:")
 
-        gmodel = Model(kropff_bragg_peak_tof, nan_policy="propagate", independent_vars=["lda"])
+        gmodel = Model(
+            kropff_bragg_peak_tof, nan_policy="propagate", independent_vars=["lda"]
+        )
 
         lambda_hkl = self.lambdahkl
         tau = self.tau
@@ -294,8 +306,12 @@ class FitRegions:
         left_peak_index = self.left_edge_index
         right_peak_index = self.right_edge_index
 
-        xaxis = copy.deepcopy(self.x_axis_to_fit)[left_peak_index : right_peak_index + 1]
-        yaxis = copy.deepcopy(self.y_axis_to_fit)[left_peak_index : right_peak_index + 1]
+        xaxis = copy.deepcopy(self.x_axis_to_fit)[
+            left_peak_index : right_peak_index + 1
+        ]
+        yaxis = copy.deepcopy(self.y_axis_to_fit)[
+            left_peak_index : right_peak_index + 1
+        ]
         yaxis = -np.log(yaxis)
 
         logging.info(f"{xaxis =}")
@@ -331,9 +347,14 @@ class FitRegions:
         logging.info(f"\t{tau_value =}")
         logging.info(f"\t{tau_error =}")
 
-        yaxis_fitted = kropff_bragg_peak_tof(xaxis, a0, b0, ahkl, bhkl, ldahkl_value, sigma_value, tau_value)
+        yaxis_fitted = kropff_bragg_peak_tof(
+            xaxis, a0, b0, ahkl, bhkl, ldahkl_value, sigma_value, tau_value
+        )
 
         self.fit_dict["lambdahkl"] = {"value": ldahkl_value, "error": ldahkl_error}
         self.fit_dict["sigma"] = {"value": sigma_value, "error": sigma_error}
         self.fit_dict["tau"] = {"value": tau_value, "error": tau_error}
-        self.fit_dict[FittingRegions.bragg_peak] = {"xaxis": xaxis, "yaxis": yaxis_fitted}
+        self.fit_dict[FittingRegions.bragg_peak] = {
+            "xaxis": xaxis,
+            "yaxis": yaxis_fitted,
+        }

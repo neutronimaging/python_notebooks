@@ -63,7 +63,10 @@ class ImageDataGraph(base.DOMWidget):
         self.height = height
         self._format = uformat
         self._nrows, self._ncols = self.img_data.shape
-        self._img_min, self._img_max = int(np.min(self.img_data)), int(np.max(self.img_data))
+        self._img_min, self._img_max = (
+            int(np.min(self.img_data)),
+            int(np.max(self.img_data)),
+        )
         self._b64value = self.getimg_bytes()
         super(ImageDataGraph, self).__init__()
         return
@@ -71,7 +74,11 @@ class ImageDataGraph(base.DOMWidget):
     def getimg_bytes(self):
         """Encodes the image's data into Base64."""
 
-        img = ((self.img_data - self._img_min) / (self._img_max - self._img_min) * (2**8 - 1)).astype("uint8")
+        img = (
+            (self.img_data - self._img_min)
+            / (self._img_max - self._img_min)
+            * (2**8 - 1)
+        ).astype("uint8")
         size = np.max(img.shape)
         view_size = np.max((self.width, self.height))
         if size > view_size:
@@ -215,7 +222,9 @@ class ImageDataGraph(base.DOMWidget):
         elif p1y_abs != p2y_abs and p1x_abs == p2x_abs:
             dists, vals, bar_width = self.get_data_vertical(p1x_abs, p1y_abs, p2y_abs)
         else:
-            dists, vals, bar_width = self.get_data_diagonal(p1x_abs, p1y_abs, p2x_abs, p2y_abs)
+            dists, vals, bar_width = self.get_data_diagonal(
+                p1x_abs, p1y_abs, p2x_abs, p2y_abs
+            )
         plt.bar(dists, vals, width=bar_width)
         plt.xlabel("Distance from Initial Point")
         plt.ylabel("Value")
@@ -277,7 +286,9 @@ class ImageDataGraph(base.DOMWidget):
                 ind = bins.index(b)
                 if ind < len(bins) - 1:
                     if x >= b + x0 and x < bins[ind + 1] + x0:
-                        intensities[ind] = intensities[ind] + self.img_data[int(y), int(x)]
+                        intensities[ind] = (
+                            intensities[ind] + self.img_data[int(y), int(x)]
+                        )
                         num_binvals[ind] = num_binvals[ind] + 1
                         break
         for val, num in np.nditer([intensities, num_binvals]):
@@ -328,7 +339,9 @@ class ImageDataGraph(base.DOMWidget):
                 ind = bins.index(b)
                 if ind < len(bins) - 1:
                     if y >= b + y0 and y < bins[ind + 1] + y0:
-                        intensities[ind] = intensities[ind] + self.img_data[int(y), int(x)]
+                        intensities[ind] = (
+                            intensities[ind] + self.img_data[int(y), int(x)]
+                        )
                         num_binvals[ind] = num_binvals[ind] + 1
                         break
         for val, num in np.nditer([intensities, num_binvals]):
@@ -413,7 +426,9 @@ class ImageDataGraph(base.DOMWidget):
                         ind = bin_borders.index(b)
                         if ind < len(bin_borders) - 1:
                             if p >= b and p < bin_borders[ind + 1]:
-                                intensities[ind] = intensities[ind] + self.img_data[int(y), int(x)]
+                                intensities[ind] = (
+                                    intensities[ind] + self.img_data[int(y), int(x)]
+                                )
                                 num_binvals[ind] = num_binvals[ind] + 1
                                 break
         for i, n in np.nditer([intensities, num_binvals]):

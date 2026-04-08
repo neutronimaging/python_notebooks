@@ -33,7 +33,10 @@ class Main:
             self.dict_shapes[f"{_height}, {_width}"] = _shape
 
         vertical_layout = widgets.VBox(
-            [widgets.Label("Available shapes (height, width)"), widgets.RadioButtons(options=self.dict_shapes.keys())]
+            [
+                widgets.Label("Available shapes (height, width)"),
+                widgets.RadioButtons(options=self.dict_shapes.keys()),
+            ]
         )
         display(vertical_layout)
         self.shape_dropdown_ui = vertical_layout.children[1]
@@ -46,7 +49,10 @@ class Main:
         )
 
         self.output_folder_ui = fileselector.FileSelectorPanel(
-            instruction="Select Output Folder ...", start_dir=self.working_dir, type="directory", next=self.export
+            instruction="Select Output Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
+            next=self.export,
         )
 
         self.output_folder_ui.show()
@@ -60,7 +66,9 @@ class Main:
         format_selected = self.shape_dropdown_ui.value
 
         height, width = self.dict_shapes[format_selected]
-        new_output_folder = os.path.join(output_folder, f"{source_folder_name}_height{height}px_width{width}px")
+        new_output_folder = os.path.join(
+            output_folder, f"{source_folder_name}_height{height}px_width{width}px"
+        )
 
         make_or_reset_folder(new_output_folder)
 
@@ -89,4 +97,10 @@ class Main:
             w.value = _index + 1
 
         w.close()
-        display(HTML('<span style="font-size: 20px; color=blue">Images created in ' + new_output_folder + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color=blue">Images created in '
+                + new_output_folder
+                + "</span>"
+            )
+        )

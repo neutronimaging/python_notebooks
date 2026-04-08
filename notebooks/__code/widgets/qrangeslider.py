@@ -61,7 +61,14 @@ __version__ = "0.1.1"
 import sys
 
 from qtpy import QtCore, QtGui
-from qtpy.QtWidgets import QApplication, QGridLayout, QGroupBox, QHBoxLayout, QSplitter, QWidget
+from qtpy.QtWidgets import (
+    QApplication,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QSplitter,
+    QWidget,
+)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -517,6 +524,10 @@ if __name__ == "__main__":
     rs = QRangeSlider()
     rs.show()
     rs.setRange(15, 35)
-    rs.setBackgroundStyle("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);")
-    rs.handle.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);")
+    rs.setBackgroundStyle(
+        "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);"
+    )
+    rs.handle.setStyleSheet(
+        "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);"
+    )
     app.exec_()

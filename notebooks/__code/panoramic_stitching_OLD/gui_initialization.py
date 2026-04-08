@@ -94,16 +94,22 @@ class GuiInitialization:
             # reference image
             _combobox_ref = QtGui.QComboBox()
             _combobox_ref.blockSignals(True)
-            _combobox_ref.currentIndexChanged.connect(self.parent.table_widget_reference_image_changed)
+            _combobox_ref.currentIndexChanged.connect(
+                self.parent.table_widget_reference_image_changed
+            )
             _combobox_ref.addItems(self.parent.list_reference["basename_files"])
-            _combobox_ref.setCurrentIndex(_dict_of_this_row["reference_combobox_file_index"])
+            _combobox_ref.setCurrentIndex(
+                _dict_of_this_row["reference_combobox_file_index"]
+            )
             _combobox_ref.blockSignals(False)
             self.parent.ui.tableWidget.setCellWidget(_row, 0, _combobox_ref)
 
             # target image
             _combobox = QtGui.QComboBox()
             _combobox.blockSignals(True)
-            _combobox.currentIndexChanged.connect(self.parent.table_widget_target_image_changed)
+            _combobox.currentIndexChanged.connect(
+                self.parent.table_widget_target_image_changed
+            )
             _combobox.addItems(self.parent.list_target["basename_files"])
             _combobox.setCurrentIndex(_dict_of_this_row["target_combobox_file_index"])
             _combobox.blockSignals(False)
@@ -126,38 +132,54 @@ class GuiInitialization:
             config.button["up_up"]["released"]
         )
         self.parent.ui.up_up_button.setIcon(QtGui.QIcon(up_up_arrow_file))
-        up_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button["up"]["released"])
+        up_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(
+            config.button["up"]["released"]
+        )
         self.parent.ui.up_button.setIcon(QtGui.QIcon(up_arrow_file))
-        left_left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(
-            config.button["left_left"]["released"]
+        left_left_arrow_file = (
+            GuiInitialization.__make_full_file_name_to_static_folder_of(
+                config.button["left_left"]["released"]
+            )
         )
         self.parent.ui.left_left_button.setIcon(QtGui.QIcon(left_left_arrow_file))
-        left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button["left"]["released"])
+        left_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(
+            config.button["left"]["released"]
+        )
         self.parent.ui.left_button.setIcon(QtGui.QIcon(left_arrow_file))
         right_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(
             config.button["right"]["released"]
         )
         self.parent.ui.right_button.setIcon(QtGui.QIcon(right_arrow_file))
-        right_right_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(
-            config.button["right_right"]["released"]
+        right_right_arrow_file = (
+            GuiInitialization.__make_full_file_name_to_static_folder_of(
+                config.button["right_right"]["released"]
+            )
         )
         self.parent.ui.right_right_button.setIcon(QtGui.QIcon(right_right_arrow_file))
 
-        down_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(config.button["down"]["released"])
+        down_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(
+            config.button["down"]["released"]
+        )
         self.parent.ui.down_button.setIcon(QtGui.QIcon(down_arrow_file))
-        down_down_arrow_file = GuiInitialization.__make_full_file_name_to_static_folder_of(
-            config.button["down_down"]["released"]
+        down_down_arrow_file = (
+            GuiInitialization.__make_full_file_name_to_static_folder_of(
+                config.button["down_down"]["released"]
+            )
         )
         self.parent.ui.down_down_button.setIcon(QtGui.QIcon(down_down_arrow_file))
 
         list_ui = [self.parent.ui.left_button, self.parent.ui.right_button]
         GuiInitialization.__set_widgets_size(
-            widgets=list_ui, width=BUTTON_SIZE["single_arrow"]["width"], height=BUTTON_SIZE["single_arrow"]["height"]
+            widgets=list_ui,
+            width=BUTTON_SIZE["single_arrow"]["width"],
+            height=BUTTON_SIZE["single_arrow"]["height"],
         )
 
         list_ui = [self.parent.ui.left_left_button, self.parent.ui.right_right_button]
         GuiInitialization.__set_widgets_size(
-            widgets=list_ui, width=BUTTON_SIZE["double_arrow"]["width"], height=BUTTON_SIZE["double_arrow"]["height"]
+            widgets=list_ui,
+            width=BUTTON_SIZE["double_arrow"]["width"],
+            height=BUTTON_SIZE["double_arrow"]["height"],
         )
 
         list_ui = [self.parent.ui.up_button, self.parent.ui.down_button]
@@ -210,10 +232,14 @@ class GuiInitialization:
                 "width": int(roi_row_reference["width"]),
                 "height": int(roi_row_reference["height"]),
             }
-            master_dict_row["reference_combobox_file_index"] = int(roi_row_reference["file_index"])
+            master_dict_row["reference_combobox_file_index"] = int(
+                roi_row_reference["file_index"]
+            )
 
             roi_row_target = configuration_roi_row["target"]
-            master_dict_row["target_combobox_file_index"] = int(roi_row_target["file_index"])
+            master_dict_row["target_combobox_file_index"] = int(
+                roi_row_target["file_index"]
+            )
             master_dict_row["target_roi"] = {
                 "x0": int(roi_row_target["x0"]),
                 "y0": int(roi_row_target["y0"]),

@@ -25,7 +25,9 @@ import h5py
 import numpy as np
 
 from __code import system
-from __code.timepix3_from_event_to_histo_hdf5.timepix3_from_event_to_histo_hdf5 import Timepix3FromEventToHistoHdf5
+from __code.timepix3_from_event_to_histo_hdf5.timepix3_from_event_to_histo_hdf5 import (
+    Timepix3FromEventToHistoHdf5,
+)
 
 system.System.select_working_dir(facility="SNS", instrument="SNAP")
 from __code.__all import custom_style

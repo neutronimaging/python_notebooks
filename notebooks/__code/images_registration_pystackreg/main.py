@@ -11,7 +11,10 @@ from PIL import Image
 from pystackreg import StackReg
 from tqdm import tqdm
 
-from __code._utilities.file import make_or_reset_folder, retrieve_list_of_most_dominant_extension_from_folder
+from __code._utilities.file import (
+    make_or_reset_folder,
+    retrieve_list_of_most_dominant_extension_from_folder,
+)
 from __code._utilities.images import read_img_stack
 from __code._utilities.json import save_json
 from __code._utilities.time import get_current_time_in_special_file_name_format
@@ -61,7 +64,9 @@ class ImagesRegistrationPystackreg:
         self.folder_name = folder_name
 
         # retrieve list of files
-        self.list_of_files, ext = retrieve_list_of_most_dominant_extension_from_folder(folder=folder_name)
+        self.list_of_files, ext = retrieve_list_of_most_dominant_extension_from_folder(
+            folder=folder_name
+        )
 
         self.stack = read_img_stack(list_files=self.list_of_files, ext=ext)
 
@@ -70,20 +75,26 @@ class ImagesRegistrationPystackreg:
 
     def display_unregistered(self):
         def preview_unregistered(image_index, vmin=0.8, vmax=1.2):
-            fig, ax = plt.subplots(ncols=3, nrows=1, num="Unregistered images", figsize=(15, 5))
+            fig, ax = plt.subplots(
+                ncols=3, nrows=1, num="Unregistered images", figsize=(15, 5)
+            )
             ax[0].imshow(self.stack[0], vmin=0, vmax=1)
             ax[0].set_title("First image")
 
             ax[1].imshow(self.stack[image_index], vmin=0, vmax=1)
             ax[1].set_title(f"Image #{image_index}")
 
-            image = ax[2].imshow(np.divide(self.stack[image_index], self.stack[0]), vmin=vmin, vmax=vmax)
+            image = ax[2].imshow(
+                np.divide(self.stack[image_index], self.stack[0]), vmin=vmin, vmax=vmax
+            )
             ax[2].set_title(f"Image[{image_index}] / First image")
             cb = plt.colorbar(image, ax=ax[2])
 
         v = interactive(
             preview_unregistered,
-            image_index=widgets.IntSlider(min=0, max=len(self.list_of_files) - 1, value=1),
+            image_index=widgets.IntSlider(
+                min=0, max=len(self.list_of_files) - 1, value=1
+            ),
             vmin=widgets.FloatSlider(min=0, max=2, value=0.8),
             vmax=widgets.FloatSlider(min=0, max=2, value=1.2),
         )
@@ -142,7 +153,9 @@ class ImagesRegistrationPystackreg:
         return x0, x1, y0, y1, data_have_been_cropped
 
     def perform_cropping(self):
-        x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(self.selector_unregistered)
+        x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(
+            self.selector_unregistered
+        )
         self.crop["before registration"] = {"x0": x0, "x1": x1, "y0": y0, "y1": y1}
 
         if data_have_been_cropped:
@@ -197,7 +210,9 @@ class ImagesRegistrationPystackreg:
             if self.fig2:
                 self.fig2.clear()
 
-            self.fig2, ax2 = plt.subplots(ncols=3, nrows=1, num="Registered images", figsize=(15, 5))
+            self.fig2, ax2 = plt.subplots(
+                ncols=3, nrows=1, num="Registered images", figsize=(15, 5)
+            )
 
             ax2[0].imshow(self.registered_stack[0], vmin=0, vmax=1)
             ax2[0].set_title("First image")
@@ -206,7 +221,9 @@ class ImagesRegistrationPystackreg:
             ax2[1].set_title(f"Image #{image_index}")
 
             image = ax2[2].imshow(
-                np.divide(self.registered_stack[image_index], self.registered_stack[0]), vmin=vmin, vmax=vmax
+                np.divide(self.registered_stack[image_index], self.registered_stack[0]),
+                vmin=vmin,
+                vmax=vmax,
             )
             ax2[2].set_title(f"Image[{image_index}] / First image")
             cb = plt.colorbar(image, ax=ax2[2])
@@ -214,7 +231,9 @@ class ImagesRegistrationPystackreg:
 
         v2 = interactive(
             preview_registered,
-            image_index=widgets.IntSlider(min=0, max=len(self.list_of_files) - 1, value=1),
+            image_index=widgets.IntSlider(
+                min=0, max=len(self.list_of_files) - 1, value=1
+            ),
             vmin=widgets.FloatSlider(min=0, max=2, value=0.8),
             vmax=widgets.FloatSlider(min=0, max=2, value=1.2),
         )
@@ -252,7 +271,9 @@ class ImagesRegistrationPystackreg:
         ax.set_title("Click and drag to select region to crop")
 
     def perform_cropping_for_export(self):
-        x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(self.selector_registered)
+        x0, x1, y0, y1, data_have_been_cropped = self._get_crop_region(
+            self.selector_registered
+        )
         self.crop["after registration"] = {"x0": x0, "x1": x1, "y0": y0, "y1": y1}
 
         if data_have_been_cropped:
@@ -295,12 +316,16 @@ class ImagesRegistrationPystackreg:
         # create output folder
         source_folder = os.path.basename(os.path.dirname(list_file_names[0]))
         time_stamp = get_current_time_in_special_file_name_format()
-        full_output_folder_name = os.path.join(output_folder, f"{source_folder}_{time_stamp}")
+        full_output_folder_name = os.path.join(
+            output_folder, f"{source_folder}_{time_stamp}"
+        )
         make_or_reset_folder(full_output_folder_name)
 
         for i, file_name in tqdm(enumerate(list_file_names)):
             short_file_name = os.path.basename(file_name)
-            full_output_file_name = os.path.join(full_output_folder_name, short_file_name)
+            full_output_file_name = os.path.join(
+                full_output_folder_name, short_file_name
+            )
             _image = Image.fromarray(registered_crop_stack[i])
             _image.save(full_output_file_name)
 
@@ -309,10 +334,17 @@ class ImagesRegistrationPystackreg:
             "input folder": source_folder,
             "number of files": len(list_file_names),
             "crop": self.crop,
-            "registration": {"type": self.algo_options.value, "image of reference": self.reference_options.value},
+            "registration": {
+                "type": self.algo_options.value,
+                "image of reference": self.reference_options.value,
+            },
         }
         json_file_name = os.path.join(full_output_folder_name, "config.json")
         save_json(json_file_name, metadata)
 
-        self.output_label.value = f"DONE! (Registered files have been created in {full_output_folder_name})"
-        display(HTML(f"Registered files have been created in {full_output_folder_name}"))
+        self.output_label.value = (
+            f"DONE! (Registered files have been created in {full_output_folder_name})"
+        )
+        display(
+            HTML(f"Registered files have been created in {full_output_folder_name}")
+        )

@@ -94,14 +94,18 @@ class MetadataStringFormatHandler(QMainWindow):
 
     def init_table(self):
         list_files_full_name = self.parent.data_dict["file_name"]
-        list_files_short_name = [os.path.basename(_file) for _file in list_files_full_name]
+        list_files_short_name = [
+            os.path.basename(_file) for _file in list_files_full_name
+        ]
 
         main_table_metadata_column = self.parent.get_raw_metadata_column()
 
         for _row, _file in enumerate(list_files_short_name):
             self.ui.tableWidget.insertRow(_row)
             self.set_item_table(row=_row, col=0, value=_file)
-            self.set_item_table(row=_row, col=1, value=main_table_metadata_column[_row], editable=True)
+            self.set_item_table(
+                row=_row, col=1, value=main_table_metadata_column[_row], editable=True
+            )
 
     def set_item_table(self, row=0, col=0, value="", editable=False):
         item = QtGui.QTableWidgetItem(str(value))
