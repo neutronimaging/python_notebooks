@@ -20,6 +20,7 @@ class BinHandler:
     def __init__(self, working_dir=""):
         self.working_dir = working_dir
         self.output_folder_ui = None
+        self.ipts_folder = working_dir
 
     def select_images(self):
         _instruction = "Select images to bin"
@@ -118,8 +119,10 @@ class BinHandler:
             multiple=False,
             next=self.export,
             type="directory",
+            ipts_folder=self.ipts_folder,
             show_jump_to_home=True,
             show_jump_to_share=True,
+            newdir_toolbar_button=True,            
         )
         # self.output_folder_ui.show()
 
@@ -156,6 +159,9 @@ class BinHandler:
         return os.path.basename(full_dir_name)
 
     def export(self, output_folder):
+        
+        self.output_folder_ui.shortcut_buttons.close()
+        
         input_folder = self.get_input_folder()
         # output_folder = os.path.abspath(os.path.join(self.output_folder_ui.selected,
         #                                              "{}_rebin_by_{}".format(input_folder, self.bin_value)))
