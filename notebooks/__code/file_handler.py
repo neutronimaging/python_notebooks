@@ -6,6 +6,7 @@ import re
 import shutil
 from collections import Counter, OrderedDict, namedtuple
 from pathlib import Path
+import logging
 
 import numpy as np
 import pandas as pd
@@ -342,6 +343,9 @@ def _convert_epics_timestamp_to_rfc3339_timestamp(epics_timestamp):
 
 
 def retrieve_time_stamp(list_images, label=""):
+    
+    logging.info(f"\t -> retrieve_time_stamp for {label} with {len(list_images)} images")
+    
     if not list_images:
         return {"list_images": None, "list_time_stamp": None, "list_time_stamp_user_format": None}
 
@@ -375,6 +379,11 @@ def retrieve_time_stamp(list_images, label=""):
         progress_bar.value = _index + 1
 
     box.close()
+
+    logging.info(f"\t -> time stamp retrieved for {label}")
+    logging.info(f"\t -> {list_images =}")
+    logging.info(f"\t -> {list_time_stamp =}")
+    logging.info(f"\t -> {list_time_stamp_user_format =}")
 
     return {
         "list_images": list_images,

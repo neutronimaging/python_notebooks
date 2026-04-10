@@ -147,6 +147,7 @@ class NormalizationWithSimplifySelection:
         self.match_files()
         self.calculate_first_and_last_ob()
         self.calculate_time_range()
+        
         # self.display_time_range_selection_widgets()
 
     def select_ob_folder(self):
@@ -157,11 +158,11 @@ class NormalizationWithSimplifySelection:
         self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files)
 
     def auto_retrieve_ob_metadata(self):
-        logging.info("> auto_retrieve_ob_metadata")
+        logging.info("> auto_retrieve_ob_metadata - WORKING WITH OB")
         folder = os.path.join(self.working_dir, "raw", "ob")
-        logging.info(f"-> folder: {folder}")
+        logging.info(f"\t-> folder: {folder}")
         list_of_ob_files = file_handler.get_list_of_all_files_in_subfolders(folder=folder, extensions=["tiff", "tif"])
-        logging.info(f"-> nbr of ob files found: {len(list_of_ob_files)}")
+        logging.info(f"\t-> nbr of ob files found: {len(list_of_ob_files)}")
         self.ob_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_ob_files, label="ob")
 
     # logging.info(f"ob metadata dict")
@@ -185,6 +186,7 @@ class NormalizationWithSimplifySelection:
         self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_df_files)
 
     def auto_retrieve_df_metadata(self):
+        logging.info("> auto_retrieve_df_metadata - WORKING WITH DF")
         folder_df = os.path.join(self.working_dir, "raw", "df")
         folder_dc = os.path.join(self.working_dir, "raw", "dc")
         list_of_df_files = file_handler.get_list_of_all_files_in_subfolders(
@@ -196,12 +198,14 @@ class NormalizationWithSimplifySelection:
         list_of_files = list_of_df_files + list_of_dc_files
         logging.info(f"-> nbr of dc files found: {len(list_of_files)}")
         self.df_metadata_dict = MetadataHandler.retrieve_metadata(list_of_files=list_of_files, label="df")
+        logging.info(f"\t -> df metadata dict: {self.df_metadata_dict}")
 
     def match_files(self):
         """This is where the files will be associated with their respective OB, DC by using the metadata"""
 
         if not JSON_DEBUGGING:
             self.create_master_sample_dict()
+            logging.info(f"\t -> after creating master sample dict, final_full_master_dict: {self.final_full_master_dict}")
 
         self.match_ob()
         self.match_df()
@@ -210,7 +214,7 @@ class NormalizationWithSimplifySelection:
             # for debugging only, exporting the json
             import json
 
-            with open("/Users/j35/Desktop/which_ob_and_df_to_use.json", "w") as outfile:
+            with open("/SNS/users/j35/Desktop/which_ob_and_df_to_use.json", "w") as outfile:
                 json.dump(self.final_full_master_dict, outfile)
 
     def match_ob(self):
@@ -219,14 +223,27 @@ class NormalizationWithSimplifySelection:
         - detector type
         - aperture
         """
+        logging.info("> entering match_ob")
         list_ob_dict = self.ob_metadata_dict
         final_full_master_dict = self.final_full_master_dict
         list_of_sample_acquisition = final_full_master_dict.keys()
 
+        if JSON_DEBUGGING:
+            import json
+            with open("/SNS/users/j35/Desktop/list_ob_dict.json", "w") as outfile:
+                json.dump(list_ob_dict, outfile)
+                          
         for _index_ob in list_ob_dict.keys():
             _all_ob_instrument_metadata = Get.get_instrument_metadata_only(list_ob_dict[_index_ob])
             _ob_instrument_metadata = utilities.isolate_instrument_metadata(_all_ob_instrument_metadata)
-            _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME.value]["value"]
+            
+            _acquisition_time = _all_ob_instrument_metadata[MetadataName.EXPOSURE_TIME.value].get("value", None)
+            if _acquisition_time is None:
+                logging.warning(f"\t -> OB file {list_ob_dict[_index_ob]['filename']} does not have acquisition time metadata, skipping it for the matching with the sample")
+                continue
+            else:
+                logging.info(f"\t -> OB file {list_ob_dict[_index_ob]['filename']} has acquisition time {_acquisition_time}, trying to match with sample metadata")
+            
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
                     _sample_metadata_infos = final_full_master_dict[_acquisition_time][_config_id]["metadata_infos"]
@@ -234,6 +251,7 @@ class NormalizationWithSimplifySelection:
                         final_full_master_dict[_acquisition_time][_config_id]["list_ob"].append(list_ob_dict[_index_ob])
 
         self.final_full_master_dict = final_full_master_dict
+        logging.info(f"\t -> after matching ob, final_full_master_dict: {self.final_full_master_dict}")
 
     def match_df(self):
         """
@@ -242,6 +260,7 @@ class NormalizationWithSimplifySelection:
         - detector type used
         - acquisition time
         """
+        logging.info("> entering match_df")
         list_df_dict = self.df_metadata_dict
         final_full_master_dict = self.final_full_master_dict
         list_of_sample_acquisition = final_full_master_dict.keys()
@@ -249,7 +268,11 @@ class NormalizationWithSimplifySelection:
         for _index_df in list_df_dict.keys():
             _all_df_instrument_metadata = Get.get_instrument_metadata_only(list_df_dict[_index_df])
             _df_instrument_metadata = utilities.isolate_instrument_metadata(_all_df_instrument_metadata)
-            _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME.value]["value"]
+            _acquisition_time = _all_df_instrument_metadata[MetadataName.EXPOSURE_TIME.value].get("value", None)
+
+            if _acquisition_time is None:
+                logging.warning(f"\t -> DF file {list_df_dict[_index_df]['filename']} does not have acquisition time metadata, skipping it for the matching with the sample")
+                continue
 
             if _acquisition_time in list_of_sample_acquisition:
                 for _config_id in final_full_master_dict[_acquisition_time].keys():
@@ -263,6 +286,7 @@ class NormalizationWithSimplifySelection:
                         final_full_master_dict[_acquisition_time][_config_id]["list_df"].append(list_df_dict[_index_df])
 
         self.final_full_master_dict = final_full_master_dict
+        logging.info(f"\t -> after matching df, final_full_master_dict: {self.final_full_master_dict}")
 
     def create_master_sample_dict(self):
         final_full_master_dict = collections.OrderedDict()
