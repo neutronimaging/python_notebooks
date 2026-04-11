@@ -27,7 +27,7 @@ from __code.normalization_tof.units import (
     convert_array_from_time_to_energy,
     convert_array_from_time_to_lambda,
 )
-from __code.normalization_tof.normalization_for_timepix import create_master_dict
+from __code.normalization_resonance.normalization_for_timepix import create_master_dict
 
 LOG_PATH = "/SNS/VENUS/shared/log/"
 LOAD_DTYPE = np.uint16

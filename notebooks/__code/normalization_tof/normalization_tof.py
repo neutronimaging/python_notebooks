@@ -480,12 +480,12 @@ class NormalizationTof:
 
             for _file_full_path in list_of_ob_full_path:
                 if os.path.exists(_file_full_path):
-                    notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND")
+                    notebook_logging.info(f"\tOB full path {_file_full_path} - FOUND")
                     is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
                         self.check_nbr_tiff[DataType.ob].append(nbr_tiff)
-                        notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
+                        notebook_logging.info(f"\tOB full path {_file_full_path} - FOUND with {nbr_tiff} tif* files")
                         display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
                         self.dict_ob[_file_full_path] = {}
                         self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
@@ -508,7 +508,7 @@ class NormalizationTof:
                     else:
                         display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
                 else:
-                    notebook_logging.info(f"\tOB run number {_file_full_path} - NOT FOUND")
+                    notebook_logging.info(f"\tOB full path {_file_full_path} - NOT FOUND")
                     display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
 
         else:

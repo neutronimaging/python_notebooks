@@ -1411,7 +1411,9 @@ def export_normalized_data(ob_master_dict=None,
 
     logging.info("Exporting normalized data ...")
 
-    list_ob_runs = list(ob_master_dict.keys())
+    list_ob_folder_name = list(ob_master_dict.keys()) # those are actually full path, not run number
+    list_ob_runs = [ob_master_dict[_ob_folder_name][MasterDictKeys.run_number] for _ob_folder_name in list_ob_folder_name]
+    
     str_ob_runs = "_".join([str(_ob_run_number) for _ob_run_number in list_ob_runs])
     full_output_folder = os.path.join(
         output_folder, f"normalized_sample_{_sample_run_number}_obs_{str_ob_runs}"
