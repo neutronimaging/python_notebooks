@@ -55,6 +55,7 @@ class System:
         offline=False,
         default_working_dir="~/",
         verbose=True,
+        instruments=None,
     ):
         """Display the instrument/IPTS selector UI and initialize defaults.
 
@@ -73,6 +74,9 @@ class System:
             Folder to use in offline mode. ``~/`` by default.
         verbose : bool
             If True, record in the log file information about the selected working directory.
+        instruments : list[str] | None
+            Optional list of instruments to display. If None, all instruments are shown.
+            If a single instrument is provided, the selector widget is replaced by a label.
         """
         if verbose:
             cls.verbose = True
@@ -108,7 +112,14 @@ class System:
                 )
             )
 
-            full_list_instruments = sorted(INSTRUMENT_TO_START_PATH.keys())
+            all_instruments = sorted(INSTRUMENT_TO_START_PATH.keys())
+            if instruments is not None:
+                full_list_instruments = [i for i in instruments if i in all_instruments]
+                if not full_list_instruments:
+                    full_list_instruments = all_instruments
+            else:
+                full_list_instruments = all_instruments
+
             if instrument in full_list_instruments:
                 default_instrument = instrument
             else:
@@ -120,23 +131,34 @@ class System:
                 logging.info(f"Default instrument: {default_instrument}")
                 logging.info(f"Start path for IPTS folders: {start_path}")
 
-            select_instrument_ui = widgets.HBox(
-                [
-                    widgets.Label("Select Instrument", layout=widgets.Layout(width="20%")),
-                    widgets.Select(
-                        options=full_list_instruments, value=default_instrument, layout=widgets.Layout(width="20%")
-                    ),
-                ]
-            )
-            cls.instrument_ui = select_instrument_ui.children[1]
-            cls.instrument_ui.observe(cls.check_instrument_input, names="value")
+            if len(full_list_instruments) == 1:
+                cls.instrument_ui = widgets.Select(
+                    options=full_list_instruments, value=default_instrument, layout=widgets.Layout(width="20%")
+                )
+                select_instrument_ui = widgets.HBox(
+                    [
+                        widgets.HTML("<b>Instrument:</b>"),
+                        widgets.Label(default_instrument),
+                    ]
+                )
+            else:
+                select_instrument_ui = widgets.HBox(
+                    [
+                        widgets.HTML("<b>Select Instrument</b>", layout=widgets.Layout(width="20%")),
+                        widgets.Select(
+                            options=full_list_instruments, value=default_instrument, layout=widgets.Layout(width="20%")
+                        ),
+                    ]
+                )
+                cls.instrument_ui = select_instrument_ui.children[1]
+                cls.instrument_ui.observe(cls.check_instrument_input, names="value")
 
             help_ui = widgets.Button(description="HELP", button_style="info")
             help_ui.on_click(cls.select_ipts_help)
 
             top_hbox = widgets.HBox(
                 [
-                    widgets.Label("IPTS-"),
+                    widgets.HTML("<b>IPTS-</b>"),
                     widgets.Text(value="", layout=widgets.Layout(width="10%")),
                     widgets.Label("DOES NOT EXIST!", layout=widgets.Layout(width="20%")),
                 ]
@@ -159,7 +181,7 @@ class System:
 
             bottom_hbox = widgets.HBox(
                 [
-                    widgets.Label("Select Folder", layout=widgets.Layout(width="20%")),
+                    widgets.HTML("<b>Select Folder</b>", layout=widgets.Layout(width="20%")),
                     widgets.Select(
                         options=user_list_folders, value=default_value, layout=widgets.Layout(height="300px")
                     ),
