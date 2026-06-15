@@ -159,6 +159,19 @@ class DehydrationHydrationCorrection:
         #     list_of_images = list_of_images[:20]  # Load only the first 5 images for debugging
         
         logging.info(f"Number of TIFF images found in the folder: {len(list_of_images)}")
+        display(HTML("<span>Number of TIFF images found in the folder: " + str(len(list_of_images)) + "</span>"))
+        
+        if len(list_of_images) == 0:
+            logging.warning("No TIFF images found in the selected folder. Let's look one level deeper in the folder structure.")
+            display(HTML("<span style='color: red;'>No TIFF images found in the selected folder. Let's look one level deeper in the folder structure.</span>"))
+            # we gonna look one level deeper in the folder structure, maybe the images are in a subfolder
+            for root, dirs, files in os.walk(folder_name):
+                for file in files:
+                    if file.lower().endswith((".tif", ".tiff")):
+                        list_of_images.append(os.path.join(root, file))
+            list_of_images.sort()
+            logging.info(f"After searching subfolders, number of TIFF images found: {len(list_of_images)}")    
+        
         self.load_images(list_of_images)
 
     def visualize_raw_images(self):

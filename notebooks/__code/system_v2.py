@@ -19,6 +19,7 @@ from __code._utilities.time import get_current_time_in_special_file_name_format
 INSTRUMENT_TO_START_PATH = {
     "MARS": "/HFIR/CG1D/",
     "VENUS": "/SNS/VENUS/",
+    "SNAP": "/SNS/SNAP/",
 }
 
 def initialize_logging():
