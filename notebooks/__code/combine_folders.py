@@ -10,9 +10,10 @@ from NeuNorm.normalization import Normalization
 
 from __code import file_handler
 from __code._utilities.file import get_full_home_file_name
+from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders as MyFileSelectorPanelWithJumpFolders
 from __code.ipywe import fileselector
 
-LOG_FILE_NAME = ".combine_folders.log"
+LOG_FILE_NAME = "combine_folders.log"
 
 
 class CombineFolders:
@@ -23,20 +24,33 @@ class CombineFolders:
     nbr_files_in_each_folder = np.nan
     global_list_of_folders_to_combine = []
 
-    def __init__(self, working_dir=""):
-        self.working_dir = working_dir
-        self.list_folders_short = []
-        self.global_list_of_folders_to_combine = []
-
-        self.log_file_name = get_full_home_file_name(LOG_FILE_NAME)
-
+    def initialize(self):
+        LOG_PATH = "/SNS/VENUS/shared/log/"
+        file_name, ext = os.path.splitext(os.path.basename(__file__))
+        user_name = os.getlogin()  # add user name to the log file name
+        log_file_name = os.path.join(LOG_PATH, f"{file_name}_{user_name}.log")
         logging.basicConfig(
-            filename=self.log_file_name,
+            filename=log_file_name,
             filemode="w",
             format="[%(levelname)s] - %(asctime)s - %(message)s",
             level=logging.INFO,
         )
-        logging.info("*** Starting a new session ***")
+        logging.info(f"*** Starting a new script {file_name} ***")
+
+
+    def __init__(self, working_dir=""):
+        self.working_dir = working_dir
+        self.shared_dir = self.working_dir + "/shared"
+        self.list_folders_short = []
+        self.global_list_of_folders_to_combine = []
+        self.initialize()
+        
+        self.nexus_folder = os.path.join(self.working_dir, "nexus")
+        _, _facility, _beamline, ipts, _ = self.shared_dir.split("/")
+
+        self.ipts = ipts
+        self.ipts_folder = self.working_dir
+        self.instrument = _beamline.upper()
 
     def select_folders(self):
         self.done_button = widgets.Button(
@@ -265,68 +279,71 @@ class CombineFolders:
         else:
             raise NotImplementedError(f"Algorithm {merging_algo} has not been implemented yet!")
 
-        logging.info(f"-> merging algorithm: {algorithm}")
+        self.output_folder_widget_ui.shortcut_buttons.close()
+        with self.output_folder_widget_ui.out:
+            
+            logging.info(f"-> merging algorithm: {algorithm}")
 
-        # get output folder
-        output_folder = os.path.abspath(output_folder)
-        logging.info(f"-> output folder: {output_folder}")
+            # get output folder
+            output_folder = os.path.abspath(output_folder)
+            logging.info(f"-> output folder: {output_folder}")
 
-        # create dictionary of how the images will be combined
-        merging_dict = self.__create_merging_dictionary()
-        self.merginc_dict_debugging = merging_dict
+            # create dictionary of how the images will be combined
+            merging_dict = self.__create_merging_dictionary()
+            self.merginc_dict_debugging = merging_dict
 
-        # create final list of files to merge
-        final_dict_of_files_to_merge = self.__create_dict_of_files_to_merge(merging_dict)
-        self.final_dict_of_files_to_merge_debugging = final_dict_of_files_to_merge
+            # create final list of files to merge
+            final_dict_of_files_to_merge = self.__create_dict_of_files_to_merge(merging_dict)
+            self.final_dict_of_files_to_merge_debugging = final_dict_of_files_to_merge
 
-        final_nbr_folders = len(merging_dict.keys())
-        folder_level_ui = widgets.HBox(
-            [
-                widgets.Label("Folder Progress:", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=final_nbr_folders, layout=widgets.Layout(width="50%")),
-            ]
-        )
-        display(folder_level_ui)
-        w1 = folder_level_ui.children[1]
+            final_nbr_folders = len(merging_dict.keys())
+            folder_level_ui = widgets.HBox(
+                [
+                    widgets.Label("Folder Progress:", layout=widgets.Layout(width="20%")),
+                    widgets.IntProgress(max=final_nbr_folders, layout=widgets.Layout(width="50%")),
+                ]
+            )
+            display(folder_level_ui)
+            w1 = folder_level_ui.children[1]
 
-        nbr_files_to_merge = self.nbr_files_in_each_folder
-        file_level_ui = widgets.HBox(
-            [
-                widgets.Label("File Progress:", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=nbr_files_to_merge, layout=widgets.Layout(width="50%")),
-            ]
-        )
-        display(file_level_ui)
-        w2 = file_level_ui.children[1]
+            nbr_files_to_merge = self.nbr_files_in_each_folder
+            file_level_ui = widgets.HBox(
+                [
+                    widgets.Label("File Progress:", layout=widgets.Layout(width="20%")),
+                    widgets.IntProgress(max=nbr_files_to_merge, layout=widgets.Layout(width="50%")),
+                ]
+            )
+            display(file_level_ui)
+            w2 = file_level_ui.children[1]
 
-        for _index_final_folder, _final_folder in enumerate(final_dict_of_files_to_merge.keys()):
-            file_handler.make_or_reset_folder(os.path.join(output_folder, _final_folder))
+            for _index_final_folder, _final_folder in enumerate(final_dict_of_files_to_merge.keys()):
+                file_handler.make_or_reset_folder(os.path.join(output_folder, _final_folder))
 
-            list_files_to_merge = final_dict_of_files_to_merge[_final_folder]
-            for _index_files_to_merge, _files_to_merge in enumerate(list_files_to_merge):
-                _files_to_merge = [_file for _file in _files_to_merge]
-                self.files_to_merge_for_testing = _files_to_merge
-                o_load = Normalization()
-                o_load.load(file=_files_to_merge)
-                _data = o_load.data["sample"]["data"]
-                combined_data = self.__merging_algorithm(algorithm, _data)
-                self.combined_data_for_testing = combined_data
+                list_files_to_merge = final_dict_of_files_to_merge[_final_folder]
+                for _index_files_to_merge, _files_to_merge in enumerate(list_files_to_merge):
+                    _files_to_merge = [_file for _file in _files_to_merge]
+                    self.files_to_merge_for_testing = _files_to_merge
+                    o_load = Normalization()
+                    o_load.load(file=_files_to_merge)
+                    _data = o_load.data["sample"]["data"]
+                    combined_data = self.__merging_algorithm(algorithm, _data)
+                    self.combined_data_for_testing = combined_data
 
-                _base_name_file = os.path.basename(_files_to_merge[0])
-                output_file_name = os.path.join(output_folder, _final_folder, _base_name_file)
-                logging.info(f"_final_folder: {_final_folder}")
-                logging.info(f"_base_name_file: {_base_name_file}")
+                    _base_name_file = os.path.basename(_files_to_merge[0])
+                    output_file_name = os.path.join(output_folder, _final_folder, _base_name_file)
+                    logging.info(f"_final_folder: {_final_folder}")
+                    logging.info(f"_base_name_file: {_base_name_file}")
 
-                file_handler.save_data(data=combined_data, filename=output_file_name)
-                w2.value = _index_files_to_merge + 1
+                    file_handler.save_data(data=combined_data, filename=output_file_name)
+                    w2.value = _index_files_to_merge + 1
 
-            if self.keep_extra_files.value == "yes":
-                self.move_extra_files_to_output_folder(output_folder=os.path.join(output_folder, _final_folder))
+                if self.keep_extra_files.value == "yes":
+                    self.move_extra_files_to_output_folder(output_folder=os.path.join(output_folder, _final_folder))
 
-            w1.value = _index_final_folder + 1
+                w1.value = _index_final_folder + 1
 
-        folder_level_ui.close()
-        file_level_ui.close()
+            folder_level_ui.close()
+            file_level_ui.close()
 
     def move_extra_files_to_output_folder(self, output_folder="./"):
         logging.info("moving extra files to output folder")
@@ -365,10 +382,16 @@ class CombineFolders:
         return function_(*args)
 
     def select_output_folder(self):
-        self.output_folder_widget = fileselector.FileSelectorPanel(
-            instruction="select where to create the " + "output folders ...",
-            start_dir=self.working_dir,
-            next=self.merging,
-            type="directory",
-        )
-        self.output_folder_widget.show()
+        
+        self.output_folder_widget_ui = MyFileSelectorPanelWithJumpFolders(
+                instruction="select where to create the " + "output folders ...",
+                start_dir=self.working_dir,
+                type="directory",
+                ipts_folder=self.ipts_folder,
+                newdir_toolbar_button=True,
+                next=self.merging,
+                show_jump_to_share=True,
+                show_jump_to_home=True,
+            )
+        
+    

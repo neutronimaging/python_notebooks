@@ -147,7 +147,7 @@ def make_tiff(data=[], filename="", metadata=None):
 
 
 def make_fits(data=[], filename=""):
-    fits.writeto(filename, data, clobber=True)
+    fits.writeto(filename, data, overwrite=True)
 
 
 def make_folder(folder_name):
