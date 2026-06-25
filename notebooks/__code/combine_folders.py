@@ -101,8 +101,7 @@ class CombineFolders:
             self.select_folders_file_selector()
 
     def stop_selecting_folders(self, value):
-        # self.folder_list_widget.remove()
-        # self.output_folder_widget_ui.shortcut_buttons.close()
+        self.folder_list_widget.output_folder_ui.remove()
         self.done_button.close()
 
         logging.info("User stop selecting folders")
