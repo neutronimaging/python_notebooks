@@ -7,10 +7,12 @@ import numpy as np
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
+from pytest import File
 
 from __code import file_handler
 from __code._utilities.file import get_full_home_file_name
 from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders as MyFileSelectorPanelWithJumpFolders
+from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe import fileselector
 
 LOG_FILE_NAME = "combine_folders.log"
@@ -67,14 +69,25 @@ class CombineFolders:
         self.select_folders_file_selector()
 
     def select_folders_file_selector(self):
-        self.folder_list_widget = fileselector.FileSelectorPanel(
+        
+        self.folder_list_widget = MyFileSelectorPanelWithJumpFolders(
             instruction="select folder to combine",
             start_dir=self.working_dir,
             type="directory",
             next=self.add_folder_selected_to_global_list,
             multiple=True,
+            show_jump_to_share=False,
+            show_jump_to_home=False,
         )
-        self.folder_list_widget.show()
+        
+        # self.folder_list_widget = fileselector.FileSelectorPanel(
+        #     instruction="select folder to combine",
+        #     start_dir=self.working_dir,
+        #     type="directory",
+        #     next=self.add_folder_selected_to_global_list,
+        #     multiple=True,
+        # )
+        # self.folder_list_widget.show()
 
     def add_folder_selected_to_global_list(self, list_folders):
         for _folder in list_folders:
@@ -84,24 +97,42 @@ class CombineFolders:
             self.done_button.disabled = False
             self.done_button.button_style = "success"
 
-        self.select_folders_file_selector()
+        with self.folder_list_widget.out:
+            self.select_folders_file_selector()
 
     def stop_selecting_folders(self, value):
-        self.folder_list_widget.remove()
+        # self.folder_list_widget.remove()
+        # self.output_folder_widget_ui.shortcut_buttons.close()
         self.done_button.close()
 
         logging.info("User stop selecting folders")
 
         are_folders_valid = self.check_validity_of_folders_selected()
 
-        if are_folders_valid:
-            pass
-        else:
-            display(
-                HTML(
-                    '<span style="font-size: 20px; color:red">Folders must contain the same number' " of images!</span>"
+        with self.folder_list_widget.out:
+            if are_folders_valid:
+                logging.info("Folders are valid")
+                display(
+                    HTML(
+                        '<span style="font-size: 20px; color:green">Folders are valid and ready to be combined!</span>'
+                    )
                 )
-            )
+            else:
+                logging.info("Folders are NOT valid")
+                display(
+                    HTML(
+                        '<span style="font-size: 20px; color:red">Folders are NOT valid and cannot be combined!</span>'
+                    )
+                )
+        # if are_folders_valid:
+        #     pass
+        # else:
+        #     logging.info("Folders do not contain the same number of images")
+        #     display(
+        #         HTML(
+        #             '<span style="font-size: 20px; color:red">Folders must contain the same number' " of images!</span>"
+        #         )
+        #     )
 
     def check_validity_of_folders_selected(self):
         global_list_of_folders = self.global_list_of_folders_to_combine
