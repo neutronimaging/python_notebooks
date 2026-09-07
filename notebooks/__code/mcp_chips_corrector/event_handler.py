@@ -3,11 +3,10 @@ import logging
 
 import numpy as np
 import pyqtgraph as pg
-from qtpy.QtGui import QPen
-
 from __code.mcp_chips_corrector import COLOR_CONTOUR, INTER_CHIPS, PROFILE_ROI
 from __code.mcp_chips_corrector.alignment import Alignment
 from __code.mcp_chips_corrector.get import Get
+from qtpy.QtGui import QPen
 
 
 class EventHandler:
@@ -53,13 +52,16 @@ class EventHandler:
 
         if not first_update:
             _histo_widget.setLevels(
-                self.parent.alignment_view_histogram_level[0], self.parent.alignment_view_histogram_level[1]
+                self.parent.alignment_view_histogram_level[0],
+                self.parent.alignment_view_histogram_level[1],
             )
 
         _view_box.setState(_state)
 
     def check_auto_fill_checkBox_widget(self):
-        self.parent.ui.auto_fill_gaps_checkBox.setEnabled(self.parent.ui.apply_chips_alignment_correction.isChecked())
+        self.parent.ui.auto_fill_gaps_checkBox.setEnabled(
+            self.parent.ui.apply_chips_alignment_correction.isChecked()
+        )
 
     def display_setup_image(self):
         setup_image = self.parent.o_corrector.integrated_data
@@ -95,7 +97,13 @@ class EventHandler:
         _pen = QPen()
         _pen.setColor(COLOR_CONTOUR)
         _pen.setWidthF(0.01)
-        _roi_id = pg.ROI([x0, y0], [contour_width, contour_height], pen=_pen, scaleSnap=True, movable=False)
+        _roi_id = pg.ROI(
+            [x0, y0],
+            [contour_width, contour_height],
+            pen=_pen,
+            scaleSnap=True,
+            movable=False,
+        )
 
         self.parent.setup_image_view.addItem(_roi_id)
         self.parent.contour_id = _roi_id
@@ -140,7 +148,9 @@ class EventHandler:
         y0 = self.parent.profile[profile_type]["y0"]
         width = self.parent.profile[profile_type]["width"]
         height = self.parent.profile[profile_type]["height"]
-        nbr_pixels_to_exclude_on_each_side_of_chips_gap = self.parent.nbr_pixels_to_exclude_on_each_side_of_chips_gap
+        nbr_pixels_to_exclude_on_each_side_of_chips_gap = (
+            self.parent.nbr_pixels_to_exclude_on_each_side_of_chips_gap
+        )
 
         data = self.parent.integrated_data[y0 : y0 + height, x0 : x0 + width]
         if profile_type == "horizontal":
@@ -162,14 +172,24 @@ class EventHandler:
         index_of_chip = self.o_get.get_index_of_chip_to_correct()
 
         color_pen = Get.get_color_of_pen(
-            gap_index=gap_index, index_of_chip=index_of_chip, profile_type=profile_type, x0=x0, y0=y0, x_axis=x_axis
+            gap_index=gap_index,
+            index_of_chip=index_of_chip,
+            profile_type=profile_type,
+            x0=x0,
+            y0=y0,
+            x_axis=x_axis,
         )
 
         self.coefficient_corrector_can_be_calculated = False
         if len(where_is_gap_in_x_axis[0] > 0):
             "the inter chips space falls within the profile selected"
 
-            x_axis_other_chip, x_axis_working_chip, y_axis_other_chip, y_axis_working_chip = Get.get_x_y_ranges(
+            (
+                x_axis_other_chip,
+                x_axis_working_chip,
+                y_axis_other_chip,
+                y_axis_working_chip,
+            ) = Get.get_x_y_ranges(
                 index_of_chip,
                 profile_data,
                 profile_type,
@@ -183,19 +203,27 @@ class EventHandler:
             self.x_axis_working_chip = x_axis_working_chip
             self.x_axis_other_chip = x_axis_other_chip
 
-            self.parent.profile_view.plot(x_axis_working_chip, y_axis_working_chip, pen=color_pen, symbol="o")
-            self.parent.profile_view.plot(x_axis_other_chip, y_axis_other_chip, pen="w", symbol="o")
+            self.parent.profile_view.plot(
+                x_axis_working_chip, y_axis_working_chip, pen=color_pen, symbol="o"
+            )
+            self.parent.profile_view.plot(
+                x_axis_other_chip, y_axis_other_chip, pen="w", symbol="o"
+            )
 
             if color_pen == "r":
                 self.coefficient_corrector_can_be_calculated = True
 
         else:
-            self.parent.profile_view.plot(x_axis, profile_data, pen=color_pen, symbol="o")
+            self.parent.profile_view.plot(
+                x_axis, profile_data, pen=color_pen, symbol="o"
+            )
 
         pen = QPen()
         pen.setColor(INTER_CHIPS)
         pen.setWidthF(0.3)
-        line = pg.InfiniteLine(pos=self.parent.image_size.width / 2, angle=90, pen=pen, label="Inter Chips")
+        line = pg.InfiniteLine(
+            pos=self.parent.image_size.width / 2, angle=90, pen=pen, label="Inter Chips"
+        )
         self.parent.profile_view.addItem(line)
 
     def calculate_coefficient_corrector(self):
@@ -243,7 +271,9 @@ class EventHandler:
         else:
             self.parent.ui.contrast_tabWidget.setTabEnabled(1, True)
 
-        image_corrected = self.calculate_contrast_image(raw_image=self.parent.setup_live_image)
+        image_corrected = self.calculate_contrast_image(
+            raw_image=self.parent.setup_live_image
+        )
         self.parent.corrected_live_image = image_corrected
         self.display_contrast_image()
 
@@ -251,7 +281,9 @@ class EventHandler:
         setup_image = copy.deepcopy(raw_image)
 
         if self.parent.ui.apply_contrast_correction_checkBox.isChecked():
-            coefficient = float(str(self.parent.ui.coefficient_corrector_lineEdit.text()))
+            coefficient = float(
+                str(self.parent.ui.coefficient_corrector_lineEdit.text())
+            )
             index_of_chip_to_correct = self.o_get.get_index_of_chip_to_correct()
             gap_index = self.parent.image_size.gap_index
 
@@ -298,13 +330,18 @@ class EventHandler:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.corrected_histogram_level[0], self.parent.corrected_histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.corrected_histogram_level[0],
+                self.parent.corrected_histogram_level[1],
+            )
 
     def update_result_tab(self):
         if str(self.parent.ui.coefficient_corrector_lineEdit.text()) == "N/A":
             image_corrected = self.parent.setup_live_image
         else:
-            image_corrected = self.calculate_contrast_image(raw_image=self.parent.setup_live_image)
+            image_corrected = self.calculate_contrast_image(
+                raw_image=self.parent.setup_live_image
+            )
         o_align = Alignment(parent=self.parent, raw_image=image_corrected)
         _image = o_align.correct()
         _image = np.transpose(_image)

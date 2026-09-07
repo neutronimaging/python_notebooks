@@ -1,6 +1,5 @@
-from qtpy import QtGui
-
 from __code.panoramic_stitching.get import Get
+from qtpy import QtGui
 
 
 class AutomaticallyStitch:
@@ -21,7 +20,9 @@ class AutomaticallyStitch:
         group_selected = o_get.get_combobox_folder_selected()
 
         # first calculate the long and lift position versus pixel coefficient from the ref. group
-        group_reference_offset_dictionary = self.parent.offset_dictionary[group_selected]
+        group_reference_offset_dictionary = self.parent.offset_dictionary[
+            group_selected
+        ]
         group_reference_data_dictionary = self.parent.data_dictionary[group_selected]
         list_files = group_reference_offset_dictionary.keys()
 
@@ -29,8 +30,12 @@ class AutomaticallyStitch:
         list_pixel_vs_motor_lift_axis_value = []
 
         for _file_index, _file in enumerate(list_files):
-            long_axis_value = group_reference_data_dictionary[_file].metadata["MotLongAxis.RBV"]
-            lift_axis_value = group_reference_data_dictionary[_file].metadata["MotLiftTable.RBV"]
+            long_axis_value = group_reference_data_dictionary[_file].metadata[
+                "MotLongAxis.RBV"
+            ]
+            lift_axis_value = group_reference_data_dictionary[_file].metadata[
+                "MotLiftTable.RBV"
+            ]
 
             if _file_index == 0:
                 long_axis_reference_value = long_axis_value
@@ -75,15 +80,29 @@ class AutomaticallyStitch:
             # get xoffset and yofffset pixel/motor position of each image of reference group
             for _file_index, _file in enumerate(list_files):
                 if _file_index == 0:
-                    long_axis_value_image_reference = data_dictionary[_file].metadata["MotLongAxis.RBV"]
-                    lift_axis_value_image_reference = data_dictionary[_file].metadata["MotLiftTable.RBV"]
+                    long_axis_value_image_reference = data_dictionary[_file].metadata[
+                        "MotLongAxis.RBV"
+                    ]
+                    lift_axis_value_image_reference = data_dictionary[_file].metadata[
+                        "MotLiftTable.RBV"
+                    ]
                     continue
 
-                long_axis_value = data_dictionary[_file].metadata["MotLongAxis.RBV"] - long_axis_value_image_reference
-                lift_axis_value = data_dictionary[_file].metadata["MotLiftTable.RBV"] - lift_axis_value_image_reference
+                long_axis_value = (
+                    data_dictionary[_file].metadata["MotLongAxis.RBV"]
+                    - long_axis_value_image_reference
+                )
+                lift_axis_value = (
+                    data_dictionary[_file].metadata["MotLiftTable.RBV"]
+                    - lift_axis_value_image_reference
+                )
 
-                xoffset_of_this_file = int(long_axis_value * list_pixel_vs_motor_long_axis_value[_file_index])
-                yoffset_of_this_file = int(lift_axis_value * list_pixel_vs_motor_lift_axis_value[_file_index])
+                xoffset_of_this_file = int(
+                    long_axis_value * list_pixel_vs_motor_long_axis_value[_file_index]
+                )
+                yoffset_of_this_file = int(
+                    lift_axis_value * list_pixel_vs_motor_lift_axis_value[_file_index]
+                )
 
                 group_offset_dictionary[_file]["xoffset"] = xoffset_of_this_file
                 group_offset_dictionary[_file]["yoffset"] = yoffset_of_this_file

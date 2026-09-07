@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-
 from __code._utilities.table_handler import TableHandler
 
 

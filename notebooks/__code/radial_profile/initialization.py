@@ -1,9 +1,17 @@
 import pyqtgraph as pg
-from qtpy import QtCore
-from qtpy.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QSizePolicy, QSlider, QSpacerItem, QVBoxLayout, QWidget
-
 from __code._utilities.parent import Parent
 from __code.radial_profile.event_handler import EventHandler
+from qtpy import QtCore
+from qtpy.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QProgressBar,
+    QSizePolicy,
+    QSlider,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class Initialization(Parent):
@@ -64,9 +72,15 @@ class Initialization(Parent):
         # self.parent.ui.lineEdit.setText(str(self.parent.grid_size))
 
         self.parent.ui.guide_red_slider.setValue(self.parent.guide_color_slider["red"])
-        self.parent.ui.guide_green_slider.setValue(self.parent.guide_color_slider["green"])
-        self.parent.ui.guide_blue_slider.setValue(self.parent.guide_color_slider["blue"])
-        self.parent.ui.guide_alpha_slider.setValue(self.parent.guide_color_slider["alpha"])
+        self.parent.ui.guide_green_slider.setValue(
+            self.parent.guide_color_slider["green"]
+        )
+        self.parent.ui.guide_blue_slider.setValue(
+            self.parent.guide_color_slider["blue"]
+        )
+        self.parent.ui.guide_alpha_slider.setValue(
+            self.parent.guide_color_slider["alpha"]
+        )
 
         self.parent.ui.sector_from_value.setText(str(self.parent.sector_range["from"]))
         self.parent.ui.sector_to_value.setText(str(self.parent.sector_range["to"]))

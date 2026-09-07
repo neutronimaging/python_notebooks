@@ -4,15 +4,14 @@ import os
 import re
 
 import numpy as np
+from __code import file_handler
+from __code.ipywe import fileselector
+from __code.metadata_handler import MetadataHandler
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
 from PIL import Image
 from scipy.stats.mstats import gmean
-
-from __code import file_handler
-from __code.ipywe import fileselector
-from __code.metadata_handler import MetadataHandler
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 
@@ -45,7 +44,13 @@ class SequentialCombineImagesUsingMetadata:
         self.files_list_widget.show()
 
     def info_folder_selected(self, selected):
-        display(HTML('<span style="font-size: 20px; color:blue">You selected folder: ' + selected + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">You selected folder: '
+                + selected
+                + "</span>"
+            )
+        )
         self.folder_selected = selected
 
     def record_file_extension(self, filename=""):
@@ -107,7 +112,8 @@ class SequentialCombineImagesUsingMetadata:
         )
 
         self.combine_method = widgets.RadioButtons(
-            options=["add", "arithmetic mean", "geometric mean"], value="arithmetic mean"
+            options=["add", "arithmetic mean", "geometric mean"],
+            value="arithmetic mean",
         )
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
@@ -140,8 +146,15 @@ class SequentialCombineImagesUsingMetadata:
 
         create_list_progress = widgets.HBox(
             [
-                widgets.Label("Creating Merging List:", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=len(self.list_images), min=1, value=1, layout=widgets.Layout(width="80%")),
+                widgets.Label(
+                    "Creating Merging List:", layout=widgets.Layout(width="20%")
+                ),
+                widgets.IntProgress(
+                    max=len(self.list_images),
+                    min=1,
+                    value=1,
+                    layout=widgets.Layout(width="80%"),
+                ),
             ]
         )
         display(create_list_progress)
@@ -164,16 +177,20 @@ class SequentialCombineImagesUsingMetadata:
         _list_files = [list_of_files[0]]
         _dict_metadata = {}
 
-        _previous_metadata = MetadataHandler.get_metata(filename=list_of_files[0], list_metadata=list_of_tag_selected)
+        _previous_metadata = MetadataHandler.get_metata(
+            filename=list_of_files[0], list_metadata=list_of_tag_selected
+        )
         _previous_run = self.isolate_run_text_from_filename(list_of_files[0])
 
         for _index, _file in enumerate(list_of_files[1:]):
-            _current_metadata = MetadataHandler.get_metata(filename=_file, list_metadata=list_of_tag_selected)
+            _current_metadata = MetadataHandler.get_metata(
+                filename=_file, list_metadata=list_of_tag_selected
+            )
             _current_run = self.isolate_run_text_from_filename(_file)
 
-            if self.are_metadata_within_error_range(_current_metadata, _previous_metadata) and (
-                _previous_run == _current_run
-            ):
+            if self.are_metadata_within_error_range(
+                _current_metadata, _previous_metadata
+            ) and (_previous_run == _current_run):
                 _list_files.append(_file)
             else:
                 str_position_counter = f"{position_counter:04d}"
@@ -187,7 +204,9 @@ class SequentialCombineImagesUsingMetadata:
                 _list_files = [_file]
 
                 if _previous_run != _current_run:
-                    master_list_images_to_combine[_previous_run] = list_images_to_combine
+                    master_list_images_to_combine[_previous_run] = (
+                        list_images_to_combine
+                    )
                     list_images_to_combine = collections.OrderedDict()
 
                 _previous_metadata = _current_metadata
@@ -195,14 +214,13 @@ class SequentialCombineImagesUsingMetadata:
 
             progress_bar.value = _index + 1
 
-        else:
-            str_position_counter = f"{position_counter:04d}"
-            tag_name = f"{position_prefix}{str_position_counter}"
-            list_images_to_combine[tag_name] = {
-                "list_of_files": _list_files,
-                "dict_metadata": _previous_metadata.copy(),
-            }
-            master_list_images_to_combine[_previous_run] = list_images_to_combine
+        str_position_counter = f"{position_counter:04d}"
+        tag_name = f"{position_prefix}{str_position_counter}"
+        list_images_to_combine[tag_name] = {
+            "list_of_files": _list_files,
+            "dict_metadata": _previous_metadata.copy(),
+        }
+        master_list_images_to_combine[_previous_run] = list_images_to_combine
 
         create_list_progress.close()
         del create_list_progress
@@ -233,7 +251,9 @@ class SequentialCombineImagesUsingMetadata:
 
     def isolate_run_text_from_filename(self, full_file_name):
         basename = os.path.basename(full_file_name)
-        regular_expression = self.extension_to_regular_expression_dict[self.file_extension]
+        regular_expression = self.extension_to_regular_expression_dict[
+            self.file_extension
+        ]
         m = re.search(regular_expression, basename)
         if m is not None:
             return m.group("run")
@@ -267,7 +287,10 @@ class SequentialCombineImagesUsingMetadata:
 
         box2 = widgets.VBox(
             [
-                widgets.Label("List of Files for this position", layout=widgets.Layout(width="100%")),
+                widgets.Label(
+                    "List of Files for this position",
+                    layout=widgets.Layout(width="100%"),
+                ),
                 widgets.Select(
                     options=self.get_list_of_files_for_selected_run_position(),
                     layout=widgets.Layout(width="100%", height="500px"),
@@ -286,13 +309,19 @@ class SequentialCombineImagesUsingMetadata:
             layout=widgets.Layout(width="300px"),
         )
 
-        str_metadata = self.get_str_metadata(metadata_dict=self.get_metadata_for_selected_run_position())
+        str_metadata = self.get_str_metadata(
+            metadata_dict=self.get_metadata_for_selected_run_position()
+        )
         self.metadata_recap_textarea = box3.children[1]
         self.metadata_recap_textarea.value = str_metadata
 
-        hori_box = widgets.HBox([box0, box1, box2, box3], layout=widgets.Layout(width="100%"))
+        hori_box = widgets.HBox(
+            [box0, box1, box2, box3], layout=widgets.Layout(width="100%")
+        )
 
-        self.list_of_positions_ui.on_trait_change(self.recap_positions_changed, name="value")
+        self.list_of_positions_ui.on_trait_change(
+            self.recap_positions_changed, name="value"
+        )
         self.list_of_runs_ui.on_trait_change(self.recap_runs_changed, name="value")
 
         display(hori_box)
@@ -325,10 +354,14 @@ class SequentialCombineImagesUsingMetadata:
         position_selected = self.list_of_positions_ui.value
         run_selected = self.list_of_runs_ui.value
 
-        list_files_of_files = self.master_list_images_to_combine[run_selected][position_selected]["list_of_files"]
+        list_files_of_files = self.master_list_images_to_combine[run_selected][
+            position_selected
+        ]["list_of_files"]
         self.list_of_files_ui.options = list_files_of_files
 
-        str_metadata = self.get_str_metadata(metadata_dict=self.get_metadata_for_selected_run_position())
+        str_metadata = self.get_str_metadata(
+            metadata_dict=self.get_metadata_for_selected_run_position()
+        )
         self.metadata_recap_textarea.value = str_metadata
 
     def recap_runs_changed(self):
@@ -406,7 +439,9 @@ class SequentialCombineImagesUsingMetadata:
         merging_ui = widgets.HBox(
             [
                 widgets.Label("Merging Progress", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=len(merging_list.keys()), layout=widgets.Layout(width="80%")),
+                widgets.IntProgress(
+                    max=len(merging_list.keys()), layout=widgets.Layout(width="80%")
+                ),
             ]
         )
         display(merging_ui)
@@ -426,14 +461,20 @@ class SequentialCombineImagesUsingMetadata:
                 _data = o_load.data["sample"]["data"]
                 _metadata = o_load.data["sample"]["metadata"][0]
 
-                combined_data = SequentialCombineImagesUsingMetadata._merging_algorithm(algorithm, _data)
+                combined_data = SequentialCombineImagesUsingMetadata._merging_algorithm(
+                    algorithm, _data
+                )
 
                 _new_name = self._define_merged_file_name(
-                    output_folder=output_folder, run_label=_run, position_label=_position
+                    output_folder=output_folder,
+                    run_label=_run,
+                    position_label=_position,
                 )
                 output_file_name = os.path.join(output_folder, _new_name)
 
-                file_handler.save_data(data=combined_data, filename=output_file_name, metadata=_metadata)
+                file_handler.save_data(
+                    data=combined_data, filename=output_file_name, metadata=_metadata
+                )
 
             _run_index += 1
             progress_bar_ui.value = _run_index
@@ -442,17 +483,25 @@ class SequentialCombineImagesUsingMetadata:
         del merging_ui
 
         display(
-            HTML('<span style="font-size: 20px; color:blue">Files have been created in : ' + output_folder + "</span>")
+            HTML(
+                '<span style="font-size: 20px; color:blue">Files have been created in : '
+                + output_folder
+                + "</span>"
+            )
         )
 
     def make_output_folder(self, output_folder):
         algorithm_selected = self.__get_formated_merging_algo_name()
         folder_selected = os.path.basename(os.path.dirname(self.folder_selected))
-        output_folder = os.path.join(output_folder, f"{folder_selected}_{algorithm_selected}")
+        output_folder = os.path.join(
+            output_folder, f"{folder_selected}_{algorithm_selected}"
+        )
         file_handler.make_folder(output_folder)
         return output_folder
 
-    def _define_merged_file_name(self, output_folder="", run_label="", position_label=""):
+    def _define_merged_file_name(
+        self, output_folder="", run_label="", position_label=""
+    ):
         """Create the new merged file name using the run, position labels
 
         ex: run_label = "run1"

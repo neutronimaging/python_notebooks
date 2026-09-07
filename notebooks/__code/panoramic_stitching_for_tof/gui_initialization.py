@@ -6,14 +6,16 @@ from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 
 matplotlib.use("Qt5Agg")
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.config_buttons import button
 from __code.panoramic_stitching.gui_handler import GuiHandler
 from __code.panoramic_stitching.mplcanvas import MplCanvas
-from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of, set_widgets_size
+from __code.panoramic_stitching.utilities import (
+    make_full_file_name_to_static_folder_of,
+    set_widgets_size,
+)
 from __code.panoramic_stitching_for_tof.coarse_tab_handler import CoarseTabHandler
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 
 class GuiInitialization:
@@ -56,7 +58,9 @@ class GuiInitialization:
     def pyqtgraph(self):
         # calculate best contrast images
         _view1 = pg.PlotItem()
-        self.parent.ui.image_view_best_contrast = pg.ImageView(view=_view1, name="view1")
+        self.parent.ui.image_view_best_contrast = pg.ImageView(
+            view=_view1, name="view1"
+        )
         self.parent.ui.image_view_best_contrast.ui.roiBtn.hide()
         self.parent.ui.image_view_best_contrast.ui.menuBtn.hide()
         image_layout_best_contrast = QVBoxLayout()
@@ -69,7 +73,9 @@ class GuiInitialization:
         self.parent.ui.image_view_coarse_alignment.ui.roiBtn.hide()
         self.parent.ui.image_view_coarse_alignment.ui.menuBtn.hide()
         image_layout_coarse_alignment = QVBoxLayout()
-        image_layout_coarse_alignment.addWidget(self.parent.ui.image_view_coarse_alignment)
+        image_layout_coarse_alignment.addWidget(
+            self.parent.ui.image_view_coarse_alignment
+        )
         self.parent.ui.coarse_alignment_widget.setLayout(image_layout_coarse_alignment)
 
         # stitch images
@@ -110,22 +116,38 @@ class GuiInitialization:
         # move buttons
         _file_path = os.path.dirname(__file__)
 
-        up_up_arrow_file = make_full_file_name_to_static_folder_of(button["up_up"]["released"])
+        up_up_arrow_file = make_full_file_name_to_static_folder_of(
+            button["up_up"]["released"]
+        )
         self.parent.ui.up_up_button.setIcon(QIcon(up_up_arrow_file))
-        up_arrow_file = make_full_file_name_to_static_folder_of(button["up"]["released"])
+        up_arrow_file = make_full_file_name_to_static_folder_of(
+            button["up"]["released"]
+        )
         self.parent.ui.up_button.setIcon(QIcon(up_arrow_file))
-        left_left_arrow_file = make_full_file_name_to_static_folder_of(button["left_left"]["released"])
+        left_left_arrow_file = make_full_file_name_to_static_folder_of(
+            button["left_left"]["released"]
+        )
         self.parent.ui.left_left_button.setIcon(QIcon(left_left_arrow_file))
-        left_arrow_file = make_full_file_name_to_static_folder_of(button["left"]["released"])
+        left_arrow_file = make_full_file_name_to_static_folder_of(
+            button["left"]["released"]
+        )
         self.parent.ui.left_button.setIcon(QIcon(left_arrow_file))
-        right_arrow_file = make_full_file_name_to_static_folder_of(button["right"]["released"])
+        right_arrow_file = make_full_file_name_to_static_folder_of(
+            button["right"]["released"]
+        )
         self.parent.ui.right_button.setIcon(QIcon(right_arrow_file))
-        right_right_arrow_file = make_full_file_name_to_static_folder_of(button["right_right"]["released"])
+        right_right_arrow_file = make_full_file_name_to_static_folder_of(
+            button["right_right"]["released"]
+        )
         self.parent.ui.right_right_button.setIcon(QIcon(right_right_arrow_file))
 
-        down_arrow_file = make_full_file_name_to_static_folder_of(button["down"]["released"])
+        down_arrow_file = make_full_file_name_to_static_folder_of(
+            button["down"]["released"]
+        )
         self.parent.ui.down_button.setIcon(QIcon(down_arrow_file))
-        down_down_arrow_file = make_full_file_name_to_static_folder_of(button["down_down"]["released"])
+        down_down_arrow_file = make_full_file_name_to_static_folder_of(
+            button["down_down"]["released"]
+        )
         self.parent.ui.down_down_button.setIcon(QIcon(down_down_arrow_file))
 
         list_ui = [self.parent.ui.left_button, self.parent.ui.right_button]
@@ -156,14 +178,21 @@ class GuiInitialization:
             height=self.button_size["double_vertical_arrow"]["height"],
         )
 
-        state_hori_matplotlib = self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
+        state_hori_matplotlib = (
+            self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
+        )
         o_gui = GuiHandler(parent=self.parent)
         o_gui.enabled_horizontal_profile_widgets(enabled=state_hori_matplotlib)
 
-        state_verti_matplotlib = self.parent.ui.enable_vertical_profile_checkbox.isChecked()
+        state_verti_matplotlib = (
+            self.parent.ui.enable_vertical_profile_checkbox.isChecked()
+        )
         o_gui.enabled_vertical_profile_widgets(enabled=state_verti_matplotlib)
 
-        profile_sliders = [self.parent.ui.horizontal_profile_width_slider, self.parent.ui.vertical_profile_width_slider]
+        profile_sliders = [
+            self.parent.ui.horizontal_profile_width_slider,
+            self.parent.ui.vertical_profile_width_slider,
+        ]
         for _slider in profile_sliders:
             _slider.setMinimum(self.parent.width_profile["min"])
             _slider.setMaximum(self.parent.width_profile["max"])
@@ -187,7 +216,10 @@ class GuiInitialization:
         self.parent.best_contrast_list_folders_combobox_changed()
 
         # bin size of best contrast (nbr of images / 100 by default)
-        bin_size = int(self.parent.nbr_files_per_folder / self.parent.default_best_contrast_bin_size_divider)
+        bin_size = int(
+            self.parent.nbr_files_per_folder
+            / self.parent.default_best_contrast_bin_size_divider
+        )
         self.parent.ui.best_contrast_bin_size_value.setText(str(bin_size))
 
         self.parent.bin_size_text_field_return_pressed()

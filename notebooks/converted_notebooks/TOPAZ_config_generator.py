@@ -46,7 +46,10 @@ o_config_loader.select_config_file()
 # # Define Parameters
 
 # + run_control={"frozen": false, "read_only": false}
-_cfg = TopazConfigGenerator(working_dir=system.System.get_working_dir(), config_dict_loaded=o_config_loader.config_dict)
+_cfg = TopazConfigGenerator(
+    working_dir=system.System.get_working_dir(),
+    config_dict_loaded=o_config_loader.config_dict,
+)
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
 # # Export the Config File

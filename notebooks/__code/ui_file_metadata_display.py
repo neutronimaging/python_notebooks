@@ -21,7 +21,9 @@ class Ui_MainWindow:
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem)
         self.para_1_label = QtWidgets.QLabel(self.centralwidget)
         self.para_1_label.setMinimumSize(QtCore.QSize(30, 0))
@@ -39,14 +41,18 @@ class Ui_MainWindow:
         self.para_2_value = QtWidgets.QLabel(self.centralwidget)
         self.para_2_value.setObjectName("para_2_value")
         self.horizontalLayout_3.addWidget(self.para_2_value)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.widget_2 = QtWidgets.QWidget(self.centralwidget)
         self.widget_2.setObjectName("widget_2")
         self.verticalLayout.addWidget(self.widget_2)
         self.widget = QtWidgets.QWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -70,7 +76,9 @@ class Ui_MainWindow:
         self.tableWidget.setMinimumSize(QtCore.QSize(300, 0))
         self.tableWidget.setMaximumSize(QtCore.QSize(300, 16777215))
         self.tableWidget.setAlternatingRowColors(True)
-        self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.ContiguousSelection)
+        self.tableWidget.setSelectionMode(
+            QtWidgets.QAbstractItemView.ContiguousSelection
+        )
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(3)
@@ -88,7 +96,9 @@ class Ui_MainWindow:
         self.export_button = QtWidgets.QPushButton(self.centralwidget)
         self.export_button.setObjectName("export_button")
         self.horizontalLayout.addWidget(self.export_button)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem2)
         self.close_button = QtWidgets.QPushButton(self.centralwidget)
         self.close_button.setObjectName("close_button")
@@ -104,7 +114,9 @@ class Ui_MainWindow:
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
+        self.tableWidget.itemSelectionChanged.connect(
+            MainWindow.table_widget_selection_changed
+        )
         self.close_button.clicked.connect(MainWindow.close_clicked)
         self.group_slider.sliderMoved["int"].connect(MainWindow.refresh_pyqtgraph)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)

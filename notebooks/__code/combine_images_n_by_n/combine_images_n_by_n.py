@@ -4,15 +4,14 @@ import random
 from pathlib import Path, PurePath
 
 import numpy as np
-from IPython.display import HTML, display
-from ipywidgets import widgets
-from NeuNorm.normalization import Normalization
-from scipy.stats.mstats import gmean
-
 from __code._utilities.file import make_or_increment_folder_name
 from __code._utilities.string import get_beginning_common_part_of_string_from_list
 from __code.file_folder_browser import FileFolderBrowser
 from __code.ipywe import myfileselector
+from IPython.display import HTML, display
+from ipywidgets import widgets
+from NeuNorm.normalization import Normalization
+from scipy.stats.mstats import gmean
 
 FILE_PREFIX = "image"
 
@@ -37,15 +36,21 @@ class CombineImagesNByN:
         self.timespectra_file_name = None
 
     def select_images(self):
-        o_file_browser = FileFolderBrowser(working_dir=self.working_dir, next_function=self.post_select_images)
+        o_file_browser = FileFolderBrowser(
+            working_dir=self.working_dir, next_function=self.post_select_images
+        )
         self.list_files_selected = o_file_browser.select_images_with_search(
-            instruction="Select images to combine", multiple_flag=True, filters={"TIFF": "*.tif*", "FITS": "*.fits"}
+            instruction="Select images to combine",
+            multiple_flag=True,
+            filters={"TIFF": "*.tif*", "FITS": "*.fits"},
         )
 
     def post_select_images(self, list_of_images):
         if list_of_images:
             self.input_folder_selected = os.path.dirname(list_of_images[0])
-            self.base_working_dir = str(PurePath(Path(self.input_folder_selected).parent).name)
+            self.base_working_dir = str(
+                PurePath(Path(self.input_folder_selected).parent).name
+            )
             self.list_files = list_of_images
 
     # def select_folder(self):
@@ -90,7 +95,9 @@ class CombineImagesNByN:
         list_index = list(dict_list_files_by_index.keys())
         list_index.sort()
 
-        list_files_sorted_by_index = [dict_list_files_by_index[_key] for _key in list_index]
+        list_files_sorted_by_index = [
+            dict_list_files_by_index[_key] for _key in list_index
+        ]
         return list_files_sorted_by_index
 
     def sorting_the_files(self):
@@ -102,24 +109,36 @@ class CombineImagesNByN:
         index = split_name[-1]
 
         # tab 1 - full name
-        list_files_base_name_only = [os.path.basename(_file) for _file in self.list_files]
+        list_files_base_name_only = [
+            os.path.basename(_file) for _file in self.list_files
+        ]
         vertical_layout_tab1 = widgets.VBox(
             [
-                widgets.HTML(value=f"<b>{base_name}</b>{ext}", layout=widgets.Layout(width="100%")),
-                widgets.Select(options=list_files_base_name_only, layout=widgets.Layout(width="100%", height="700px")),
+                widgets.HTML(
+                    value=f"<b>{base_name}</b>{ext}",
+                    layout=widgets.Layout(width="100%"),
+                ),
+                widgets.Select(
+                    options=list_files_base_name_only,
+                    layout=widgets.Layout(width="100%", height="700px"),
+                ),
             ]
         )
 
         # tab 2 - file_index
         self.list_files_by_index = self.sort_by_index()
-        list_files_by_index_base_name_only = [os.path.basename(_file) for _file in self.list_files_by_index]
+        list_files_by_index_base_name_only = [
+            os.path.basename(_file) for _file in self.list_files_by_index
+        ]
         vertical_layout_tab2 = widgets.VBox(
             [
                 widgets.HTML(
-                    value=f"{base_name_before_index}_<b>{index}</b>{ext}", layout=widgets.Layout(width="100%")
+                    value=f"{base_name_before_index}_<b>{index}</b>{ext}",
+                    layout=widgets.Layout(width="100%"),
                 ),
                 widgets.Select(
-                    options=list_files_by_index_base_name_only, layout=widgets.Layout(width="100%", height="700px")
+                    options=list_files_by_index_base_name_only,
+                    layout=widgets.Layout(width="100%", height="700px"),
                 ),
             ]
         )
@@ -158,7 +177,8 @@ class CombineImagesNByN:
         )
 
         self.combine_method = widgets.RadioButtons(
-            options=["add", "arithmetic mean", "geometric mean", "median"], value="arithmetic mean"
+            options=["add", "arithmetic mean", "geometric mean", "median"],
+            value="arithmetic mean",
         )
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
@@ -166,8 +186,7 @@ class CombineImagesNByN:
 
     def how_many_files(self):
         nbr_files = len(self.list_files_sorted)
-        if nbr_files > 30:
-            nbr_files = 30
+        nbr_files = min(nbr_files, 30)
         radio_list_string = [str(_index) for _index in np.arange(2, nbr_files + 1)]
 
         vertical_layout = widgets.VBox(
@@ -305,9 +324,13 @@ class CombineImagesNByN:
     def preview_result(self):
         how_to_rename_layout = widgets.VBox(
             [
-                widgets.Label("How to name output files:", layout=widgets.Layout(width="100%")),
+                widgets.Label(
+                    "How to name output files:", layout=widgets.Layout(width="100%")
+                ),
                 widgets.RadioButtons(
-                    options=RENAMING_OPTIONS, layout=widgets.Layout(width="100%"), value=RENAMING_OPTIONS[-1]
+                    options=RENAMING_OPTIONS,
+                    layout=widgets.Layout(width="100%"),
+                    value=RENAMING_OPTIONS[-1],
                 ),
             ]
         )
@@ -319,21 +342,27 @@ class CombineImagesNByN:
 
         # tab1
         list_groups = list(self.dict_list_files.keys())
-        self.group_dropdown = widgets.Dropdown(options=list_groups, description="Groups")
+        self.group_dropdown = widgets.Dropdown(
+            options=list_groups, description="Groups"
+        )
         self.list_files_per_group = widgets.Select(
             options=self.dict_list_files[list_groups[0]],
             description="Files",
             layout=widgets.Layout(width="100%", height="400px"),
         )
 
-        new_file_name_label = widgets.Label("Output file name:", layout=widgets.Layout(width="150px", height="80px"))
+        new_file_name_label = widgets.Label(
+            "Output file name:", layout=widgets.Layout(width="150px", height="80px")
+        )
         self.new_file_name = widgets.Label(
-            self.dict_list_new_files[0], layout=widgets.Layout(width="400px", height="80px")
+            self.dict_list_new_files[0],
+            layout=widgets.Layout(width="400px", height="80px"),
         )
         hori1 = widgets.HBox([new_file_name_label, self.new_file_name])
 
         vbox1 = widgets.VBox(
-            [self.group_dropdown, self.list_files_per_group, hori1], layout=widgets.Layout(height="600px")
+            [self.group_dropdown, self.list_files_per_group, hori1],
+            layout=widgets.Layout(height="600px"),
         )
 
         accordion_widgets = [vbox1]
@@ -341,14 +370,17 @@ class CombineImagesNByN:
         # tab2
         if len(self.bad_dict_list_files.keys()) > 0:
             list_groups = list(self.bad_dict_list_files.keys())
-            self.bad_group_dropdown = widgets.Dropdown(options=list_groups, description="Bad Groups")
+            self.bad_group_dropdown = widgets.Dropdown(
+                options=list_groups, description="Bad Groups"
+            )
             self.bad_list_files_per_group = widgets.Select(
                 options=self.bad_dict_list_files[list_groups[0]],
                 description="Files",
                 layout=widgets.Layout(width="100%", height="500px"),
             )
             vbox2 = widgets.VBox(
-                [self.bad_group_dropdown, self.bad_list_files_per_group], layout=widgets.Layout(height="600px")
+                [self.bad_group_dropdown, self.bad_list_files_per_group],
+                layout=widgets.Layout(height="600px"),
             )
             self.bad_group_dropdown.observe(self.bad_group_changed, names="value")
             accordion_widgets.append(vbox2)
@@ -394,7 +426,9 @@ class CombineImagesNByN:
             for _key in dict_list_files.keys():
                 list_files = dict_list_files[_key]
                 base_list_files = [os.path.basename(_file) for _file in list_files]
-                _common_part = get_beginning_common_part_of_string_from_list(list_of_text=base_list_files)
+                _common_part = get_beginning_common_part_of_string_from_list(
+                    list_of_text=base_list_files
+                )
                 new_file_name = _common_part + f"_{_key:03d}.tiff"
                 dict_list_new_files[_key] = new_file_name
 
@@ -443,7 +477,11 @@ class CombineImagesNByN:
         horizontal_layout = widgets.HBox(
             [
                 widgets.Label("Merging Progress", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(max=len(dict_list_files.keys()), value=0, layout=widgets.Layout(width="50%")),
+                widgets.IntProgress(
+                    max=len(dict_list_files.keys()),
+                    value=0,
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
         global_slider = horizontal_layout.children[1]
@@ -456,7 +494,9 @@ class CombineImagesNByN:
             bin_value=self.bin_value,
             algo_name=algo_name,
         )
-        output_folder_name = make_or_increment_folder_name(folder_name=output_folder_name)
+        output_folder_name = make_or_increment_folder_name(
+            folder_name=output_folder_name
+        )
 
         output_timespectra_file_name = os.path.join(
             output_folder_name, CombineImagesNByN.__create_timestamp_file_name()
@@ -511,7 +551,10 @@ class CombineImagesNByN:
 
     @staticmethod
     def combine_timespectra(
-        input_timespectra_file_name=None, output_timespectra_file_name=None, bin_value=2, merging_algorithm=None
+        input_timespectra_file_name=None,
+        output_timespectra_file_name=None,
+        bin_value=2,
+        merging_algorithm=None,
     ):
         if input_timespectra_file_name is None:
             return
@@ -531,18 +574,27 @@ class CombineImagesNByN:
             working_count_axis_to_bin = data[index : index + bin_value, 1]
 
             time_axis_binned.append(
-                CombineImagesNByN.merging_algorithm(CombineImagesNByN.arithmetic_mean, working_time_axis_to_bin)
+                CombineImagesNByN.merging_algorithm(
+                    CombineImagesNByN.arithmetic_mean, working_time_axis_to_bin
+                )
             )
-            count_axis_binned.append(CombineImagesNByN.merging_algorithm(merging_algorithm, working_count_axis_to_bin))
+            count_axis_binned.append(
+                CombineImagesNByN.merging_algorithm(
+                    merging_algorithm, working_count_axis_to_bin
+                )
+            )
 
         new_timespectra = list(zip(time_axis_binned, count_axis_binned, strict=False))
         np.savetxt(output_timespectra_file_name, new_timespectra, delimiter="\t")
 
     @staticmethod
-    def __create_output_folder_name(output_folder="./", base_file_name="", bin_value=2, algo_name="add"):
+    def __create_output_folder_name(
+        output_folder="./", base_file_name="", bin_value=2, algo_name="add"
+    ):
         output_folder = os.path.abspath(output_folder)
         output_folder_name = os.path.join(
-            output_folder, f"{base_file_name}_files_combined_by_{bin_value:d}_{algo_name}"
+            output_folder,
+            f"{base_file_name}_files_combined_by_{bin_value:d}_{algo_name}",
         )
         return output_folder_name
 

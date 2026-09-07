@@ -25,7 +25,10 @@ class Oncat:
 
     def authentication(self):
         try:
-            self.oncat.login(self.username, str(getpass.getpass(f"Enter Password for {self.username}:")))
+            self.oncat.login(
+                self.username,
+                str(getpass.getpass(f"Enter Password for {self.username}:")),
+            )
         except:
             self.oncat = None
 
@@ -36,7 +39,9 @@ class GetEverything:
     def __init__(self, instrument="CG1D", facility="HFIR", run="", oncat=None):
         run = self.__remove_leading_backslash(run)
 
-        self.datafiles = oncat.Datafile.retrieve(run, facility=facility, instrument=instrument)
+        self.datafiles = oncat.Datafile.retrieve(
+            run, facility=facility, instrument=instrument
+        )
 
     def __remove_leading_backslash(self, run):
         return run[1:]
@@ -44,15 +49,25 @@ class GetEverything:
 
 class GetProjection:
     def __init__(
-        self, instrument="CG1D", facility="HFIR", list_files=[], oncat=None, projection=[], with_progressbar=False
+        self,
+        instrument="CG1D",
+        facility="HFIR",
+        list_files=[],
+        oncat=None,
+        projection=[],
+        with_progressbar=False,
     ):
         projection.append("ingested")
 
         if with_progressbar:
             box1 = widgets.HBox(
                 [
-                    widgets.Label("Retrieving Metadata ...", layout=widgets.Layout(width="30%")),
-                    widgets.IntProgress(max=len(list_files), layout=widgets.Layout(width="70%")),
+                    widgets.Label(
+                        "Retrieving Metadata ...", layout=widgets.Layout(width="30%")
+                    ),
+                    widgets.IntProgress(
+                        max=len(list_files), layout=widgets.Layout(width="70%")
+                    ),
                 ]
             )
             display(box1)

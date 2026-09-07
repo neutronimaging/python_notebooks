@@ -32,7 +32,9 @@ custom_style.style()
 # # Select Folder
 
 o_shift = ShiftTimeOffset()
-o_select = SelectFolder(system=system, is_input_folder=True, next_function=o_shift.display_counts_vs_time)
+o_select = SelectFolder(
+    system=system, is_input_folder=True, next_function=o_shift.display_counts_vs_time
+)
 
 # # Repeat on other folders?
 

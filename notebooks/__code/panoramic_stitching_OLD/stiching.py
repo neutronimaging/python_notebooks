@@ -1,7 +1,6 @@
 from collections import defaultdict
 
 import numpy as np
-
 from __code._panoramic_stitching.utilities import Utilities
 
 DEBUG_JSON = False
@@ -16,16 +15,28 @@ class Stitching:
         o_utilities = Utilities(parent=self.parent)
 
         for _row in master_dict.keys():
-            _data_reference = o_utilities.get_image_for_this_row(data_type="reference", row=_row)
-            _data_target = o_utilities.get_image_for_this_row(data_type="target", row=_row)
+            _data_reference = o_utilities.get_image_for_this_row(
+                data_type="reference", row=_row
+            )
+            _data_target = o_utilities.get_image_for_this_row(
+                data_type="target", row=_row
+            )
 
             reference_roi = master_dict[_row]["reference_roi"]
-            [ref_x0, ref_y0, ref_width, ref_height] = Stitching.retrieve_roi_parameters(roi_dict=reference_roi)
+            [ref_x0, ref_y0, ref_width, ref_height] = Stitching.retrieve_roi_parameters(
+                roi_dict=reference_roi
+            )
             target_roi = master_dict[_row]["target_roi"]
-            [target_x0, target_y0, _, _] = Stitching.retrieve_roi_parameters(roi_dict=target_roi)
+            [target_x0, target_y0, _, _] = Stitching.retrieve_roi_parameters(
+                roi_dict=target_roi
+            )
 
-            _data_reference_roi = _data_reference[ref_y0 : ref_y0 + ref_height, ref_x0 : ref_x0 + ref_width]
-            _data_target_roi = _data_target[target_y0 : target_y0 + ref_height, target_x0 : target_x0 + ref_width]
+            _data_reference_roi = _data_reference[
+                ref_y0 : ref_y0 + ref_height, ref_x0 : ref_x0 + ref_width
+            ]
+            _data_target_roi = _data_target[
+                target_y0 : target_y0 + ref_height, target_x0 : target_x0 + ref_width
+            ]
 
             f_reference = np.fft.fft2(_data_reference_roi)
             f_target = np.fft.fft2(_data_target_roi)
@@ -37,7 +48,10 @@ class Stitching:
             optimum_x0 = pos[1][0]
             optimum_y0 = pos[0][0]
 
-            displacement = {"x": target_x0 - ref_x0 + optimum_x0, "y": target_y0 - ref_y0 + optimum_y0}
+            displacement = {
+                "x": target_x0 - ref_x0 + optimum_x0,
+                "y": target_y0 - ref_y0 + optimum_y0,
+            }
 
             master_dict[_row]["displacement"]["x"] = displacement["x"]
             master_dict[_row]["displacement"]["y"] = displacement["y"]
@@ -56,14 +70,18 @@ class Stitching:
             _data_target = list_target_file["data"][_target_file_index]
 
             reference_roi = master_dict[_row]["reference_roi"]
-            [ref_x0, ref_y0, ref_width, ref_height] = Stitching.retrieve_roi_parameters(roi_dict=reference_roi)
-
-            target_roi = master_dict[_row]["target_roi"]
-            [starting_target_x0, starting_target_y0, target_width, target_height] = Stitching.retrieve_roi_parameters(
-                roi_dict=target_roi
+            [ref_x0, ref_y0, ref_width, ref_height] = Stitching.retrieve_roi_parameters(
+                roi_dict=reference_roi
             )
 
-            _data_reference_of_roi = _data_reference[ref_y0 : ref_y0 + ref_height, ref_x0 : ref_x0 + ref_width]
+            target_roi = master_dict[_row]["target_roi"]
+            [starting_target_x0, starting_target_y0, target_width, target_height] = (
+                Stitching.retrieve_roi_parameters(roi_dict=target_roi)
+            )
+
+            _data_reference_of_roi = _data_reference[
+                ref_y0 : ref_y0 + ref_height, ref_x0 : ref_x0 + ref_width
+            ]
 
             # where to start from
             moving_target_x0 = starting_target_x0
@@ -82,11 +100,15 @@ class Stitching:
             print("Reference:")
             print(f"x0:{ref_x0}, y0:{ref_y0}, width:{ref_width}, height:{ref_height}")
             print("target:")
-            print(f"x0:{starting_target_x0}, y0:{starting_target_y0}, width:{target_width}, height:{target_height}")
+            print(
+                f"x0:{starting_target_x0}, y0:{starting_target_y0}, width:{target_width}, height:{target_height}"
+            )
 
             if DEBUG_JSON:
                 o_utilities = Utilities(parent=self.parent)
-                _reference_file_index = o_utilities.get_reference_index_selected_from_row(row=_row)
+                _reference_file_index = (
+                    o_utilities.get_reference_index_selected_from_row(row=_row)
+                )
 
                 roi_to_export[str(_row)] = {
                     "reference": {
@@ -108,13 +130,19 @@ class Stitching:
             counts_and_x0_position_dict = defaultdict(list)
             counts_and_y0_position_dict = defaultdict(list)
 
-            counts_3d = np.zeros((final_target_y0 - moving_target_y0 + 1, final_target_x0 - moving_target_x0 + 1))
+            counts_3d = np.zeros(
+                (
+                    final_target_y0 - moving_target_y0 + 1,
+                    final_target_x0 - moving_target_x0 + 1,
+                )
+            )
 
             x = 0
             y = 0
             while moving_target_y0 <= final_target_y0:
                 _data_target_of_roi = _data_target[
-                    moving_target_y0 : moving_target_y0 + ref_height, moving_target_x0 : moving_target_x0 + ref_width
+                    moving_target_y0 : moving_target_y0 + ref_height,
+                    moving_target_x0 : moving_target_x0 + ref_width,
                 ]
 
                 _diff_array = np.abs(_data_target_of_roi - _data_reference_of_roi)
@@ -149,7 +177,8 @@ class Stitching:
 
             self.parent.debug_big_array_roi_ref = _data_reference_of_roi
             self.parent.debug_big_array_roi_target = _data_target[
-                optimum_y0 : optimum_y0 + ref_height, optimum_x0 : optimum_x0 + ref_width
+                optimum_y0 : optimum_y0 + ref_height,
+                optimum_x0 : optimum_x0 + ref_width,
             ]
 
             if DEBUG_JSON:
