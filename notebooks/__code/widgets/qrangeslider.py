@@ -61,7 +61,14 @@ __version__ = "0.1.1"
 import sys
 
 from qtpy import QtCore, QtGui
-from qtpy.QtWidgets import QApplication, QGridLayout, QGroupBox, QHBoxLayout, QSplitter, QWidget
+from qtpy.QtWidgets import (
+    QApplication,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QSplitter,
+    QWidget,
+)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -147,7 +154,7 @@ class Ui_Form:
 
 class Element(QGroupBox):
     def __init__(self, parent, main):
-        super(Element, self).__init__(parent)
+        super().__init__(parent)
         self.main = main
 
     def setStyleSheet(self, style):
@@ -179,7 +186,7 @@ class Head(Element):
     """area before the handle"""
 
     def __init__(self, parent, main):
-        super(Head, self).__init__(parent, main)
+        super().__init__(parent, main)
 
     def drawText(self, event, qp):
         qp.setPen(self.textColor())
@@ -191,7 +198,7 @@ class Tail(Element):
     """area after the handle"""
 
     def __init__(self, parent, main):
-        super(Tail, self).__init__(parent, main)
+        super().__init__(parent, main)
 
     def drawText(self, event, qp):
         qp.setPen(self.textColor())
@@ -203,7 +210,7 @@ class Handle(Element):
     """handle area"""
 
     def __init__(self, parent, main):
-        super(Handle, self).__init__(parent, main)
+        super().__init__(parent, main)
 
     def drawText(self, event, qp):
         qp.setPen(self.textColor())
@@ -324,7 +331,7 @@ class QRangeSlider(QWidget, Ui_Form):
         :return: New QRangeSlider instance.
 
         """
-        super(QRangeSlider, self).__init__(parent)
+        super().__init__(parent)
         self.setupUi(self)
         self.setMouseTracking(False)
 
@@ -517,6 +524,10 @@ if __name__ == "__main__":
     rs = QRangeSlider()
     rs.show()
     rs.setRange(15, 35)
-    rs.setBackgroundStyle("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);")
-    rs.handle.setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);")
+    rs.setBackgroundStyle(
+        "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);"
+    )
+    rs.handle.setStyleSheet(
+        "background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);"
+    )
     app.exec_()

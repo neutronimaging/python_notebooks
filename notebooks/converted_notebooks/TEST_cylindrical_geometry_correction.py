@@ -37,7 +37,10 @@ list_files = glob.glob(file_dir + "*.tif")
 o_selection = FileSelection()
 o_selection.load_files(list_files)
 
-o_profile = ProfileUi(working_dir=os.path.dirname(list_files[0]), data_dict=o_selection.data_dict["sample"])
+o_profile = ProfileUi(
+    working_dir=os.path.dirname(list_files[0]),
+    data_dict=o_selection.data_dict["sample"],
+)
 o_profile.show()
 
 

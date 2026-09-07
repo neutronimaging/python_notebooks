@@ -3,11 +3,10 @@ import os
 import time
 
 import ipywidgets as ipyw
+from __code.ipywe import fileselector
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
-
-from __code.ipywe import fileselector
 
 
 class MyFileSelectorPanel:
@@ -17,11 +16,18 @@ class MyFileSelectorPanel:
     # statement should change the width of the file selector. "width="
     # doesn't appear to work in earlier versions.
     select_layout = ipyw.Layout(width="99%", height="260px")
-    select_multiple_layout = ipyw.Layout(width="99%", height="260px", display="flex", flex_flow="column")
+    select_multiple_layout = ipyw.Layout(
+        width="99%", height="260px", display="flex", flex_flow="column"
+    )
     button_layout = ipyw.Layout(margin="5px 40px", border="1px solid gray")
-    toolbar_button_layout = ipyw.Layout(margin="5px 10px", width="100px", border="1px solid gray")
+    toolbar_button_layout = ipyw.Layout(
+        margin="5px 10px", width="100px", border="1px solid gray"
+    )
     toolbar_box_layout = ipyw.Layout(
-        border="1px solid lightgrey", padding="3px", margin="5px 50px 5px 5px", width="100%"
+        border="1px solid lightgrey",
+        padding="3px",
+        margin="5px 50px 5px 5px",
+        width="100%",
     )
     label_layout = ipyw.Layout(width="250px")
     layout = ipyw.Layout()
@@ -29,7 +35,6 @@ class MyFileSelectorPanel:
     def js_alert(self, m):
         js = "<script>alert('%s');</script>" % m
         display(HTML(js))
-        return
 
     def __init__(
         self,
@@ -100,20 +105,34 @@ class MyFileSelectorPanel:
         # toolbar on the top
         # "jump to"
         self.jumpto_input = jumpto_input = ipyw.Text(
-            value=curdir, placeholder="", description="Location: ", layout=ipyw.Layout(width="100%")
+            value=curdir,
+            placeholder="",
+            description="Location: ",
+            layout=ipyw.Layout(width="100%"),
         )
-        jumpto_button = ipyw.Button(description="Jump", layout=self.toolbar_button_layout)
+        jumpto_button = ipyw.Button(
+            description="Jump", layout=self.toolbar_button_layout
+        )
         jumpto_button.on_click(self.handle_jumpto)
-        jumpto = ipyw.HBox(children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout)
+        jumpto = ipyw.HBox(
+            children=[jumpto_input, jumpto_button], layout=self.toolbar_box_layout
+        )
         self.jumpto_button = jumpto_button
         if self.newdir_toolbar_button:
             # "new dir"
             self.newdir_input = newdir_input = ipyw.Text(
-                value="", placeholder="new dir name", description="New subdir: ", layout=ipyw.Layout(width="180px")
+                value="",
+                placeholder="new dir name",
+                description="New subdir: ",
+                layout=ipyw.Layout(width="180px"),
             )
-            newdir_button = ipyw.Button(description="Create", layout=self.toolbar_button_layout)
+            newdir_button = ipyw.Button(
+                description="Create", layout=self.toolbar_button_layout
+            )
             newdir_button.on_click(self.handle_newdir)
-            newdir = ipyw.HBox(children=[newdir_input, newdir_button], layout=self.toolbar_box_layout)
+            newdir = ipyw.HBox(
+                children=[newdir_input, newdir_button], layout=self.toolbar_box_layout
+            )
             toolbar = ipyw.HBox(children=[jumpto, newdir])
         else:
             toolbar = ipyw.HBox(children=[jumpto])
@@ -138,11 +157,19 @@ class MyFileSelectorPanel:
         if self.multiple:
             value = []
             self.select = ipyw.SelectMultiple(
-                value=value, options=entries, description="Select", layout=self.select_multiple_layout
+                value=value,
+                options=entries,
+                description="Select",
+                layout=self.select_multiple_layout,
             )
         else:
             value = entries[0]
-            self.select = ipyw.Select(value=value, options=entries, description="Select", layout=self.select_layout)
+            self.select = ipyw.Select(
+                value=value,
+                options=entries,
+                description="Select",
+                layout=self.select_layout,
+            )
         """When ipywidgets 7.0 is released, the old way that the select or select multiple
            widget was set up (see below) should work so long as self.select_layout is changed
            to include the display="flex" and flex_flow="column" statements. In ipywidgets 6.0,
@@ -170,7 +197,9 @@ class MyFileSelectorPanel:
         left_vbox = ipyw.VBox(left_widgets, layout=ipyw.Layout(width="80%"))
         # right
         # change directory button
-        self.changedir = ipyw.Button(description="Change directory", layout=self.button_layout)
+        self.changedir = ipyw.Button(
+            description="Change directory", layout=self.button_layout
+        )
         self.changedir.on_click(self.handle_changedir)
         # select button
         ok_layout = cloneLayout(self.button_layout)
@@ -181,7 +210,9 @@ class MyFileSelectorPanel:
         right_vbox = ipyw.VBox(children=[self.changedir, self.ok])
         select_panel = ipyw.HBox(
             children=[left_vbox, right_vbox],
-            layout=ipyw.Layout(border="1px solid lightgrey", margin="5px", padding="10px"),
+            layout=ipyw.Layout(
+                border="1px solid lightgrey", margin="5px", padding="10px"
+            ),
         )
         body = ipyw.VBox(children=[toolbar, select_panel], layout=self.layout)
         self.footer.value = ""
@@ -192,10 +223,11 @@ class MyFileSelectorPanel:
             self.filters.update(All=["*.*"])
         self.cur_filter = self.cur_filter or self.filters[self.default_filter or "All"]
         self.filter_widget = ipyw.Dropdown(
-            options=self.filters, value=self.cur_filter, layout=ipyw.Layout(align_self="flex-end", width="15%")
+            options=self.filters,
+            value=self.cur_filter,
+            layout=ipyw.Layout(align_self="flex-end", width="15%"),
         )
         self.filter_widget.observe(self.handle_filter_changed, names="value")
-        return
 
     def getFilteredEntries(self):
         curdir = self.curdir
@@ -208,7 +240,9 @@ class MyFileSelectorPanel:
         # filter out dirs, they will be added below
         list_files = filter(lambda o: not os.path.isdir(o), list_files)
         list_files = list(map(os.path.basename, list_files))
-        list_dirs = [o for o in os.listdir(curdir) if os.path.isdir(os.path.join(curdir, o))]
+        list_dirs = [
+            o for o in os.listdir(curdir) if os.path.isdir(os.path.join(curdir, o))
+        ]
         self.footer.value += "<p>" + " ".join(list_dirs) + "</p>"
         entries = list_dirs + list_files
         return entries
@@ -219,17 +253,14 @@ class MyFileSelectorPanel:
 
     def disable(self):
         disable(self.panel)
-        return
 
     def enable(self):
         enable(self.panel)
-        return
 
     def changeDir(self, path):
         close(self.body)
         self.body = self.createBody(path)
         self.panel.children = [self.header, self.body, self.footer]
-        return
 
     def handle_jumpto(self, s):
         v = self.jumpto_input.value
@@ -300,11 +331,9 @@ class MyFileSelectorPanel:
 
     def show(self):
         display(self.panel)
-        return
 
     def remove(self):
         close(self.panel)
-        
 
 
 # XXX css for big select area XXX
@@ -322,7 +351,6 @@ div.output_subarea > div {margin: 0.4em;}
 def js_alert(m):
     js = "<script>alert('%s');</script>" % m
     display(HTML(js))
-    return
 
 
 def cloneLayout(l):
@@ -337,7 +365,6 @@ def cloneLayout(l):
 def close(w):
     "recursively close a widget"
     recursive_op(w, lambda x: x.close())
-    return
 
 
 def disable(w):
@@ -347,7 +374,6 @@ def disable(w):
         w.disabled = True
 
     recursive_op(w, _)
-    return
 
 
 def enable(w):
@@ -357,7 +383,6 @@ def enable(w):
         w.disabled = False
 
     recursive_op(w, _)
-    return
 
 
 def recursive_op(w, single_op):
@@ -366,7 +391,6 @@ def recursive_op(w, single_op):
             recursive_op(c, single_op)
             continue
     single_op(w)
-    return
 
 
 def close(w):
@@ -376,7 +400,6 @@ def close(w):
             close(c)
             continue
     w.close()
-    return
 
 
 def create_file_times(paths):
@@ -420,7 +443,15 @@ def del_ftime(file_label):
 class FileSelection:
     next = None
 
-    def __init__(self, working_dir="./", filter="", default_filter=None, next=None, instructions=None, multiple=True):
+    def __init__(
+        self,
+        working_dir="./",
+        filter="",
+        default_filter=None,
+        next=None,
+        instructions=None,
+        multiple=True,
+    ):
         self.working_dir = working_dir
         self.instuctions = instructions
         self.filter = filter
@@ -433,7 +464,9 @@ class FileSelection:
     def select_file_help(self, value):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile"
+        )
 
     def load_files(self, files):
         o_norm = Normalization()
@@ -473,7 +506,10 @@ class FileSelection:
                 )
             else:
                 self.files_ui = fileselector.FileSelectorPanel(
-                    instruction=instructions, start_dir=self.working_dir, next=next, multiple=self.multiple
+                    instruction=instructions,
+                    start_dir=self.working_dir,
+                    next=next,
+                    multiple=self.multiple,
                 )
 
         else:
@@ -489,7 +525,10 @@ class FileSelection:
                 )
             else:
                 self.files_ui = fileselector.FileSelectorPanel(
-                    instruction=instructions, start_dir=self.working_dir, next=next, multiple=self.multiple
+                    instruction=instructions,
+                    start_dir=self.working_dir,
+                    next=next,
+                    multiple=self.multiple,
                 )
 
         self.files_ui.show()
@@ -534,12 +573,11 @@ class FileSelectorPanelWithJumpFolders:
                     filters=filters,
                     stay_alive=stay_alive,
                 )
-            
 
         def display_file_selector_from_home(ev):
             start_dir = os.path.expanduser("~")
 
-            #self.output_folder_ui.remove()
+            # self.output_folder_ui.remove()
             with self.out:
                 self.output_folder_ui.remove()
                 self.display_file_selector(
@@ -561,14 +599,18 @@ class FileSelectorPanelWithJumpFolders:
         list_buttons = []
         if show_jump_to_share:
             share_button = widgets.Button(
-                description=f"Jump to {ipts} Shared Folder", button_style="success", layout=button_layout
+                description=f"Jump to {ipts} Shared Folder",
+                button_style="success",
+                layout=button_layout,
             )
             share_button.on_click(display_file_selector_from_shared)
             list_buttons.append(share_button)
 
         if show_jump_to_home:
             home_button = widgets.Button(
-                description="Jump to My Home Folder", button_style="success", layout=button_layout
+                description="Jump to My Home Folder",
+                button_style="success",
+                layout=button_layout,
             )
             home_button.on_click(display_file_selector_from_home)
             list_buttons.append(home_button)
@@ -604,7 +646,7 @@ class FileSelectorPanelWithJumpFolders:
             default_filter=default_filter,
             stay_alive=stay_alive,
         )
-        
+
         self.out = widgets.Output()
         display(self.out)
 

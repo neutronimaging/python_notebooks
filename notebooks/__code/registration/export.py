@@ -2,12 +2,11 @@ import copy
 import os
 
 import numpy as np
+from __code._utilities.file import make_or_increment_folder_name
 from NeuNorm.normalization import Normalization
 from qtpy.QtWidgets import QApplication, QFileDialog
 from scipy.ndimage.interpolation import shift
 from skimage import transform
-
-from __code._utilities.file import make_or_increment_folder_name
 
 
 class Export:
@@ -17,15 +16,24 @@ class Export:
 
     def run(self):
         _export_folder = QFileDialog.getExistingDirectory(
-            self.parent, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self.parent,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         if _export_folder:
             # add custom folder name
             working_dir_basename = os.path.basename(self.working_dir)
             # append "registered" and "time_stamp"
-            full_output_folder_name = os.path.join(_export_folder, working_dir_basename + "_registered")
-            full_output_folder_name = make_or_increment_folder_name(full_output_folder_name)
-            o_export = ExportRegistration(parent=self.parent, export_folder=full_output_folder_name)
+            full_output_folder_name = os.path.join(
+                _export_folder, working_dir_basename + "_registered"
+            )
+            full_output_folder_name = make_or_increment_folder_name(
+                full_output_folder_name
+            )
+            o_export = ExportRegistration(
+                parent=self.parent, export_folder=full_output_folder_name
+            )
             o_export.run()
             QApplication.processEvents()
 
@@ -47,12 +55,19 @@ class ExportRegistration:
         for _row, _data in enumerate(data_dict_raw["data"]):
             _filename = list_file_names[_row]
             if not _row == self.parent.reference_image_index:
-                _xoffset = int(np.floor(float(self.parent.ui.tableWidget.item(_row, 1).text())))
-                _yoffset = int(np.floor(float(self.parent.ui.tableWidget.item(_row, 2).text())))
+                _xoffset = int(
+                    np.floor(float(self.parent.ui.tableWidget.item(_row, 1).text()))
+                )
+                _yoffset = int(
+                    np.floor(float(self.parent.ui.tableWidget.item(_row, 2).text()))
+                )
                 _rotation = float(self.parent.ui.tableWidget.item(_row, 3).text())
 
                 _data_registered = self.registered_data(
-                    raw_data=_data, xoffset=_xoffset, yoffset=_yoffset, rotation=_rotation
+                    raw_data=_data,
+                    xoffset=_xoffset,
+                    yoffset=_yoffset,
+                    rotation=_rotation,
                 )
             else:
                 _data_registered = _data

@@ -1,9 +1,11 @@
 import numpy as np
+from __code._utilities.table_handler import TableHandler
+from __code.group_images_by_cycle_for_grating_experiment import (
+    IndexOfColumns,
+    list_fit_procedure,
+)
 from qtpy import QtCore
 from qtpy.QtWidgets import QComboBox, QSpinBox, QTableWidgetItem
-
-from __code._utilities.table_handler import TableHandler
-from __code.group_images_by_cycle_for_grating_experiment import IndexOfColumns, list_fit_procedure
 
 
 class ExcelTableHandler(TableHandler):
@@ -79,7 +81,9 @@ class ExcelTableHandler(TableHandler):
             period_widget.setValue(int(value))
             self.insert_widget(row=self.row_to_set, column=column, widget=period_widget)
             period_widget.valueChanged.connect(
-                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+                lambda value, row=self.row_to_set, column=column: method(
+                    value, row, column
+                )
             )
         else:
             period_widget = self.get_widget(row=self.row_to_set, column=column)
@@ -100,9 +104,13 @@ class ExcelTableHandler(TableHandler):
             images_per_step.setMinimum(1)
             images_per_step.setMaximum(10)
             images_per_step.setValue(images_per_step_value)
-            self.insert_widget(row=self.row_to_set, column=column, widget=images_per_step)
+            self.insert_widget(
+                row=self.row_to_set, column=column, widget=images_per_step
+            )
             images_per_step.valueChanged.connect(
-                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+                lambda value, row=self.row_to_set, column=column: method(
+                    value, row, column
+                )
             )
         else:
             images_per_step = self.get_widget(row=self.row_to_set, column=column)
@@ -142,7 +150,9 @@ class ExcelTableHandler(TableHandler):
             fit_procedure.setCurrentIndex(index)
             self.insert_widget(row=self.row_to_set, column=column, widget=fit_procedure)
             fit_procedure.currentIndexChanged.connect(
-                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+                lambda value, row=self.row_to_set, column=column: method(
+                    value, row, column
+                )
             )
         else:
             fit_procedure = self.get_widget(row=self.row_to_set, column=column)
@@ -178,9 +188,13 @@ class ExcelTableHandler(TableHandler):
             gamma_filter_ui = QComboBox()
             gamma_filter_ui.addItems(values)
             gamma_filter_ui.setCurrentText(gamma_filter_value)
-            self.insert_widget(row=self.row_to_set, column=column, widget=gamma_filter_ui)
+            self.insert_widget(
+                row=self.row_to_set, column=column, widget=gamma_filter_ui
+            )
             gamma_filter_ui.currentIndexChanged.connect(
-                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+                lambda value, row=self.row_to_set, column=column: method(
+                    value, row, column
+                )
             )
         else:
             gamma_filter_ui = self.get_widget(row=self.row_to_set, column=column)
@@ -261,9 +275,13 @@ class ExcelTableHandler(TableHandler):
             gamma_filter_dc_ui = QComboBox()
             gamma_filter_dc_ui.addItems(values)
             gamma_filter_dc_ui.setCurrentText(gamma_filter_value)
-            self.insert_widget(row=self.row_to_set, column=column, widget=gamma_filter_dc_ui)
+            self.insert_widget(
+                row=self.row_to_set, column=column, widget=gamma_filter_dc_ui
+            )
             gamma_filter_dc_ui.currentIndexChanged.connect(
-                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+                lambda value, row=self.row_to_set, column=column: method(
+                    value, row, column
+                )
             )
         else:
             gamma_filter_dc_ui = self.get_widget(row=self.row_to_set, column=column)
@@ -351,7 +369,9 @@ class ExcelTableHandler(TableHandler):
             dc_outlier_ui.setCurrentText(dc_outlier_value)
             self.insert_widget(row=self.row_to_set, column=column, widget=dc_outlier_ui)
             dc_outlier_ui.currentIndexChanged.connect(
-                lambda value, row=self.row_to_set, column=column: method(value, row, column)
+                lambda value, row=self.row_to_set, column=column: method(
+                    value, row, column
+                )
             )
         else:
             dc_outlier_ui = self.get_widget(row=self.row_to_set, column=column)

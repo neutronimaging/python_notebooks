@@ -31,7 +31,9 @@ initializer.select_instrument()
 # # Select your ReductionLog files and then the Metadata to extract
 
 working_dir = initializer.get_working_dir()
-o_extract = extract.Extract(working_dir=working_dir, instrument=initializer.get_instrument())
+o_extract = extract.Extract(
+    working_dir=working_dir, instrument=initializer.get_instrument()
+)
 o_extract.select_reductionlog()
 
 # # Select output folder

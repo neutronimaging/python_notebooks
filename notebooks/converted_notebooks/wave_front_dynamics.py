@@ -26,7 +26,10 @@
 # warnings.filterwarnings('ignore')
 
 from __code import system
-from __code.wave_front_dynamics.wave_front_dynamics import WaveFrontDynamics, WaveFrontDynamicsUI
+from __code.wave_front_dynamics.wave_front_dynamics import (
+    WaveFrontDynamics,
+    WaveFrontDynamicsUI,
+)
 
 system.System.select_working_dir(notebook="wave_front_dynamics")
 from __code.__all import custom_style
@@ -57,6 +60,8 @@ o_wave.load_data()
 # # Launch User Interface
 
 # + run_control={"frozen": false, "read_only": false}
-o_ui = WaveFrontDynamicsUI(working_dir=system.System.get_working_dir(), wave_front_dynamics=o_wave)
+o_ui = WaveFrontDynamicsUI(
+    working_dir=system.System.get_working_dir(), wave_front_dynamics=o_wave
+)
 o_ui.show()
 # -

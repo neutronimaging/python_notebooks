@@ -7,9 +7,8 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QMainWindow
 
-from ImagingReso.resonance import Resonance
-
 from __code.ui_resonance_imaging_layers_input import Ui_MainWindow as UiSampleMainWindow
+from ImagingReso.resonance import Resonance
 
 
 class SampleWindow(QMainWindow):
@@ -66,13 +65,21 @@ class SampleWindow(QMainWindow):
             _layer_name = self.get_table_item(_row_index, 0)
             if _layer_name == "":
                 break
-            _dict["elements"] = self.format_string_to_array(string=self.get_table_item(_row_index, 1), data_type="str")
+            _dict["elements"] = self.format_string_to_array(
+                string=self.get_table_item(_row_index, 1), data_type="str"
+            )
             _dict["stoichiometric_ratio"] = self.format_string_to_array(
                 string=self.get_table_item(_row_index, 2), data_type="float"
             )
-            _dict["thickness"] = {"value": float(self.get_table_item(_row_index, 3)), "units": "mm"}
+            _dict["thickness"] = {
+                "value": float(self.get_table_item(_row_index, 3)),
+                "units": "mm",
+            }
             if self.get_table_item(_row_index, 4):
-                _dict["density"] = {"value": float(self.get_table_item(_row_index, 4)), "units": "g/cm3"}
+                _dict["density"] = {
+                    "value": float(self.get_table_item(_row_index, 4)),
+                    "units": "g/cm3",
+                }
             _table_dictionary[_layer_name] = _dict
         self.stack = _table_dictionary
 
@@ -80,7 +87,9 @@ class SampleWindow(QMainWindow):
         E_max = float(str(self.ui.Emax_lineEdit.text()))
         delta_E = float(str(self.ui.deltaE_lineEdit.text()))
 
-        o_reso = Resonance(stack=self.stack, energy_min=E_min, energy_max=E_max, energy_step=delta_E)
+        o_reso = Resonance(
+            stack=self.stack, energy_min=E_min, energy_max=E_max, energy_step=delta_E
+        )
         self.o_reso = o_reso
 
         self.fill_check_groupBox()
@@ -127,11 +136,15 @@ class SampleWindow(QMainWindow):
             return
 
         _entry = self.stack[layer_selected][element_selected]
-        number_of_atoms = float(self.stack[layer_selected]["atoms_per_cm3"][element_selected])
+        number_of_atoms = float(
+            self.stack[layer_selected]["atoms_per_cm3"][element_selected]
+        )
         self.ui.element_number_of_atoms.setText(f"{number_of_atoms:6.3e}")
         density = str(self.stack[layer_selected][element_selected]["density"]["value"])
         self.ui.element_density.setText(f"{float(density):6.3e}")
-        molar_mass = str(self.stack[layer_selected][element_selected]["molar_mass"]["value"])
+        molar_mass = str(
+            self.stack[layer_selected][element_selected]["molar_mass"]["value"]
+        )
         self.ui.element_molar_mass.setText(f"{float(molar_mass):6.3e}")
 
         self.fill_isotopes_table(element_selected)
@@ -239,7 +252,9 @@ class SampleWindow(QMainWindow):
             list_isotopic_ratio.append(_iso_ratio)
 
         self.o_reso.set_isotopic_ratio(
-            compound=layer_selected, element=element_selected, list_ratio=list_isotopic_ratio
+            compound=layer_selected,
+            element=element_selected,
+            list_ratio=list_isotopic_ratio,
         )
 
         self.layer_combobox_clicked(layer_selected)
