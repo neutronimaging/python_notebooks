@@ -29,7 +29,9 @@ def combine_images(output_folder="./", list_images=None, new_file_name=""):
     del o_combined
 
 
-def make_dictionary_of_groups_new_names(dictionary_of_groups_sorted, dict_group_outer_value):
+def make_dictionary_of_groups_new_names(
+    dictionary_of_groups_sorted, dict_group_outer_value
+):
     dict_new_names = OrderedDict()
     for _group_index in dictionary_of_groups_sorted.keys():
         nbr_files = len(dictionary_of_groups_sorted[_group_index])
@@ -40,7 +42,12 @@ def make_dictionary_of_groups_new_names(dictionary_of_groups_sorted, dict_group_
         if len(before_and_after_decimal) > 1:
             before_decimal = int(before_and_after_decimal[0])
             before_decimal_str = f"{before_decimal:03d}"
-            str_outer_value_formatted = "_".join([before_decimal_str, before_and_after_decimal[1]])
-        list_new_names = [f"group_{str_outer_value_formatted}_{_index:07d}.tiff" for _index in np.arange(nbr_files)]
+            str_outer_value_formatted = "_".join(
+                [before_decimal_str, before_and_after_decimal[1]]
+            )
+        list_new_names = [
+            f"group_{str_outer_value_formatted}_{_index:07d}.tiff"
+            for _index in np.arange(nbr_files)
+        ]
         dict_new_names[_group_index] = list_new_names
     return dict_new_names

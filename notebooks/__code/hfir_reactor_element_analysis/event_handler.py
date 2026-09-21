@@ -1,9 +1,8 @@
 import numpy as np
-from qtpy import QtGui
-from qtpy.QtWidgets import QMenu
-
 from __code._utilities.array import get_closest_index, reject_n_outliers
 from __code._utilities.table_handler import TableHandler
+from qtpy import QtGui
+from qtpy.QtWidgets import QMenu
 
 
 class EventHandler:
@@ -61,7 +60,9 @@ class EventHandler:
             plot_type = "."
 
         for _index, _y_axis in enumerate(list_y_axis):
-            self.parent.profiles_plot.axes.plot(x_axis, _y_axis, plot_type, label=list_file_selected[_index])
+            self.parent.profiles_plot.axes.plot(
+                x_axis, _y_axis, plot_type, label=list_file_selected[_index]
+            )
             self.parent.profiles_plot.axes.legend()
             self.parent.profiles_plot.axes.set_title("Profile of selected images")
 
@@ -75,7 +76,9 @@ class EventHandler:
             list_mean_position_of_elements = self.get_list_mean_position_of_elements()
             if list_mean_position_of_elements is not None:
                 for _value in list_mean_position_of_elements:
-                    self.parent.profiles_plot.axes.axvline(_value, linestyle="-", color="blue")
+                    self.parent.profiles_plot.axes.axvline(
+                        _value, linestyle="-", color="blue"
+                    )
 
         # thresholds
         threshold = self.parent.ui.threshold_slider.value()
@@ -133,12 +136,17 @@ class EventHandler:
         list_of_y_max = []
         local_y_max = 0
         x_of_local_max = 0
-        minimum_number_of_points_to_high_region = self.parent.ui.minimum_number_of_points_spinBox.value()
+        minimum_number_of_points_to_high_region = (
+            self.parent.ui.minimum_number_of_points_spinBox.value()
+        )
         number_of_points_in_current_high_region = 0
         for _x_value, _y_value in zip(working_x_axis, working_y_axis, strict=False):
             if _y_value < threshold:
                 if local_y_max != 0:
-                    if number_of_points_in_current_high_region >= minimum_number_of_points_to_high_region:
+                    if (
+                        number_of_points_in_current_high_region
+                        >= minimum_number_of_points_to_high_region
+                    ):
                         list_of_x_of_local_max.append(x_of_local_max)
                         list_of_y_max.append(local_y_max)
                         local_y_max = 0
@@ -182,7 +190,9 @@ class EventHandler:
         ymin = 0
         ymax = len(self.parent.list_of_images)
         for _value in list_mean_position_of_elements:
-            self.parent.elements_position.axes.vlines(_value, ymin, ymax, colors=(1, 0, 0, 1))
+            self.parent.elements_position.axes.vlines(
+                _value, ymin, ymax, colors=(1, 0, 0, 1)
+            )
 
     def populate_elements_position_table(self):
         global_list_of_xy_max = self.parent.global_list_of_xy_max
@@ -198,8 +208,7 @@ class EventHandler:
             x_axis = global_list_of_xy_max[_file]["x"]
             raw_table.append(x_axis)
 
-            if len(x_axis) > nbr_column:
-                nbr_column = len(x_axis)
+            nbr_column = max(nbr_column, len(x_axis))
             for _column in np.arange(len(x_axis)):
                 if _row == 0:
                     o_table.insert_column(_column)
@@ -231,7 +240,9 @@ class EventHandler:
         self.parent.list_ideal_position_of_elements = list_mean_position_of_elements
         tolerance = self.parent.ui.tolerance_value_doubleSpinBox.value()
 
-        mean_angle_offset_between_elements = self.get_mean_angle_offset_between_elements()
+        mean_angle_offset_between_elements = (
+            self.get_mean_angle_offset_between_elements()
+        )
         list_average = np.arange(
             list_mean_position_of_elements[0],
             nbr_column * mean_angle_offset_between_elements,
@@ -255,8 +266,12 @@ class EventHandler:
                     _error_row.append(0)
                     break
 
-                while (_element_position < (list_average[_reference_index_element] - tolerance)) or (
-                    _element_position > (list_average[_reference_index_element] + tolerance)
+                while (
+                    _element_position
+                    < (list_average[_reference_index_element] - tolerance)
+                ) or (
+                    _element_position
+                    > (list_average[_reference_index_element] + tolerance)
                 ):
                     if _element_position < list_average[_reference_index_element]:
                         _error_row.append(0)
@@ -271,7 +286,9 @@ class EventHandler:
 
                 if found_flag:
                     # find the closest place where this _element_position goes
-                    nearest_index = get_closest_index(array=list_average, value=_element_position)
+                    nearest_index = get_closest_index(
+                        array=list_average, value=_element_position
+                    )
                     ideal_table_data_error[_row_index, nearest_index] = 1
 
                     _reference_index_element += 1
@@ -289,7 +306,9 @@ class EventHandler:
             for _column, _state in enumerate(error_table[_row]):
                 if _state == 0:
                     if o_table.is_item(row=_row, column=_column):
-                        o_table.set_background_color(row=_row, column=_column, qcolor=QtGui.QColor(150, 0, 0))
+                        o_table.set_background_color(
+                            row=_row, column=_column, qcolor=QtGui.QColor(150, 0, 0)
+                        )
 
     def display_missing_peaks_table(self):
         ideal_table_data_error = self.parent.ideal_table_data_error
@@ -322,21 +341,32 @@ class EventHandler:
         nbr_column = int(median_number_of_elements)
         elements_position_error_table = np.zeros((nbr_row, nbr_column))
         # mean_angle_offset_between_elements = self.get_mean_angle_offset_between_elements()
-        self.parent.list_mean_position_of_elements = self.get_list_mean_position_of_elements()
+        self.parent.list_mean_position_of_elements = (
+            self.get_list_mean_position_of_elements()
+        )
         self.tolerance_value = self.parent.ui.tolerance_value_doubleSpinBox.value()
 
         for _row_index in np.arange(nbr_row):
-            for _col_index, _col_value in enumerate(self.parent.elements_position_formatted_raw_table[_row_index]):
-                col_index = self.where_value_found_within_expected_tolerance(value=_col_value)
+            for _col_index, _col_value in enumerate(
+                self.parent.elements_position_formatted_raw_table[_row_index]
+            ):
+                col_index = self.where_value_found_within_expected_tolerance(
+                    value=_col_value
+                )
                 if col_index >= 0:
-                    elements_position_error_table[_row_index, col_index] += 1  # we found an element at that position
+                    elements_position_error_table[_row_index, col_index] += (
+                        1  # we found an element at that position
+                    )
                     # if a value > 1 is found later on when checking the table, an error will be displayed for that
                     # cell
                 elif col_index == -1:
                     closer_col_index = get_closest_index(
-                        value=_col_value, array=self.parent.list_mean_position_of_elements
+                        value=_col_value,
+                        array=self.parent.list_mean_position_of_elements,
                     )
-                    elements_position_error_table[_row_index, closer_col_index] = -10  # very low value to make sure
+                    elements_position_error_table[
+                        _row_index, closer_col_index
+                    ] = -10  # very low value to make sure
                     # an error will show up in this cell
 
         o_table = TableHandler(table_ui=self.parent.error_tableWidget)
@@ -348,9 +378,13 @@ class EventHandler:
                     o_table.insert_empty_column(_col_index)
                 o_table.insert_empty_row(_row_index)
                 _value = elements_position_error_table[_row_index, _col_index]
-                o_table.insert_item_with_float(row=_row_index, column=_col_index, float_value=_value)
+                o_table.insert_item_with_float(
+                    row=_row_index, column=_col_index, float_value=_value
+                )
 
-    def is_value_within_expected_tolerance(self, value_to_check=None, value_expected=None):
+    def is_value_within_expected_tolerance(
+        self, value_to_check=None, value_expected=None
+    ):
         tolerance_value = self.tolerance_value
         if (value_to_check >= (value_expected - tolerance_value)) and (
             value_to_check <= (value_expected + tolerance_value)
@@ -367,7 +401,9 @@ class EventHandler:
         list_of_ideal_elements_position = self.parent.list_mean_position_of_elements
 
         for _index, ideal_position in enumerate(list_of_ideal_elements_position):
-            if (value >= (ideal_position - tolerance_value)) and (value <= (ideal_position + tolerance_value)):
+            if (value >= (ideal_position - tolerance_value)) and (
+                value <= (ideal_position + tolerance_value)
+            ):
                 return _index
 
         return -1
@@ -401,7 +437,9 @@ class EventHandler:
 
         [nbr_row, nbr_column] = np.shape(table)
 
-        number_of_outliers_to_reject = int((self.parent.percent_of_outliers_to_reject / 100) * nbr_row)
+        number_of_outliers_to_reject = int(
+            (self.parent.percent_of_outliers_to_reject / 100) * nbr_row
+        )
         # list_mean_value = []
         # for _column_index in np.arange(nbr_column):
         #     _col_value = table[:, _column_index]
@@ -410,7 +448,9 @@ class EventHandler:
 
         # mean of first element
         _col_value = table[:, 0]
-        _col_value_without_outliers = reject_n_outliers(array=_col_value, n=number_of_outliers_to_reject)
+        _col_value_without_outliers = reject_n_outliers(
+            array=_col_value, n=number_of_outliers_to_reject
+        )
         mean_first_element = np.nanmean(_col_value)
 
         # trying to calculate manually ideal list mean
@@ -430,7 +470,9 @@ class EventHandler:
         return np.median(list_number_of_elements)
 
     def format_table(self, raw_table=None):
-        max_number_of_elements = np.max([len(list_of_elements) for list_of_elements in raw_table])
+        max_number_of_elements = np.max(
+            [len(list_of_elements) for list_of_elements in raw_table]
+        )
         number_of_rows = len(raw_table)
         formatted_table = np.empty((number_of_rows, max_number_of_elements))
         formatted_table[:] = np.nan

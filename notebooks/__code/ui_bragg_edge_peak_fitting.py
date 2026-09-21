@@ -22,7 +22,9 @@ class Ui_MainWindow:
         self.verticalLayout = QtWidgets.QVBoxLayout(self.tab)
         self.verticalLayout.setObjectName("verticalLayout")
         self.splitter = QtWidgets.QSplitter(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
@@ -41,7 +43,9 @@ class Ui_MainWindow:
         self.label = QtWidgets.QLabel(self.tab)
         self.label.setMinimumSize(QtCore.QSize(200, 0))
         self.label.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.lineEdit = QtWidgets.QLineEdit(self.tab)
@@ -57,7 +61,9 @@ class Ui_MainWindow:
         self.label_4 = QtWidgets.QLabel(self.tab)
         self.label_4.setMinimumSize(QtCore.QSize(200, 0))
         self.label_4.setMaximumSize(QtCore.QSize(200, 16777215))
-        self.label_4.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.label_4.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.label_4.setObjectName("label_4")
         self.gridLayout.addWidget(self.label_4, 1, 0, 1, 1)
         self.lineEdit_2 = QtWidgets.QLineEdit(self.tab)
@@ -71,7 +77,9 @@ class Ui_MainWindow:
         self.label_3.setObjectName("label_3")
         self.gridLayout.addWidget(self.label_3, 1, 2, 1, 1)
         self.horizontalLayout_2.addLayout(self.gridLayout)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_2.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.tabWidget.addTab(self.tab, "")
@@ -127,7 +135,9 @@ class Ui_MainWindow:
         self.cancel_button = QtWidgets.QPushButton(self.centralwidget)
         self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout.addWidget(self.cancel_button)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem1)
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
@@ -155,7 +165,9 @@ class Ui_MainWindow:
         self.label_2.setText(_translate("MainWindow", "m"))
         self.label_4.setText(_translate("MainWindow", "detector offset"))
         self.label_3.setText(_translate("MainWindow", "micros"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Selection"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Selection")
+        )
         self.groupBox.setTitle(_translate("MainWindow", "List of algorithms"))
         self.radioButton_3.setText(_translate("MainWindow", "algorithm 3"))
         self.radioButton_2.setText(_translate("MainWindow", "algorithm 2"))
@@ -170,6 +182,8 @@ class Ui_MainWindow:
         item.setText(_translate("MainWindow", "coeff2 value"))
         item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "coeff2 error"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Fitting"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Fitting")
+        )
         self.cancel_button.setText(_translate("MainWindow", "Cancel"))
         self.apply_button.setText(_translate("MainWindow", "Use this peak"))

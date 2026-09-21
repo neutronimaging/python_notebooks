@@ -23,7 +23,9 @@
 # +
 
 from __code import system
-from __code.venus_list_of_nexus_with_pc_above_threshold.main import VenusNexusListPCAboveThreshold
+from __code.venus_list_of_nexus_with_pc_above_threshold.main import (
+    VenusNexusListPCAboveThreshold,
+)
 
 system.System.select_working_dir(facility="SNS", instrument="VENUS")
 from __code.__all import custom_style

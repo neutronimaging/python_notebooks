@@ -17,8 +17,8 @@ class DataType:
     ob: str = "ob"
     dc: str = "dc"
 
-class Roi:
 
+class Roi:
     def __init__(self, left: int = 0, top: int = 0, width: int = 1, height: int = 1):
         self.left: int = left
         self.top: int = top

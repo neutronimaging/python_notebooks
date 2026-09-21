@@ -23,7 +23,9 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.calibrated_transmission.calibrated_transmission import CalibratedTransmissionUi
+from __code.calibrated_transmission.calibrated_transmission import (
+    CalibratedTransmissionUi,
+)
 from __code.ipywe.myfileselector import FileSelection
 
 system.System.select_working_dir(notebook="calibrated_transmission")
@@ -49,7 +51,8 @@ o_selection.select_data()
 
 # + run_control={"frozen": false, "read_only": false}
 o_calibration = CalibratedTransmissionUi(
-    working_dir=system.System.get_working_dir(), data_dict=o_selection.data_dict["sample"]
+    working_dir=system.System.get_working_dir(),
+    data_dict=o_selection.data_dict["sample"],
 )
 o_calibration.show()
 

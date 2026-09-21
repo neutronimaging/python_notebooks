@@ -20,7 +20,9 @@
 
 # %matplotlib notebook
 from __code import system
-from __code.images_and_metadata_extrapolation_matcher import ImagesAndMetadataExtrapolationMatcher
+from __code.images_and_metadata_extrapolation_matcher import (
+    ImagesAndMetadataExtrapolationMatcher,
+)
 from __code.select_files_and_folders import SelectAsciiFile, SelectFolder
 
 system.System.select_working_dir(notebook="images_and_metadata_extrapolation_matcher")

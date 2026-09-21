@@ -7,7 +7,9 @@ from __code.file_handler import make_ascii_file_from_string, read_ascii
 # this will clean up all the ipynb files by running the nbstripout program
 # in the specified folder
 
-parser = argparse.ArgumentParser(description="Preparing notebooks for deploymenet to analysis machine")
+parser = argparse.ArgumentParser(
+    description="Preparing notebooks for deploymenet to analysis machine"
+)
 parser.add_argument("-i", "--input", help="Input folder to clean.", type=str)
 
 

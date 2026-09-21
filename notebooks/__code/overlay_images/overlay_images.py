@@ -1,9 +1,8 @@
 import glob
 import os
 
-from NeuNorm.normalization import Normalization
-
 from __code.ipywe import fileselector
+from NeuNorm.normalization import Normalization
 
 
 class OverlayImages:
@@ -18,7 +17,7 @@ class OverlayImages:
     def select_input_folder(self, data_type="high resolution"):
         self.current_data_type = data_type
         list_folder_widget = fileselector.FileSelectorPanel(
-            instruction=f"select folder containing {data_type} " "images!",
+            instruction=f"select folder containing {data_type} images!",
             start_dir=self.working_dir,
             type="directory",
             next=self.folder_selected,

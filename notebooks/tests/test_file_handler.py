@@ -10,7 +10,9 @@ class TestReadBraggEdgeFittingAsciiFormat:
     def setup_method(self):
         data_path = Path(__file__).parent
         self.data_path = data_path
-        self.ascii_file_name = str(Path(data_path) / "data" / "ascii" / "bragg_edge_fitting_all_regions.txt")
+        self.ascii_file_name = str(
+            Path(data_path) / "data" / "ascii" / "bragg_edge_fitting_all_regions.txt"
+        )
 
     def test_file_does_not_exist(self):
         ascii_file = "does_not_exist"
@@ -18,7 +20,9 @@ class TestReadBraggEdgeFittingAsciiFormat:
             read_bragg_edge_fitting_ascii_format(full_file_name=ascii_file)
 
     def test_retrieving_metadata_columns(self):
-        result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
+        result = read_bragg_edge_fitting_ascii_format(
+            full_file_name=self.ascii_file_name
+        )
         metadata_column = result["metadata"]["columns"]
 
         assert metadata_column["3"] == {
@@ -62,18 +66,26 @@ class TestReadBraggEdgeFittingAsciiFormat:
         assert len(metadata_column) == 86
 
     def test_retrieving_data(self):
-        result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
+        result = read_bragg_edge_fitting_ascii_format(
+            full_file_name=self.ascii_file_name
+        )
         pd_data = result["data"]
         data_col3 = np.array(pd_data["3"])
         print(data_col3[0:4])
-        assert np.allclose(data_col3[0:4], [0.00078657, 0.00066687, 0.00100886, 0.00068397], atol=1e-5)
+        assert np.allclose(
+            data_col3[0:4], [0.00078657, 0.00066687, 0.00100886, 0.00068397], atol=1e-5
+        )
 
     def test_retrieving_xaxis(self):
-        result = read_bragg_edge_fitting_ascii_format(full_file_name=self.ascii_file_name)
+        result = read_bragg_edge_fitting_ascii_format(
+            full_file_name=self.ascii_file_name
+        )
         pd_data = result["data"]
         data_tof = np.array(pd_data["tof"])
         assert np.allclose(data_tof[0:4], [0.96, 11.2, 21.44, 31.68])
         data_lambda = np.array(pd_data["lambda"])
-        assert np.allclose(data_lambda[0:4], [0.0197830, 0.01981425, 0.019845414, 0.01987658])
+        assert np.allclose(
+            data_lambda[0:4], [0.0197830, 0.01981425, 0.019845414, 0.01987658]
+        )
         data_index = np.array(pd_data["index"])
         assert np.all(data_index[0:4] == [0, 1, 2, 3])

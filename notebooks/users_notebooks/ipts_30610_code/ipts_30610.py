@@ -15,12 +15,11 @@ import socket
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import numpy as np
+from __code._utilities.file import make_or_increment_folder_name, make_tiff
+from __code.file_folder_browser import FileFolderBrowser
 from IPython.display import HTML, display
 from ipywidgets import interactive
 from NeuNorm.normalization import Normalization
-
-from __code._utilities.file import make_or_increment_folder_name, make_tiff
-from __code.file_folder_browser import FileFolderBrowser
 
 from .cylindrical_geometry_correction import number_of_pixels_at_that_position1
 
@@ -61,7 +60,9 @@ class IPTS_30610:
             list_of_images = glob.glob(os.path.join(self.working_dir, "*.tif*"))
             self.load_images(list_of_images=list_of_images)
         else:
-            file_folder_browser = FileFolderBrowser(working_dir=self.working_dir, next_function=self.load_images)
+            file_folder_browser = FileFolderBrowser(
+                working_dir=self.working_dir, next_function=self.load_images
+            )
             file_folder_browser.select_images(filters={"TIFF": "*.tif?"})
 
     def load_images(self, list_of_images):
@@ -81,7 +82,11 @@ class IPTS_30610:
         if self.data:
             [self.height, self.width] = np.shape(np.squeeze(self.data[0]))
 
-        display(HTML("<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"))
+        display(
+            HTML(
+                "<span>Number of images loaded: " + str(len(list_of_images)) + "</span>"
+            )
+        )
 
     def visualize_raw_images(self):
         fig, ax1 = plt.subplots(num="Raw Images")
@@ -92,7 +97,12 @@ class IPTS_30610:
 
         v = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=len(self.data) - 1, value=0, layout=widgets.Layout(width="50%")),
+            image_index=widgets.IntSlider(
+                min=0,
+                max=len(self.data) - 1,
+                value=0,
+                layout=widgets.Layout(width="50%"),
+            ),
         )
         display(v)
 
@@ -134,8 +144,12 @@ class IPTS_30610:
             #             color='g',
             #             linestyle="--")
 
-            profile1 = data[profile1_h, vert_guide - profile_margin : vert_guide + profile_margin]
-            profile2 = data[profile2_h, vert_guide - profile_margin : vert_guide + profile_margin]
+            profile1 = data[
+                profile1_h, vert_guide - profile_margin : vert_guide + profile_margin
+            ]
+            profile2 = data[
+                profile2_h, vert_guide - profile_margin : vert_guide + profile_margin
+            ]
 
             ax1.cla()
             ax1.plot(profile1, "b", label="profile 1")
@@ -148,9 +162,17 @@ class IPTS_30610:
         self.v = interactive(
             plot,
             rot_value=widgets.FloatSlider(
-                min=-5.0, max=5.0, value=default_rotate_angle, layout=widgets.Layout(width="50%")
+                min=-5.0,
+                max=5.0,
+                value=default_rotate_angle,
+                layout=widgets.Layout(width="50%"),
             ),
-            image_index=widgets.IntSlider(min=0, max=len(self.data) - 1, value=0, layout=widgets.Layout(width="50%")),
+            image_index=widgets.IntSlider(
+                min=0,
+                max=len(self.data) - 1,
+                value=0,
+                layout=widgets.Layout(width="50%"),
+            ),
             vert_guide=widgets.IntSlider(
                 min=0,
                 max=self.width - 1,
@@ -192,9 +214,8 @@ class IPTS_30610:
             profile = self.data[image_index][profile_mker, :]
             ax1.plot(profile, ".")
             delta_x = right - left
-            if delta_x < 0:
-                delta_x = 0
-            left_x_profile = (left - delta_x) if (left - delta_x) > 0 else 0
+            delta_x = max(delta_x, 0)
+            left_x_profile = max(0, left - delta_x)
             plt.xlim([left_x_profile, right + delta_x])
             plt.xlabel("Horizontal pixel")
             plt.ylabel("Counts")
@@ -206,12 +227,24 @@ class IPTS_30610:
 
         self.crop_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            left=widgets.IntSlider(min=0, max=width - 1, value=self.config["default_crop"]["x0"]),
-            right=widgets.IntSlider(min=0, max=width - 1, value=self.config["default_crop"]["x1"]),
-            top=widgets.IntSlider(min=0, max=height - 1, value=self.config["default_crop"]["y0"]),
-            bottom=widgets.IntSlider(min=0, max=height - 1, value=self.config["default_crop"]["y1"]),
-            profile_mker=widgets.IntSlider(min=0, max=height - 1, value=self.config["default_crop"]["marker"]),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
+            left=widgets.IntSlider(
+                min=0, max=width - 1, value=self.config["default_crop"]["x0"]
+            ),
+            right=widgets.IntSlider(
+                min=0, max=width - 1, value=self.config["default_crop"]["x1"]
+            ),
+            top=widgets.IntSlider(
+                min=0, max=height - 1, value=self.config["default_crop"]["y0"]
+            ),
+            bottom=widgets.IntSlider(
+                min=0, max=height - 1, value=self.config["default_crop"]["y1"]
+            ),
+            profile_mker=widgets.IntSlider(
+                min=0, max=height - 1, value=self.config["default_crop"]["marker"]
+            ),
         )
         display(self.crop_ui)
 
@@ -229,7 +262,12 @@ class IPTS_30610:
             ax1.imshow(data, vmin=0, vmax=1)
             # plt.tight_layout()
 
-        v = interactive(plot, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0))
+        v = interactive(
+            plot,
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
+        )
         display(v)
 
     def export_cropped_images(self):
@@ -247,7 +285,9 @@ class IPTS_30610:
     def export_cropped_images_step2(self, output_folder):
         output_folder = os.path.abspath(output_folder)
         working_dir = self.working_dir
-        base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cropped")
+        base_working_dir = os.path.join(
+            output_folder, os.path.basename(working_dir) + "_cropped"
+        )
         base_working_dir = make_or_increment_folder_name(base_working_dir)
 
         list_images_corrected = self.cropped_data
@@ -264,7 +304,13 @@ class IPTS_30610:
             progress_bar.value = index + 1
 
         progress_bar.close()
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created!</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 12px; color:blue">'
+                + str(nbr_images)
+                + " images created!</span>"
+            )
+        )
 
     def background_range_selection(self):
         fig, ax1 = plt.subplots(num="Select top and bottom of background range")
@@ -283,7 +329,9 @@ class IPTS_30610:
 
         self.background_limit_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
             top=widgets.IntSlider(min=0, max=height - 1, value=default_top),
             bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom),
         )
@@ -307,7 +355,9 @@ class IPTS_30610:
 
         self.sample_limit_ui = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
             top=widgets.IntSlider(min=0, max=height - 1, value=default_top),
             bottom=widgets.IntSlider(min=0, max=height - 1, value=default_bottom),
         )
@@ -321,13 +371,16 @@ class IPTS_30610:
         y0_background = self.background_limit_ui.children[1].value
         y1_background = self.background_limit_ui.children[2].value
         background_signal_integrated = [
-            np.mean(_data[y0_background : y1_background + 1, :], axis=0) for _data in self.cropped_data
+            np.mean(_data[y0_background : y1_background + 1, :], axis=0)
+            for _data in self.cropped_data
         ]
 
         y0_sample = self.sample_limit_ui.children[1].value
         y1_sample = self.sample_limit_ui.children[2].value
         sample_without_background = []
-        for _background, _sample in zip(background_signal_integrated, self.cropped_data, strict=False):
+        for _background, _sample in zip(
+            background_signal_integrated, self.cropped_data, strict=False
+        ):
             _data = _sample[y0_sample : y1_sample + 1]
             sample_without_background.append(np.abs(_data - _background))
 
@@ -340,7 +393,10 @@ class IPTS_30610:
             ax1.imshow(self.sample_without_background[image_index], vmin=0, vmax=1)
 
         self.sample_no_background_ui = interactive(
-            plot, image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0)
+            plot,
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
         )
         display(self.sample_no_background_ui)
 
@@ -364,7 +420,9 @@ class IPTS_30610:
 
         v = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
             profile_height=widgets.IntSlider(min=0, max=height - 1, value=0),
         )
         display(v)
@@ -391,8 +449,10 @@ class IPTS_30610:
                 expected_array = []
                 for x_index, x in enumerate(profile):
                     measure = x
-                    number_of_pixels_through_thickness = number_of_pixels_at_that_position1(
-                        position=x_index, radius=radius
+                    number_of_pixels_through_thickness = (
+                        number_of_pixels_at_that_position1(
+                            position=x_index, radius=radius
+                        )
                     )
                     number_of_pixels.append(number_of_pixels_through_thickness)
                     expected_array.append(measure / number_of_pixels_through_thickness)
@@ -417,22 +477,32 @@ class IPTS_30610:
 
         self.sample_corrected = interactive(
             plot,
-            image_index=widgets.IntSlider(min=0, max=self.number_of_images - 1, value=0),
-            index1=widgets.IntSlider(min=0, max=height - 1, value=int((height - 1) / 3)),
-            index2=widgets.IntSlider(min=0, max=height - 1, value=2 * int((height - 1) / 3)),
+            image_index=widgets.IntSlider(
+                min=0, max=self.number_of_images - 1, value=0
+            ),
+            index1=widgets.IntSlider(
+                min=0, max=height - 1, value=int((height - 1) / 3)
+            ),
+            index2=widgets.IntSlider(
+                min=0, max=height - 1, value=2 * int((height - 1) / 3)
+            ),
             plot_max=widgets.FloatSlider(min=1e-5, max=1.0, step=0.001, value=0.02),
         )
         display(self.sample_corrected)
 
     def export_profiles(self):
         working_dir = os.path.dirname(self.working_dir)
-        output_folder_browser = FileFolderBrowser(working_dir=working_dir, next_function=self.export)
+        output_folder_browser = FileFolderBrowser(
+            working_dir=working_dir, next_function=self.export
+        )
         output_folder_browser.select_output_folder()
 
     def export(self, output_folder):
         output_folder = os.path.abspath(output_folder)
         working_dir = self.working_dir
-        base_working_dir = os.path.join(output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected")
+        base_working_dir = os.path.join(
+            output_folder, os.path.basename(working_dir) + "_cylindrical_geo_corrected"
+        )
         base_working_dir = make_or_increment_folder_name(base_working_dir)
 
         # export images
@@ -450,7 +520,13 @@ class IPTS_30610:
             progress_bar.value = index + 1
 
         progress_bar.close()
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " images created!</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 12px; color:blue">'
+                + str(nbr_images)
+                + " images created!</span>"
+            )
+        )
 
         # export profiles
 
@@ -473,8 +549,12 @@ class IPTS_30610:
         for index, image in enumerate(list_images_corrected):
             _name = os.path.basename(list_of_images[index])
             base_name_without_suffix = PurePosixPath(_name).stem
-            base_name_of_ascii_file = str(base_name_without_suffix) + "_profile_corrected.csv"
-            full_name_of_ascii_file = os.path.join(base_working_dir, base_name_of_ascii_file)
+            base_name_of_ascii_file = (
+                str(base_name_without_suffix) + "_profile_corrected.csv"
+            )
+            full_name_of_ascii_file = os.path.join(
+                base_working_dir, base_name_of_ascii_file
+            )
 
             df = pd.DataFrame(image)
             df.to_csv(full_name_of_ascii_file)
@@ -483,11 +563,27 @@ class IPTS_30610:
 
         progress_bar.close()
 
-        display(HTML('<span style="font-size: 12px; color:blue">' + str(nbr_images) + " ASCII files created!</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 12px; color:blue">'
+                + str(nbr_images)
+                + " ASCII files created!</span>"
+            )
+        )
 
         json_file_name = os.path.join(base_working_dir, "metadata.json")
         with open(json_file_name, "w") as outfile:
             json.dump(metadata, outfile)
-        display(HTML('<span style="font-size: 12px; color:blue"> metadata json file created (metadata.json)!</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 12px; color:blue"> metadata json file created (metadata.json)!</span>'
+            )
+        )
 
-        display(HTML('<span style="font-size: 12px; color:blue"> Output folder: ' + base_working_dir + "!</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 12px; color:blue"> Output folder: '
+                + base_working_dir
+                + "!</span>"
+            )
+        )

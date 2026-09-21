@@ -16,14 +16,21 @@ class ExportTable:
         working_dir = self.parent.working_dir
         base_working_dir = os.path.basename(working_dir)
 
-        full_file_name = os.path.join(self.export_folder, base_working_dir + "_metadata_table.txt")
+        full_file_name = os.path.join(
+            self.export_folder, base_working_dir + "_metadata_table.txt"
+        )
         return full_file_name
 
     def run(self):
         full_output_file_name = self._create_output_file_name()
         metadata = self.create_metadata_array()
         data = self.create_data_array()
-        make_ascii_file(metadata=metadata, data=data, output_file_name=full_output_file_name, dim="1d")
+        make_ascii_file(
+            metadata=metadata,
+            data=data,
+            output_file_name=full_output_file_name,
+            dim="1d",
+        )
 
         show_status_message(
             parent=self.parent,
@@ -69,9 +76,13 @@ class ExportTable:
                 metadata.append(f"# Metadata {metadata_axis} operation: None")
             else:
                 if value_2 == "":
-                    metadata.append(f"# Metadata {metadata_axis} operation: {math_1} {value_1}")
+                    metadata.append(
+                        f"# Metadata {metadata_axis} operation: {math_1} {value_1}"
+                    )
                 else:
-                    metadata.append(f"# Metadata {metadata_axis} operation: {math_1} {value_1} {math_2} {value_2}")
+                    metadata.append(
+                        f"# Metadata {metadata_axis} operation: {math_1} {value_1} {math_2} {value_2}"
+                    )
 
         format_math(x_axis_metadata_operation, metadata_axis="x_axis")
         format_math(y_axis_metadata_operation, metadata_axis="y_axis")

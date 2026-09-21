@@ -13,7 +13,6 @@ from plotly.offline import init_notebook_mode, iplot
 init_notebook_mode()
 # import plotly.plotly as py
 import plotly.graph_objs as go
-
 from __code.time_utility import TimestampFormatter
 from __code.utilities import display_html_message
 
@@ -40,8 +39,12 @@ class ImagesAndMetadataExtrapolationMatcher:
         return self.merged_dataframe
 
     def load_ascii_files(self):
-        self.ascii_file_1_dataframe = self.retrieve_dataframe(filename=self.ascii_file_1)
-        self.ascii_file_2_dataframe = self.retrieve_dataframe(filename=self.ascii_file_2)
+        self.ascii_file_1_dataframe = self.retrieve_dataframe(
+            filename=self.ascii_file_1
+        )
+        self.ascii_file_2_dataframe = self.retrieve_dataframe(
+            filename=self.ascii_file_2
+        )
 
     def retrieve_dataframe(self, filename=""):
         _dataframe = pd.read_csv(filename)
@@ -49,7 +52,9 @@ class ImagesAndMetadataExtrapolationMatcher:
         return _dataframe
 
     def remove_white_space_in_column_names(self, dataframe):
-        clean_column_names = [_old_col_name.strip() for _old_col_name in list(dataframe.columns.values)]
+        clean_column_names = [
+            _old_col_name.strip() for _old_col_name in list(dataframe.columns.values)
+        ]
         dataframe.columns = clean_column_names
         return dataframe
 
@@ -65,7 +70,9 @@ class ImagesAndMetadataExtrapolationMatcher:
         return dataframe
 
     def merge_data(self):
-        if (INDEX_SIMPLE_MERGE in self.ascii_file_1_dataframe) and (INDEX_SIMPLE_MERGE in self.ascii_file_2_dataframe):
+        if (INDEX_SIMPLE_MERGE in self.ascii_file_1_dataframe) and (
+            INDEX_SIMPLE_MERGE in self.ascii_file_2_dataframe
+        ):
             self.simple_merge()
 
         else:
@@ -76,7 +83,10 @@ class ImagesAndMetadataExtrapolationMatcher:
         self.set_index(self.ascii_file_2_dataframe)
 
         self.merged_dataframe = pd.merge(
-            self.ascii_file_1_dataframe, self.ascii_file_2_dataframe, on=INDEX_SIMPLE_MERGE, how="outer"
+            self.ascii_file_1_dataframe,
+            self.ascii_file_2_dataframe,
+            on=INDEX_SIMPLE_MERGE,
+            how="outer",
         )
 
     def set_index(self, dataframe, index=INDEX_SIMPLE_MERGE):
@@ -87,7 +97,10 @@ class ImagesAndMetadataExtrapolationMatcher:
         self.set_index(self.ascii_file_2_dataframe, index=INDEX_EXTRAPOLATION_MERGE)
 
         merged_dataframe = pd.merge(
-            self.ascii_file_1_dataframe, self.ascii_file_2_dataframe, on=INDEX_EXTRAPOLATION_MERGE, how="outer"
+            self.ascii_file_1_dataframe,
+            self.ascii_file_2_dataframe,
+            on=INDEX_EXTRAPOLATION_MERGE,
+            how="outer",
         )
         merged_dataframe.sort_values(by=INDEX_EXTRAPOLATION_MERGE, inplace=True)
         self.merged_dataframe = merged_dataframe.reset_index(drop=True)
@@ -96,11 +109,21 @@ class ImagesAndMetadataExtrapolationMatcher:
 
     def select_metadata_to_extrapolate(self):
         list_metadata = self.get_column_names(self.merged_dataframe)
-        display(HTML('<span style="font-size: 15px; color:blue">CTRL + Click to select multiple rows!</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 15px; color:blue">CTRL + Click to select multiple rows!</span>'
+            )
+        )
         box = widgets.HBox(
             [
-                widgets.Label("Select Metadata to Extrapolate:", layout=widgets.Layout(width="30%")),
-                widgets.SelectMultiple(options=list_metadata, layout=widgets.Layout(width="70%", height="70%")),
+                widgets.Label(
+                    "Select Metadata to Extrapolate:",
+                    layout=widgets.Layout(width="30%"),
+                ),
+                widgets.SelectMultiple(
+                    options=list_metadata,
+                    layout=widgets.Layout(width="70%", height="70%"),
+                ),
             ],
             layout=widgets.Layout(height="250px"),
         )
@@ -125,7 +148,9 @@ class ImagesAndMetadataExtrapolationMatcher:
             _metadata_value = metadata_array[_index]
             if np.isnan(_metadata_value):
                 _new_value = Extrapolate.calculate_extrapolated_metadata(
-                    global_index=_index, metadata_array=metadata_array, timestamp_array=timestamp_array
+                    global_index=_index,
+                    metadata_array=metadata_array,
+                    timestamp_array=timestamp_array,
                 )
                 extrapolated_metadata_array.append(_new_value)
                 extrapolated_timestamp_array.append(timestamp_array[_index])
@@ -144,10 +169,15 @@ class ImagesAndMetadataExtrapolationMatcher:
             self.metadata_to_display_changed(value)
 
     def metadata_to_display_changed(self, name_of_metadata_to_display):
-        self.extract_known_and_unknown_axis_infos(metadata_name=name_of_metadata_to_display)
+        self.extract_known_and_unknown_axis_infos(
+            metadata_name=name_of_metadata_to_display
+        )
 
         data_known = go.Scatter(
-            x=self.timestamp_s_metadata_known, y=self.metadata_column, mode="markers", name="Original metadata"
+            x=self.timestamp_s_metadata_known,
+            y=self.metadata_column,
+            mode="markers",
+            name="Original metadata",
         )
 
         data_extrapolated = go.Scatter(
@@ -174,7 +204,9 @@ class ImagesAndMetadataExtrapolationMatcher:
         # known metadata values
         timestamp_metadata_known = self.ascii_file_2_dataframe["timestamp_user_format"]
         self.timestamp_s_metadata_known = [
-            TimestampFormatter.convert_to_second(_time, timestamp_format=TIMESTAMP_FORMAT)
+            TimestampFormatter.convert_to_second(
+                _time, timestamp_format=TIMESTAMP_FORMAT
+            )
             for _time in timestamp_metadata_known
         ]
         self.metadata_column = self.ascii_file_2_dataframe[metadata_name]
@@ -187,7 +219,9 @@ class ImagesAndMetadataExtrapolationMatcher:
         #                                      for _time in timestamp_metadata_unknown]
         timestamp_metadata_unknown = self.extrapolated_timestamp_only[metadata_name]
         self.timestamp_s_metadata_unknown = [
-            TimestampFormatter.convert_to_second(_time, timestamp_format=TIMESTAMP_FORMAT)
+            TimestampFormatter.convert_to_second(
+                _time, timestamp_format=TIMESTAMP_FORMAT
+            )
             for _time in timestamp_metadata_unknown
         ]
 
@@ -200,7 +234,9 @@ class ImagesAndMetadataExtrapolationMatcher:
         clean_list_columns = [
             _name
             for _name in list_columns
-            if not self._is_name_in_list(name=_name, list_name=[INDEX_EXTRAPOLATION_MERGE, INDEX_SIMPLE_MERGE])
+            if not self._is_name_in_list(
+                name=_name, list_name=[INDEX_EXTRAPOLATION_MERGE, INDEX_SIMPLE_MERGE]
+            )
         ]
         return clean_list_columns
 
@@ -223,15 +259,21 @@ class ImagesAndMetadataExtrapolationMatcher:
         display_html_message(title_message="Output folder name:", message=folder_name)
 
         output_file_name = self.get_output_file_name()
-        display_html_message(title_message="Output file name:", message=output_file_name)
+        display_html_message(
+            title_message="Output file name:", message=output_file_name
+        )
 
         return os.path.join(folder_name, output_file_name)
 
     def export_ascii(self, folder_name):
-        full_output_file_name = self.make_and_inform_of_full_output_file_name(folder_name)
+        full_output_file_name = self.make_and_inform_of_full_output_file_name(
+            folder_name
+        )
         self.cleanup_merged_dataframe()
         self.merged_dataframe.to_csv(full_output_file_name)
-        display_html_message(title_message="File Created with Success!", message_type="ok")
+        display_html_message(
+            title_message="File Created with Success!", message_type="ok"
+        )
 
     def cleanup_merged_dataframe(self):
         # keeping only the raws with filename information defined
@@ -240,7 +282,9 @@ class ImagesAndMetadataExtrapolationMatcher:
 
 class Extrapolate:
     @staticmethod
-    def get_first_metadata_and_index_value(index=-1, metadata_array=[], direction="left"):
+    def get_first_metadata_and_index_value(
+        index=-1, metadata_array=[], direction="left"
+    ):
         if direction == "left":
             coeff = -1
         else:
@@ -256,18 +300,30 @@ class Extrapolate:
         return [metadata_array[index], index]
 
     @staticmethod
-    def calculate_extrapolated_metadata(global_index=-1, metadata_array=[], timestamp_array=[]):
-        [left_metadata_value, left_index] = Extrapolate.get_first_metadata_and_index_value(
-            index=global_index, metadata_array=metadata_array, direction="left"
+    def calculate_extrapolated_metadata(
+        global_index=-1, metadata_array=[], timestamp_array=[]
+    ):
+        [left_metadata_value, left_index] = (
+            Extrapolate.get_first_metadata_and_index_value(
+                index=global_index, metadata_array=metadata_array, direction="left"
+            )
         )
-        [right_metadata_value, right_index] = Extrapolate.get_first_metadata_and_index_value(
-            index=global_index, metadata_array=metadata_array, direction="right"
+        [right_metadata_value, right_index] = (
+            Extrapolate.get_first_metadata_and_index_value(
+                index=global_index, metadata_array=metadata_array, direction="right"
+            )
         )
 
-        left_timestamp_s_format = TimestampFormatter.convert_to_second(timestamp_array[left_index])
-        right_timestamp_s_format = TimestampFormatter.convert_to_second(timestamp_array[right_index])
+        left_timestamp_s_format = TimestampFormatter.convert_to_second(
+            timestamp_array[left_index]
+        )
+        right_timestamp_s_format = TimestampFormatter.convert_to_second(
+            timestamp_array[right_index]
+        )
 
-        x_timestamp_s_format = TimestampFormatter.convert_to_second(timestamp_array[global_index])
+        x_timestamp_s_format = TimestampFormatter.convert_to_second(
+            timestamp_array[global_index]
+        )
 
         extra_value = Extrapolate.extrapolate_value(
             x=x_timestamp_s_format,

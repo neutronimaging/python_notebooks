@@ -2,10 +2,6 @@ from pathlib import Path
 
 import numpy as np
 import pyqtgraph as pg
-from qtpy import QtGui
-from qtpy.QtGui import QGuiApplication
-from qtpy.QtWidgets import QFileDialog, QMenu
-
 from __code._utilities.dictionary import key_path_exists_in_dictionary
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.get import Get
@@ -13,6 +9,9 @@ from __code.bragg_edge.kropff_fitting_job_handler import KropffFittingJobHandler
 from __code.file_handler import make_ascii_file_from_2dim_array
 from __code.table_handler import TableHandler
 from __code.utilities import find_nearest_index
+from qtpy import QtGui
+from qtpy.QtGui import QGuiApplication
+from qtpy.QtWidgets import QFileDialog, QMenu
 
 
 class Kropff:
@@ -40,7 +39,9 @@ class Kropff:
 
     def reset_bragg_peak_table(self):
         self.clear_table(table_name="bragg_peak")
-        self.fill_table_with_minimum_contain(table_ui=self.parent.ui.bragg_edge_tableWidget)
+        self.fill_table_with_minimum_contain(
+            table_ui=self.parent.ui.bragg_edge_tableWidget
+        )
 
     def clear_table(self, table_name="high_lambda", is_all=False):
         """remove all the rows of the table name specified, or all if is_all is True"""
@@ -90,7 +91,9 @@ class Kropff:
         o_table = TableHandler(table_ui=self.table_ui["bragg_peak"])
         _col = 1
         for _row in fitting_input_dictionary["rois"].keys():
-            _entry = fitting_input_dictionary["rois"][_row]["fitting"]["kropff"]["bragg_peak"]
+            _entry = fitting_input_dictionary["rois"][_row]["fitting"]["kropff"][
+                "bragg_peak"
+            ]
             o_table.set_item_with_float(_row, _col, _entry["ldahkl"])
             o_table.set_item_with_float(_row, _col + 1, _entry["tau"])
             o_table.set_item_with_float(_row, _col + 2, _entry["sigma"])
@@ -123,8 +126,12 @@ class Kropff:
 
     def fit_bragg_peak_selected_rows(self):
         o_gui = GuiUtility(parent=self.parent)
-        list_rows_selected = o_gui.get_rows_of_table_selected(table_ui=self.parent.ui.bragg_edge_tableWidget)
-        self.parent.kropff_fit_bragg_peak_region_of_selected_rows(list_row_to_fit=list_rows_selected)
+        list_rows_selected = o_gui.get_rows_of_table_selected(
+            table_ui=self.parent.ui.bragg_edge_tableWidget
+        )
+        self.parent.kropff_fit_bragg_peak_region_of_selected_rows(
+            list_row_to_fit=list_rows_selected
+        )
 
     def export_bragg_peak_profile(self):
         working_dir = str(Path(self.parent.working_dir).parent)
@@ -136,12 +143,16 @@ class Kropff:
 
         if _export_folder:
             o_gui = GuiUtility(parent=self.parent)
-            list_row_selected = o_gui.get_rows_of_table_selected(table_ui=self.parent.ui.bragg_edge_tableWidget)
+            list_row_selected = o_gui.get_rows_of_table_selected(
+                table_ui=self.parent.ui.bragg_edge_tableWidget
+            )
 
             for row_selected in list_row_selected:
                 # make up output file name
                 name_of_row = o_gui.get_table_str_item(
-                    table_ui=self.parent.ui.bragg_edge_tableWidget, row=row_selected, column=0
+                    table_ui=self.parent.ui.bragg_edge_tableWidget,
+                    row=row_selected,
+                    column=0,
                 )
                 [x0, y0, width, height] = name_of_row.split("; ")
                 name_of_row_formatted = f"x0{x0}_y0{y0}_width{width}_height{height}"
@@ -154,10 +165,18 @@ class Kropff:
                 x_axis = o_fit.xaxis_to_fit
                 y_axis = o_fit.list_yaxis_to_fit[row_selected]
 
-                a0 = self.parent.fitting_input_dictionary["rois"][row_selected]["fitting"]["kropff"]["high"]["a0"]
-                b0 = self.parent.fitting_input_dictionary["rois"][row_selected]["fitting"]["kropff"]["high"]["b0"]
-                ahkl = self.parent.fitting_input_dictionary["rois"][row_selected]["fitting"]["kropff"]["low"]["ahkl"]
-                bhkl = self.parent.fitting_input_dictionary["rois"][row_selected]["fitting"]["kropff"]["low"]["bhkl"]
+                a0 = self.parent.fitting_input_dictionary["rois"][row_selected][
+                    "fitting"
+                ]["kropff"]["high"]["a0"]
+                b0 = self.parent.fitting_input_dictionary["rois"][row_selected][
+                    "fitting"
+                ]["kropff"]["high"]["b0"]
+                ahkl = self.parent.fitting_input_dictionary["rois"][row_selected][
+                    "fitting"
+                ]["kropff"]["low"]["ahkl"]
+                bhkl = self.parent.fitting_input_dictionary["rois"][row_selected][
+                    "fitting"
+                ]["kropff"]["low"]["bhkl"]
 
                 metadata = [f"# Bragg peak fitting of row {row_selected + 1}"]
                 metadata.append(f"# x0: {x0}")
@@ -172,7 +191,10 @@ class Kropff:
                 metadata.append("# lambda (Angstroms), average transmission")
 
                 make_ascii_file_from_2dim_array(
-                    metadata=metadata, col1=x_axis, col2=y_axis, output_file_name=full_file_name
+                    metadata=metadata,
+                    col1=x_axis,
+                    col2=y_axis,
+                    output_file_name=full_file_name,
                 )
 
             message = f"Exported {len(list_row_selected)} file(s) in {_export_folder}"
@@ -190,12 +212,19 @@ class Kropff:
         list_of_rows_to_select = []
         fitting_input_dictionary_rois = self.parent.fitting_input_dictionary["rois"]
         for _row in fitting_input_dictionary_rois.keys():
-            _thkl = float(fitting_input_dictionary_rois[_row]["fitting"]["kropff"]["bragg_peak"]["ldahkl"])
+            _thkl = float(
+                fitting_input_dictionary_rois[_row]["fitting"]["kropff"]["bragg_peak"][
+                    "ldahkl"
+                ]
+            )
             if _thkl < 0:
                 list_of_rows_to_select.append(_row)
 
         o_gui = GuiUtility(parent=self.parent)
-        o_gui.select_rows_of_table(table_ui=self.parent.ui.bragg_edge_tableWidget, list_of_rows=list_of_rows_to_select)
+        o_gui.select_rows_of_table(
+            table_ui=self.parent.ui.bragg_edge_tableWidget,
+            list_of_rows=list_of_rows_to_select,
+        )
 
     def update_fitting_plot(self):
         self.parent.ui.fitting.clear()
@@ -240,15 +269,23 @@ class Kropff:
             if self.parent.fitting_peak_ui:
                 self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
             self.parent.fitting_peak_ui = pg.LinearRegionItem(
-                values=peak_range, orientation=None, brush=None, movable=True, bounds=None
+                values=peak_range,
+                orientation=None,
+                brush=None,
+                movable=True,
+                bounds=None,
             )
-            self.parent.fitting_peak_ui.sigRegionChanged.connect(self.parent.fitting_range_changed)
+            self.parent.fitting_peak_ui.sigRegionChanged.connect(
+                self.parent.fitting_range_changed
+            )
             self.parent.fitting_peak_ui.setZValue(-10)
             self.parent.ui.fitting.addItem(self.parent.fitting_peak_ui)
 
         else:
             for row_selected in list_row_selected:
-                selected_roi = self.parent.fitting_input_dictionary["rois"][row_selected]
+                selected_roi = self.parent.fitting_input_dictionary["rois"][
+                    row_selected
+                ]
 
                 xaxis_dict = self.parent.fitting_input_dictionary["xaxis"]
                 [left_xaxis_index, right_xaxis_index] = self.parent.bragg_edge_range
@@ -260,7 +297,9 @@ class Kropff:
                 yaxis = yaxis[left_xaxis_index:right_xaxis_index]
 
                 self.parent.ui.fitting.setLabel("bottom", xaxis_label)
-                self.parent.ui.fitting.setLabel("left", "Cross Section (arbitrary units)")
+                self.parent.ui.fitting.setLabel(
+                    "left", "Cross Section (arbitrary units)"
+                )
                 yaxis = -np.log(yaxis)
                 self.parent.ui.fitting.plot(
                     xaxis,
@@ -277,15 +316,24 @@ class Kropff:
                 if peak_range_index[0] is None:
                     peak_range = self.parent.bragg_edge_range
                 else:
-                    peak_range = [xaxis[peak_range_index[0]], xaxis[peak_range_index[1]]]
+                    peak_range = [
+                        xaxis[peak_range_index[0]],
+                        xaxis[peak_range_index[1]],
+                    ]
 
                 if self.parent.fitting_peak_ui:
                     self.parent.ui.fitting.removeItem(self.parent.fitting_peak_ui)
 
                 self.parent.fitting_peak_ui = pg.LinearRegionItem(
-                    values=peak_range, orientation=None, brush=None, movable=False, bounds=None
+                    values=peak_range,
+                    orientation=None,
+                    brush=None,
+                    movable=False,
+                    bounds=None,
                 )
-                self.parent.fitting_peak_ui.sigRegionChanged.connect(self.parent.fitting_range_changed)
+                self.parent.fitting_peak_ui.sigRegionChanged.connect(
+                    self.parent.fitting_range_changed
+                )
                 self.parent.fitting_peak_ui.setZValue(-10)
                 self.parent.ui.fitting.addItem(self.parent.fitting_peak_ui)
 
@@ -294,18 +342,31 @@ class Kropff:
 
                 if key_path_exists_in_dictionary(
                     dictionary=self.parent.fitting_input_dictionary,
-                    tree_key=["rois", row_selected, "fitting", algo_name, name_of_page, "xaxis_to_fit"],
+                    tree_key=[
+                        "rois",
+                        row_selected,
+                        "fitting",
+                        algo_name,
+                        name_of_page,
+                        "xaxis_to_fit",
+                    ],
                 ):
                     # show fit only if tof scale selected
                     if x_axis_selected == "lambda":
-                        _entry = self.parent.fitting_input_dictionary["rois"][row_selected]["fitting"][algo_name][
-                            name_of_page
-                        ]
+                        _entry = self.parent.fitting_input_dictionary["rois"][
+                            row_selected
+                        ]["fitting"][algo_name][name_of_page]
                         xaxis = _entry["xaxis_to_fit"]
                         yaxis = _entry["yaxis_fitted"]
                         # yaxis = -np.log(yaxis)
                         self.parent.ui.fitting.plot(
-                            xaxis, yaxis, pen=(self.parent.fit_rgb[0], self.parent.fit_rgb[1], self.parent.fit_rgb[2])
+                            xaxis,
+                            yaxis,
+                            pen=(
+                                self.parent.fit_rgb[0],
+                                self.parent.fit_rgb[1],
+                                self.parent.fit_rgb[2],
+                            ),
                         )
 
                 if peak_range_index[0] is None:
@@ -328,9 +389,9 @@ class Kropff:
         left_index = find_nearest_index(array=xaxis, value=left_range)
         right_index = find_nearest_index(array=xaxis, value=right_range)
 
-        xaxis_in_selected_axis = self.parent.fitting_input_dictionary["xaxis"][x_axis_selected][0][
-            global_left_range:global_right_range
-        ]
+        xaxis_in_selected_axis = self.parent.fitting_input_dictionary["xaxis"][
+            x_axis_selected
+        ][0][global_left_range:global_right_range]
         real_left_value = xaxis_in_selected_axis[left_index]
         real_right_value = xaxis_in_selected_axis[right_index]
         if x_axis_selected == "lambda":

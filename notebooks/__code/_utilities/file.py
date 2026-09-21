@@ -10,13 +10,12 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from __code._utilities.time import get_current_time_in_special_file_name_format
+from __code.metadata_handler import MetadataHandler
 from astropy.io import fits
 from IPython.display import display
 from ipywidgets import widgets
 from PIL import Image
-
-from __code._utilities.time import get_current_time_in_special_file_name_format
-from __code.metadata_handler import MetadataHandler
 
 
 def get_full_home_file_name(base_file_name):
@@ -192,7 +191,9 @@ def make_or_increment_folder_name(folder_name):
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
     else:
-        new_folder_name = "_".join([folder_name, get_current_time_in_special_file_name_format()])
+        new_folder_name = "_".join(
+            [folder_name, get_current_time_in_special_file_name_format()]
+        )
         if os.path.exists(new_folder_name):
             os.removedirs(new_folder_name)
         os.makedirs(new_folder_name)
@@ -205,7 +206,9 @@ def copy_files_to_folder(list_files=[], output_folder=""):
         shutil.copy(_file, output_folder)
 
 
-def copy_and_rename_files_to_folder(list_files=[], new_list_files_names=[], output_folder=""):
+def copy_and_rename_files_to_folder(
+    list_files=[], new_list_files_names=[], output_folder=""
+):
     for _index_file, _original_file in enumerate(list_files):
         _new_file = os.path.join(output_folder, new_list_files_names[_index_file])
         shutil.copy(_original_file, _new_file)
@@ -246,11 +249,12 @@ def make_ascii_file(metadata=[], data=[], output_file_name="", dim="2d", sep=","
 
 def append_to_file(data=[], output_file_name=""):
     with open(output_file_name, "a") as f:
-        for _line in data:
-            f.write(_line + "\n")
+        f.writelines(_line + "\n" for _line in data)
 
 
-def make_ascii_file_from_2dim_array(metadata=None, col1=None, col2=None, output_file_name=None, sep=", "):
+def make_ascii_file_from_2dim_array(
+    metadata=None, col1=None, col2=None, output_file_name=None, sep=", "
+):
     with open(output_file_name, "w") as f:
         for _meta in metadata:
             _line = _meta + "\n"
@@ -286,7 +290,7 @@ def retrieve_metadata_value_from_ascii_file(filename=None, metadata_name=None):
             if not line:
                 break
 
-            if metadata_name in line:  #
+            if metadata_name in line:
                 divided_parts = line.split(":")
                 if len(divided_parts) > 1:
                     value = ":".join(divided_parts[1:])
@@ -315,7 +319,9 @@ def retrieve_metadata_from_dsc_list_files(list_files=[]):
 
     metadata = {}
     for _index, _file in enumerate(list_files):
-        metadata[os.path.basename(_file)] = retrieve_metadata_from_dsc_file(filename=_file)
+        metadata[os.path.basename(_file)] = retrieve_metadata_from_dsc_file(
+            filename=_file
+        )
         w.value = _index + 1
 
     return metadata
@@ -426,7 +432,9 @@ def retrieve_time_stamp(list_images, label=""):
     box = widgets.HBox(
         [
             widgets.Label(message, layout=widgets.Layout(width="20%")),
-            widgets.IntProgress(min=0, max=len(list_images), value=0, layout=widgets.Layout(width="50%")),
+            widgets.IntProgress(
+                min=0, max=len(list_images), value=0, layout=widgets.Layout(width="50%")
+            ),
         ]
     )
     progress_bar = box.children[1]
@@ -494,21 +502,33 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#fitting peak range in file index: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata["bragg_edge_range"] = [int(m.group("left_index")), int(m.group("right_index"))]
+                    metadata["bragg_edge_range"] = [
+                        int(m.group("left_index")),
+                        int(m.group("right_index")),
+                    ]
                 else:
                     metadata["bragg_edge_range"] = [None, None]
                 line_number += 1
                 continue
             if "#distance detector-sample: " in line:
-                metadata["distance_detector_sample"] = line.split("#distance detector-sample: ")[1].strip()
+                metadata["distance_detector_sample"] = line.split(
+                    "#distance detector-sample: "
+                )[1].strip()
                 line_number += 1
                 continue
             if "#detector offset: " in line:
-                metadata["detector_offset"] = line.split("#detector offset: ")[1].strip()
+                metadata["detector_offset"] = line.split("#detector offset: ")[
+                    1
+                ].strip()
                 line_number += 1
                 continue
             if "#kropff fitting procedure started: " in line:
-                result = True if line.split("#kropff fitting procedure started: ")[1].strip() == "True" else False
+                result = (
+                    True
+                    if line.split("#kropff fitting procedure started: ")[1].strip()
+                    == "True"
+                    else False
+                )
                 metadata["kropff fitting procedure started"] = result
                 line_number += 1
                 continue
@@ -524,7 +544,12 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 continue
             if "#march-dollase fitting procedure started: " in line:
                 result = (
-                    True if line.split("#march-dollase fitting procedure started: ")[1].strip() == "True" else False
+                    True
+                    if line.split("#march-dollase fitting procedure started: ")[
+                        1
+                    ].strip()
+                    == "True"
+                    else False
                 )
                 metadata["march-dollase fitting procedure started"] = result
                 line_number += 1
@@ -533,11 +558,17 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 regular = r"^#Bragg peak selection range: \[(?P<left_index>\d+), (?P<right_index>\d+)\]$"
                 m = re.search(regular, line.strip())
                 if m:
-                    metadata["bragg_peak_selection_range"] = [int(m.group("left_index")), int(m.group("right_index"))]
+                    metadata["bragg_peak_selection_range"] = [
+                        int(m.group("left_index")),
+                        int(m.group("right_index")),
+                    ]
                 line_number += 1
                 continue
             if "#kropff " in line:
-                regular = r"^#kropff (?P<type>\w+) selection range: \[(?P<left_index>\d+), " r"(?P<right_index>\d+)\]$"
+                regular = (
+                    r"^#kropff (?P<type>\w+) selection range: \[(?P<left_index>\d+), "
+                    r"(?P<right_index>\d+)\]$"
+                )
                 m = re.search(regular, line.strip())
                 if m:
                     metadata["kropff_{}".format(m.group("type"))] = [
@@ -547,17 +578,23 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
                 line_number += 1
                 continue
             if "#fitting algorithm selected: " in line:
-                metadata["fitting_algorithm_selected"] = line.split("#fitting algorithm selected: ")[1].strip()
+                metadata["fitting_algorithm_selected"] = line.split(
+                    "#fitting algorithm selected: "
+                )[1].strip()
                 line_number += 1
                 continue
             if "#march-dollase history table row " in line:
-                _row_and_list_flag = line.split("#march-dollase history table row ")[1].strip()
+                _row_and_list_flag = line.split("#march-dollase history table row ")[
+                    1
+                ].strip()
                 [_row, list_flag] = _row_and_list_flag.split(":")
                 march_history_table[_row] = list_flag
                 line_number += 1
                 continue
             if "#march-dollase history init " in line:
-                _parameter_and_value = line.split("#march-dollase history init ")[1].strip()
+                _parameter_and_value = line.split("#march-dollase history init ")[
+                    1
+                ].strip()
                 [_parameter, _value] = _parameter_and_value.split(":")
                 march_history_init[_parameter] = _value
                 line_number += 1
@@ -648,7 +685,9 @@ def read_bragg_edge_fitting_ascii_format(full_file_name):
         metadata["march-dollase history table"] = march_history_table
         metadata["march-dollase history init"] = march_history_init
 
-    pd_data = pd.read_csv(full_file_name, skiprows=line_number, header=0, names=col_label)
+    pd_data = pd.read_csv(
+        full_file_name, skiprows=line_number, header=0, names=col_label
+    )
     return {"data": pd_data, "metadata": metadata}
 
 
@@ -661,7 +700,9 @@ class ListMostDominantExtension:
     def get_list_of_files(self):
         list_of_input_files = glob.glob(os.path.join(self.working_dir, "*"))
         list_of_input_files.sort()
-        self.list_of_base_name = [os.path.basename(_file) for _file in list_of_input_files]
+        self.list_of_base_name = [
+            os.path.basename(_file) for _file in list_of_input_files
+        ]
 
     def get_counter_of_extension(self):
         counter_extension = Counter()
@@ -686,7 +727,11 @@ class ListMostDominantExtension:
 
     def check_uniqueness_of_dominant_extension(self):
         # check if there are several ext with the same max number
-        indices = [i for i, x in enumerate(self.list_of_number_of_ext) if x == self.dominant_number]
+        indices = [
+            i
+            for i, x in enumerate(self.list_of_number_of_ext)
+            if x == self.dominant_number
+        ]
         if len(indices) > 1:  # found several majority ext
             self.uniqueness = False
         else:
@@ -701,21 +746,34 @@ class ListMostDominantExtension:
 
     def retrieve_parameters(self):
         if self.uniqueness:
-            list_of_input_files = glob.glob(os.path.join(self.working_dir, "*" + self.dominant_extension))
+            list_of_input_files = glob.glob(
+                os.path.join(self.working_dir, "*" + self.dominant_extension)
+            )
             list_of_input_files.sort()
 
-            self.result = self.Result(list_files=list_of_input_files, ext=self.dominant_extension, uniqueness=True)
+            self.result = self.Result(
+                list_files=list_of_input_files,
+                ext=self.dominant_extension,
+                uniqueness=True,
+            )
 
         else:
             list_of_maj_ext = [
-                _ext for _ext in self.counter_extension.keys() if self.counter_extension[_ext] == self.dominant_number
+                _ext
+                for _ext in self.counter_extension.keys()
+                if self.counter_extension[_ext] == self.dominant_number
             ]
 
             box = widgets.HBox(
                 [
-                    widgets.Label("Select Extension to work with", layout=widgets.Layout(width="20%")),
+                    widgets.Label(
+                        "Select Extension to work with",
+                        layout=widgets.Layout(width="20%"),
+                    ),
                     widgets.Dropdown(
-                        options=list_of_maj_ext, layout=widgets.Layout(width="20%"), value=list_of_maj_ext[0]
+                        options=list_of_maj_ext,
+                        layout=widgets.Layout(width="20%"),
+                        value=list_of_maj_ext[0],
                     ),
                 ]
             )
@@ -728,7 +786,13 @@ class ListMostDominantExtension:
 
         else:
             _ext_selected = self.dropdown_ui.value
-            list_of_input_files = glob.glob(os.path.join(self.working_dir, "*" + _ext_selected))
+            list_of_input_files = glob.glob(
+                os.path.join(self.working_dir, "*" + _ext_selected)
+            )
             list_of_input_files.sort()
 
-            return self.Result(list_files=list_of_input_files, ext=self.dominant_extension, uniqueness=True)
+            return self.Result(
+                list_files=list_of_input_files,
+                ext=self.dominant_extension,
+                uniqueness=True,
+            )

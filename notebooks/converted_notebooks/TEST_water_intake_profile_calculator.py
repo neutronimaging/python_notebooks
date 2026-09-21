@@ -27,7 +27,10 @@ from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name="ui_water_intake_profile.ui")
 
 from __code import system
-from __code.water_intake_profile_calculator import WaterIntakeProfileCalculator, WaterIntakeProfileSelector
+from __code.water_intake_profile_calculator import (
+    WaterIntakeProfileCalculator,
+    WaterIntakeProfileSelector,
+)
 
 system.System.select_working_dir()
 from __code.__all import custom_style
@@ -59,7 +62,10 @@ o_gui.show()
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.water_intake_profile_calculator import WaterIntakeProfileCalculator, WaterIntakeProfileSelector
+from __code.water_intake_profile_calculator import (
+    WaterIntakeProfileCalculator,
+    WaterIntakeProfileSelector,
+)
 
 # + run_control={"frozen": false, "read_only": false}
 # %gui qt
