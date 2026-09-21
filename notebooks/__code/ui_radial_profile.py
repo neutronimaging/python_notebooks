@@ -24,7 +24,9 @@ class Ui_MainWindow:
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.widget = QtWidgets.QWidget(self.tab_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -34,7 +36,9 @@ class Ui_MainWindow:
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.groupBox_2 = QtWidgets.QGroupBox(self.tab_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
@@ -65,7 +69,8 @@ class Ui_MainWindow:
         self.verticalLayout_3.addWidget(self.groupBox_2)
         self.groupBox_3 = QtWidgets.QGroupBox(self.tab_2)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding,
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -91,7 +96,9 @@ class Ui_MainWindow:
         self.sector_from_value.setMinimumSize(QtCore.QSize(30, 0))
         self.sector_from_value.setMaximumSize(QtCore.QSize(30, 16777215))
         self.sector_from_value.setText("")
-        self.sector_from_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.sector_from_value.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.sector_from_value.setObjectName("sector_from_value")
         self.gridLayout_2.addWidget(self.sector_from_value, 0, 2, 1, 1)
         self.sector_to_label = QtWidgets.QLabel(self.groupBox_3)
@@ -102,10 +109,14 @@ class Ui_MainWindow:
         self.gridLayout_2.addWidget(self.sector_from_label, 0, 0, 1, 1)
         self.from_angle_slider = QtWidgets.QScrollBar(self.groupBox_3)
         self.from_angle_slider.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.from_angle_slider.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.from_angle_slider.sizePolicy().hasHeightForWidth()
+        )
         self.from_angle_slider.setSizePolicy(sizePolicy)
         self.from_angle_slider.setMaximum(360)
         self.from_angle_slider.setOrientation(QtCore.Qt.Horizontal)
@@ -113,7 +124,9 @@ class Ui_MainWindow:
         self.gridLayout_2.addWidget(self.from_angle_slider, 0, 1, 1, 1)
         self.sector_to_value = QtWidgets.QLabel(self.groupBox_3)
         self.sector_to_value.setText("")
-        self.sector_to_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.sector_to_value.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.sector_to_value.setObjectName("sector_to_value")
         self.gridLayout_2.addWidget(self.sector_to_value, 1, 2, 1, 1)
         self.to_angle_slider = QtWidgets.QScrollBar(self.groupBox_3)
@@ -182,12 +195,16 @@ class Ui_MainWindow:
         self.grid_size_slider.setObjectName("grid_size_slider")
         self.gridLayout_3.addWidget(self.grid_size_slider, 4, 1, 1, 1)
         self.verticalLayout_3.addWidget(self.groupBox_4)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_3.addItem(spacerItem)
         self.horizontalLayout_2.addLayout(self.verticalLayout_3)
         self.verticalLayout_4.addLayout(self.horizontalLayout_2)
         self.groupBox = QtWidgets.QGroupBox(self.tab_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
@@ -200,7 +217,9 @@ class Ui_MainWindow:
         self.verticalLayout.setObjectName("verticalLayout")
         self.textBrowser = QtWidgets.QTextBrowser(self.groupBox)
         self.textBrowser.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
@@ -219,10 +238,14 @@ class Ui_MainWindow:
         self.calculate_profiles_button.setObjectName("calculate_profiles_button")
         self.verticalLayout_6.addWidget(self.calculate_profiles_button)
         self.widget_profile = QtWidgets.QWidget(self.tab)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_profile.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.widget_profile.sizePolicy().hasHeightForWidth()
+        )
         self.widget_profile.setSizePolicy(sizePolicy)
         self.widget_profile.setObjectName("widget_profile")
         self.verticalLayout_6.addWidget(self.widget_profile)
@@ -237,7 +260,9 @@ class Ui_MainWindow:
         self.help_button = QtWidgets.QPushButton(self.centralwidget)
         self.help_button.setObjectName("help_button")
         self.horizontalLayout.addWidget(self.help_button)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem1)
         self.cancel_button = QtWidgets.QPushButton(self.centralwidget)
         self.cancel_button.setObjectName("cancel_button")
@@ -258,16 +283,30 @@ class Ui_MainWindow:
         self.sector_full_circle.clicked.connect(MainWindow.sector_radio_button_changed)
         self.sector_sector.clicked.connect(MainWindow.sector_radio_button_changed)
         self.guide_red_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
-        self.guide_green_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
-        self.guide_blue_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
-        self.guide_alpha_slider.sliderMoved["int"].connect(MainWindow.guide_color_changed)
+        self.guide_green_slider.sliderMoved["int"].connect(
+            MainWindow.guide_color_changed
+        )
+        self.guide_blue_slider.sliderMoved["int"].connect(
+            MainWindow.guide_color_changed
+        )
+        self.guide_alpha_slider.sliderMoved["int"].connect(
+            MainWindow.guide_color_changed
+        )
         self.grid_size_slider.sliderMoved["int"].connect(MainWindow.grid_slider_moved)
         self.grid_size_slider.sliderPressed.connect(MainWindow.grid_slider_pressed)
-        self.from_angle_slider.sliderMoved["int"].connect(MainWindow.sector_from_angle_moved)
-        self.to_angle_slider.sliderMoved["int"].connect(MainWindow.sector_to_angle_moved)
-        self.from_angle_slider.sliderPressed.connect(MainWindow.sector_from_angle_clicked)
+        self.from_angle_slider.sliderMoved["int"].connect(
+            MainWindow.sector_from_angle_moved
+        )
+        self.to_angle_slider.sliderMoved["int"].connect(
+            MainWindow.sector_to_angle_moved
+        )
+        self.from_angle_slider.sliderPressed.connect(
+            MainWindow.sector_from_angle_clicked
+        )
         self.to_angle_slider.sliderPressed.connect(MainWindow.sector_to_angle_clicked)
-        self.from_angle_slider.sliderReleased.connect(MainWindow.sector_from_angle_clicked)
+        self.from_angle_slider.sliderReleased.connect(
+            MainWindow.sector_from_angle_clicked
+        )
         self.to_angle_slider.sliderReleased.connect(MainWindow.sector_to_angle_clicked)
         self.guide_red_slider.sliderPressed.connect(MainWindow.guide_color_clicked)
         self.guide_red_slider.sliderReleased.connect(MainWindow.guide_color_released)
@@ -278,9 +317,15 @@ class Ui_MainWindow:
         self.guide_alpha_slider.sliderPressed.connect(MainWindow.guide_color_clicked)
         self.guide_alpha_slider.sliderReleased.connect(MainWindow.guide_color_released)
         self.grid_size_slider.sliderReleased.connect(MainWindow.grid_slider_pressed)
-        self.from_angle_slider.valueChanged["int"].connect(MainWindow.sector_from_angle_moved)
-        self.to_angle_slider.valueChanged["int"].connect(MainWindow.sector_to_angle_moved)
-        self.calculate_profiles_button.clicked.connect(MainWindow.calculate_profiles_clicked)
+        self.from_angle_slider.valueChanged["int"].connect(
+            MainWindow.sector_from_angle_moved
+        )
+        self.to_angle_slider.valueChanged["int"].connect(
+            MainWindow.sector_to_angle_moved
+        )
+        self.calculate_profiles_button.clicked.connect(
+            MainWindow.calculate_profiles_clicked
+        )
         self.export_profiles_button.clicked.connect(MainWindow.export_profiles_clicked)
         self.help_button.clicked.connect(MainWindow.help_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -317,9 +362,18 @@ class Ui_MainWindow:
                 '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">* <span style=" font-weight:600;">Export</span> profiles</p></body></html>',
             )
         )
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Initialization"))
-        self.calculate_profiles_button.setText(_translate("MainWindow", "Calculate Profiles"))
-        self.export_profiles_button.setText(_translate("MainWindow", "Export Profiles ..."))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Profile"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_2),
+            _translate("MainWindow", "Initialization"),
+        )
+        self.calculate_profiles_button.setText(
+            _translate("MainWindow", "Calculate Profiles")
+        )
+        self.export_profiles_button.setText(
+            _translate("MainWindow", "Export Profiles ...")
+        )
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Profile")
+        )
         self.help_button.setText(_translate("MainWindow", "Help"))
         self.cancel_button.setText(_translate("MainWindow", "Done"))

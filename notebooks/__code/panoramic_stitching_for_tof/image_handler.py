@@ -1,9 +1,8 @@
 import numpy as np
 import pyqtgraph as pg
-from qtpy import QtGui
-
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching_for_tof.get import Get
+from qtpy import QtGui
 
 COLOR_LOCK = QtGui.QColor(62, 13, 244, 100)
 COLOR_UNLOCK = QtGui.QColor(255, 0, 0, 100)
@@ -25,7 +24,9 @@ class ImageHandler:
 
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
-        name_of_file_selected = o_table.get_item_str_from_cell(row=row_selected, column=0)
+        name_of_file_selected = o_table.get_item_str_from_cell(
+            row=row_selected, column=0
+        )
 
         offset_dictionary = self.parent.offset_dictionary
 
@@ -102,8 +103,12 @@ class ImageHandler:
                 yoffset = offset_dictionary[_folder]["yoffset"]
 
                 panoramic_image[
-                    yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                    xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                    yoffset + VERTICAL_MARGIN : yoffset
+                    + image_height
+                    + VERTICAL_MARGIN,
+                    xoffset + HORIZONTAL_MARGIN : xoffset
+                    + image_width
+                    + HORIZONTAL_MARGIN,
                 ] = _image
 
         self.parent.panoramic_images = panoramic_image
@@ -115,13 +120,19 @@ class ImageHandler:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
     def get_max_offset(self):
         offset_dictionary = self.parent.offset_dictionary
 
-        list_xoffset = [offset_dictionary[_key]["xoffset"] for _key in offset_dictionary.keys()]
-        list_yoffset = [offset_dictionary[_key]["yoffset"] for _key in offset_dictionary.keys()]
+        list_xoffset = [
+            offset_dictionary[_key]["xoffset"] for _key in offset_dictionary.keys()
+        ]
+        list_yoffset = [
+            offset_dictionary[_key]["yoffset"] for _key in offset_dictionary.keys()
+        ]
 
         return int(np.max(list_yoffset)), int(np.max(list_xoffset))
 
@@ -138,16 +149,24 @@ class ImageHandler:
             from_roi = self.parent.from_roi
             x = from_roi["x"]
             y = from_roi["y"]
-            self.parent.from_roi_id = pg.ROI([x, y], [ROI_WIDTH, ROI_HEIGHT], scaleSnap=True)
+            self.parent.from_roi_id = pg.ROI(
+                [x, y], [ROI_WIDTH, ROI_HEIGHT], scaleSnap=True
+            )
             self.parent.ui.image_view.addItem(self.parent.from_roi_id)
-            self.parent.from_roi_id.sigRegionChanged.connect(self.parent.from_roi_box_changed)
+            self.parent.from_roi_id.sigRegionChanged.connect(
+                self.parent.from_roi_box_changed
+            )
 
             to_roi = self.parent.to_roi
             x = to_roi["x"]
             y = to_roi["y"]
-            self.parent.to_roi_id = pg.ROI([x, y], [ROI_WIDTH, ROI_HEIGHT], scaleSnap=True)
+            self.parent.to_roi_id = pg.ROI(
+                [x, y], [ROI_WIDTH, ROI_HEIGHT], scaleSnap=True
+            )
             self.parent.ui.image_view.addItem(self.parent.to_roi_id)
-            self.parent.to_roi_id.sigRegionChanged.connect(self.parent.to_roi_box_changed)
+            self.parent.to_roi_id.sigRegionChanged.connect(
+                self.parent.to_roi_box_changed
+            )
 
             self.update_from_label()
             self.update_from_cross_line()
@@ -162,12 +181,18 @@ class ImageHandler:
 
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
-        name_of_file_selected = o_table.get_item_str_from_cell(row=row_selected, column=0)
+        name_of_file_selected = o_table.get_item_str_from_cell(
+            row=row_selected, column=0
+        )
 
         offset_dictionary = self.parent.offset_dictionary
 
-        xoffset_of_selected_image = offset_dictionary[name_of_file_selected]["xoffset"] + HORIZONTAL_MARGIN
-        yoffset_of_selected_image = offset_dictionary[name_of_file_selected]["yoffset"] + VERTICAL_MARGIN
+        xoffset_of_selected_image = (
+            offset_dictionary[name_of_file_selected]["xoffset"] + HORIZONTAL_MARGIN
+        )
+        yoffset_of_selected_image = (
+            offset_dictionary[name_of_file_selected]["yoffset"] + VERTICAL_MARGIN
+        )
 
         if (
             (x < xoffset_of_selected_image)
@@ -219,11 +244,19 @@ class ImageHandler:
         line_color = (255, 0, 0, 255, 1)
         lines = np.array(
             [line_color for _ in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
         line_view_binning = pg.GraphItem()
         self.parent.ui.image_view.addItem(line_view_binning)
-        line_view_binning.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+        line_view_binning.setData(
+            pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False
+        )
 
         return line_view_binning
 
@@ -231,13 +264,17 @@ class ImageHandler:
         from_roi_cross_id = self.parent.from_roi_cross_id
         from_roi = self.parent.from_roi
 
-        self.parent.from_roi_cross_id = self.update_cross_line(roi_cross_id=from_roi_cross_id, roi=from_roi)
+        self.parent.from_roi_cross_id = self.update_cross_line(
+            roi_cross_id=from_roi_cross_id, roi=from_roi
+        )
 
     def update_to_cross_line(self):
         to_roi_cross_id = self.parent.to_roi_cross_id
         to_roi = self.parent.to_roi
 
-        self.parent.to_roi_cross_id = self.update_cross_line(roi_cross_id=to_roi_cross_id, roi=to_roi)
+        self.parent.to_roi_cross_id = self.update_cross_line(
+            roi_cross_id=to_roi_cross_id, roi=to_roi
+        )
 
     def update_label(self, label_id=None, roi=None, text=""):
         if label_id:
@@ -256,9 +293,13 @@ class ImageHandler:
     def update_from_label(self):
         label_id = self.parent.from_label_id
         roi = self.parent.from_roi
-        self.parent.from_label_id = self.update_label(label_id=label_id, roi=roi, text="from")
+        self.parent.from_label_id = self.update_label(
+            label_id=label_id, roi=roi, text="from"
+        )
 
     def update_to_label(self):
         label_id = self.parent.to_label_id
         roi = self.parent.to_roi
-        self.parent.to_label_id = self.update_label(label_id=label_id, roi=roi, text="to")
+        self.parent.to_label_id = self.update_label(
+            label_id=label_id, roi=roi, text="to"
+        )

@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-
 from __code._utilities.get import Get as TopGet
 from __code.extract_evenly_spaced_files import LOG_FILENAME
 
@@ -28,7 +27,9 @@ class Get(TopGet):
         return list_of_files_to_extract
 
     def renamed_basename_list_of_files(self, prefix):
-        list_of_files_to_extract = self.parent.basename_list_of_files_that_will_be_extracted
+        list_of_files_to_extract = (
+            self.parent.basename_list_of_files_that_will_be_extracted
+        )
         if prefix:
             prefix += "_"
 

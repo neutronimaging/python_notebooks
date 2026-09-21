@@ -33,7 +33,11 @@ def reject_outliers(array=None):
     if len(array) < 3:
         return array
 
-    new_array = [_value for _value in array if (not (_value == np.min(array))) and (not (_value == np.max(array)))]
+    new_array = [
+        _value
+        for _value in array
+        if (not (_value == np.min(array))) and (not (_value == np.max(array)))
+    ]
     return new_array
 
 

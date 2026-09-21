@@ -5,21 +5,16 @@ import multiprocessing as mp
 import os
 import shutil
 from pathlib import Path
-from typing import Tuple
 
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from IPython.display import HTML, display
-from PIL import Image
-from skimage.io import imread
-from scipy.ndimage import median_filter
+from __code.normalization_resonance.normalization_for_timepix import create_master_dict
 
 # from enum import Enum
 # from scipy.constants import h, c, electron_volt, m_n
 # from timepix_geometry_correction.correct import TimepixGeometryCorrection
-
 from __code.normalization_tof.units import (
     DistanceUnitOptions,
     EnergyUnitOptions,
@@ -27,7 +22,9 @@ from __code.normalization_tof.units import (
     convert_array_from_time_to_energy,
     convert_array_from_time_to_lambda,
 )
-from __code.normalization_resonance.normalization_for_timepix import create_master_dict
+from IPython.display import HTML, display
+from PIL import Image
+from skimage.io import imread
 
 LOG_PATH = "/SNS/VENUS/shared/log/"
 LOAD_DTYPE = np.uint16
@@ -82,7 +79,9 @@ def _worker(fl):
     return (imread(fl).astype(LOAD_DTYPE)).swapaxes(0, 1)
 
 
-def load_data_using_multithreading(list_tif: list = None, combine_tof: bool = False) -> np.ndarray:
+def load_data_using_multithreading(
+    list_tif: list = None, combine_tof: bool = False
+) -> np.ndarray:
     """load data using multithreading"""
     with mp.Pool(processes=40) as pool:
         data = pool.map(_worker, list_tif)
@@ -101,7 +100,9 @@ def retrieve_list_of_tif(folder: str) -> list:
 
 
 def create_x_axis_file(
-    lambda_array: np.ndarray = None, energy_array: np.ndarray = None, output_folder: str = "./"
+    lambda_array: np.ndarray = None,
+    energy_array: np.ndarray = None,
+    output_folder: str = "./",
 ) -> str:
     """create x axis file with lambda, energy and tof arrays"""
     x_axis_data = {
@@ -139,6 +140,7 @@ def correct_chips_alignment(data: np.ndarray, config: dict) -> np.ndarray:
     # return data_corrected
     return data
 
+
 def normalization_with_list_of_full_path(
     sample_dict: dict = None,
     ob_dict: dict = None,
@@ -150,7 +152,7 @@ def normalization_with_list_of_full_path(
     shutter_counts_flag=True,
     replace_ob_zeros_by_nan_flag=False,
     replace_ob_zeros_by_local_median_flag=False,
-    kernel_size_for_local_median: Tuple[int, int, int] = (3, 3, 3),
+    kernel_size_for_local_median: tuple[int, int, int] = (3, 3, 3),
     max_iterations: int = 10,
     output_tif: bool = True,
     instrument: str = "VENUS",
@@ -208,10 +210,16 @@ def normalization_with_list_of_full_path(
 
     export_corrected_stack_of_sample_data = export_mode.get("sample_stack", False)
     export_corrected_stack_of_ob_data = export_mode.get("ob_stack", False)
-    export_corrected_stack_of_normalized_data = export_mode.get("normalized_stack", False)
-    export_corrected_integrated_sample_data = export_mode.get("sample_integrated", False)
+    export_corrected_stack_of_normalized_data = export_mode.get(
+        "normalized_stack", False
+    )
+    export_corrected_integrated_sample_data = export_mode.get(
+        "sample_integrated", False
+    )
     export_corrected_integrated_ob_data = export_mode.get("ob_integrated", False)
-    export_corrected_integrated_normalized_data = export_mode.get("normalized_integrated", False)
+    export_corrected_integrated_normalized_data = export_mode.get(
+        "normalized_integrated", False
+    )
     export_x_axis = export_mode.get("x_axis", True)
 
     logging.info(f"{export_corrected_stack_of_sample_data = }")
@@ -238,32 +246,40 @@ def normalization_with_list_of_full_path(
         logging.info(f"loading ob# {_ob_run_number} ... ")
         if verbose:
             display(HTML(f"Loading ob# {_ob_run_number} ..."))
-        ob_master_dict[_ob_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-            ob_master_dict[_ob_run_number][MasterDictKeys.list_tif], combine_tof=False
+        ob_master_dict[_ob_run_number][MasterDictKeys.data] = (
+            load_data_using_multithreading(
+                ob_master_dict[_ob_run_number][MasterDictKeys.list_tif],
+                combine_tof=False,
+            )
         )
         logging.info(f"ob# {_ob_run_number} loaded!")
         logging.info(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
         if verbose:
             display(HTML(f"ob# {_ob_run_number} loaded!"))
-            display(HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }"))
+            display(
+                HTML(f"{ob_master_dict[_ob_run_number][MasterDictKeys.data].shape = }")
+            )
 
     if proton_charge_flag:
         normalized_by_proton_charge = (
-            sample_status_metadata.all_proton_charge_found and ob_status_metadata.all_proton_charge_found
+            sample_status_metadata.all_proton_charge_found
+            and ob_status_metadata.all_proton_charge_found
         )
     else:
         normalized_by_proton_charge = False
 
     if monitor_counts_flag:
         normalized_by_monitor_counts = (
-            sample_status_metadata.all_monitor_counts_found and ob_status_metadata.all_monitor_counts_found
+            sample_status_metadata.all_monitor_counts_found
+            and ob_status_metadata.all_monitor_counts_found
         )
     else:
         normalized_by_monitor_counts = False
 
     if shutter_counts_flag:
         normalized_by_shutter_counts = (
-            sample_status_metadata.all_shutter_counts_found and ob_status_metadata.all_shutter_counts_found
+            sample_status_metadata.all_shutter_counts_found
+            and ob_status_metadata.all_shutter_counts_found
         )
     else:
         normalized_by_shutter_counts = False
@@ -280,9 +296,15 @@ def normalization_with_list_of_full_path(
         max_iterations=max_iterations,
     )
     logging.info(f"{ob_data_combined.shape = }")
-    logging.info(f"number of NaN in ob_data_combined data: {np.sum(np.isnan(ob_data_combined))}")
-    logging.info(f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}")
-    logging.info(f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} ")
+    logging.info(
+        f"number of NaN in ob_data_combined data: {np.sum(np.isnan(ob_data_combined))}"
+    )
+    logging.info(
+        f"number of inf in ob_data_combined data: {np.sum(np.isinf(ob_data_combined))}"
+    )
+    logging.info(
+        f"number of zeros in ob_data_combined data: {np.sum(ob_data_combined == 0)} "
+    )
 
     if verbose:
         display(HTML(f"{ob_data_combined.shape = }"))
@@ -291,7 +313,9 @@ def normalization_with_list_of_full_path(
         logging.info("Correcting chips alignment ...")
         if verbose:
             display(HTML("Correcting chips alignment ..."))
-            ob_data_combined = correct_chips_alignment(ob_data_combined, correct_chips_alignment_config)
+            ob_data_combined = correct_chips_alignment(
+                ob_data_combined, correct_chips_alignment_config
+            )
             logging.info("Chips alignment corrected!")
             if verbose:
                 display(HTML("Chips alignment corrected!"))
@@ -304,7 +328,9 @@ def normalization_with_list_of_full_path(
             export_corrected_stack_of_ob_data,
             export_corrected_integrated_ob_data,
             ob_data_combined,
-            spectra_file_name=ob_master_dict[_ob_run_number][MasterDictKeys.spectra_file_name],
+            spectra_file_name=ob_master_dict[_ob_run_number][
+                MasterDictKeys.spectra_file_name
+            ],
         )
 
     # load dc images
@@ -312,39 +338,56 @@ def normalization_with_list_of_full_path(
         logging.info(f"loading dc# {_dc_run_number} ... ")
         if verbose:
             display(HTML(f"Loading dc# {_dc_run_number} ..."))
-        dc_master_dict[_dc_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-            dc_master_dict[_dc_run_number][MasterDictKeys.list_tif], combine_tof=False
+        dc_master_dict[_dc_run_number][MasterDictKeys.data] = (
+            load_data_using_multithreading(
+                dc_master_dict[_dc_run_number][MasterDictKeys.list_tif],
+                combine_tof=False,
+            )
         )
         logging.info(f"dc# {_dc_run_number} loaded!")
         logging.info(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }")
         if verbose:
             display(HTML(f"dc# {_dc_run_number} loaded!"))
-            display(HTML(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }"))
+            display(
+                HTML(f"{dc_master_dict[_dc_run_number][MasterDictKeys.data].shape = }")
+            )
 
     # combine all ob images
     dc_data_combined = combine_dc_images(dc_master_dict)
-    
+
     # load sample images
     for _sample_run_number in sample_master_dict.keys():
         logging.info(f"loading sample# {_sample_run_number} ... ")
         if verbose:
             display(HTML(f"Loading sample# {_sample_run_number} ..."))
-        sample_master_dict[_sample_run_number][MasterDictKeys.data] = load_data_using_multithreading(
-            sample_master_dict[_sample_run_number][MasterDictKeys.list_tif], combine_tof=False
+        sample_master_dict[_sample_run_number][MasterDictKeys.data] = (
+            load_data_using_multithreading(
+                sample_master_dict[_sample_run_number][MasterDictKeys.list_tif],
+                combine_tof=False,
+            )
         )
         logging.info(f"sample# {_sample_run_number} loaded!")
-        logging.info(f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }")
+        logging.info(
+            f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }"
+        )
         if verbose:
             display(HTML(f"sample# {_sample_run_number} loaded!"))
-            display(HTML(f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }"))
+            display(
+                HTML(
+                    f"{sample_master_dict[_sample_run_number][MasterDictKeys.data].shape = }"
+                )
+            )
 
     if correct_chips_alignment_flag:
         logging.info("Correcting chips alignment ...")
         if verbose:
             display(HTML("Correcting chips alignment ..."))
         for _sample_run_number in sample_master_dict.keys():
-            sample_master_dict[_sample_run_number][MasterDictKeys.data] = correct_chips_alignment(
-                sample_master_dict[_sample_run_number][MasterDictKeys.data], correct_chips_alignment_config
+            sample_master_dict[_sample_run_number][MasterDictKeys.data] = (
+                correct_chips_alignment(
+                    sample_master_dict[_sample_run_number][MasterDictKeys.data],
+                    correct_chips_alignment_config,
+                )
             )
         logging.info("Chips alignment corrected!")
         if verbose:
@@ -369,7 +412,9 @@ def normalization_with_list_of_full_path(
         logging.info(f"\t sample data shape: {data_shape}")
         logging.info(f"\t data type of _sample_data: {_sample_data.dtype}")
         logging.info(f"\t Number of zeros in sample data: {number_of_zeros}")
-        logging.info(f"\t Number of nan in sample data: {np.sum(np.isnan(_sample_data))}")
+        logging.info(
+            f"\t Number of nan in sample data: {np.sum(np.isnan(_sample_data))}"
+        )
         logging.info(
             f"\t Percentage of zeros in sample data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%"
         )
@@ -380,7 +425,9 @@ def normalization_with_list_of_full_path(
 
         if normalized_by_proton_charge:
             logging.info("\t -> Normalized by proton charge")
-            proton_charge = sample_master_dict[_sample_run_number][MasterDictKeys.proton_charge]
+            proton_charge = sample_master_dict[_sample_run_number][
+                MasterDictKeys.proton_charge
+            ]
             logging.info(f"\t\t proton charge: {proton_charge} C")
             logging.info(f"\t\t{type(proton_charge) = }")
             logging.info(f"\t\tbefore division: {_sample_data.dtype = }")
@@ -389,7 +436,9 @@ def normalization_with_list_of_full_path(
 
         if normalized_by_monitor_counts:
             logging.info("\t -> Normalized by monitor counts")
-            monitor_counts = sample_master_dict[_sample_run_number][MasterDictKeys.monitor_counts]
+            monitor_counts = sample_master_dict[_sample_run_number][
+                MasterDictKeys.monitor_counts
+            ]
             logging.info(f"\t\t monitor counts: {monitor_counts}")
             logging.info(f"\t\t{type(monitor_counts) = }")
             _sample_data = _sample_data / monitor_counts
@@ -397,12 +446,18 @@ def normalization_with_list_of_full_path(
 
         if normalized_by_shutter_counts:
             list_shutter_values_for_each_image = produce_list_shutter_for_each_image(
-                list_time_spectra=ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra],
-                list_shutter_counts=sample_master_dict[_sample_run_number][MasterDictKeys.shutter_counts],
+                list_time_spectra=ob_master_dict[_ob_run_number][
+                    MasterDictKeys.list_spectra
+                ],
+                list_shutter_counts=sample_master_dict[_sample_run_number][
+                    MasterDictKeys.shutter_counts
+                ],
             )
 
             sample_data = []
-            for _sample, _shutter_value in zip(_sample_data, list_shutter_values_for_each_image, strict=False):
+            for _sample, _shutter_value in zip(
+                _sample_data, list_shutter_values_for_each_image, strict=False
+            ):
                 sample_data.append(_sample / _shutter_value)
             _sample_data = np.array(sample_data)
 
@@ -412,52 +467,74 @@ def normalization_with_list_of_full_path(
         logging.info(f"{ob_data_combined.dtype = }")
 
         # export sample data after correction if requested
-        if export_corrected_stack_of_sample_data or export_corrected_integrated_sample_data:
+        if (
+            export_corrected_stack_of_sample_data
+            or export_corrected_integrated_sample_data
+        ):
             export_sample_images(
                 output_folder,
                 export_corrected_stack_of_sample_data,
                 export_corrected_integrated_sample_data,
                 _sample_run_number,
                 _sample_data,
-                spectra_file_name=sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name],
+                spectra_file_name=sample_master_dict[_sample_run_number][
+                    MasterDictKeys.spectra_file_name
+                ],
             )
 
         if dc_data_combined is not None:
-            logging.info(f"normalization with DC subtraction")
-            _normalized_data = np.divide(np.subtract(_sample_data, dc_data_combined), np.subtract(ob_data_combined, dc_data_combined), 
-                                         out=np.zeros_like(_sample_data), 
-                                         where=(ob_data_combined - dc_data_combined)!=0)
+            logging.info("normalization with DC subtraction")
+            _normalized_data = np.divide(
+                np.subtract(_sample_data, dc_data_combined),
+                np.subtract(ob_data_combined, dc_data_combined),
+                out=np.zeros_like(_sample_data),
+                where=(ob_data_combined - dc_data_combined) != 0,
+            )
         else:
-            logging.info(f"normalization without DC subtraction")
-            _normalized_data = np.divide(_sample_data, ob_data_combined, 
-                                         out=np.zeros_like(_sample_data), 
-                                         where=ob_data_combined!=0)
-        
+            logging.info("normalization without DC subtraction")
+            _normalized_data = np.divide(
+                _sample_data,
+                ob_data_combined,
+                out=np.zeros_like(_sample_data),
+                where=ob_data_combined != 0,
+            )
+
         _normalized_data[ob_data_combined == 0] = 0
         normalized_data[_sample_run_number] = _normalized_data
 
         # normalized_data[_sample_run_number] = np.array(np.divide(_sample_data, ob_data_combined))
         logging.info(f"{normalized_data[_sample_run_number].shape = }")
         logging.info(f"{normalized_data[_sample_run_number].dtype = }")
-        logging.info(f"number of NaN in normalized data: {np.sum(np.isnan(normalized_data[_sample_run_number]))}")
-        logging.info(f"number of inf in normalized data: {np.sum(np.isinf(normalized_data[_sample_run_number]))}")
+        logging.info(
+            f"number of NaN in normalized data: {np.sum(np.isnan(normalized_data[_sample_run_number]))}"
+        )
+        logging.info(
+            f"number of inf in normalized data: {np.sum(np.isinf(normalized_data[_sample_run_number]))}"
+        )
 
-        detector_delay_us = sample_master_dict[_sample_run_number][MasterDictKeys.detector_delay_us]
-        time_spectra = sample_master_dict[_sample_run_number][MasterDictKeys.list_spectra]
+        detector_delay_us = sample_master_dict[_sample_run_number][
+            MasterDictKeys.detector_delay_us
+        ]
+        time_spectra = sample_master_dict[_sample_run_number][
+            MasterDictKeys.list_spectra
+        ]
 
         if time_spectra is None:
-            logging.info("Time spectra is None, cannot convert to lambda or energy arrays")
+            logging.info(
+                "Time spectra is None, cannot convert to lambda or energy arrays"
+            )
             lambda_array = None
             energy_array = None
-        
-        else:
 
-            logging.info(f"We have a time_spectra!")
+        else:
+            logging.info("We have a time_spectra!")
             logging.info(f"time spectra shape: {time_spectra.shape}")
-            
+
             if detector_delay_us is None:
                 detector_delay_us = 0.0
-                logging.info(f"detector delay is None, setting it to {detector_delay_us} us")
+                logging.info(
+                    f"detector delay is None, setting it to {detector_delay_us} us"
+                )
 
             logging.info(f"we have a detector delay of {detector_delay_us} us")
 
@@ -487,26 +564,29 @@ def normalization_with_list_of_full_path(
 
         logging.info(f"Preview: {preview = }")
         if preview:
-            
             # display preview of normalized data
-            fig, axs1 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+            fig, axs1 = plt.subplots(
+                1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+            )
             sample_data_integrated = np.nanmean(_sample_data, axis=0)
             im0 = axs1[0].imshow(sample_data_integrated, cmap="gray")
             plt.colorbar(im0, ax=axs1[0])
 
             display(HTML(f"<h3>Preview of run {_sample_run_number}</h3>"))
             display(HTML(f"detector delay: {detector_delay_us:.2f} us"))
-            
-            axs1[0].set_title(f"Integrated Sample data")
+
+            axs1[0].set_title("Integrated Sample data")
 
             sample_integrated1 = np.nansum(_sample_data, axis=1)
             sample_integrated = np.nansum(sample_integrated1, axis=1)
-            axs1[1].plot(sample_integrated, 'o')
+            axs1[1].plot(sample_integrated, "o")
             axs1[1].set_xlabel("File image index")
             axs1[1].set_ylabel("mean of full image")
             plt.tight_layout()
 
-            fig, axs2 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+            fig, axs2 = plt.subplots(
+                1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+            )
             ob_data_integrated = np.nanmean(ob_data_combined, axis=0)
             im1 = axs2[0].imshow(ob_data_integrated, cmap="gray")
             plt.colorbar(im1, ax=axs2[0])
@@ -514,13 +594,15 @@ def normalization_with_list_of_full_path(
 
             ob_integrated1 = np.nansum(ob_data_combined, axis=1)
             ob_integrated = np.nansum(ob_integrated1, axis=1)
-            axs2[1].plot(ob_integrated, 'o')
+            axs2[1].plot(ob_integrated, "o")
             axs2[1].set_xlabel("File image index")
             axs2[1].set_ylabel("mean of full image")
             plt.tight_layout()
 
             if dc_data_combined is not None:
-                fig, axs_dc = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                fig, axs_dc = plt.subplots(
+                    1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+                )
                 dc_data_integrated = np.nanmean(dc_data_combined, axis=0)
                 im_dc = axs_dc[0].imshow(dc_data_integrated, cmap="gray")
                 plt.colorbar(im_dc, ax=axs_dc[0])
@@ -528,26 +610,32 @@ def normalization_with_list_of_full_path(
 
                 dc_integrated1 = np.nansum(dc_data_combined, axis=1)
                 dc_integrated = np.nansum(dc_integrated1, axis=1)
-                axs_dc[1].plot(dc_integrated, 'o')
+                axs_dc[1].plot(dc_integrated, "o")
                 axs_dc[1].set_xlabel("File image index")
                 axs_dc[1].set_ylabel("mean of full image")
                 plt.tight_layout()
 
-            fig, axs3 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
-            normalized_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
+            fig, axs3 = plt.subplots(
+                1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+            )
+            normalized_data_integrated = np.nanmean(
+                normalized_data[_sample_run_number], axis=0
+            )
             im2 = axs3[0].imshow(normalized_data_integrated, cmap="gray")
             plt.colorbar(im2, ax=axs3[0])
-            axs3[0].set_title(f"Integrated Normalized data")
+            axs3[0].set_title("Integrated Normalized data")
 
             profile_step1 = np.nanmean(normalized_data[_sample_run_number], axis=1)
             profile = np.nanmean(profile_step1, axis=1)
-            axs3[1].plot(profile, 'o')
+            axs3[1].plot(profile, "o")
             axs3[1].set_xlabel("File image index")
             axs3[1].set_ylabel("mean of full image")
             plt.tight_layout()
 
             if lambda_array is not None:
-                fig, axs4 = plt.subplots(1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height))
+                fig, axs4 = plt.subplots(
+                    1, 2, figsize=(2 * PLOT_SIZE.width, PLOT_SIZE.height)
+                )
                 logging.info(f"{np.shape(profile) = }")
 
                 axs4[0].plot(lambda_array, profile, "*")
@@ -562,24 +650,36 @@ def normalization_with_list_of_full_path(
 
             plt.show()
 
-        if export_corrected_integrated_normalized_data or export_corrected_stack_of_normalized_data:
+        if (
+            export_corrected_integrated_normalized_data
+            or export_corrected_stack_of_normalized_data
+        ):
             # make up new output folder name
 
             list_ob_runs = list(ob_master_dict.keys())
-            str_ob_runs = "_".join([str(_ob_run_number) for _ob_run_number in list_ob_runs])
+            str_ob_runs = "_".join(
+                [str(_ob_run_number) for _ob_run_number in list_ob_runs]
+            )
             full_output_folder = os.path.join(
-                output_folder, f"normalized_sample_{_sample_run_number}_obs_{str_ob_runs}"
+                output_folder,
+                f"normalized_sample_{_sample_run_number}_obs_{str_ob_runs}",
             )  # issue for WEI here !
             full_output_folder = os.path.abspath(full_output_folder)
             os.makedirs(full_output_folder, exist_ok=True)
 
             if export_corrected_integrated_normalized_data:
                 # making up the integrated sample data
-                sample_data_integrated = np.nanmean(normalized_data[_sample_run_number], axis=0)
+                sample_data_integrated = np.nanmean(
+                    normalized_data[_sample_run_number], axis=0
+                )
                 full_file_name = os.path.join(full_output_folder, "integrated.tif")
-                logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} ...")
+                logging.info(
+                    f"\t -> Exporting integrated normalized data to {full_file_name} ..."
+                )
                 make_tiff(data=sample_data_integrated, filename=full_file_name)
-                logging.info(f"\t -> Exporting integrated normalized data to {full_file_name} is done!")
+                logging.info(
+                    f"\t -> Exporting integrated normalized data to {full_file_name} is done!"
+                )
 
             if export_corrected_stack_of_normalized_data:
                 output_stack_folder = os.path.join(full_output_folder, "stack")
@@ -587,14 +687,22 @@ def normalization_with_list_of_full_path(
                 os.makedirs(output_stack_folder, exist_ok=True)
 
                 for _index, _data in enumerate(normalized_data[_sample_run_number]):
-                    _output_file = os.path.join(output_stack_folder, f"image{_index:04d}.tif")
+                    _output_file = os.path.join(
+                        output_stack_folder, f"image{_index:04d}.tif"
+                    )
                     make_tiff(data=_data, filename=_output_file)
-                logging.info(f"\t -> Exporting normalized data to {output_stack_folder} is done!")
+                logging.info(
+                    f"\t -> Exporting normalized data to {output_stack_folder} is done!"
+                )
                 print(f"Exported normalized tif images are in: {output_stack_folder}!")
-                spectra_file = sample_master_dict[_sample_run_number][MasterDictKeys.spectra_file_name]
+                spectra_file = sample_master_dict[_sample_run_number][
+                    MasterDictKeys.spectra_file_name
+                ]
 
                 if spectra_file and Path(spectra_file).exists():
-                    logging.info(f"Exported time spectra file  {spectra_file} to {output_stack_folder}!")
+                    logging.info(
+                        f"Exported time spectra file  {spectra_file} to {output_stack_folder}!"
+                    )
                     shutil.copy(spectra_file, output_stack_folder)
 
                     # create x-axis file
@@ -613,7 +721,9 @@ def get_detector_offset_from_nexus(nexus_path: str) -> float:
     """get the detector offset from the nexus file"""
     with h5py.File(nexus_path, "r") as hdf5_data:
         try:
-            detector_offset_micros = hdf5_data["entry"]["DASlogs"]["BL10:Det:TH:DSPT1:TIDelay"]["value"][0]
+            detector_offset_micros = hdf5_data["entry"]["DASlogs"][
+                "BL10:Det:TH:DSPT1:TIDelay"
+            ]["value"][0]
         except KeyError:
             detector_offset_micros = None
     return detector_offset_micros
@@ -642,7 +752,9 @@ def export_sample_images(
             make_tiff(data=_data, filename=_output_file)
         logging.info(f"\t -> Exporting sample data to {output_stack_folder} is done!")
         shutil.copy(spectra_file_name, os.path.join(output_stack_folder))
-        logging.info(f"\t -> Exporting spectra file {spectra_file_name} to {output_stack_folder} is done!")
+        logging.info(
+            f"\t -> Exporting spectra file {spectra_file_name} to {output_stack_folder} is done!"
+        )
 
     if export_corrected_integrated_sample_data:
         # making up the integrated sample data
@@ -650,7 +762,9 @@ def export_sample_images(
         full_file_name = os.path.join(sample_output_folder, "integrated.tif")
         logging.info(f"\t -> Exporting integrated sample data to {full_file_name} ...")
         make_tiff(data=sample_data_integrated, filename=full_file_name)
-        logging.info(f"\t -> Exporting integrated sample data to {full_file_name} is done!")
+        logging.info(
+            f"\t -> Exporting integrated sample data to {full_file_name} is done!"
+        )
 
     display(HTML(f"Created folder {output_stack_folder} for sample outputs!"))
 
@@ -667,10 +781,13 @@ def export_ob_images(
     logging.info(f"> Exporting combined ob images to {output_folder} ...")
     logging.info(f"\t{ob_run_numbers = }")
     list_ob_runs_number_only = [
-        str(isolate_run_number_from_full_path(_ob_run_number)) for _ob_run_number in ob_run_numbers
+        str(isolate_run_number_from_full_path(_ob_run_number))
+        for _ob_run_number in ob_run_numbers
     ]
     if len(list_ob_runs_number_only) == 1:
-        ob_output_folder = os.path.join(output_folder, f"ob_{list_ob_runs_number_only[0]}")
+        ob_output_folder = os.path.join(
+            output_folder, f"ob_{list_ob_runs_number_only[0]}"
+        )
     else:
         str_list_ob_runs = "_".join(list_ob_runs_number_only)
         ob_output_folder = os.path.join(output_folder, f"ob_{str_list_ob_runs}")
@@ -699,7 +816,9 @@ def export_ob_images(
         logging.info(f"\t -> Exporting ob data to {output_stack_folder} is done!")
         # copy spectra file to the output folder
         shutil.copy(spectra_file_name, os.path.join(output_stack_folder))
-        logging.info(f"\t -> Exported spectra file {spectra_file_name} to {output_stack_folder}!")
+        logging.info(
+            f"\t -> Exported spectra file {spectra_file_name} to {output_stack_folder}!"
+        )
 
     display(HTML(f"Created folder {output_stack_folder} for OB outputs!"))
 
@@ -738,7 +857,7 @@ def isolate_run_number(run_number_full_path: str) -> int:
 def init_master_dict(data_dictionary: dict) -> dict:
     master_dict = {}
 
-    for _base_name in data_dictionary.keys():
+    for _base_name in data_dictionary:
         master_dict[_base_name] = {
             MasterDictKeys.nexus_path: data_dictionary[_base_name]["nexus"],
             MasterDictKeys.frame_number: None,
@@ -772,7 +891,7 @@ def retrieve_root_nexus_full_path(sample_folder: str) -> str:
 def update_dict_with_shutter_counts(master_dict: dict) -> tuple[dict, bool]:
     """update the master dict with shutter counts from shutter count file"""
     status_all_shutter_counts_found = True
-    for run_number in master_dict.keys():
+    for run_number in master_dict:
         data_path = master_dict[run_number][MasterDictKeys.data_path]
         _list_files = glob.glob(os.path.join(data_path, "*_ShutterCount.txt"))
         if len(_list_files) == 0:
@@ -790,14 +909,16 @@ def update_dict_with_shutter_counts(master_dict: dict) -> tuple[dict, bool]:
                     if _value == "0":
                         break
                     list_shutter_counts.append(float(_value))
-                master_dict[run_number][MasterDictKeys.shutter_counts] = list_shutter_counts
+                master_dict[run_number][MasterDictKeys.shutter_counts] = (
+                    list_shutter_counts
+                )
     return master_dict, status_all_shutter_counts_found
 
 
 def update_dict_with_spectra_files(master_dict: dict) -> tuple[dict, bool]:
     """update the master dict with spectra values from spectra file"""
     status_all_spectra_found = True
-    for _run_number in master_dict.keys():
+    for _run_number in master_dict:
         data_path = master_dict[_run_number][MasterDictKeys.data_path]
         _list_files = glob.glob(os.path.join(data_path, "*_Spectra.txt"))
         if len(_list_files) == 0:
@@ -817,7 +938,7 @@ def update_dict_with_spectra_files(master_dict: dict) -> tuple[dict, bool]:
 def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
     """update the master dict with proton charge from nexus file"""
     status_all_proton_charge_found = True
-    for _run_number in master_dict.keys():
+    for _run_number in master_dict:
         _nexus_path = master_dict[_run_number][MasterDictKeys.nexus_path]
         if _nexus_path is None or not os.path.exists(_nexus_path):
             logging.info(f"Nexus file not found for run {_run_number}!")
@@ -827,18 +948,22 @@ def update_dict_with_proton_charge(master_dict: dict) -> tuple[dict, bool]:
 
         try:
             with h5py.File(_nexus_path, "r") as hdf5_data:
-                proton_charge = hdf5_data["entry"][MasterDictKeys.proton_charge][0] / 1e12
+                proton_charge = (
+                    hdf5_data["entry"][MasterDictKeys.proton_charge][0] / 1e12
+                )
         except KeyError:
             proton_charge = None
             status_all_proton_charge_found = False
-        master_dict[_run_number][MasterDictKeys.proton_charge] = np.float32(proton_charge)
+        master_dict[_run_number][MasterDictKeys.proton_charge] = np.float32(
+            proton_charge
+        )
     return status_all_proton_charge_found
 
 
 def update_dict_with_monitor_counts(master_dict: dict) -> bool:
     """update the master dict with monitor counts from nexus file"""
     status_all_monitor_counts_found = True
-    for _run_number in master_dict.keys():
+    for _run_number in master_dict:
         _nexus_path = master_dict[_run_number][MasterDictKeys.nexus_path]
         if _nexus_path is None or not os.path.exists(_nexus_path):
             logging.info(f"Nexus file not found for run {_run_number}!")
@@ -852,14 +977,18 @@ def update_dict_with_monitor_counts(master_dict: dict) -> bool:
         except KeyError:
             monitor_counts = None
             status_all_monitor_counts_found = False
-        master_dict[_run_number][MasterDictKeys.monitor_counts] = np.float32(monitor_counts)
+        master_dict[_run_number][MasterDictKeys.monitor_counts] = np.float32(
+            monitor_counts
+        )
     return status_all_monitor_counts_found
 
 
 def update_dict_with_list_of_images(master_dict: dict) -> dict:
     """update the master dict with list of images"""
-    for _run_number in master_dict.keys():
-        list_tif = retrieve_list_of_tif(master_dict[_run_number][MasterDictKeys.data_path])
+    for _run_number in master_dict:
+        list_tif = retrieve_list_of_tif(
+            master_dict[_run_number][MasterDictKeys.data_path]
+        )
         logging.info(f"Retrieved {len(list_tif)} tif files for run {_run_number}!")
         master_dict[_run_number][MasterDictKeys.list_tif] = list_tif
 
@@ -871,16 +1000,18 @@ def get_list_run_number(data_folder: str) -> list:
     return list_run_number
 
 
-def update_dict_with_nexus_full_path(nexus_root_path: str, instrument: str, master_dict: dict) -> dict:
+def update_dict_with_nexus_full_path(
+    nexus_root_path: str, instrument: str, master_dict: dict
+) -> dict:
     """create dict of nexus path for each run number"""
-    for run_number in master_dict.keys():
+    for run_number in master_dict:
         master_dict[run_number][MasterDictKeys.nexus_path] = os.path.join(
             nexus_root_path, f"{instrument}_{run_number}.nxs.h5"
         )
 
 
 def update_with_nexus_metadata(master_dict: dict) -> dict:
-    for run_number in master_dict.keys():
+    for run_number in master_dict:
         nexus_path = master_dict[run_number][MasterDictKeys.nexus_path]
         if nexus_path is None or not os.path.exists(nexus_path):
             logging.info(f"Nexus file not found for run {run_number}!")
@@ -891,8 +1022,10 @@ def update_with_nexus_metadata(master_dict: dict) -> dict:
 
 def update_dict_with_data_full_path(data_root_path: str, master_dict: dict) -> dict:
     """create dict of data path for each run number"""
-    for run_number in master_dict.keys():
-        master_dict[run_number][MasterDictKeys.data_path] = os.path.join(data_root_path, f"Run_{run_number}")
+    for run_number in master_dict:
+        master_dict[run_number][MasterDictKeys.data_path] = os.path.join(
+            data_root_path, f"Run_{run_number}"
+        )
 
 
 def create_master_dict(
@@ -942,7 +1075,9 @@ def create_master_dict(
     return master_dict, status_metadata
 
 
-def produce_list_shutter_for_each_image(list_time_spectra: list = None, list_shutter_counts: list = None) -> list:
+def produce_list_shutter_for_each_image(
+    list_time_spectra: list = None, list_shutter_counts: list = None
+) -> list:
     """produce list of shutter counts for each image"""
 
     delat_time_spectra = list_time_spectra[1] - list_time_spectra[0]
@@ -952,31 +1087,41 @@ def produce_list_shutter_for_each_image(list_time_spectra: list = None, list_shu
     logging.info(f"\t{list_index_jump = }")
     logging.info(f"\t{list_shutter_counts = }")
 
-    list_shutter_values_for_each_image = np.zeros(len(list_time_spectra), dtype=np.float32)
+    list_shutter_values_for_each_image = np.zeros(
+        len(list_time_spectra), dtype=np.float32
+    )
     if len(list_shutter_counts) == 1:  # resonance mode
         list_shutter_values_for_each_image.fill(list_shutter_counts[0])
         return list_shutter_values_for_each_image
 
-    list_shutter_values_for_each_image[0 : list_index_jump[0] + 1].fill(list_shutter_counts[0])
+    list_shutter_values_for_each_image[0 : list_index_jump[0] + 1].fill(
+        list_shutter_counts[0]
+    )
     for _index in range(1, len(list_index_jump)):
         _start = list_index_jump[_index - 1]
         _end = list_index_jump[_index]
-        list_shutter_values_for_each_image[_start + 1 : _end + 1].fill(list_shutter_counts[_index])
+        list_shutter_values_for_each_image[_start + 1 : _end + 1].fill(
+            list_shutter_counts[_index]
+        )
 
-    list_shutter_values_for_each_image[list_index_jump[-1] + 1 :] = list_shutter_counts[-1]
+    list_shutter_values_for_each_image[list_index_jump[-1] + 1 :] = list_shutter_counts[
+        -1
+    ]
 
     return list_shutter_values_for_each_image
 
 
-def replace_zero_with_local_median(data: np.ndarray, 
-                                  kernel_size: Tuple[int, int, int] = (3, 3, 3),
-                                  max_iterations: int = 10) -> np.ndarray:
+def replace_zero_with_local_median(
+    data: np.ndarray,
+    kernel_size: tuple[int, int, int] = (3, 3, 3),
+    max_iterations: int = 10,
+) -> np.ndarray:
     """
     Replace 0 values in a 3D array using local median filtering.
 
     This function ONLY processes small neighborhoods around 0 pixels,
     avoiding expensive computation on the entire dataset.
-    
+
     Parameters:
     -----------
     data : np.ndarray
@@ -987,7 +1132,7 @@ def replace_zero_with_local_median(data: np.ndarray,
     max_iterations : int
         Maximum number of iterations to replace 0 values
         Default is 10
-    
+
     Returns:
     --------
     np.ndarray
@@ -1006,7 +1151,7 @@ def replace_zero_with_local_median(data: np.ndarray,
 
     # Calculate padding for kernel
     pad_h, pad_w, pad_d = [k // 2 for k in kernel_size]
-    
+
     for iteration in range(max_iterations):
         # Find current 0 locations
         zero_coords = np.argwhere(result == 0)
@@ -1016,13 +1161,15 @@ def replace_zero_with_local_median(data: np.ndarray,
             logging.info(f"All 0 values replaced after {iteration} iterations")
             break
 
-        logging.info(f"Iteration {iteration + 1}: {current_zero_count} 0 values remaining")
+        logging.info(
+            f"Iteration {iteration + 1}: {current_zero_count} 0 values remaining"
+        )
 
         # Process each 0 pixel individually
         replaced_count = 0
         for coord in zero_coords:
             y, x, z = coord
-            
+
             # Define the local neighborhood bounds
             y_min = max(0, y - pad_h)
             y_max = min(result.shape[0], y + pad_h + 1)
@@ -1030,13 +1177,13 @@ def replace_zero_with_local_median(data: np.ndarray,
             x_max = min(result.shape[1], x + pad_w + 1)
             z_min = max(0, z - pad_d)
             z_max = min(result.shape[2], z + pad_d + 1)
-            
+
             # Extract the local neighborhood
             neighborhood = result[y_min:y_max, x_min:x_max, z_min:z_max]
-            
+
             # Get non-NaN values in the neighborhood
             valid_values = neighborhood[~np.isnan(neighborhood)]
-            
+
             # If we have valid values, compute median and replace
             if len(valid_values) > 0:
                 median_value = np.median(valid_values)
@@ -1048,30 +1195,34 @@ def replace_zero_with_local_median(data: np.ndarray,
         # If no progress was made, break
         if replaced_count == 0:
             remaining_zero_count = np.sum(result == 0)
-            logging.info(f"No progress made. {remaining_zero_count} zero values could not be replaced")
+            logging.info(
+                f"No progress made. {remaining_zero_count} zero values could not be replaced"
+            )
             logging.info("(These may be in regions with no valid neighbors)")
             break
 
     final_zero_count = np.sum(result == 0)
     logging.info(f"Final zero count: {final_zero_count}")
-    logging.info(f"Successfully replaced {initial_zero_count - final_zero_count} zero values")
+    logging.info(
+        f"Successfully replaced {initial_zero_count - final_zero_count} zero values"
+    )
 
     return result
 
 
 def combine_dc_images(dc_master_dict: dict) -> np.ndarray:
     """combine all dc images
-    
+
     Parameters:
     -----------
     dc_master_dict : dict
         master dict of dc run numbers
-    
+
     Returns:
     --------
     np.ndarray
         combined dc data
-    
+
     """
     logging.info("Combining all dark current images")
     full_dc_data = []
@@ -1080,9 +1231,11 @@ def combine_dc_images(dc_master_dict: dict) -> np.ndarray:
     if not dc_master_dict:
         return None
 
-    for _dc_run_number in dc_master_dict.keys():
+    for _dc_run_number in dc_master_dict:
         logging.info(f"Combining dc# {_dc_run_number} ...")
-        dc_data = np.array(dc_master_dict[_dc_run_number][MasterDictKeys.data], dtype=np.float32)
+        dc_data = np.array(
+            dc_master_dict[_dc_run_number][MasterDictKeys.data], dtype=np.float32
+        )
         full_dc_data.append(dc_data)
         logging.info(f"{np.shape(full_dc_data) = }")
 
@@ -1101,11 +1254,11 @@ def combine_ob_images(
     use_shutter_counts: bool = False,
     replace_ob_zeros_by_nan: bool = False,
     replace_ob_zeros_by_local_median: bool = False,
-    kernel_size_for_local_median: Tuple[int, int, int] = (3, 3, 3), 
+    kernel_size_for_local_median: tuple[int, int, int] = (3, 3, 3),
     max_iterations: int = 10,
 ) -> np.ndarray:
     """combine all ob images and correct by proton charge and shutter counts
-    
+
     Parameters:
     -----------
     ob_master_dict : dict
@@ -1124,12 +1277,12 @@ def combine_ob_images(
         kernel size for local median filtering
     max_iterations : int
         maximum number of iterations for local median filtering
-    
+
     Returns:
     --------
     np.ndarray
         combined ob data
-    
+
     """
 
     logging.info("Combining all open beam images")
@@ -1137,15 +1290,21 @@ def combine_ob_images(
     logging.info(f"\tcorrecting by monitor counts: {use_monitor_counts}")
     logging.info(f"\tshutter counts: {use_shutter_counts}")
     logging.info(f"\treplace ob zeros by nan: {replace_ob_zeros_by_nan}")
-    logging.info(f"\treplace ob zeros by local median: {replace_ob_zeros_by_local_median}")
-    logging.info(f"\tkernel size for local median: y:{kernel_size_for_local_median[0]}, "
-                 f"x:{kernel_size_for_local_median[1]}, "
-                 f"tof:{kernel_size_for_local_median[2]}")
+    logging.info(
+        f"\treplace ob zeros by local median: {replace_ob_zeros_by_local_median}"
+    )
+    logging.info(
+        f"\tkernel size for local median: y:{kernel_size_for_local_median[0]}, "
+        f"x:{kernel_size_for_local_median[1]}, "
+        f"tof:{kernel_size_for_local_median[2]}"
+    )
     full_ob_data_corrected = []
 
-    for _ob_run_number in ob_master_dict.keys():
+    for _ob_run_number in ob_master_dict:
         logging.info(f"Combining ob# {_ob_run_number} ...")
-        ob_data = np.array(ob_master_dict[_ob_run_number][MasterDictKeys.data], dtype=np.float32)
+        ob_data = np.array(
+            ob_master_dict[_ob_run_number][MasterDictKeys.data], dtype=np.float32
+        )
 
         # get statistics of ob data
         data_shape = ob_data.shape
@@ -1154,7 +1313,9 @@ def combine_ob_images(
         number_of_zeros = np.sum(ob_data == 0)
         logging.info(f"\t ob data shape: {data_shape}")
         logging.info(f"\t Number of zeros in ob data: {number_of_zeros}")
-        logging.info(f"\t Percentage of zeros in ob data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%")
+        logging.info(
+            f"\t Percentage of zeros in ob data: {number_of_zeros / (data_shape[0] * nbr_pixels) * 100:.2f}%"
+        )
         logging.info(f"\t Mean of ob data: {np.mean(ob_data)}")
         logging.info(f"\t maximum of ob data: {np.max(ob_data)}")
         logging.info(f"\t minimum of ob data: {np.min(ob_data)}")
@@ -1172,7 +1333,9 @@ def combine_ob_images(
 
         if use_monitor_counts:
             logging.info("\t -> Normalized by monitor counts")
-            monitor_counts = ob_master_dict[_ob_run_number][MasterDictKeys.monitor_counts]
+            monitor_counts = ob_master_dict[_ob_run_number][
+                MasterDictKeys.monitor_counts
+            ]
             logging.info(f"\t\t monitor counts: {monitor_counts}")
             logging.info(f"\t\t{type(monitor_counts) = }")
             ob_data = ob_data / monitor_counts
@@ -1182,14 +1345,20 @@ def combine_ob_images(
             logging.info("\t -> Normalized by shutter counts")
 
             list_shutter_values_for_each_image = produce_list_shutter_for_each_image(
-                list_time_spectra=ob_master_dict[_ob_run_number][MasterDictKeys.list_spectra],
-                list_shutter_counts=ob_master_dict[_ob_run_number][MasterDictKeys.shutter_counts],
+                list_time_spectra=ob_master_dict[_ob_run_number][
+                    MasterDictKeys.list_spectra
+                ],
+                list_shutter_counts=ob_master_dict[_ob_run_number][
+                    MasterDictKeys.shutter_counts
+                ],
             )
 
             logging.info(f"{list_shutter_values_for_each_image.shape = }")
             temp_ob_data = np.empty_like(ob_data, dtype=np.float32)
             for _index in range(len(list_shutter_values_for_each_image)):
-                temp_ob_data[_index] = ob_data[_index] / list_shutter_values_for_each_image[_index]
+                temp_ob_data[_index] = (
+                    ob_data[_index] / list_shutter_values_for_each_image[_index]
+                )
             logging.info(f"{temp_ob_data.shape = }")
             ob_data = temp_ob_data.copy()
 
@@ -1197,9 +1366,11 @@ def combine_ob_images(
         # logging.info(f"{ob_data_combined.shape = }")
 
         if replace_ob_zeros_by_local_median:
-            ob_data = replace_zero_with_local_median(ob_data, 
-                                                     kernel_size=kernel_size_for_local_median, 
-                                                     max_iterations=max_iterations)
+            ob_data = replace_zero_with_local_median(
+                ob_data,
+                kernel_size=kernel_size_for_local_median,
+                max_iterations=max_iterations,
+            )
 
         full_ob_data_corrected.append(ob_data)
         logging.info(f"{np.shape(full_ob_data_corrected) = }")
@@ -1224,9 +1395,15 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("--sample", type=str, nargs=1, help="Full path to sample run number")
-    parser.add_argument("--ob", type=str, nargs=1, help="Full path to the ob run number")
-    parser.add_argument("--output", type=str, nargs=1, help="Path to the output folder", default="./")
+    parser.add_argument(
+        "--sample", type=str, nargs=1, help="Full path to sample run number"
+    )
+    parser.add_argument(
+        "--ob", type=str, nargs=1, help="Full path to the ob run number"
+    )
+    parser.add_argument(
+        "--output", type=str, nargs=1, help="Path to the output folder", default="./"
+    )
 
     args = parser.parse_args()
     logging.info(f"{args = }")
@@ -1275,7 +1452,9 @@ if __name__ == "__main__":
 
     # normalization(sample_folder=sample_folder, ob_folder=ob_folder, output_folder=output_folder)
 
-    print(f"Normalization is done! Check the log file {log_file_name} for more details!")
+    print(
+        f"Normalization is done! Check the log file {log_file_name} for more details!"
+    )
     print(f"Exported data to {output_folder}")
 
     # sample = /SNS/VENUS/IPTS-34808/shared/autoreduce/mcp/November17_Sample6_UA_H_Batteries_1_5_Angs_min_30Hz_5C

@@ -1,12 +1,12 @@
 import os
 
 import numpy as np
-from IPython.display import HTML, display
-from ipywidgets import widgets
-from NeuNorm.normalization import Normalization
 
 # from __code import file_handler
 from __code.ipywe import fileselector
+from IPython.display import HTML, display
+from ipywidgets import widgets
+from NeuNorm.normalization import Normalization
 
 TIFF_EXTENSIONS = (".tif", ".tiff")
 
@@ -31,7 +31,9 @@ class LoadImages:
         else:
             self._next_step = self.load_images if use_next else None
 
-        self.message = widgets.Label("SELECT THE FOLDER OF IMAGES YOU WANT TO WORK ON ...")
+        self.message = widgets.Label(
+            "SELECT THE FOLDER OF IMAGES YOU WANT TO WORK ON ..."
+        )
         display(self.message)
 
         self.list_images_ui = fileselector.FileSelectorPanel(
@@ -51,7 +53,8 @@ class LoadImages:
         list_tiff = [
             os.path.join(folder, _file)
             for _file in os.listdir(folder)
-            if _file.lower().endswith(TIFF_EXTENSIONS) and os.path.isfile(os.path.join(folder, _file))
+            if _file.lower().endswith(TIFF_EXTENSIONS)
+            and os.path.isfile(os.path.join(folder, _file))
         ]
         return sorted(list_tiff)
 

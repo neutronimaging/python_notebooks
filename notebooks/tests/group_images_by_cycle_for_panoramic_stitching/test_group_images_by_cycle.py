@@ -1,7 +1,9 @@
 import glob
 from pathlib import Path
 
-from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
+from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import (
+    GroupImagesByCycle,
+)
 
 
 class TestGroupImagesByCycle:
@@ -14,7 +16,9 @@ class TestGroupImagesByCycle:
         list_of_files.sort()
         self.list_of_files = list_of_files
 
-        full_tiff_path = Path(data_path) / "data" / "images" / "data_with_acquisition_cycle"
+        full_tiff_path = (
+            Path(data_path) / "data" / "images" / "data_with_acquisition_cycle"
+        )
         full_list_of_files = glob.glob(str(full_tiff_path) + "/*.tif")
         full_list_of_files.sort()
         self.full_list_of_files = full_list_of_files
@@ -22,7 +26,10 @@ class TestGroupImagesByCycle:
         self.list_of_metadata_key = [65045, 65041]
 
     def test_create_master_dictionary(self):
-        o_group = GroupImagesByCycle(list_of_files=self.list_of_files, list_of_metadata_key=self.list_of_metadata_key)
+        o_group = GroupImagesByCycle(
+            list_of_files=self.list_of_files,
+            list_of_metadata_key=self.list_of_metadata_key,
+        )
         o_group.create_master_dictionary()
 
         dict_expected = {
@@ -66,7 +73,7 @@ class TestGroupImagesByCycle:
 
         dict_returned = o_group.master_dictionary
 
-        for _file in dict_expected.keys():
+        for _file in dict_expected:
             _expected = dict_expected[_file]
             _returned = dict_returned[_file]
             for _key in _expected.keys():
@@ -74,7 +81,8 @@ class TestGroupImagesByCycle:
 
     def test_group_dictionary(self):
         o_group = GroupImagesByCycle(
-            list_of_files=self.full_list_of_files, list_of_metadata_key=self.list_of_metadata_key
+            list_of_files=self.full_list_of_files,
+            list_of_metadata_key=self.list_of_metadata_key,
         )
         o_group.create_master_dictionary()
         o_group.group()
@@ -84,11 +92,15 @@ class TestGroupImagesByCycle:
         expected_list_group0 = self.full_list_of_files[:9]
         assert len(o_group.dictionary_of_groups[0]) == len(expected_list_group0)
 
-        for _file_returned, _file_expected in zip(o_group.dictionary_of_groups[0], expected_list_group0, strict=False):
+        for _file_returned, _file_expected in zip(
+            o_group.dictionary_of_groups[0], expected_list_group0, strict=False
+        ):
             assert _file_expected == _file_returned
 
         expected_list_group1 = self.full_list_of_files[9:18]
         assert len(o_group.dictionary_of_groups[1]) == len(expected_list_group1)
 
-        for _file_returned, _file_expected in zip(o_group.dictionary_of_groups[1], expected_list_group1, strict=False):
+        for _file_returned, _file_expected in zip(
+            o_group.dictionary_of_groups[1], expected_list_group1, strict=False
+        ):
             assert _file_expected == _file_returned

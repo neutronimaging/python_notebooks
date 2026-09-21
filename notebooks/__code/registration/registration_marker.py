@@ -1,14 +1,13 @@
 import os
 
 import numpy as np
-from qtpy import QtCore, QtGui
-from qtpy.QtWidgets import QApplication, QDialog, QMenu, QTableWidget, QTableWidgetItem
-
 from __code import load_ui
 from __code._utilities.table_handler import TableHandler
 from __code.registration.event_handler import EventHandler
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 from __code.registration.marker_handler import MarkerHandler
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import QApplication, QDialog, QMenu, QTableWidget, QTableWidgetItem
 
 TABLE_NBR_COLUMNS = 4
 
@@ -70,7 +69,9 @@ class RegistrationMarkers(QDialog):
             _table_ui = self.parent.markers_table[_key]["ui"]
             if not (_table_ui == _live_table_ui):
                 for _col, _size in enumerate(self.parent.markers_table_column_width):
-                    _table_ui.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
+                    _table_ui.setColumnWidth(
+                        _col, self.parent.markers_table_column_width[_col]
+                    )
 
     def init_widgets(self):
         if self.parent.markers_table == {}:
@@ -109,14 +110,20 @@ class RegistrationMarkers(QDialog):
             selected_row = o_main_table.get_row_selected()
 
             for _col, _size in enumerate(self.parent.markers_table_column_width):
-                _table.setColumnWidth(_col, self.parent.markers_table_column_width[_col])
+                _table.setColumnWidth(
+                    _col, self.parent.markers_table_column_width[_col]
+                )
 
             _table.horizontalHeader().sectionResized.connect(self.resizing_column)
             _table.cellClicked.connect(
-                lambda row=0, column=0, tab_index=_key_tab_name: self.table_row_clicked(row, column, tab_index)
+                lambda row=0, column=0, tab_index=_key_tab_name: self.table_row_clicked(
+                    row, column, tab_index
+                )
             )
             _table.itemSelectionChanged.connect(
-                lambda key_tab_name=_key_tab_name: self.cell_clicked(key_tab_name=_key_tab_name)
+                lambda key_tab_name=_key_tab_name: self.cell_clicked(
+                    key_tab_name=_key_tab_name
+                )
             )
 
             _data_dict = self.parent.markers_table[_key_tab_name]["data"]
@@ -251,7 +258,9 @@ class RegistrationMarkers(QDialog):
         cell_value = str(table_ui.item(row_selected, column_selected).text())
         self.parent.marker_table_buffer_cell = cell_value
 
-    def paste_cell(self, top_row_selected=-1, bottom_row_selected=-1, column_selected=-1):
+    def paste_cell(
+        self, top_row_selected=-1, bottom_row_selected=-1, column_selected=-1
+    ):
         cell_contain_to_copy = self.parent.marker_table_buffer_cell
         table_ui = self.get_current_table_ui()
         markers_table = self.parent.markers_table
@@ -262,7 +271,9 @@ class RegistrationMarkers(QDialog):
             marker_axis = "y"
         for _row in np.arange(top_row_selected, bottom_row_selected + 1):
             _file = str(table_ui.item(_row, 0).text())
-            markers_table[marker_name]["data"][_file][marker_axis] = cell_contain_to_copy
+            markers_table[marker_name]["data"][_file][marker_axis] = (
+                cell_contain_to_copy
+            )
             table_ui.item(_row, column_selected).setText(str(cell_contain_to_copy))
 
         self.parent.markers_table = markers_table
@@ -328,7 +339,9 @@ class RegistrationMarkers(QDialog):
             menu.addSeparator()
 
         self.start_marker = menu.addAction("Set marker interpolation initial position")
-        self.end_marker = menu.addAction("Set marker interpolation final position and process intermediate markers")
+        self.end_marker = menu.addAction(
+            "Set marker interpolation final position and process intermediate markers"
+        )
 
         if self.parent.markers_initial_position["row"] is None:
             self.end_marker.setEnabled(False)
@@ -338,7 +351,9 @@ class RegistrationMarkers(QDialog):
         action = menu.exec_(QtGui.QCursor.pos())
 
         if action == copy_cell:
-            self.copy_cell(row_selected=top_row_selected, column_selected=left_column_selected)
+            self.copy_cell(
+                row_selected=top_row_selected, column_selected=left_column_selected
+            )
 
         elif action == paste_cell:
             self.paste_cell(
@@ -359,7 +374,9 @@ class RegistrationMarkers(QDialog):
         self.parent.markers_initial_position["row"] = row_selected
         self.parent.markers_initial_position["tab_name"] = tab_selected
         o_table = TableHandler(table_ui=self.parent.markers_table[tab_selected]["ui"])
-        o_table.set_item_with_str(row=row_selected, column=3, cell_str="Interpolation starting position")
+        o_table.set_item_with_str(
+            row=row_selected, column=3, cell_str="Interpolation starting position"
+        )
 
     def end_marker_initialized(self):
         tab_selected = self.get_current_active_tab()
@@ -384,10 +401,14 @@ class RegistrationMarkers(QDialog):
             coeff = 1
             for _row in np.arange(from_row + 1, to_row):
                 xoffset_value = int(np.round(xoffset_from + coeff * delta_xoffset))
-                o_table.set_item_with_str(row=_row, column=1, cell_str=str(xoffset_value))
+                o_table.set_item_with_str(
+                    row=_row, column=1, cell_str=str(xoffset_value)
+                )
 
                 yoffset_value = int(np.round(yoffset_from + coeff * delta_yoffset))
-                o_table.set_item_with_str(row=_row, column=2, cell_str=str(yoffset_value))
+                o_table.set_item_with_str(
+                    row=_row, column=2, cell_str=str(yoffset_value)
+                )
                 coeff += 1
 
         self.parent.markers_initial_position["row"] = None
@@ -443,7 +464,12 @@ class RegistrationMarkers(QDialog):
             x = self.parent.o_MarkerDefaultSettings.x
             y = self.parent.o_MarkerDefaultSettings.y
             self.__populate_table_row(table, _row, _short_file, x, y)
-            _data_dict[_short_file] = {"x": x, "y": y, "marker_ui": None, "label_ui": None}
+            _data_dict[_short_file] = {
+                "x": x,
+                "y": y,
+                "marker_ui": None,
+                "label_ui": None,
+            }
 
         _marker_dict["data"] = _data_dict
 
@@ -452,7 +478,9 @@ class RegistrationMarkers(QDialog):
         self.ui.tabWidget.setCurrentIndex(number_of_tabs - 1)
         table.itemChanged.connect(self.table_cell_modified)
         table.itemSelectionChanged.connect(
-            lambda key_tab_name=new_marker_name: self.cell_clicked(key_tab_name=new_marker_name)
+            lambda key_tab_name=new_marker_name: self.cell_clicked(
+                key_tab_name=new_marker_name
+            )
         )
         self.parent.markers_table[new_marker_name] = _marker_dict
 
@@ -520,13 +548,17 @@ class RegistrationMarkers(QDialog):
         for _marker in markers_table.keys():
             _list_files = markers_table[_marker]["data"]
             for _file in _list_files:
-                markers_list[_file]["x"].append(markers_table[_marker]["data"][_file]["x"])
-                markers_list[_file]["y"].append(markers_table[_marker]["data"][_file]["y"])
+                markers_list[_file]["x"].append(
+                    markers_table[_marker]["data"][_file]["x"]
+                )
+                markers_list[_file]["y"].append(
+                    markers_table[_marker]["data"][_file]["y"]
+                )
 
         step += 1
         self.parent.eventProgress.setValue(step)
         QApplication.processEvents()
-        for _file in markers_list.keys():
+        for _file in markers_list:
             markers_list[_file]["mean_x"] = np.mean(markers_list[_file]["x"])
             markers_list[_file]["mean_y"] = np.mean(markers_list[_file]["y"])
 

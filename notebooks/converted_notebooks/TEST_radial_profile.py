@@ -34,6 +34,8 @@ list_files = glob.glob(file_dir + "*.tiff")
 o_selection = FileSelection()
 o_selection.load_files(list_files)
 
-o_select = SelectRadialParameters(working_dir=file_dir, data_dict=o_selection.data_dict["sample"])
+o_select = SelectRadialParameters(
+    working_dir=file_dir, data_dict=o_selection.data_dict["sample"]
+)
 o_select.show()
 # -

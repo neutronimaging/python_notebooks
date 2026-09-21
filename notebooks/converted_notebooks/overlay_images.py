@@ -55,6 +55,8 @@ o_data.select_input_folder(data_type="low resolution")
 
 # + run_control={"frozen": false, "read_only": false}
 o_interface = InterfaceHandler(
-    o_norm_high_res=o_data.o_norm_high_res, o_norm_low_res=o_data.o_norm_low_res, working_dir=o_data.working_dir
+    o_norm_high_res=o_data.o_norm_high_res,
+    o_norm_low_res=o_data.o_norm_low_res,
+    working_dir=o_data.working_dir,
 )
 # -

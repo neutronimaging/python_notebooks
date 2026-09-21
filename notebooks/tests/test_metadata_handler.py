@@ -30,6 +30,8 @@ class TestMetadataHandler:
     def test_correct_requested_metadata_dict_returned(self):
         list_key = [65062, 65063]
         list_files = glob.glob(str(self.tiff_path) + "/*.tif")
-        dict_returned = MetadataHandler.retrieve_value_of_metadata_key(list_files=list_files, list_key=list_key)
+        dict_returned = MetadataHandler.retrieve_value_of_metadata_key(
+            list_files=list_files, list_key=list_key
+        )
         assert dict_returned[list_files[0]][65062] == "MotAperture.RBV:220.000000"
         assert dict_returned[list_files[1]][65062] == "MotAperture.RBV:220.000000"

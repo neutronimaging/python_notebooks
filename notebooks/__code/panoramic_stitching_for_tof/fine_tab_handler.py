@@ -1,11 +1,10 @@
 import pyqtgraph as pg
-from qtpy import QtCore
-from qtpy.QtWidgets import QCheckBox, QHBoxLayout, QSizePolicy, QSpacerItem, QWidget
-
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.gui_handler import GuiHandler
 from __code.panoramic_stitching_for_tof.event_handler import TOFEventHandler
 from __code.panoramic_stitching_for_tof.image_handler import ImageHandler
+from qtpy import QtCore
+from qtpy.QtWidgets import QCheckBox, QHBoxLayout, QSizePolicy, QSpacerItem, QWidget
 
 
 class FineTabHandler:
@@ -36,11 +35,18 @@ class FineTabHandler:
                 else:
                     editable_flag = editable_columns_boolean[_column_index]
 
-                o_table.insert_item(row=_row_index, column=_column_index, value=_text, editable=editable_flag)
+                o_table.insert_item(
+                    row=_row_index,
+                    column=_column_index,
+                    value=_text,
+                    editable=editable_flag,
+                )
 
                 # checkbox to turn on/off the visibility of the row
                 hori_layout = QHBoxLayout()
-                spacer_item_left = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+                spacer_item_left = QSpacerItem(
+                    408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding
+                )
                 hori_layout.addItem(spacer_item_left)
                 check_box = QCheckBox()
                 if offset_entry["visible"]:
@@ -50,10 +56,14 @@ class FineTabHandler:
                 check_box.setCheckState(_state)
 
                 check_box.stateChanged.connect(
-                    lambda state=0, row=_row_index: self.parent.visibility_checkbox_changed(state=state, row=row)
+                    lambda state=0, row=_row_index: (
+                        self.parent.visibility_checkbox_changed(state=state, row=row)
+                    )
                 )
                 hori_layout.addWidget(check_box)
-                spacer_item_right = QSpacerItem(408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding)
+                spacer_item_right = QSpacerItem(
+                    408, 20, QSizePolicy.Expanding, QSizePolicy.Expanding
+                )
                 hori_layout.addItem(spacer_item_right)
                 cell_widget = QWidget()
                 cell_widget.setLayout(hori_layout)
@@ -106,7 +116,9 @@ class FineTabHandler:
         self,
         roi_id=None,
     ):
-        region = roi_id.getArraySlice(self.parent.current_live_image, self.parent.ui.image_view.imageItem)
+        region = roi_id.getArraySlice(
+            self.parent.current_live_image, self.parent.ui.image_view.imageItem
+        )
 
         x0 = region[0][0].start
         y0 = region[0][1].start
@@ -143,13 +155,17 @@ class FineTabHandler:
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
         row_selected = o_table.get_row_selected()
 
-        current_xoffset_of_selected_row = int(o_table.get_item_str_from_cell(row=row_selected, column=1))
+        current_xoffset_of_selected_row = int(
+            o_table.get_item_str_from_cell(row=row_selected, column=1)
+        )
         new_xoffset = int(current_xoffset_of_selected_row - delta_x)
         self.parent.ui.tableWidget.item(row_selected, 1).setText(str(new_xoffset))
         o_event = TOFEventHandler(parent=self.parent)
         o_event.save_table_offset_of_this_cell(row=row_selected, column=1)
 
-        current_yoffset_of_selected_row = int(o_table.get_item_str_from_cell(row=row_selected, column=2))
+        current_yoffset_of_selected_row = int(
+            o_table.get_item_str_from_cell(row=row_selected, column=2)
+        )
         new_yoffset = current_yoffset_of_selected_row - delta_y
         self.parent.ui.tableWidget.item(row_selected, 2).setText(str(new_yoffset))
         o_event.save_table_offset_of_this_cell(row=row_selected, column=2)

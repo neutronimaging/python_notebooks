@@ -1,19 +1,18 @@
 import os
 
-from IPython.display import HTML, display
-from qtpy.QtWidgets import QMainWindow
-
 from __code import load_ui
 from __code.decorators import wait_cursor
 from __code.file_folder_browser import FileFolderBrowser
 from __code.outliers_filtering.event_handler import EventHandler
 from __code.outliers_filtering.export import Export
 from __code.outliers_filtering.initialization import Initialization
+from IPython.display import HTML, display
+from qtpy.QtWidgets import QMainWindow
 
 
 class InterfaceHandler(FileFolderBrowser):
     def __init__(self, working_dir=""):
-        super(InterfaceHandler, self).__init__(working_dir=working_dir, next_function=self.display_status)
+        super().__init__(working_dir=working_dir, next_function=self.display_status)
 
     def get_list_of_files(self):
         return self.list_images_ui.selected
@@ -23,7 +22,13 @@ class InterfaceHandler(FileFolderBrowser):
 
     def display_status(self, list_of_files):
         nbr_images = str(len(list_of_files))
-        display(HTML('<span style="font-size: 15px; color:blue">You have selected ' + nbr_images + " images </span>"))
+        display(
+            HTML(
+                '<span style="font-size: 15px; color:blue">You have selected '
+                + nbr_images
+                + " images </span>"
+            )
+        )
 
 
 class Interface(QMainWindow):
@@ -67,7 +72,7 @@ class Interface(QMainWindow):
         self.list_files = list_of_files
         self.working_dir = os.path.dirname(list_of_files[0])
 
-        super(Interface, self).__init__(parent)
+        super().__init__(parent)
         ui_full_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             os.path.join("ui", "ui_outliers_filtering_tool.ui"),
@@ -135,7 +140,9 @@ class Interface(QMainWindow):
     def help_clicked(self):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/outliers-filtering-tool/")
+        webbrowser.open(
+            "https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/outliers-filtering-tool/"
+        )
 
     def display_image(self, image):
         self.ui.image_view.setImage(image)

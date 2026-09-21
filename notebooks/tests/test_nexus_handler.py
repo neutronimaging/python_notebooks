@@ -28,7 +28,8 @@ class TestGetListEntries:
         """make sure error is raised if entry is wrong"""
         with pytest.raises(KeyError):
             _ = nexus_handler.get_list_entries(
-                nexus_file_name=self.nexus_file_name, starting_entries=["entry_does_not_exist"]
+                nexus_file_name=self.nexus_file_name,
+                starting_entries=["entry_does_not_exist"],
             )
 
     def test_data_retrieved(self):
@@ -37,7 +38,12 @@ class TestGetListEntries:
             nexus_file_name=self.nexus_file_name, starting_entries=["entry", "daslogs"]
         )
 
-        assert result["pv1"] == ["average_value", "maximum_value", "minimum_value", "value"]
+        assert result["pv1"] == [
+            "average_value",
+            "maximum_value",
+            "minimum_value",
+            "value",
+        ]
 
 
 class TestGetEntryValue:
@@ -58,9 +64,13 @@ class TestGetEntryValue:
     def test_raising_attribute_error_if_wrong_entry(self):
         entry_path = ["wrong", "path"]
         with pytest.raises(AttributeError):
-            _ = nexus_handler.get_entry_value(nexus_file_name=self.nexus_file_name, entry_path=entry_path)
+            _ = nexus_handler.get_entry_value(
+                nexus_file_name=self.nexus_file_name, entry_path=entry_path
+            )
 
     def test_data_retrieved(self):
         entry_path = ["entry", "daslogs", "pv1", "value"]
-        result = nexus_handler.get_entry_value(nexus_file_name=self.nexus_file_name, entry_path=entry_path)
+        result = nexus_handler.get_entry_value(
+            nexus_file_name=self.nexus_file_name, entry_path=entry_path
+        )
         assert result == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

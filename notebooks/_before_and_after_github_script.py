@@ -9,12 +9,23 @@ from __code.file_handler import make_ascii_file_from_string, read_ascii
 
 parser = argparse.ArgumentParser(description="Before Push or After Pull from GitHub")
 parser.add_argument(
-    "-b", "--before_push", action="store_true", help="Convert all .ipynb to .py in converted_notebooks folder"
+    "-b",
+    "--before_push",
+    action="store_true",
+    help="Convert all .ipynb to .py in converted_notebooks folder",
 )
 parser.add_argument(
-    "-a", "--after_pull", action="store_true", help="Convert all .py from converted_notebooks folder to .ipynb"
+    "-a",
+    "--after_pull",
+    action="store_true",
+    help="Convert all .py from converted_notebooks folder to .ipynb",
 )
-parser.add_argument("-d", "--use_debugging_mode", action="store_true", help="Change the debugging mode on/off")
+parser.add_argument(
+    "-d",
+    "--use_debugging_mode",
+    action="store_true",
+    help="Change the debugging mode on/off",
+)
 
 
 def run():

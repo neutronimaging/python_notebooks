@@ -131,7 +131,14 @@ data[:, 50:60, 30:40] += sig
 imv.setImage(data, xvals=np.linspace(1.0, 3.0, data.shape[0]))
 
 ## Set a custom color map
-colors = [(0, 0, 0), (45, 5, 61), (84, 42, 55), (150, 87, 60), (208, 171, 141), (255, 255, 255)]
+colors = [
+    (0, 0, 0),
+    (45, 5, 61),
+    (84, 42, 55),
+    (150, 87, 60),
+    (208, 171, 141),
+    (255, 255, 255),
+]
 cmap = pg.ColorMap(pos=np.linspace(0.0, 1.0, 6), color=colors)
 imv.setColorMap(cmap)
 

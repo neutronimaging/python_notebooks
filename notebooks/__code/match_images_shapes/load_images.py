@@ -6,9 +6,8 @@ try:
 except ImportError:
     pass
 
-from NeuNorm.normalization import Normalization
-
 from __code.ipywe import fileselector
+from NeuNorm.normalization import Normalization
 
 
 class LoadImages:
@@ -27,9 +26,16 @@ class LoadImages:
             next = self.load_images
         else:
             next = None
-        display(HTML('<span style="font-size: 20px; color:blue">Select the images you want to work on!</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Select the images you want to work on!</span>'
+            )
+        )
         self.list_images_ui = fileselector.FileSelectorPanel(
-            instruction="Select Images...", multiple=True, next=next, start_dir=self.working_dir
+            instruction="Select Images...",
+            multiple=True,
+            next=next,
+            start_dir=self.working_dir,
         )
         self.list_images_ui.show()
 

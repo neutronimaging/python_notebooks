@@ -1,12 +1,11 @@
 import os
 
-from IPython.display import HTML, display
-from ipywidgets import widgets
-
 from __code import utilities
 from __code.file_handler import ListMostDominantExtension
 from __code.ipywe import fileselector
 from __code.ipywe.myfileselector import FileSelectorPanelWithJumpFolders
+from IPython.display import HTML, display
+from ipywidgets import widgets
 
 
 class FormatFileNameIndex:
@@ -55,8 +54,12 @@ class NamingSchemaDefinition:
             self.working_dir = o_format.working_dir
 
         if self.list_files:
-            _random_input_list = utilities.get_n_random_element(input_list=self.list_files, n=10)
-            self.random_input_list = [os.path.basename(_file) for _file in _random_input_list]
+            _random_input_list = utilities.get_n_random_element(
+                input_list=self.list_files, n=10
+            )
+            self.random_input_list = [
+                os.path.basename(_file) for _file in _random_input_list
+            ]
 
         self.basename = os.path.basename(self.list_files[0])
 
@@ -127,16 +130,22 @@ class NamingSchemaDefinition:
         # current schema name
         self.box2 = widgets.HBox(
             [
-                widgets.Label("Pre. Index Separator", layout=widgets.Layout(width="15%")),
+                widgets.Label(
+                    "Pre. Index Separator", layout=widgets.Layout(width="15%")
+                ),
                 widgets.Text(value="_", layout=widgets.Layout(width="5%")),
             ]
         )
 
         self.box2b = widgets.HBox(
             [
-                widgets.Label("Untouched filename part:", layout=widgets.Layout(width="20%")),
+                widgets.Label(
+                    "Untouched filename part:", layout=widgets.Layout(width="20%")
+                ),
                 widgets.Label("", layout=widgets.Layout(width="40%")),
-                widgets.IntRangeSlider(value=[0, 2], min=0, max=len(self.basename), step=1),
+                widgets.IntRangeSlider(
+                    value=[0, 2], min=0, max=len(self.basename), step=1
+                ),
             ]
         )
         self.int_range_slider = self.box2b.children[2]
@@ -145,11 +154,17 @@ class NamingSchemaDefinition:
 
         self.box4 = widgets.HBox(
             [
-                widgets.Label("Current Name Schema: ", layout=widgets.Layout(width="20%")),
-                widgets.Label(self.current_naming_schema(), layout=widgets.Layout(width="30%")),
+                widgets.Label(
+                    "Current Name Schema: ", layout=widgets.Layout(width="20%")
+                ),
+                widgets.Label(
+                    self.current_naming_schema(), layout=widgets.Layout(width="30%")
+                ),
                 widgets.Label("Random Input:", layout=widgets.Layout(width="15%")),
                 widgets.Dropdown(
-                    options=self.random_input_list, value=self.random_input_list[0], layout=widgets.Layout(width="50%")
+                    options=self.random_input_list,
+                    value=self.random_input_list[0],
+                    layout=widgets.Layout(width="50%"),
                 ),
             ]
         )
@@ -157,36 +172,54 @@ class NamingSchemaDefinition:
         self.box2.children[1].on_trait_change(self.pre_index_text_changed, "value")
         before = widgets.VBox([self.box2, self.box2b, self.box4])
         self.random_input_checkbox = self.box4.children[3]
-        self.random_input_checkbox.observe(self.random_input_checkbox_value_changed, "value")
+        self.random_input_checkbox.observe(
+            self.random_input_checkbox_value_changed, "value"
+        )
 
         # new naming schema
         box_text_width = "10%"
         self.box1 = widgets.HBox(
             [
-                widgets.Label("New prefix File Name", layout=widgets.Layout(width="10%")),
+                widgets.Label(
+                    "New prefix File Name", layout=widgets.Layout(width="10%")
+                ),
                 widgets.Checkbox(
-                    value=True, description="Use previous prefix name", layout=widgets.Layout(width="30%")
+                    value=True,
+                    description="Use previous prefix name",
+                    layout=widgets.Layout(width="30%"),
                 ),
             ]
         )
         self.use_previous_prefix_widget = self.box1.children[1]
-        self.box1.children[1].observe(self.changed_use_previous_prefix_name, names="value")
+        self.box1.children[1].observe(
+            self.changed_use_previous_prefix_name, names="value"
+        )
 
         self.box1b = widgets.HBox(
             [
                 widgets.Label("", layout=widgets.Layout(width="10%")),
-                widgets.Checkbox(value=False, description="Use new prefix", layout=widgets.Layout(width="20%")),
-                widgets.Text(value="image", disabled=True, layout=widgets.Layout(width="25%")),
+                widgets.Checkbox(
+                    value=False,
+                    description="Use new prefix",
+                    layout=widgets.Layout(width="20%"),
+                ),
+                widgets.Text(
+                    value="image", disabled=True, layout=widgets.Layout(width="25%")
+                ),
             ]
         )
         self.box1b.children[2].observe(self.changed_use_new_prefix_name, names="value")
         self.new_prefix_text_widget = self.box1b.children[2]
         self.user_new_prefix_widget = self.box1b.children[1]
-        self.user_new_prefix_widget.observe(self.changed_use_new_prefix_name, names="value")
+        self.user_new_prefix_widget.observe(
+            self.changed_use_new_prefix_name, names="value"
+        )
 
         self.box5 = widgets.HBox(
             [
-                widgets.Label("New Index Separator", layout=widgets.Layout(width="15%")),
+                widgets.Label(
+                    "New Index Separator", layout=widgets.Layout(width="15%")
+                ),
                 widgets.Text(value="_", layout=widgets.Layout(width=box_text_width)),
             ]
         )
@@ -208,7 +241,9 @@ class NamingSchemaDefinition:
         self.box6 = widgets.HBox(
             [
                 widgets.Label("New Name Schema: ", layout=widgets.Layout(width="20%")),
-                widgets.Label(self.new_naming_schema(), layout=widgets.Layout(width="40%")),
+                widgets.Label(
+                    self.new_naming_schema(), layout=widgets.Layout(width="40%")
+                ),
             ]
         )
 
@@ -217,13 +252,17 @@ class NamingSchemaDefinition:
         self.box7.children[1].on_trait_change(self.post_text_changed, "value")
         self.box8.children[1].on_trait_change(self.post_text_changed, "value")
 
-        after = widgets.VBox([self.box1, self.box1b, self.box5, self.box7, self.box8, self.box6])
+        after = widgets.VBox(
+            [self.box1, self.box1b, self.box5, self.box7, self.box8, self.box6]
+        )
 
         accordion = widgets.Accordion(children=[before, after])
         accordion.set_title(0, "Current Schema Name")
         accordion.set_title(1, "New Naming Schema")
 
-        output_ui_1 = widgets.HBox([widgets.Label("Example of naming: ", layout=widgets.Layout(width="20%"))])
+        output_ui_1 = widgets.HBox(
+            [widgets.Label("Example of naming: ", layout=widgets.Layout(width="20%"))]
+        )
 
         self.output_ui_2 = widgets.HBox(
             [
@@ -240,7 +279,9 @@ class NamingSchemaDefinition:
         )
 
         self.output_ui_3.children[1].add_class("result_label")
-        vbox = widgets.VBox([accordion, output_ui_1, self.output_ui_2, self.output_ui_3])
+        vbox = widgets.VBox(
+            [accordion, output_ui_1, self.output_ui_2, self.output_ui_3]
+        )
         display(vbox)
 
         self.demo_output_file_name()
@@ -248,7 +289,9 @@ class NamingSchemaDefinition:
         self.changed_use_new_prefix_name()
 
     def demo_output_file_name(self):
-        input_file = self.get_basename_of_current_dropdown_selected_file(is_with_ext=True)
+        input_file = self.get_basename_of_current_dropdown_selected_file(
+            is_with_ext=True
+        )
         self.output_ui_2.children[1].value = input_file
 
         old_index_separator = self.get_old_index_separator()
@@ -340,7 +383,12 @@ class NamingSchemaDefinition:
 
         try:
             _index = int(_name_separated[-1]) + offset
-            new_name = prefix + new_index_separator + "{:0{}}".format(_index, new_number_of_digits) + self.ext
+            new_name = (
+                prefix
+                + new_index_separator
+                + "{:0{}}".format(_index, new_number_of_digits)
+                + self.ext
+            )
         except ValueError:
             _index = _name_separated[-1]
             new_name = prefix + new_index_separator + _index + self.ext
@@ -361,7 +409,9 @@ class NamingSchemaDefinition:
         new_number_of_digits = self.get_new_number_of_digits()
         offset = self.box8.children[1].value
 
-        list_of_input_basename_files = [os.path.basename(_file) for _file in list_of_input_files]
+        list_of_input_basename_files = [
+            os.path.basename(_file) for _file in list_of_input_files
+        ]
 
         new_list = {}
         for _file_index, _file in enumerate(list_of_input_basename_files):
@@ -392,7 +442,11 @@ class NamingSchemaDefinition:
                 type="directory",
             )
         else:
-            display(HTML('<span style="font-size: 20px; color:red">You need to fix the namig convention first!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:red">You need to fix the namig convention first!</span>'
+                )
+            )
 
     def export(self, selected):
         self.output_folder_ui.shortcut_buttons.close()
@@ -401,7 +455,9 @@ class NamingSchemaDefinition:
         new_output_folder = os.path.abspath(selected)
 
         utilities.copy_files(
-            dict_old_new_names=dict_old_new_names, new_output_folder=new_output_folder, overwrite=False
+            dict_old_new_names=dict_old_new_names,
+            new_output_folder=new_output_folder,
+            overwrite=False,
         )
 
         self.new_list_files = dict_old_new_names
@@ -420,7 +476,9 @@ class NamingSchemaDefinition:
             [
                 widgets.Label("Renmaing results: ", layout=widgets.Layout(width="20%")),
                 widgets.Dropdown(
-                    options=self.renaming_result, value=self.renaming_result[0], layout=widgets.Layout(width="80%")
+                    options=self.renaming_result,
+                    value=self.renaming_result[0],
+                    layout=widgets.Layout(width="80%"),
                 ),
             ]
         )

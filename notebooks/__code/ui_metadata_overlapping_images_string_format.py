@@ -47,12 +47,16 @@ class Ui_MainWindow:
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setObjectName("pushButton_2")
         self.horizontalLayout.addWidget(self.pushButton_2)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem)
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setObjectName("pushButton_3")
         self.horizontalLayout.addWidget(self.pushButton_3)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem1)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setObjectName("pushButton")
@@ -68,8 +72,12 @@ class Ui_MainWindow:
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.first_part_lineEdit.textChanged["QString"].connect(MainWindow.string_format_changed)
-        self.second_part_lineEdit.textChanged["QString"].connect(MainWindow.string_format_changed)
+        self.first_part_lineEdit.textChanged["QString"].connect(
+            MainWindow.string_format_changed
+        )
+        self.second_part_lineEdit.textChanged["QString"].connect(
+            MainWindow.string_format_changed
+        )
         self.pushButton_3.clicked.connect(MainWindow.launch_help)
         self.pushButton_2.clicked.connect(MainWindow.cancel)
         self.pushButton.clicked.connect(MainWindow.ok)

@@ -80,7 +80,9 @@ for _material in hkl:
         _hkl_string.append(_hkl_s)
     _hkl_formated[_material] = _hkl_string
 
-trace = go.Scatter(x=o_bragg.lambda_array, y=o_bragg.counts_vs_file_index, mode="markers")
+trace = go.Scatter(
+    x=o_bragg.lambda_array, y=o_bragg.counts_vs_file_index, mode="markers"
+)
 
 layout = go.Layout(
     width="100%",

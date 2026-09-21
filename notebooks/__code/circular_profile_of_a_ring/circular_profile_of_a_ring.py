@@ -1,8 +1,7 @@
 import glob
 
-from NeuNorm.normalization import Normalization
-
 from __code.ipywe import fileselector
+from NeuNorm.normalization import Normalization
 
 
 class CircularProfileOfARing:
