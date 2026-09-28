@@ -34,15 +34,21 @@ def test_are_those_two_lists_identical_within_tolerance():
 
     list1 = [1, 2, 3]
     list2 = [1, 2.1, 3]
-    assert list.are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.2)
+    assert list.are_those_two_lists_identical_within_tolerance(
+        list1, list2, tolerance=0.2
+    )
 
     list1 = [1, 2, 3]
     list2 = [1, 2.1, 3]
-    assert not list.are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.1)
+    assert not list.are_those_two_lists_identical_within_tolerance(
+        list1, list2, tolerance=0.1
+    )
 
     list1 = [1, 2, 3, 4, 5, 6, 7]
     list2 = [1, 2.1, 3, 4.1, 5, 6.1, 7]
-    assert list.are_those_two_lists_identical_within_tolerance(list1, list2, tolerance=0.15)
+    assert list.are_those_two_lists_identical_within_tolerance(
+        list1, list2, tolerance=0.15
+    )
 
 
 def test_are_those_two_lists_of_lists_identical_within_tolerance():
@@ -53,7 +59,9 @@ def test_are_those_two_lists_of_lists_identical_within_tolerance():
 
     list1 = [[1, 2]]
     list2 = [[1, 2], [3, 4]]
-    assert not list.are_those_two_lists_of_lists_identical_within_tolerance(list1, list2)
+    assert not list.are_those_two_lists_of_lists_identical_within_tolerance(
+        list1, list2
+    )
 
     list1 = [[1, 2], [3, 4]]
     assert list.are_those_two_lists_of_lists_identical_within_tolerance(list1, list1)
@@ -68,11 +76,15 @@ def test_are_those_two_lists_of_lists_identical_within_tolerance():
 
     list1 = [[1, 2.1], [3, 4], [5, 6.1, 7]]
     list2 = [[1, 2], [3, 4.1], [5, 6, 7]]
-    assert list.are_those_two_lists_of_lists_identical_within_tolerance(list1, list2, tolerance=0.15)
+    assert list.are_those_two_lists_of_lists_identical_within_tolerance(
+        list1, list2, tolerance=0.15
+    )
 
     list1 = [[1, 2.1], [3, 4], [5, 6.1, 7]]
     list2 = [[1, 2], [3, 4.2], [5, 6, 7]]
-    assert not list.are_those_two_lists_of_lists_identical_within_tolerance(list1, list2, tolerance=0.15)
+    assert not list.are_those_two_lists_of_lists_identical_within_tolerance(
+        list1, list2, tolerance=0.15
+    )
 
 
 def test_is_this_list_already_in_those_lists_within_tolerance():
@@ -91,4 +103,6 @@ def test_is_this_list_already_in_those_lists_within_tolerance():
 
     list1 = [10, 25]
     list2 = [[10, 20], [30, 40]]
-    assert list.is_this_list_already_in_those_lists_within_tolerance(list1, list2, tolerance=5.1)
+    assert list.is_this_list_already_in_those_lists_within_tolerance(
+        list1, list2, tolerance=5.1
+    )

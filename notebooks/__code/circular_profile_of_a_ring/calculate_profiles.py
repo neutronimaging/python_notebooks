@@ -47,7 +47,14 @@ class CalculateProfiles:
         self.parent.eventProgress.setVisible(False)
         self.parent.ui.export_profiles_button.setEnabled(True)
 
-    def get_profile(self, image=None, angle_matrix=None, mask_ring=None, list_angles=None, profile_dictionary=None):
+    def get_profile(
+        self,
+        image=None,
+        angle_matrix=None,
+        mask_ring=None,
+        list_angles=None,
+        profile_dictionary=None,
+    ):
         # # create profile_dictionary
         # angle_bin = self.parent.angle_bin_horizontalSlider.value()/100
         #
@@ -60,7 +67,9 @@ class CalculateProfiles:
         x_mask = mask_ring[1]
         for y, x in zip(y_mask, x_mask, strict=False):
             angle = angle_matrix[y, x]
-            bin_angle = CalculateProfiles.get_corresponding_bin_angle(angle=angle, list_angles=list_angles)
+            bin_angle = CalculateProfiles.get_corresponding_bin_angle(
+                angle=angle, list_angles=list_angles
+            )
             # print(f"angle:{angle} -> bin_angle:{bin_angle}")
             profile_dictionary[bin_angle] = image[y, x]
 
@@ -85,9 +94,14 @@ class CalculateProfiles:
 
         # find all the pixels that are within the ring
         xv, yv = np.meshgrid(x, y)
-        distances_power = np.sqrt(np.power(yv - y_central_pixel, 2) + np.power(xv - x_central_pixel, 2))
+        distances_power = np.sqrt(
+            np.power(yv - y_central_pixel, 2) + np.power(xv - x_central_pixel, 2)
+        )
 
-        mask_ring = np.where((distances_power > inner_radius) & (distances_power < (inner_radius + thickness)))
+        mask_ring = np.where(
+            (distances_power > inner_radius)
+            & (distances_power < (inner_radius + thickness))
+        )
 
         # find angles of all the pixels
         angles_matrix = CalculateProfiles._build_angles_matrix(
@@ -109,7 +123,9 @@ class CalculateProfiles:
         return {"angles_matrix": ring_angles_matrix, "mask_ring": mask_ring}
 
     @staticmethod
-    def _build_angles_matrix(image_width=None, image_height=None, x_central_pixel=None, y_central_pixel=None):
+    def _build_angles_matrix(
+        image_width=None, image_height=None, x_central_pixel=None, y_central_pixel=None
+    ):
         full_angles_matrix = np.zeros((image_height, image_width))
 
         # bottom right corner of matrix
@@ -122,7 +138,10 @@ class CalculateProfiles:
         xv_right_bottom, yv_right_bottom = np.meshgrid(x_right_bottom, y_right_bottom)
 
         angles_right_bottom = 90 + np.rad2deg(
-            np.arctan((yv_right_bottom - y_central_pixel) / (xv_right_bottom - x_central_pixel))
+            np.arctan(
+                (yv_right_bottom - y_central_pixel)
+                / (xv_right_bottom - x_central_pixel)
+            )
         )
 
         full_angles_matrix[
@@ -140,7 +159,9 @@ class CalculateProfiles:
         xv_right_top, yv_right_top = np.meshgrid(x_right_top, y_right_top)
 
         angles_right_top = 90 + np.rad2deg(
-            np.arctan((yv_right_top - y_central_pixel) / (xv_right_top - x_central_pixel))
+            np.arctan(
+                (yv_right_top - y_central_pixel) / (xv_right_top - x_central_pixel)
+            )
         )
 
         full_angles_matrix[
@@ -157,7 +178,9 @@ class CalculateProfiles:
 
         xv_left_top, yv_left_top = np.meshgrid(x_left_top, y_left_top)
 
-        angles_left_top = 270 + np.rad2deg(np.arctan((yv_left_top - y_central_pixel) / (xv_left_top - x_central_pixel)))
+        angles_left_top = 270 + np.rad2deg(
+            np.arctan((yv_left_top - y_central_pixel) / (xv_left_top - x_central_pixel))
+        )
         full_angles_matrix[
             int(y_left_top[0]) : int(y_left_top[0]) + len(y_left_top),
             int(x_left_top[0]) : int(x_left_top[0]) + len(x_left_top),
@@ -173,7 +196,9 @@ class CalculateProfiles:
         xv_left_bottom, yv_left_bottom = np.meshgrid(x_left_bottom, y_left_bottom)
 
         angles_left_bottom = 270 + np.rad2deg(
-            np.arctan((yv_left_bottom - y_central_pixel) / (xv_left_bottom - x_central_pixel))
+            np.arctan(
+                (yv_left_bottom - y_central_pixel) / (xv_left_bottom - x_central_pixel)
+            )
         )
         full_angles_matrix[
             int(y_left_bottom[0]) : int(y_left_bottom[0]) + len(y_left_bottom),
@@ -200,7 +225,9 @@ class CalculateProfiles:
             x_profile = self.parent.list_angles
             y_profile = _profile["y_profile"]
 
-            self.parent.profile_plot.axes.plot(x_profile, y_profile, plot_type, label=file)
+            self.parent.profile_plot.axes.plot(
+                x_profile, y_profile, plot_type, label=file
+            )
             self.parent.profile_plot.axes.legend()
             self.parent.profile_plot.draw()
             # QtGui.QGuiApplication.processEvents()

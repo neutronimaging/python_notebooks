@@ -27,7 +27,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from __code import system
-from __code.circular_profile_of_a_ring.circular_profile_of_a_ring import CircularProfileOfARing
+from __code.circular_profile_of_a_ring.circular_profile_of_a_ring import (
+    CircularProfileOfARing,
+)
 from __code.circular_profile_of_a_ring.interface_handler import InterfaceHandler
 
 system.System.select_working_dir(notebook="circular_profile_of_a_ring")
@@ -49,5 +51,7 @@ o_selection.select_input_folder()
 # # Launch User Interface
 
 # + run_control={"frozen": false, "read_only": false}
-o_select = InterfaceHandler(working_dir=system.System.get_working_dir(), o_norm=o_selection.o_norm)
+o_select = InterfaceHandler(
+    working_dir=system.System.get_working_dir(), o_norm=o_selection.o_norm
+)
 # -

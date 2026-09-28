@@ -98,7 +98,9 @@ list_files = [
 
 import glob
 
-list_files = glob.glob("/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-19921-Charles/registration_test_set/*.tif")
+list_files = glob.glob(
+    "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-19921-Charles/registration_test_set/*.tif"
+)
 
 [os.path.exists(_file) for _file in list_files]
 

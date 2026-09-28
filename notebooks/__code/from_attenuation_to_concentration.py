@@ -1,11 +1,10 @@
 import os
 
+from __code.file_handler import ListMostDominantExtension, make_or_reset_folder
+from __code.ipywe import fileselector
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
-
-from __code.file_handler import ListMostDominantExtension, make_or_reset_folder
-from __code.ipywe import fileselector
 
 
 class FromAttenuationToConcentration:
@@ -14,7 +13,10 @@ class FromAttenuationToConcentration:
 
     def select_folder(self):
         self.folder_list_widget = fileselector.FileSelectorPanel(
-            instruction="Select data folder", start_dir=self.working_dir, next=self.load_data, type="directory"
+            instruction="Select data folder",
+            start_dir=self.working_dir,
+            next=self.load_data,
+            type="directory",
         )
         self.folder_list_widget.show()
 
@@ -34,7 +36,9 @@ class FromAttenuationToConcentration:
             [
                 widgets.Label("A(x,y) = "),
                 widgets.Text("0.052", layout=widgets.Layout(width="10%")),
-                widgets.Dropdown(options=["+", "-"], layout=widgets.Layout(width="5%"), value="+"),
+                widgets.Dropdown(
+                    options=["+", "-"], layout=widgets.Layout(width="5%"), value="+"
+                ),
                 widgets.Text("2.55e-5", layout=widgets.Layout(width="10%")),
                 widgets.Label(" * H(x,Y)"),
             ]
@@ -66,7 +70,11 @@ class FromAttenuationToConcentration:
             progress_bar.close()
 
         except:
-            display(HTML('<span style="font-size: 20px; color:red">Make sure the coefficient are floats!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 20px; color:red">Make sure the coefficient are floats!</span>'
+                )
+            )
 
     def select_output_folder(self):
         self.output_folder_list_widget = fileselector.FileSelectorPanel(
@@ -80,7 +88,9 @@ class FromAttenuationToConcentration:
     def create_concentration_list_of_file_names(self):
         """will use the original list of files and create the new file name that add the word "concentration" in it"""
         list_files = self.list_files
-        base_list_files = [f"concentration_{os.path.basename(_file)}" for _file in list_files]
+        base_list_files = [
+            f"concentration_{os.path.basename(_file)}" for _file in list_files
+        ]
 
         return base_list_files
 
@@ -99,5 +109,9 @@ class FromAttenuationToConcentration:
         o_norm.export(folder=new_output_dir, data_type="sample", file_type="tif")
 
         display(
-            HTML('<span style="font-size: 20px; color:blue">Files have been created in ' + new_output_dir + "</span>")
+            HTML(
+                '<span style="font-size: 20px; color:blue">Files have been created in '
+                + new_output_dir
+                + "</span>"
+            )
         )

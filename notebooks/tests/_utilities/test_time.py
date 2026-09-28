@@ -51,13 +51,17 @@ class TestAbsoluteTimeHandler:
         o_time = time.AbsoluteTimeHandler(initial_absolute_time=self.starting_time)
 
         with pytest.raises(NotImplementedError):
-            o_time.get_absolute_time_for_this_delta_time_array(delta_time_array=[1, 2, 3], units="lightyear")
+            o_time.get_absolute_time_for_this_delta_time_array(
+                delta_time_array=[1, 2, 3], units="lightyear"
+            )
 
     def test_delta_time_array_correctly_formated(self):
         o_time = time.AbsoluteTimeHandler(initial_absolute_time=self.starting_time)
         delta_time_array = [1, 2, 3, 4]
         units = "seconds"
-        o_time.get_absolute_time_for_this_delta_time_array(delta_time_array=delta_time_array, units=units)
+        o_time.get_absolute_time_for_this_delta_time_array(
+            delta_time_array=delta_time_array, units=units
+        )
         delta_time_formated = o_time.delta_time_formated
 
         list_hours_calculated = []
@@ -91,7 +95,9 @@ class TestAbsoluteTimeHandler:
 class TestRelativeTimeHandler:
     def setup_method(self):
         self.first_file_starting_time = b"2020-01-10T10:15:33.303238667-05:00"
-        self.second_file_staring_time = b"2020-01-10T10:20:33.303238667-05:00"  # 5mn later
+        self.second_file_staring_time = (
+            b"2020-01-10T10:20:33.303238667-05:00"  # 5mn later
+        )
 
     def test_minimum_arguments_provided(self):
         with pytest.raises(ValueError):
@@ -102,35 +108,42 @@ class TestRelativeTimeHandler:
         wrong_local_format_time = "2020-01-10Tbad_format_as_well"
         with pytest.raises(ValueError):
             time.RelativeTimeHandler(
-                master_initial_time=wrong_master_format_time, local_initial_time=wrong_local_format_time
+                master_initial_time=wrong_master_format_time,
+                local_initial_time=wrong_local_format_time,
             )
 
     def test_make_sure_local_is_after_master(self):
         with pytest.raises(ValueError):
             time.RelativeTimeHandler(
-                master_initial_time=self.second_file_staring_time, local_initial_time=self.first_file_starting_time
+                master_initial_time=self.second_file_staring_time,
+                local_initial_time=self.first_file_starting_time,
             )
 
     def test_time_offset_calculated_is_right(self):
         o_time = time.RelativeTimeHandler(
-            master_initial_time=self.first_file_starting_time, local_initial_time=self.second_file_staring_time
+            master_initial_time=self.first_file_starting_time,
+            local_initial_time=self.second_file_staring_time,
         )
         time_offset_calculated = o_time.time_offset_calculated_s
         assert 300 == time_offset_calculated
 
     def test_minimum_arguments_to_get_relative_time_method(self):
         o_time = time.RelativeTimeHandler(
-            master_initial_time=self.first_file_starting_time, local_initial_time=self.second_file_staring_time
+            master_initial_time=self.first_file_starting_time,
+            local_initial_time=self.second_file_staring_time,
         )
         with pytest.raises(ValueError):
             o_time.get_relative_time_for_this_time_array()
 
     def test_relative_time_array_correctly_calculated(self):
         o_time = time.RelativeTimeHandler(
-            master_initial_time=self.first_file_starting_time, local_initial_time=self.second_file_staring_time
+            master_initial_time=self.first_file_starting_time,
+            local_initial_time=self.second_file_staring_time,
         )
         time_array = [0, 10, 20, 30, 40]
-        relative_time_calculated = o_time.get_relative_time_for_this_time_array(time_array=time_array)
+        relative_time_calculated = o_time.get_relative_time_for_this_time_array(
+            time_array=time_array
+        )
         relative_time_expected = [300, 310, 320, 330, 340]
         assert relative_time_calculated == relative_time_expected
 
