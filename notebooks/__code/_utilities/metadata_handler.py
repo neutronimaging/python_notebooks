@@ -34,7 +34,11 @@ class MetadataHandler:
                 except:
                     time_stamp = o_dict[65000]
 
-                time_stamp = MetadataHandler._convert_epics_timestamp_to_rfc3339_timestamp(time_stamp)
+                time_stamp = (
+                    MetadataHandler._convert_epics_timestamp_to_rfc3339_timestamp(
+                        time_stamp
+                    )
+                )
 
             except:
                 time_stamp = os.path.getctime(file_name)
@@ -113,7 +117,9 @@ class MetadataHandler:
         _dict = OrderedDict()
         for _file in list_files:
             _meta = MetadataHandler.get_metadata(
-                filename=_file, list_metadata=list_metadata, using_enum_object=using_enum_object
+                filename=_file,
+                list_metadata=list_metadata,
+                using_enum_object=using_enum_object,
             )
             _dict[_file] = _meta
 
@@ -145,7 +151,9 @@ class MetadataHandler:
 
         _dict = OrderedDict()
         for _file in list_files:
-            _meta = MetadataHandler.get_value_of_metadata_key(filename=_file, list_key=list_key)
+            _meta = MetadataHandler.get_value_of_metadata_key(
+                filename=_file, list_key=list_key
+            )
             _dict[_file] = _meta
 
         return _dict

@@ -23,13 +23,19 @@ import os
 
 # # Input Settings
 
-data_folder = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/2021_07_21_1in/"
-ob_folder = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ob/2021_07_21_1in/"
+data_folder = (
+    "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/2021_07_21_1in/"
+)
+ob_folder = (
+    "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ob/2021_07_21_1in/"
+)
 df_folder = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/df/2021_07_19/"
 
 ct_sig = "treated_1inch"
 ct_scan_root = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/"
-ct_dir = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/2021_07_21_1in/"
+ct_dir = (
+    "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/raw/ct_scans/2021_07_21_1in/"
+)
 iptsdir = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/"
 outdir = "/Volumes/G-DRIVE/IPTS/IPTS-25519-iMars3D-command-line/shared/processed_data/2021_07_21_1in"
 instrument = "CG1D"

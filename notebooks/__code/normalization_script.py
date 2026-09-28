@@ -5,9 +5,15 @@ from NeuNorm.roi import ROI
 
 parser = argparse.ArgumentParser(description="Neutron Imaging Normalization")
 parser.add_argument("-o", "--output", help="output folder", type=str)
-parser.add_argument("-sf", "--sample_files", help="comma separated list of samples", type=str)
-parser.add_argument("-of", "--ob_files", help="comma separated list of open beams", type=str)
-parser.add_argument("-dc", "--dc_files", help="comma separated list of dark current", type=str)
+parser.add_argument(
+    "-sf", "--sample_files", help="comma separated list of samples", type=str
+)
+parser.add_argument(
+    "-of", "--ob_files", help="comma separated list of open beams", type=str
+)
+parser.add_argument(
+    "-dc", "--dc_files", help="comma separated list of dark current", type=str
+)
 parser.add_argument("-rois", help="colon string of each roi: x0,y0,x1,y1")
 
 

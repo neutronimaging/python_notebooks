@@ -24,7 +24,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from __code import system
-from __code.panoramic_stitching_for_tof.panoramic_stitching_for_tof import PanoramicStitching
+from __code.panoramic_stitching_for_tof.panoramic_stitching_for_tof import (
+    PanoramicStitching,
+)
 
 system.System.select_working_dir(notebook="panoramic_stitching_for_tof")
 from __code.__all import custom_style

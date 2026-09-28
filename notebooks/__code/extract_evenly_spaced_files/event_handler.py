@@ -1,15 +1,16 @@
 import logging
 
 import numpy as np
-from qtpy import QtGui
-from qtpy.QtGui import QGuiApplication
-from qtpy.QtWidgets import QMenu
-
 from __code._utilities.list_widget import ListWidget
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
 from __code.extract_evenly_spaced_files.load import load_file
-from __code.extract_evenly_spaced_files.manual_mode_interface_handler import Interface as ManualModeInterface
+from __code.extract_evenly_spaced_files.manual_mode_interface_handler import (
+    Interface as ManualModeInterface,
+)
 from __code.extract_evenly_spaced_files.statistics import Statistics
+from qtpy import QtGui
+from qtpy.QtGui import QGuiApplication
+from qtpy.QtWidgets import QMenu
 
 
 class EventHandler:
@@ -18,7 +19,11 @@ class EventHandler:
 
     def load_files(self):
         logging.info("loading files ...")
-        show_status_message(parent=self.parent, message="Loading ...", status=StatusMessageStatus.working)
+        show_status_message(
+            parent=self.parent,
+            message="Loading ...",
+            status=StatusMessageStatus.working,
+        )
         list_files = self.parent.list_of_files_that_will_be_extracted
         nbr_files = len(list_files)
 
@@ -38,8 +43,15 @@ class EventHandler:
         self.parent.list_data = list_data
         self.parent.eventProgress.setVisible(False)
 
-        logging.info(f"file loaded! np.shape(list_data): {np.shape(self.parent.list_data)}")
-        show_status_message(parent=self.parent, message="Done loading!", status=StatusMessageStatus.ready, duration_s=5)
+        logging.info(
+            f"file loaded! np.shape(list_data): {np.shape(self.parent.list_data)}"
+        )
+        show_status_message(
+            parent=self.parent,
+            message="Done loading!",
+            status=StatusMessageStatus.ready,
+            duration_s=5,
+        )
         QGuiApplication.processEvents()
 
     def select_first_file(self):
@@ -65,13 +77,17 @@ class EventHandler:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
     def list_files_right_click(self):
         menu = QMenu(self.parent)
         remove_action = menu.addAction("Remove")
 
-        if len(self.parent.basename_list_of_files_that_will_be_extracted) != len(self.parent.full_raw_list_of_files):
+        if len(self.parent.basename_list_of_files_that_will_be_extracted) != len(
+            self.parent.full_raw_list_of_files
+        ):
             replace_with_action = menu.addAction("Replace with ...")
 
         action = menu.exec_(QtGui.QCursor.pos())
@@ -87,10 +103,14 @@ class EventHandler:
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         index_file_selected = o_list.get_current_row()
 
-        del self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
+        del self.parent.basename_list_of_files_that_will_be_extracted[
+            index_file_selected
+        ]
         del self.parent.list_data[index_file_selected]
         self.parent.ui.list_of_files_listWidget.clear()
-        self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
+        self.parent.ui.list_of_files_listWidget.addItems(
+            self.parent.basename_list_of_files_that_will_be_extracted
+        )
 
         o_list.select_element(row=index_file_selected - 1)
         self.update_manual_interface()

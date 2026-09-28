@@ -12,13 +12,12 @@ class Step(traitlets.HasTraits):
     button_layout = ipyw.Layout(margin="10px 5px 5px 5px")
 
     def __init__(self, context, previous_step=None):
-        super(Step, self).__init__()
+        super().__init__()
         self.context = context
         self.previous_step = previous_step
         self.next_step = None
         self.panel = None
         self._ondisplay = False
-        return
 
     def createPanel(self):
         body = self.createBody()
@@ -36,7 +35,6 @@ class Step(traitlets.HasTraits):
             PREVIOUS = ipyw.Button(description="PREVIOUS")
             PREVIOUS.on_click(self.handle_previous_button_click)
             buttons.append(PREVIOUS)
-        #
         NEXT = ipyw.Button(description="NEXT")
         NEXT.on_click(self.handle_next_button_click)
         buttons.append(NEXT)

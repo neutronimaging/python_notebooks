@@ -8,8 +8,6 @@ from qtpy.QtGui import QGuiApplication
 from qtpy.QtWidgets import QApplication, QMainWindow, QProgressBar, QVBoxLayout
 
 matplotlib.use("Qt5Agg")
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
 from __code import load_ui
 from __code.circular_profile_of_a_ring.calculate_profiles import CalculateProfiles
 from __code.circular_profile_of_a_ring.configuration_handler import ConfigurationHandler
@@ -17,6 +15,7 @@ from __code.circular_profile_of_a_ring.event_handler import EventHandler
 from __code.circular_profile_of_a_ring.export_profiles import ExportProfiles
 from __code.decorators import wait_cursor
 from __code.panoramic_stitching.mplcanvas import MplCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 INNER_RING_MARKER_LENGTH = 30  # number of pixels
 OUTER_RING_MARKER_LENGTH = 50  # number of pixels
@@ -25,7 +24,9 @@ OUTER_RING_MARKER_LENGTH = 50  # number of pixels
 class InterfaceHandler:
     def __init__(self, working_dir=None, o_norm=None):
         o_interface = Interface(
-            data=o_norm.data["sample"]["data"], list_files=o_norm.data["sample"]["file_name"], working_dir=working_dir
+            data=o_norm.data["sample"]["data"],
+            list_files=o_norm.data["sample"]["file_name"],
+            working_dir=working_dir,
         )
         o_interface.show()
         self.o_interface = o_interface
@@ -75,7 +76,7 @@ class Interface(QMainWindow):
         [self.height, self.width] = np.shape(data[0])
         self.working_dir = working_dir if working_dir else "./"
 
-        super(Interface, self).__init__(parent)
+        super().__init__(parent)
 
         ui_full_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -126,7 +127,12 @@ class Interface(QMainWindow):
         _pen.setWidthF(0.01)
 
         self.angle_line = pg.InfiniteLine(
-            [x0, y0], pen=_pen, label=f"{angle:.2f}", angle=angle - 90.0, span=(0, 1), labelOpts={"position": 0.9}
+            [x0, y0],
+            pen=_pen,
+            label=f"{angle:.2f}",
+            angle=angle - 90.0,
+            span=(0, 1),
+            labelOpts={"position": 0.9},
         )
         # self.angle_line.addMarker('o', size=15)
         self.ui.image_view.addItem(self.angle_line)
@@ -147,9 +153,13 @@ class Interface(QMainWindow):
         self.hLine = pg.InfiniteLine(pos=y0, angle=0, movable=True)
 
         self.vLine.sigDragged.connect(self.manual_circle_center_changed)
-        self.vLine.sigPositionChangeFinished.connect(self.manual_circle_center_changed_finished)
+        self.vLine.sigPositionChangeFinished.connect(
+            self.manual_circle_center_changed_finished
+        )
         self.hLine.sigDragged.connect(self.manual_circle_center_changed)
-        self.hLine.sigPositionChangeFinished.connect(self.manual_circle_center_changed_finished)
+        self.hLine.sigPositionChangeFinished.connect(
+            self.manual_circle_center_changed_finished
+        )
 
         self.ui.image_view.addItem(self.vLine, ignoreBounds=False)
         self.ui.image_view.addItem(self.hLine, ignoreBounds=False)
@@ -189,7 +199,9 @@ class Interface(QMainWindow):
         max_ring_value = self.width
         default_inner_ring_value = int(self.width / 4)
         default_ring_thickness = 100
-        self.ui.ring_inner_radius_slider.setMaximum(max_ring_value * 100)  # *100 because slider is int
+        self.ui.ring_inner_radius_slider.setMaximum(
+            max_ring_value * 100
+        )  # *100 because slider is int
         self.ui.ring_inner_radius_slider.setValue(default_inner_ring_value * 100)
         self.ui.ring_inner_radius_doubleSpinBox.setMaximum(max_ring_value)
         self.ui.ring_inner_radius_doubleSpinBox.setSingleStep(0.01)
@@ -268,12 +280,20 @@ class Interface(QMainWindow):
         )
         lines = np.array(
             [line_color for n in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
 
         line_view_binning = pg.GraphItem()
         self.ui.image_view.addItem(line_view_binning)
-        line_view_binning.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+        line_view_binning.setData(
+            pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False
+        )
 
         self.line_view_binning = line_view_binning
 
@@ -316,11 +336,16 @@ class Interface(QMainWindow):
         if self.inner_ring_roi:
             self.ui.image_view.removeItem(self.inner_ring_roi)
         self.inner_ring_roi = pg.CircleROI(
-            [inner_x0, inner_y0], [inner_width_and_height, inner_width_and_height], movable=True, pen=self.ring_pen
+            [inner_x0, inner_y0],
+            [inner_width_and_height, inner_width_and_height],
+            movable=True,
+            pen=self.ring_pen,
         )
         self.ui.image_view.addItem(self.inner_ring_roi)
         self.inner_ring_roi.sigRegionChanged.connect(self.manual_inner_ring_changed)
-        self.inner_ring_roi.sigRegionChangeFinished.connect(self.manual_inner_ring_change_finished)
+        self.inner_ring_roi.sigRegionChangeFinished.connect(
+            self.manual_inner_ring_change_finished
+        )
 
         if self.outer_ring_roi:
             self.ui.image_view.removeItem(self.outer_ring_roi)
@@ -333,7 +358,9 @@ class Interface(QMainWindow):
         )
         self.remove_handles(ring_ui=self.outer_ring_roi)
         self.outer_ring_roi.sigRegionChanged.connect(self.manual_outer_ring_changed)
-        self.outer_ring_roi.sigRegionChangeFinished.connect(self.manual_outer_ring_change_finished)
+        self.outer_ring_roi.sigRegionChangeFinished.connect(
+            self.manual_outer_ring_change_finished
+        )
 
     def remove_handles(self, ring_ui=None):
         self.ui.image_view.addItem(ring_ui)
@@ -353,10 +380,15 @@ class Interface(QMainWindow):
     def manual_inner_ring_changed(self):
         self.ui.image_view.removeItem(self.outer_ring_roi)
 
-        list_ui = [self.ui.ring_inner_radius_doubleSpinBox, self.ui.ring_inner_radius_slider]
+        list_ui = [
+            self.ui.ring_inner_radius_doubleSpinBox,
+            self.ui.ring_inner_radius_slider,
+        ]
         self.block_signals(list_ui=list_ui, block_status=True)
 
-        region = self.inner_ring_roi.getArraySlice(self.current_live_image, self.ui.image_view.imageItem)
+        region = self.inner_ring_roi.getArraySlice(
+            self.current_live_image, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
@@ -373,7 +405,9 @@ class Interface(QMainWindow):
         if y1 + thickness >= self.height:
             self.replot_inner_ring(x0=x0, y0=y0, x1=x1, y1=y1)
 
-        region = self.inner_ring_roi.getArraySlice(self.current_live_image, self.ui.image_view.imageItem)
+        region = self.inner_ring_roi.getArraySlice(
+            self.current_live_image, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
@@ -393,7 +427,10 @@ class Interface(QMainWindow):
         ring_thickness = self.ui.ring_thickness_doubleSpinBox.value()
         outer_ring_circle_width = 2 * (ring_radius + ring_thickness)
         self.outer_ring_roi = pg.CircleROI(
-            [x_central_pixel - ring_radius - ring_thickness, y_central_pixel - ring_radius - ring_thickness],
+            [
+                x_central_pixel - ring_radius - ring_thickness,
+                y_central_pixel - ring_radius - ring_thickness,
+            ],
             [outer_ring_circle_width, outer_ring_circle_width],
             movable=True,
             resizable=False,
@@ -402,7 +439,9 @@ class Interface(QMainWindow):
         self.ui.image_view.addItem(self.outer_ring_roi)
         self.remove_handles(ring_ui=self.outer_ring_roi)
         self.outer_ring_roi.sigRegionChanged.connect(self.manual_outer_ring_changed)
-        self.outer_ring_roi.sigRegionChangeFinished.connect(self.manual_outer_ring_change_finished)
+        self.outer_ring_roi.sigRegionChangeFinished.connect(
+            self.manual_outer_ring_change_finished
+        )
 
         self.vLine.setValue(x_central_pixel)
         self.hLine.setValue(y_central_pixel)
@@ -417,7 +456,10 @@ class Interface(QMainWindow):
         outer_ring_circle_width = 2 * (ring_radius + ring_thickness)
         self.ui.image_view.removeItem(self.outer_ring_roi)
         self.outer_ring_roi = pg.CircleROI(
-            [x_central_pixel - ring_radius - ring_thickness, y_central_pixel - ring_radius - ring_thickness],
+            [
+                x_central_pixel - ring_radius - ring_thickness,
+                y_central_pixel - ring_radius - ring_thickness,
+            ],
             [outer_ring_circle_width, outer_ring_circle_width],
             movable=True,
             resizable=False,
@@ -458,7 +500,9 @@ class Interface(QMainWindow):
         self.block_signals(list_ui=list_ui, block_status=True)
 
         # outer ring
-        region = self.outer_ring_roi.getArraySlice(self.current_live_image, self.ui.image_view.imageItem)
+        region = self.outer_ring_roi.getArraySlice(
+            self.current_live_image, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
@@ -516,7 +560,9 @@ class Interface(QMainWindow):
         self.block_signals(list_ui=list_ui, block_status=True)
 
         # inner ring
-        region = self.inner_ring_roi.getArraySlice(self.current_live_image, self.ui.image_view.imageItem)
+        region = self.inner_ring_roi.getArraySlice(
+            self.current_live_image, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         y0 = region[0][1].start
@@ -533,7 +579,9 @@ class Interface(QMainWindow):
         if y1 + thickness >= self.height:
             self.replot_inner_ring(x0=x0, y0=y0, x1=x1, y1=y1)
 
-        region = self.inner_ring_roi.getArraySlice(self.current_live_image, self.ui.image_view.imageItem)
+        region = self.inner_ring_roi.getArraySlice(
+            self.current_live_image, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         # y0 = region[0][1].start
@@ -541,7 +589,9 @@ class Interface(QMainWindow):
         radius_1 = int(x1 - x0) / 2
 
         # outer ring
-        region = self.outer_ring_roi.getArraySlice(self.current_live_image, self.ui.image_view.imageItem)
+        region = self.outer_ring_roi.getArraySlice(
+            self.current_live_image, self.ui.image_view.imageItem
+        )
         x0 = region[0][0].start
         x1 = region[0][0].stop
         radius_2 = int(x1 - x0) / 2
@@ -751,7 +801,9 @@ class Interface(QMainWindow):
         value = Interface.format_angle_degrees(value)
 
         right_comma_value = self.ui.angle_cursor_dial_2.value()
-        right_comma_formatted = Interface.format_angle_minutes(right_comma_value) / 100.0
+        right_comma_formatted = (
+            Interface.format_angle_minutes(right_comma_value) / 100.0
+        )
         full_value = value + right_comma_formatted
         self.ui.angle_cursor_value.setText(str(full_value))
 
@@ -760,7 +812,9 @@ class Interface(QMainWindow):
 
     def angle_cursor_dial2_moved(self, value):
         value = Interface.format_angle_minutes(value)
-        left_comma_value = Interface.format_angle_degrees(self.ui.angle_cursor_dial.value())
+        left_comma_value = Interface.format_angle_degrees(
+            self.ui.angle_cursor_dial.value()
+        )
 
         full_value = float(left_comma_value + value / 100.0)
         self.ui.angle_cursor_value.setText(str(full_value))

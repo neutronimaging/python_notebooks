@@ -21,7 +21,9 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.normalization.normalization_with_simplify_selection import NormalizationWithSimplifySelection
+from __code.normalization.normalization_with_simplify_selection import (
+    NormalizationWithSimplifySelection,
+)
 
 system.System.select_working_dir(notebook="normalization_with_simplify_selection")
 from __code.__all import custom_style
@@ -39,7 +41,9 @@ custom_style.style()
 #
 # Change the time range if needed!
 
-o_which = NormalizationWithSimplifySelection(working_dir=system.System.get_working_dir())
+o_which = NormalizationWithSimplifySelection(
+    working_dir=system.System.get_working_dir()
+)
 o_which.select_sample_folder()
 
 # # Normalization workflow summary

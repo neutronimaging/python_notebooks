@@ -1,14 +1,15 @@
 import os
 
+from __code._utilities.file import make_ascii_file_from_string, read_ascii
 from IPython.display import display
 from ipywidgets import widgets
-
-from __code._utilities.file import make_ascii_file_from_string, read_ascii
 
 from .config import debugger_folder as list_debugging_folder
 from .config import debugging
 from .config import password_to_unlock_config as PASSWORD
-from .config import percentage_of_images_to_use_for_roi_selection as PERCENTAGE_OF_IMAGES
+from .config import (
+    percentage_of_images_to_use_for_roi_selection as PERCENTAGE_OF_IMAGES,
+)
 
 THIS_FILE_PATH = os.path.dirname(__file__)
 CONFIG_FILE = os.path.join(THIS_FILE_PATH, "config.py")
@@ -19,15 +20,24 @@ class SuperUser:
         self.launch_ui()
 
     def launch_ui(self):
-        password = widgets.Password(value="", placeholder="Enter password", description="Password", diabled=False)
+        password = widgets.Password(
+            value="",
+            placeholder="Enter password",
+            description="Password",
+            diabled=False,
+        )
         password.observe(self.password_entered, names="value")
 
         # ----
 
         # debugging mode
-        self.debugging_mode = widgets.Checkbox(value=debugging, description="Debugging Mode", disabled=True)
+        self.debugging_mode = widgets.Checkbox(
+            value=debugging, description="Debugging Mode", disabled=True
+        )
 
-        self.debugging_folder_label = widgets.HTML("List of folders to look for when running in <b>debugging</b> mode.")
+        self.debugging_folder_label = widgets.HTML(
+            "List of folders to look for when running in <b>debugging</b> mode."
+        )
         self.debugging_folder = widgets.Select(
             options=list_debugging_folder,
             value=list_debugging_folder[0],
@@ -46,21 +56,37 @@ class SuperUser:
         )
         self.remove_entry.on_click(self.remove_entry_clicked)
 
-        self.new_entry_text = widgets.Text(value="", description="New folder", disabled=True)
+        self.new_entry_text = widgets.Text(
+            value="", description="New folder", disabled=True
+        )
         self.add_entry = widgets.Button(
-            description="", disabled=True, button_style="", icon="plus-square", layout=widgets.Layout(width="95px")
+            description="",
+            disabled=True,
+            button_style="",
+            icon="plus-square",
+            layout=widgets.Layout(width="95px"),
         )
         self.add_entry.on_click(self.add_entry_clicked)
         hori_layout_percentage = widgets.HBox([self.new_entry_text, self.add_entry])
 
         # percentage of images to use for roi selection
-        self.percentage_roi_label = widgets.HTML("Percentage of images to use for ROI selection", disabled=True)
+        self.percentage_roi_label = widgets.HTML(
+            "Percentage of images to use for ROI selection", disabled=True
+        )
         percentage_of_images = PERCENTAGE_OF_IMAGES * 100
         self.percentage_roi_value = widgets.FloatText(
-            value=percentage_of_images, disabled=True, layout=widgets.Layout(width="50px")
+            value=percentage_of_images,
+            disabled=True,
+            layout=widgets.Layout(width="50px"),
         )
         self.percentage_units = widgets.HTML("%", disabled=True)
-        hori_layout = widgets.HBox([self.percentage_roi_label, self.percentage_roi_value, self.percentage_units])
+        hori_layout = widgets.HBox(
+            [
+                self.percentage_roi_label,
+                self.percentage_roi_value,
+                self.percentage_units,
+            ]
+        )
 
         # ----
         self.save_changes = widgets.Button(
@@ -159,7 +185,9 @@ class SuperUser:
             elif "debugger_folder = " in _line:
                 ascii_after.append(f"debugger_folder = {str_list_folders_formatted}")
             elif "percentage_of_images_to_use_for_roi_selection = " in _line:
-                ascii_after.append(f"percentage_of_images_to_use_for_roi_selection = {percentage_roi_selection}")
+                ascii_after.append(
+                    f"percentage_of_images_to_use_for_roi_selection = {percentage_roi_selection}"
+                )
             else:
                 ascii_after.append(_line)
 

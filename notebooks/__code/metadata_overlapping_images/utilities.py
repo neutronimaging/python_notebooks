@@ -3,7 +3,11 @@ import re
 from . import LIST_FUNNY_CHARACTERS
 
 
-def string_cleaning(first_part_of_string_to_remove="", last_part_of_string_to_remove="", string_to_clean=""):
+def string_cleaning(
+    first_part_of_string_to_remove="",
+    last_part_of_string_to_remove="",
+    string_to_clean="",
+):
     first_part_of_string_to_remove = first_part_of_string_to_remove
     _clean_first_part = ""
     for _c in first_part_of_string_to_remove:
@@ -31,7 +35,9 @@ def string_cleaning(first_part_of_string_to_remove="", last_part_of_string_to_re
 
 
 def linear_operation(input_parameter="", math_1="", value_1="", math_2="", value_2=""):
-    if is_linear_operation_valid(input_parameter=input_parameter, value_1=value_1, value_2=value_2):
+    if is_linear_operation_valid(
+        input_parameter=input_parameter, value_1=value_1, value_2=value_2
+    ):
         operation_to_eval = f"{input_parameter}"
         if value_1:
             operation_to_eval += f" {math_1} {float(value_1)}"
