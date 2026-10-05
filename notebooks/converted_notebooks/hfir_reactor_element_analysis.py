@@ -27,7 +27,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from __code import system
-from __code.hfir_reactor_element_analysis.hfir_reactor_element_analysis import HfirReactorElementAnalysis
+from __code.hfir_reactor_element_analysis.hfir_reactor_element_analysis import (
+    HfirReactorElementAnalysis,
+)
 from __code.hfir_reactor_element_analysis.interface_handler import InterfaceHandler
 
 system.System.select_working_dir(notebook="hfir_reactor_element_analysis")
@@ -48,7 +50,9 @@ o_selection = HfirReactorElementAnalysis(working_dir=system.System.get_working_d
 o_selection.select_ascii_file()
 # -
 
-o_select = InterfaceHandler(working_dir=system.System.get_working_dir(), o_selection=o_selection)
+o_select = InterfaceHandler(
+    working_dir=system.System.get_working_dir(), o_selection=o_selection
+)
 
 
 # # DEBUG
@@ -56,7 +60,9 @@ o_select = InterfaceHandler(working_dir=system.System.get_working_dir(), o_selec
 # +
 import os
 
-from __code.hfir_reactor_element_analysis.hfir_reactor_element_analysis import HfirReactorElementAnalysis
+from __code.hfir_reactor_element_analysis.hfir_reactor_element_analysis import (
+    HfirReactorElementAnalysis,
+)
 from __code.hfir_reactor_element_analysis.interface_handler import InterfaceHandler
 
 ascii_file_name = "/Users/j35/IPTS/HFIR-Reactor/HFIR-Reactor_profiles_top.csv"
@@ -69,5 +75,7 @@ assert os.path.exists(ascii_file_name)
 o_selection = HfirReactorElementAnalysis(working_dir="/Users/j35/IPTS/HFIR-Reactor/")
 o_selection.load_ascii(ascii_file_name)
 
-o_select = InterfaceHandler(working_dir="/Users/j35/IPTS/HFIR-Reactor/", o_selection=o_selection)
+o_select = InterfaceHandler(
+    working_dir="/Users/j35/IPTS/HFIR-Reactor/", o_selection=o_selection
+)
 # -

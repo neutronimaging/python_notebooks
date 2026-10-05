@@ -42,7 +42,9 @@ o_load.select_images(use_next=True)
 # # Shapes available
 
 o_main = Main(
-    working_data=o_load.working_data, list_images=o_load.list_images, working_metadata=o_load.working_metadata
+    working_data=o_load.working_data,
+    list_images=o_load.list_images,
+    working_metadata=o_load.working_metadata,
 )
 o_main.display_available_shapes()
 

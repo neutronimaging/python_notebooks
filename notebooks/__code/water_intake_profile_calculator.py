@@ -4,6 +4,10 @@ import re
 
 import numpy as np
 import pyqtgraph as pg
+from __code import load_ui
+from __code.file_format_reader import DscReader
+from __code.file_handler import make_ascii_file, retrieve_time_stamp
+from __code.ipywe import fileselector
 from changepy import pelt
 from changepy.costs import normal_var
 from IPython.display import HTML, display
@@ -28,11 +32,6 @@ from qtpy.QtWidgets import (
 )
 from scipy.optimize import curve_fit
 from scipy.special import erf
-
-from __code import load_ui
-from __code.file_format_reader import DscReader
-from __code.file_handler import make_ascii_file, retrieve_time_stamp
-from __code.ipywe import fileselector
 
 
 class MeanRangeCalculation:
@@ -69,7 +68,12 @@ class WaterIntakeHandler:
     # fitting by error function requires that the signal goes from max to min values
     is_data_from_max_to_min = True
 
-    def __init__(self, dict_profiles={}, ignore_first_image=True, algorithm_selected="sliding_average"):
+    def __init__(
+        self,
+        dict_profiles={},
+        ignore_first_image=True,
+        algorithm_selected="sliding_average",
+    ):
         self.dict_profiles = dict_profiles
         self.ignore_first_image = ignore_first_image
 
@@ -166,9 +170,7 @@ class WaterIntakeHandler:
             water_intake_peaks_erf.append(_peak)
 
             for _i, _err in enumerate(error):
-                if np.isnan(_err):
-                    error[_i] = np.sqrt(popt[0])
-                elif np.isinf(_err):
+                if np.isnan(_err) or np.isinf(_err):
                     error[_i] = np.sqrt(popt[0])
                 else:
                     error[_i] = _err
@@ -265,7 +267,8 @@ class WaterIntakeProfileSelector(QMainWindow):
         QMainWindow.__init__(self, parent=parent)
 
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), os.path.join("ui", "ui_water_intake_profile.ui")
+            os.path.dirname(os.path.dirname(__file__)),
+            os.path.join("ui", "ui_water_intake_profile.ui"),
         )
 
         self.ui = load_ui(ui_full_path, baseinstance=self)
@@ -316,7 +319,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         hori_layout.addWidget(self.height_value)
 
         # spacer
-        spacerItem = QSpacerItem(22520, 40, QSizePolicy.Expanding, QSizePolicy.Expanding)
+        spacerItem = QSpacerItem(
+            22520, 40, QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
         hori_layout.addItem(spacerItem)
 
         # progress bar
@@ -379,7 +384,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         self.water_intake = pg.PlotWidget(title="Water Intake")
         self.water_intake.plot()
         self.ui.water_intake_refresh_button = QPushButton("Refresh Water Intake Plot")
-        self.ui.water_intake_refresh_button.clicked.connect(self.refresh_water_intake_plot_clicked)
+        self.ui.water_intake_refresh_button.clicked.connect(
+            self.refresh_water_intake_plot_clicked
+        )
         vertical_layout = QVBoxLayout()
         vertical_layout.addWidget(self.water_intake)
         vertical_layout.addWidget(self.ui.water_intake_refresh_button)
@@ -483,7 +490,9 @@ class WaterIntakeProfileSelector(QMainWindow):
                 _time_stamp_unix = f"{_time_stamp_unix:.2f}"
             _time_stamp_user = list_time_stamp_user[_row]
 
-            self.__insert_information_in_table(row=_row, col0=_short_name, col1=_time_stamp_unix, col2=_time_stamp_user)
+            self.__insert_information_in_table(
+                row=_row, col0=_short_name, col1=_time_stamp_unix, col2=_time_stamp_user
+            )
 
     def __clear_infos_table(self):
         nbr_row = self.ui.tableWidget.rowCount()
@@ -577,9 +586,13 @@ class WaterIntakeProfileSelector(QMainWindow):
         elif algorithm_selected == "error_function":
             peak = o_water_intake_handler.water_intake_peaks_erf
             self.water_intake_peaks_erf = peak.copy()
-            self.dict_error_function_parameters = o_water_intake_handler.dict_error_function_parameters
+            self.dict_error_function_parameters = (
+                o_water_intake_handler.dict_error_function_parameters
+            )
             delta_time = o_water_intake_handler.water_intake_deltatime
-            self.is_data_from_max_to_min = o_water_intake_handler.is_data_from_max_to_min
+            self.is_data_from_max_to_min = (
+                o_water_intake_handler.is_data_from_max_to_min
+            )
 
             # due to the fact that the pixel reported may be from the right
             if self.is_inte_along_x_axis:
@@ -630,11 +643,21 @@ class WaterIntakeProfileSelector(QMainWindow):
 
             self.water_intake.addItem(err)
             self.water_intake.plot(
-                delta_time, peak, symbolPen=None, pen=None, symbol="o", symbolBruch=(200, 200, 200, 50)
+                delta_time,
+                peak,
+                symbolPen=None,
+                pen=None,
+                symbol="o",
+                symbolBruch=(200, 200, 200, 50),
             )
         else:
             self.water_intake.plot(
-                delta_time, peak, symbolPen=None, pen=None, symbol="o", symbolBruch=(200, 200, 200, 50)
+                delta_time,
+                peak,
+                symbolPen=None,
+                pen=None,
+                symbol="o",
+                symbolBruch=(200, 200, 200, 50),
             )
 
         self.water_intake.setLabel("left", y_label)
@@ -663,14 +686,26 @@ class WaterIntakeProfileSelector(QMainWindow):
             is_data_from_max_to_min = self.is_data_from_max_to_min
             if self.is_inte_along_x_axis:
                 if is_data_from_max_to_min:
-                    peak_value = _water_intake_peaks[index_selected] + int(self.roi["y0"])
+                    peak_value = _water_intake_peaks[index_selected] + int(
+                        self.roi["y0"]
+                    )
                 else:
-                    peak_value = int(self.roi["height"] + self.roi["y0"] - _water_intake_peaks[index_selected])
+                    peak_value = int(
+                        self.roi["height"]
+                        + self.roi["y0"]
+                        - _water_intake_peaks[index_selected]
+                    )
             else:
                 if is_data_from_max_to_min:
-                    peak_value = _water_intake_peaks[index_selected] + int(self.roi["x0"])
+                    peak_value = _water_intake_peaks[index_selected] + int(
+                        self.roi["x0"]
+                    )
                 else:
-                    peak_value = int(self.roi["width"] + self.roi["x0"] - _water_intake_peaks[index_selected])
+                    peak_value = int(
+                        self.roi["width"]
+                        + self.roi["x0"]
+                        - _water_intake_peaks[index_selected]
+                    )
         elif algorithm_selected == "change_point":
             _water_intake_peaks = self.water_intake_peaks_change_point.copy()
             if self.is_inte_along_x_axis:
@@ -694,7 +729,11 @@ class WaterIntakeProfileSelector(QMainWindow):
             xdata = self.live_x_axis
             fitting_xdata = np.arange(len(xdata))
             ydata = WaterIntakeHandler.fitting_function(
-                fitting_xdata, _fit_parameters["c"], _fit_parameters["w"], _fit_parameters["m"], _fit_parameters["n"]
+                fitting_xdata,
+                _fit_parameters["c"],
+                _fit_parameters["w"],
+                _fit_parameters["m"],
+                _fit_parameters["n"],
             )
 
             if not is_data_from_max_to_min:
@@ -728,7 +767,10 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def export_water_intake_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         if _export_folder:
             export_folder = os.path.abspath(_export_folder)
@@ -769,7 +811,9 @@ class WaterIntakeProfileSelector(QMainWindow):
 
             metadata = []
             metadata.append("# Water Intake Signal ")
-            metadata.append(f"# roi [x0, y0, width, height]: [{x0}, {y0}, {width}, {height}]")
+            metadata.append(
+                f"# roi [x0, y0, width, height]: [{x0}, {y0}, {width}, {height}]"
+            )
             metadata.append(f"# integration direction: {inte_direction}")
             metadata.append(f"# input folder: {full_input_folder}")
             metadata.append(f"# algorithm used: {_algo_used}")
@@ -777,21 +821,33 @@ class WaterIntakeProfileSelector(QMainWindow):
             metadata.append("# ")
             metadata.append(f"# Time(s), {yaxis_label}, error")
 
-            export_file_name = f"water_intake_of_{short_input_folder}_with_{nbr_files}input_files.txt"
+            export_file_name = (
+                f"water_intake_of_{short_input_folder}_with_{nbr_files}input_files.txt"
+            )
             full_export_file_name = os.path.join(export_folder, export_file_name)
 
             if _master_algo_used == "error_function":
                 metadata.append(f"# Time(s), {yaxis_label}, error")
                 data = [
                     f"{_x_axis}, {_y_axis}, {_error}"
-                    for _x_axis, _y_axis, _error in zip(x_axis, y_axis, error, strict=False)
+                    for _x_axis, _y_axis, _error in zip(
+                        x_axis, y_axis, error, strict=False
+                    )
                 ]
             else:
                 metadata.append(f"# Time(s), {yaxis_label}")
-                data = [f"{_x_axis}, {_y_axis}" for _x_axis, _y_axis, _error in zip(x_axis, y_axis, strict=False)]
+                data = [
+                    f"{_x_axis}, {_y_axis}"
+                    for _x_axis, _y_axis, _error in zip(x_axis, y_axis, strict=False)
+                ]
 
             display(HTML(f"Exported water intake file: {full_export_file_name}"))
-            make_ascii_file(metadata=metadata, data=data, output_file_name=full_export_file_name, dim="1d")
+            make_ascii_file(
+                metadata=metadata,
+                data=data,
+                output_file_name=full_export_file_name,
+                dim="1d",
+            )
 
     def __get_water_intake_yaxis_label(self):
         if self.ui.pixel_radioButton.isChecked():
@@ -800,7 +856,9 @@ class WaterIntakeProfileSelector(QMainWindow):
             return "distance"
 
     def roi_moved(self):
-        region = self.roi_id.getArraySlice(self.current_image, self.ui.image_view.imageItem)
+        region = self.roi_id.getArraySlice(
+            self.current_image, self.ui.image_view.imageItem
+        )
 
         x0 = region[0][0].start
         x1 = region[0][0].stop
@@ -897,7 +955,9 @@ class WaterIntakeProfileSelector(QMainWindow):
         dict_data = self.dict_data
         list_images = np.array(dict_data["list_images"].copy())
         list_time_stamp = np.array(dict_data["list_time_stamp"].copy())
-        list_time_stamp_user_format = np.array(dict_data["list_time_stamp_user_format"].copy())
+        list_time_stamp_user_format = np.array(
+            dict_data["list_time_stamp_user_format"].copy()
+        )
         list_data = np.array(dict_data["list_data"].copy())
 
         if is_by_name:
@@ -912,7 +972,9 @@ class WaterIntakeProfileSelector(QMainWindow):
 
         dict_data["list_images"] = list(sorted_list_images)
         dict_data["list_time_stamp"] = list(sorted_list_time_stamp)
-        dict_data["list_time_stamp_user_format"] = list(sorted_list_time_stamp_user_format)
+        dict_data["list_time_stamp_user_format"] = list(
+            sorted_list_time_stamp_user_format
+        )
         dict_data["list_data"] = sorted_list_data
 
         self.dict_data = dict_data
@@ -960,7 +1022,10 @@ class WaterIntakeProfileSelector(QMainWindow):
 
     def export_table_button_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
 
         if _export_folder:
@@ -970,7 +1035,9 @@ class WaterIntakeProfileSelector(QMainWindow):
             list_images = dict_data["list_images"]
             input_folder = os.path.basename(os.path.dirname(list_images[0]))
 
-            output_file_name = os.path.join(export_folder, input_folder + "_sorting_table.txt")
+            output_file_name = os.path.join(
+                export_folder, input_folder + "_sorting_table.txt"
+            )
 
             list_time = dict_data["list_time_stamp"]
             list_time_stamp_user_format = dict_data["list_time_stamp_user_format"]
@@ -989,12 +1056,20 @@ class WaterIntakeProfileSelector(QMainWindow):
                 )
             ]
 
-            make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim="1d")
+            make_ascii_file(
+                metadata=metadata,
+                data=data,
+                output_file_name=output_file_name,
+                dim="1d",
+            )
             display(HTML(f"Table has been exported in {output_file_name}"))
 
     def import_dsc_clicked(self):
         _dsc_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         if _dsc_folder:
             dsc_folder = os.path.abspath(_dsc_folder)
@@ -1022,10 +1097,14 @@ class WaterIntakeProfileSelector(QMainWindow):
         for _key in list_images:
             _short_key = os.path.basename(_key)
             new_list_time_stamp.append(dict_disc[_short_key]["time_stamp"])
-            new_list_time_stamp_user_format.append(dict_disc[_short_key]["time_stamp_user_format"])
+            new_list_time_stamp_user_format.append(
+                dict_disc[_short_key]["time_stamp_user_format"]
+            )
 
         self.dict_data_raw["list_time_stamp"] = new_list_time_stamp.copy()
-        self.dict_data_raw["list_time_stamp_user_format"] = new_list_time_stamp_user_format.copy()
+        self.dict_data_raw["list_time_stamp_user_format"] = (
+            new_list_time_stamp_user_format.copy()
+        )
 
     def algorithm_changed(self):
         self.update_plots()
@@ -1044,7 +1123,9 @@ class WaterIntakeProfileSelector(QMainWindow):
     def help_button_clicked(self):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/water_intake_profile_calculator/")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/water_intake_profile_calculator/"
+        )
 
     def ok_button_clicked(self):
         # do soemthing here
@@ -1071,7 +1152,9 @@ class WaterIntakeProfileCalculator:
     def select_file_help(self, value):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/en/tutorial/notebooks/file_selector/#select_profile"
+        )
 
     def select_data(self):
         help_ui = widgets.Button(description="HELP", button_style="info")
@@ -1079,7 +1162,10 @@ class WaterIntakeProfileCalculator:
         display(help_ui)
 
         self.files_ui = fileselector.FileSelectorPanel(
-            instruction="Select Images ...", start_dir=self.working_dir, next=self.load_and_plot, multiple=True
+            instruction="Select Images ...",
+            start_dir=self.working_dir,
+            next=self.load_and_plot,
+            multiple=True,
         )
 
         self.files_ui.show()
@@ -1109,7 +1195,9 @@ class WaterIntakeProfileCalculator:
 
         list_images = dict_time_stamp["list_images"].copy()
         list_time_stamp = dict_time_stamp["list_time_stamp"].copy()
-        list_time_stamp_user_format = dict_time_stamp["list_time_stamp_user_format"].copy()
+        list_time_stamp_user_format = dict_time_stamp[
+            "list_time_stamp_user_format"
+        ].copy()
 
         list_images = np.array(list_images)
         time_stamp = np.array(list_time_stamp)
@@ -1190,7 +1278,9 @@ class ProfileHandler:
 
         if save:
             list_time_stamp = self.parent.dict_data["list_time_stamp"]
-            is_sorting_by_name = self.parent.ui.sort_files_by_name_radioButton.isChecked()
+            is_sorting_by_name = (
+                self.parent.ui.sort_files_by_name_radioButton.isChecked()
+            )
             if is_sorting_by_name:
                 time_stamp_first_file = 0
             else:
@@ -1206,7 +1296,11 @@ class ProfileHandler:
 
             x_axis = x_axis[: len(self._profile)]
 
-            self.parent.dict_profiles[str(index_file)] = {"data": _profile, "x_axis": x_axis, "delta_time": delta_time}
+            self.parent.dict_profiles[str(index_file)] = {
+                "data": _profile,
+                "x_axis": x_axis,
+                "delta_time": delta_time,
+            }
 
     def plot(self):
         self.parent.profile.clear()
@@ -1300,16 +1394,22 @@ class ProfileHandler:
             for index in np.arange(first_image, nbr_images):
                 _short_file_name = os.path.basename(list_images[index])
                 [_basename, _] = os.path.splitext(_short_file_name)
-                output_file_name = os.path.join(export_folder, _basename + "_profile.txt")
+                output_file_name = os.path.join(
+                    export_folder, _basename + "_profile.txt"
+                )
 
                 metadata = []
                 metadata.append("# Profile over ROI selected integrated along x-axis")
-                metadata.append(f"# roi [x0, y0, width, height]: [{x0}, {y0}, {width}, {height}]")
+                metadata.append(
+                    f"# roi [x0, y0, width, height]: [{x0}, {y0}, {width}, {height}]"
+                )
                 metadata.append(f"# integration direction: {inte_direction}")
                 metadata.append(f"# folder: {input_folder}")
                 metadata.append(f"# filename: {_short_file_name}")
                 metadata.append(f"# timestamp (unix): {list_time_stamp[index]}")
-                metadata.append(f"# timestamp (user format): {list_time_stamp_user_format[index]}")
+                metadata.append(
+                    f"# timestamp (user format): {list_time_stamp_user_format[index]}"
+                )
                 metadata.append(f"# algorithm used: {_algo_used}")
                 metadata.append("# ")
                 metadata.append("# pixel, counts")
@@ -1323,9 +1423,16 @@ class ProfileHandler:
                     _line = f"{_pixel_index + y0}, {_counts}"
                     data.append(_line)
 
-                make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim="1d")
+                make_ascii_file(
+                    metadata=metadata,
+                    data=data,
+                    output_file_name=output_file_name,
+                    dim="1d",
+                )
 
                 self.parent.eventProgress.setValue(index)
 
             self.parent.eventProgress.setVisible(False)
-            display(HTML(f"Exported Profiles files ({nbr_images} files) in {export_folder}"))
+            display(
+                HTML(f"Exported Profiles files ({nbr_images} files) in {export_folder}")
+            )

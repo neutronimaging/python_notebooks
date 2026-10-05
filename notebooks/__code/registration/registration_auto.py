@@ -25,7 +25,9 @@ class RegistrationAuto:
         self.parent.eventProgress.setVisible(True)
 
         for _row, _image in enumerate(_list_images):
-            [yoffset, xoffset], error, diffphase = register_translation(_ref_image, _image)
+            [yoffset, xoffset], error, diffphase = register_translation(
+                _ref_image, _image
+            )
             if not _row == self.parent.reference_image_index:
                 self.parent.set_item(row=_row, col=1, value=xoffset)
                 self.parent.set_item(row=_row, col=2, value=yoffset)

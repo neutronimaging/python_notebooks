@@ -1,10 +1,9 @@
 import os
 
+from __code.file_handler import make_or_reset_folder
 from NeuNorm.normalization import Normalization
 from qtpy import QtGui
 from qtpy.QtWidgets import QFileDialog
-
-from __code.file_handler import make_or_reset_folder
 
 
 class Export:
@@ -13,12 +12,18 @@ class Export:
 
     def run(self):
         working_dir = os.path.abspath(os.path.dirname(self.parent.working_dir))
-        export_folder = QFileDialog.getExistingDirectory(self.parent, caption="Select folder", directory=working_dir)
+        export_folder = QFileDialog.getExistingDirectory(
+            self.parent, caption="Select folder", directory=working_dir
+        )
 
         if export_folder:
             # make own folder where the data will be exported
-            short_high_res_input_folder = os.path.basename(self.parent.high_res_input_folder)
-            short_low_res_input_folder = os.path.basename(self.parent.low_res_input_folder)
+            short_high_res_input_folder = os.path.basename(
+                self.parent.high_res_input_folder
+            )
+            short_low_res_input_folder = os.path.basename(
+                self.parent.low_res_input_folder
+            )
             output_folder = f"{short_low_res_input_folder}_and_{short_high_res_input_folder}_overlaid"
             full_output_folder = os.path.join(export_folder, output_folder)
             make_or_reset_folder(full_output_folder)

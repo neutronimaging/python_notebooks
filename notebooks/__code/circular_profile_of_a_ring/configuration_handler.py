@@ -63,7 +63,10 @@ class ConfigurationHandler:
             self.parent.ui.statusbar.setStyleSheet("color: green")
 
     def save(self):
-        default_file_name = os.path.abspath(os.path.basename(self.parent.working_dir)) + "_configuration.cfg"
+        default_file_name = (
+            os.path.abspath(os.path.basename(self.parent.working_dir))
+            + "_configuration.cfg"
+        )
         working_dir = os.path.dirname(self.parent.working_dir)
         directory = os.path.join(working_dir, default_file_name)
         config_file_name = QFileDialog.getSaveFileName(
@@ -107,7 +110,13 @@ class ConfigurationHandler:
                 "thickness": ring_thickness,
             },
             "angle_bin_size": angle_bin_size,
-            "grid": {"bin_size": bin_size, "red": red, "green": green, "blue": blue, "alpha": alpha},
+            "grid": {
+                "bin_size": bin_size,
+                "red": red,
+                "green": green,
+                "blue": blue,
+                "alpha": alpha,
+            },
         }
 
         return config_dict

@@ -1,14 +1,15 @@
 import logging
 import os
 
-from qtpy.QtWidgets import QMainWindow
-
 from __code import load_ui
 from __code._utilities.list_widget import ListWidget
 from __code.extract_evenly_spaced_files.event_handler import EventHandler
 from __code.extract_evenly_spaced_files.get import Get
-from __code.extract_evenly_spaced_files.interface_initialization import InterfaceInitialization
+from __code.extract_evenly_spaced_files.interface_initialization import (
+    InterfaceInitialization,
+)
 from __code.extract_evenly_spaced_files.statistics import Statistics
+from qtpy.QtWidgets import QMainWindow
 
 
 class Interface:
@@ -46,19 +47,25 @@ class InterfaceHandler(QMainWindow):
 
         self.parent = parent
         self.o_extract = o_extract
-        self.basename_list_of_files_that_will_be_extracted = o_extract.basename_list_of_files_that_will_be_extracted
+        self.basename_list_of_files_that_will_be_extracted = (
+            o_extract.basename_list_of_files_that_will_be_extracted
+        )
         self.list_of_files_that_will_be_extracted = o_extract.list_of_files_to_extract
         self.full_raw_list_of_files = o_extract.list_files
-        self.full_base_list_of_files = [os.path.basename(_file) for _file in self.full_raw_list_of_files]
+        self.full_base_list_of_files = [
+            os.path.basename(_file) for _file in self.full_raw_list_of_files
+        ]
         self.extracting_value = self.o_extract.extracting_ui.value
 
         logging.info(
             f"number of files to extract: len(list_of_files_to_extract) = "
             f" {len(self.list_of_files_that_will_be_extracted)}"
         )
-        logging.info(f"number of full list of files: len(full_raw_list_of_files) = {len(self.full_raw_list_of_files)}")
+        logging.info(
+            f"number of full list of files: len(full_raw_list_of_files) = {len(self.full_raw_list_of_files)}"
+        )
 
-        super(InterfaceHandler, self).__init__(parent)
+        super().__init__(parent)
         ui_full_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             os.path.join("ui", "ui_extract_evenly_spaced_files.ui"),
@@ -127,8 +134,12 @@ class InterfaceHandler(QMainWindow):
         if self.manual_interface_id:
             self.manual_interface_id.close()
 
-        basename_list_of_files_that_will_be_extracted = self.basename_list_of_files_that_will_be_extracted
-        self.o_extract.basename_list_of_files_that_will_be_extracted = basename_list_of_files_that_will_be_extracted
+        basename_list_of_files_that_will_be_extracted = (
+            self.basename_list_of_files_that_will_be_extracted
+        )
+        self.o_extract.basename_list_of_files_that_will_be_extracted = (
+            basename_list_of_files_that_will_be_extracted
+        )
         self.close()
 
     def closeEvent(self, event=None):

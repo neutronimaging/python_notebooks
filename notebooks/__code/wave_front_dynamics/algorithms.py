@@ -59,7 +59,11 @@ class Algorithms:
     progress_bar_ui = None  # progress bar ui
 
     def __init__(
-        self, list_data=None, ignore_first_dataset=True, algorithm_selected="sliding_average", progress_bar_ui=None
+        self,
+        list_data=None,
+        ignore_first_dataset=True,
+        algorithm_selected="sliding_average",
+        progress_bar_ui=None,
     ):
         self.list_data = list_data
         self.ignore_first_dataset = ignore_first_dataset
@@ -180,9 +184,7 @@ class Algorithms:
             peak_error_function_data.append(_peak)
 
             for _i, _err in enumerate(error):
-                if np.isnan(_err):
-                    error[_i] = np.sqrt(popt[0])
-                elif np.isinf(_err):
+                if np.isnan(_err) or np.isinf(_err):
                     error[_i] = np.sqrt(popt[0])
                 else:
                     error[_i] = _err

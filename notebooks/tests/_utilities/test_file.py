@@ -6,7 +6,9 @@ from notebooks.__code._utilities import file
 class TestFolders:
     def setup_method(self):
         data_path = Path(__file__).parent.parent
-        self.ascii_file_name = str(Path(data_path) / "data" / "ascii" / "bragg_edge_fitting_all_regions.txt")
+        self.ascii_file_name = str(
+            Path(data_path) / "data" / "ascii" / "bragg_edge_fitting_all_regions.txt"
+        )
 
     def test_retrieving_metadata(self):
         metadata_value_1 = "#base folder"

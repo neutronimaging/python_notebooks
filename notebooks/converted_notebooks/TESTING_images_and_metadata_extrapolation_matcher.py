@@ -20,9 +20,10 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from __code import time_utility
-from __code.images_and_metadata_extrapolation_matcher import ImagesAndMetadataExtrapolationMatcher
+from __code.images_and_metadata_extrapolation_matcher import (
+    ImagesAndMetadataExtrapolationMatcher,
+)
 
 # -
 
@@ -31,7 +32,9 @@ from __code.images_and_metadata_extrapolation_matcher import ImagesAndMetadataEx
 ascii1 = "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20444-Regina/TESTING_SET/images_timestamp_infos.txt"
 ascii2 = "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20444-Regina/TESTING_SET/Sep_17_metadata_report_from_oncat.txt"
 
-o_matcher = ImagesAndMetadataExtrapolationMatcher(ascii_file_1=ascii1, ascii_file_2=ascii2)
+o_matcher = ImagesAndMetadataExtrapolationMatcher(
+    ascii_file_1=ascii1, ascii_file_2=ascii2
+)
 
 # +
 # pprint.pprint("ascii1")
@@ -52,7 +55,9 @@ ascii1 = "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20444-Regina/TESTING_SET/im
 ascii3 = "/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20444-Regina/TESTING_SET/A49_3_at80C_4p1mm_120s_2_03_OCV_C03_2columns.txt"
 
 
-o_matcher = ImagesAndMetadataExtrapolationMatcher(ascii_file_1=ascii1, ascii_file_2=ascii3)
+o_matcher = ImagesAndMetadataExtrapolationMatcher(
+    ascii_file_1=ascii1, ascii_file_2=ascii3
+)
 
 # +
 # print("ascii1")
@@ -70,7 +75,12 @@ ascii_file_2_dataframe = o_matcher.ascii_file_2_dataframe
 ascii_file_2_dataframe.set_index("timestamp_user_format")
 # -
 
-merged_dataframe = pd.merge(ascii_file_1_dataframe, ascii_file_2_dataframe, on="timestamp_user_format", how="outer")
+merged_dataframe = pd.merge(
+    ascii_file_1_dataframe,
+    ascii_file_2_dataframe,
+    on="timestamp_user_format",
+    how="outer",
+)
 merged_dataframe.sort_values(by="timestamp_user_format", inplace=True)
 merged_dataframe = merged_dataframe.reset_index(drop=True)
 merged_dataframe
@@ -104,7 +114,9 @@ def convert_to_second(timestamp_value, timestamp_format="%Y-%m-%d %I:%M:%S"):
 
 
 # +
-def calculate_extrapolated_metadata(global_index=-1, metadata_array=[], timestamp_array=[]):
+def calculate_extrapolated_metadata(
+    global_index=-1, metadata_array=[], timestamp_array=[]
+):
     #     print("calculate_extrapolated_metadata")
     #     print("metadata_array: {}".format(metadata_array))
     #     print("timestamp_array: {}".format(timestamp_array))
@@ -169,7 +181,9 @@ for _index in np.arange(len(metadata_array)):
     _metadata_value = metadata_array[_index]
     if np.isnan(_metadata_value):
         _new_value = calculate_extrapolated_metadata(
-            global_index=_index, metadata_array=metadata_array, timestamp_array=timestamp_array
+            global_index=_index,
+            metadata_array=metadata_array,
+            timestamp_array=timestamp_array,
         )
         voltage_extrapolated_array.append(_new_value)
     else:
@@ -183,7 +197,10 @@ for _index in np.arange(len(metadata_array)):
 # -
 
 time_column = timestamp_array
-time_column_s = [convert_to_second(_time, timestamp_format="%Y-%m-%d %I:%M:%S") for _time in time_column]
+time_column_s = [
+    convert_to_second(_time, timestamp_format="%Y-%m-%d %I:%M:%S")
+    for _time in time_column
+]
 
 # %matplotlib notebook
 
@@ -194,7 +211,8 @@ time_column_s = [convert_to_second(_time, timestamp_format="%Y-%m-%d %I:%M:%S") 
 timestamp_with_voltage_known = ascii_file_2_dataframe["timestamp_user_format"]
 time_column_voltage_known = timestamp_with_voltage_known
 time_column_s_known = [
-    convert_to_second(_time, timestamp_format="%Y-%m-%d %I:%M:%S") for _time in time_column_voltage_known
+    convert_to_second(_time, timestamp_format="%Y-%m-%d %I:%M:%S")
+    for _time in time_column_voltage_known
 ]
 voltage_column = ascii_file_2_dataframe["Voltage"]
 
@@ -208,7 +226,8 @@ time_column_voltage_unknown = np.array(timestamp_array)[list_index]
 # time_column_voltage_unknown = ascii_file_1_dataframe['timestamp_user_format']
 # time_column_voltage_unknown = time_column_voltage_unknown
 time_column_s_unknown = [
-    convert_to_second(_time, timestamp_format="%Y-%m-%d %I:%M:%S") for _time in time_column_voltage_unknown
+    convert_to_second(_time, timestamp_format="%Y-%m-%d %I:%M:%S")
+    for _time in time_column_voltage_unknown
 ]
 
 
@@ -221,7 +240,12 @@ ax.set_ylabel("Voltage")
 for _vl in time_column_s_unknown:
     ax.axvline(x=_vl, color="r", linestyle="--")
 
-ax.plot(time_column_s_unknown, voltage_extrapolated_array, "*g", label="Extrapolated metadata")
+ax.plot(
+    time_column_s_unknown,
+    voltage_extrapolated_array,
+    "*g",
+    label="Extrapolated metadata",
+)
 # ax.axvline(x=time_column_s_unknown[0], color='r', linestyle='--', label="Regina's metadata")
 
 ax.legend()
@@ -249,7 +273,9 @@ _dataframe1 = pd.read_csv(ascii1)
 _dataframe1
 
 time_column = np.asarray(_dataframe1[" timestamp_user_format"])
-time_column_s = [get_seconds(_time, time_format="%Y-%m-%d %I:%M:%S") for _time in time_column]
+time_column_s = [
+    get_seconds(_time, time_format="%Y-%m-%d %I:%M:%S") for _time in time_column
+]
 
 # +
 fig, ax = plt.subplots()
@@ -318,7 +344,9 @@ data1_dt
 if "##filename" in _dataframe:
     print("yes")
 
-o_matcher = ImagesAndMetadataExtrapolationMatcher(filename_vs_timestamp=ascii1, metadata_ascii_file=ascii2)
+o_matcher = ImagesAndMetadataExtrapolationMatcher(
+    filename_vs_timestamp=ascii1, metadata_ascii_file=ascii2
+)
 
 # output file
 

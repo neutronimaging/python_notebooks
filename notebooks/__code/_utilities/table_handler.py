@@ -1,8 +1,7 @@
 import numpy as np
+from __code._utilities.widgets_handler import WidgetsHandler
 from qtpy import QtCore, QtGui
 from qtpy.QtWidgets import QTableWidgetItem, QTableWidgetSelectionRange
-
-from __code._utilities.widgets_handler import WidgetsHandler
 
 
 class TableHandler:
@@ -121,8 +120,7 @@ class TableHandler:
         self.table_ui.setRangeSelected(range_selected, True)
 
     def select_row(self, row=0):
-        if row < 0:
-            row = 0
+        row = max(row, 0)
         self.table_ui.selectRow(row)
 
     def set_column_names(self, column_names=None):
@@ -202,7 +200,9 @@ class TableHandler:
         _item = self.table_ui.item(row, column)
         _item.setBackground(qcolor)
 
-    def fill_table_with(self, list_items=None, editable_columns_boolean=None, block_signal=False):
+    def fill_table_with(
+        self, list_items=None, editable_columns_boolean=None, block_signal=False
+    ):
         """
         :param:
         list_items: 2D array of text to put in the table
@@ -218,12 +218,17 @@ class TableHandler:
 
         for _row_index, _row_entry in enumerate(list_items):
             self.insert_empty_row(_row_index)
-            for _column_index, _text in enumerate(list_items[_row_index]):
+            for _column_index, _text in enumerate(_row_entry):
                 if _row_index == 0:
                     editable_flag = False
                 else:
                     editable_flag = editable_columns_boolean[_column_index]
-                self.insert_item(row=_row_index, column=_column_index, value=_text, editable=editable_flag)
+                self.insert_item(
+                    row=_row_index,
+                    column=_column_index,
+                    value=_text,
+                    editable=editable_flag,
+                )
 
         if block_signal:
             WidgetsHandler.block_signals(ui=self.table_ui, status=False)

@@ -3,14 +3,16 @@ from collections import OrderedDict
 from pathlib import Path
 
 import numpy as np
+from __code._utilities.string import get_beginning_common_part_of_string_from_list
+from __code.file_folder_browser import FileFolderBrowser
+from __code.file_handler import (
+    make_or_reset_folder,
+    retrieve_list_of_most_dominant_extension_from_folder,
+)
+from __code.ipywe import fileselector
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
-
-from __code._utilities.string import get_beginning_common_part_of_string_from_list
-from __code.file_folder_browser import FileFolderBrowser
-from __code.file_handler import make_or_reset_folder, retrieve_list_of_most_dominant_extension_from_folder
-from __code.ipywe import fileselector
 
 
 class CombineImagesAlgorithm:
@@ -84,9 +86,13 @@ class Interface:
         select_data.show()
 
     def preview_combine_result(self, data_folder):
-        list_of_input_filenames = retrieve_list_of_most_dominant_extension_from_folder(folder=data_folder)[0]
+        list_of_input_filenames = retrieve_list_of_most_dominant_extension_from_folder(
+            folder=data_folder
+        )[0]
         self.input_folder = str(Path(list_of_input_filenames[0]).parent)
-        list_of_input_filenames = [os.path.basename(_file) for _file in list_of_input_filenames]
+        list_of_input_filenames = [
+            os.path.basename(_file) for _file in list_of_input_filenames
+        ]
         self.list_of_input_filenames = list_of_input_filenames
 
         display(
@@ -99,7 +105,8 @@ class Interface:
         verti_layout = widgets.VBox(
             [
                 widgets.SelectMultiple(
-                    options=list_of_input_filenames, layout=widgets.Layout(width="100%", height="300px")
+                    options=list_of_input_filenames,
+                    layout=widgets.Layout(width="100%", height="300px"),
                 )
             ]
         )
@@ -109,8 +116,14 @@ class Interface:
 
         hori_layout = widgets.HBox(
             [
-                widgets.Label("Prefix of new filename will be ->", layout=widgets.Layout(width="20%")),
-                widgets.Label("Not Enough images selected to correctly combine!", layout=widgets.Layout(width="80%")),
+                widgets.Label(
+                    "Prefix of new filename will be ->",
+                    layout=widgets.Layout(width="20%"),
+                ),
+                widgets.Label(
+                    "Not Enough images selected to correctly combine!",
+                    layout=widgets.Layout(width="80%"),
+                ),
             ]
         )
         display(hori_layout)
@@ -121,26 +134,37 @@ class Interface:
         new_name_verti_layout = widgets.VBox(
             [
                 widgets.Label("New list of files"),
-                widgets.Select(options=[], layout=widgets.Layout(width="100%", height=select_height)),
+                widgets.Select(
+                    options=[],
+                    layout=widgets.Layout(width="100%", height=select_height),
+                ),
             ],
             layout=widgets.Layout(width=select_width),
         )
-        new_name_verti_layout.children[1].observe(self.new_list_of_files_selection_changed, names="value")
+        new_name_verti_layout.children[1].observe(
+            self.new_list_of_files_selection_changed, names="value"
+        )
         old_name_verti_layout = widgets.VBox(
             [
                 widgets.Label("Corresponding combined files"),
-                widgets.Select(options=[], layout=widgets.Layout(width="100%", height=select_height)),
+                widgets.Select(
+                    options=[],
+                    layout=widgets.Layout(width="100%", height=select_height),
+                ),
             ],
             layout=widgets.Layout(width=select_width),
         )
 
         hori_layout_2 = widgets.HBox(
-            [new_name_verti_layout, widgets.Label("  "), old_name_verti_layout], layout=widgets.Layout(width="900px")
+            [new_name_verti_layout, widgets.Label("  "), old_name_verti_layout],
+            layout=widgets.Layout(width="900px"),
         )
         display(hori_layout_2)
         self.hori_layout_2 = hori_layout_2
         hori_layout_2.layout.visibility = self.get_preview_visibility()
-        self.final_list_of_files_combined_renamed_widget = new_name_verti_layout.children[1]
+        self.final_list_of_files_combined_renamed_widget = (
+            new_name_verti_layout.children[1]
+        )
         self.corresponding_list_of_files_combined = old_name_verti_layout.children[1]
 
     def get_preview_visibility(self):
@@ -155,7 +179,9 @@ class Interface:
             message = "Not Enough images selected to correctly combine!"
             self.block_preview = True
         else:
-            message = get_beginning_common_part_of_string_from_list(list_of_text=list_of_files_selected)
+            message = get_beginning_common_part_of_string_from_list(
+                list_of_text=list_of_files_selected
+            )
             self.block_preview = False
         self.prefix_filename_widget.value = message
         self.hori_layout_2.layout.visibility = self.get_preview_visibility()
@@ -188,7 +214,9 @@ class Interface:
                 _index += 1
 
         self.full_combine_dict = full_combine_dict
-        self.final_list_of_files_combined_renamed_widget.options = final_list_of_combined_images_renamed
+        self.final_list_of_files_combined_renamed_widget.options = (
+            final_list_of_combined_images_renamed
+        )
         self.dict_new_name_old_base_name_match = dict_new_name_old_base_name_match
 
     def new_list_of_files_selection_changed(self, value):
@@ -197,13 +225,19 @@ class Interface:
         if dict_new_name_old_base_name_match:
             base_name = dict_new_name_old_base_name_match[new_selection]
             corresponding_list_of_files = self.full_combine_dict[base_name]
-            self.corresponding_list_of_files_combined.options = corresponding_list_of_files
+            self.corresponding_list_of_files_combined.options = (
+                corresponding_list_of_files
+            )
 
     def select_output_folder(self):
         self.o_folder = FileFolderBrowser(
-            working_dir=self.working_dir, next_function=self.combine, ipts_folder=self.ipts_folder
+            working_dir=self.working_dir,
+            next_function=self.combine,
+            ipts_folder=self.ipts_folder,
         )
-        self.o_folder.select_output_folder_with_new(instruction="Select where to create the combine data folder ...")
+        self.o_folder.select_output_folder_with_new(
+            instruction="Select where to create the combine data folder ..."
+        )
 
     def combine(self, output_folder):
         # remove shortcut buttons
@@ -215,7 +249,9 @@ class Interface:
         full_new_folder_name = os.path.join(os.path.abspath(output_folder), new_folder)
         make_or_reset_folder(full_new_folder_name)
 
-        progress_ui = widgets.IntProgress(value=0, min=0, max=len(self.full_combine_dict.keys()))
+        progress_ui = widgets.IntProgress(
+            value=0, min=0, max=len(self.full_combine_dict.keys())
+        )
         display(progress_ui)
         _index = 0
 
@@ -224,7 +260,8 @@ class Interface:
             full_file_name = os.path.join(full_new_folder_name, file_name)
 
             list_files_to_combine_fullname = [
-                os.path.join(self.input_folder, _file) for _file in self.full_combine_dict[_base_name]
+                os.path.join(self.input_folder, _file)
+                for _file in self.full_combine_dict[_base_name]
             ]
 
             o_work = Normalization()
