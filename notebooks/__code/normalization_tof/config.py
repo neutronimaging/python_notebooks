@@ -13,6 +13,7 @@ class DEBUG_DATA:
     container_roi = [150, 150, 40, 40]
     detector_type = DetectorType.tpx1  # timepix1 or timepix3
 
+
 ## timepix3
 # class DEBUG_DATA:
 #     ipts = "IPTS-35167"

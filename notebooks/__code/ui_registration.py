@@ -22,31 +22,41 @@ class Ui_MainWindow:
         self.groupBox_2.setObjectName("groupBox_2")
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.groupBox_2)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem)
         self.auto_registration_button = QtWidgets.QPushButton(self.groupBox_2)
         self.auto_registration_button.setMinimumSize(QtCore.QSize(200, 0))
         self.auto_registration_button.setObjectName("auto_registration_button")
         self.horizontalLayout_5.addWidget(self.auto_registration_button)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem1)
         self.manual_registration_button = QtWidgets.QPushButton(self.groupBox_2)
         self.manual_registration_button.setMinimumSize(QtCore.QSize(200, 0))
         self.manual_registration_button.setObjectName("manual_registration_button")
         self.horizontalLayout_5.addWidget(self.manual_registration_button)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem2)
         self.marker_registration_button = QtWidgets.QPushButton(self.groupBox_2)
         self.marker_registration_button.setMinimumSize(QtCore.QSize(200, 0))
         self.marker_registration_button.setObjectName("marker_registration_button")
         self.horizontalLayout_5.addWidget(self.marker_registration_button)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem3)
         self.profiler_registration_button = QtWidgets.QPushButton(self.groupBox_2)
         self.profiler_registration_button.setMinimumSize(QtCore.QSize(200, 0))
         self.profiler_registration_button.setObjectName("profiler_registration_button")
         self.horizontalLayout_5.addWidget(self.profiler_registration_button)
-        spacerItem4 = QtWidgets.QSpacerItem(73, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            73, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem4)
         self.verticalLayout_4.addWidget(self.groupBox_2)
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
@@ -66,10 +76,14 @@ class Ui_MainWindow:
         self.label_5.setObjectName("label_5")
         self.horizontalLayout_6.addWidget(self.label_5)
         self.grid_size_slider = QtWidgets.QSlider(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.grid_size_slider.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.grid_size_slider.sizePolicy().hasHeightForWidth()
+        )
         self.grid_size_slider.setSizePolicy(sizePolicy)
         self.grid_size_slider.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.grid_size_slider.setMinimum(1)
@@ -131,27 +145,43 @@ class Ui_MainWindow:
         self.verticalLayout_5.addWidget(self.bottom_row_label)
         self.horizontalLayout_2.addWidget(self.selection_groupBox)
         self.pyqtgraph_widget = QtWidgets.QWidget(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pyqtgraph_widget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pyqtgraph_widget.sizePolicy().hasHeightForWidth()
+        )
         self.pyqtgraph_widget.setSizePolicy(sizePolicy)
         self.pyqtgraph_widget.setObjectName("pyqtgraph_widget")
         self.horizontalLayout_2.addWidget(self.pyqtgraph_widget)
-        self.selection_reference_opacity_groupBox = QtWidgets.QGroupBox(self.layoutWidget)
+        self.selection_reference_opacity_groupBox = QtWidgets.QGroupBox(
+            self.layoutWidget
+        )
         self.selection_reference_opacity_groupBox.setMinimumSize(QtCore.QSize(70, 0))
-        self.selection_reference_opacity_groupBox.setMaximumSize(QtCore.QSize(60, 16777215))
-        self.selection_reference_opacity_groupBox.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.selection_reference_opacity_groupBox.setMaximumSize(
+            QtCore.QSize(60, 16777215)
+        )
+        self.selection_reference_opacity_groupBox.setLayoutDirection(
+            QtCore.Qt.LeftToRight
+        )
         self.selection_reference_opacity_groupBox.setTitle("")
         self.selection_reference_opacity_groupBox.setAlignment(QtCore.Qt.AlignCenter)
-        self.selection_reference_opacity_groupBox.setObjectName("selection_reference_opacity_groupBox")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.selection_reference_opacity_groupBox)
+        self.selection_reference_opacity_groupBox.setObjectName(
+            "selection_reference_opacity_groupBox"
+        )
+        self.verticalLayout = QtWidgets.QVBoxLayout(
+            self.selection_reference_opacity_groupBox
+        )
         self.verticalLayout.setContentsMargins(-1, -1, 19, -1)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label_2 = QtWidgets.QLabel(self.selection_reference_opacity_groupBox)
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
-        self.opacity_slider = QtWidgets.QSlider(self.selection_reference_opacity_groupBox)
+        self.opacity_slider = QtWidgets.QSlider(
+            self.selection_reference_opacity_groupBox
+        )
         self.opacity_slider.setCursor(QtGui.QCursor(QtCore.Qt.SizeVerCursor))
         self.opacity_slider.setAccessibleDescription("")
         self.opacity_slider.setLayoutDirection(QtCore.Qt.RightToLeft)
@@ -208,7 +238,9 @@ class Ui_MainWindow:
         self.horizontalLayout_4.addWidget(self.pushButton_3)
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
         self.tableWidget = QtWidgets.QTableWidget(self.layoutWidget1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
@@ -220,7 +252,9 @@ class Ui_MainWindow:
         self.tableWidget.setFrameShadow(QtWidgets.QFrame.Plain)
         self.tableWidget.setDefaultDropAction(QtCore.Qt.IgnoreAction)
         self.tableWidget.setAlternatingRowColors(True)
-        self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.ContiguousSelection)
+        self.tableWidget.setSelectionMode(
+            QtWidgets.QAbstractItemView.ContiguousSelection
+        )
         self.tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tableWidget.setGridStyle(QtCore.Qt.SolidLine)
         self.tableWidget.setObjectName("tableWidget")
@@ -243,7 +277,9 @@ class Ui_MainWindow:
         self.help_button.setMaximumSize(QtCore.QSize(100, 30))
         self.help_button.setObjectName("help_button")
         self.horizontalLayout.addWidget(self.help_button)
-        spacerItem5 = QtWidgets.QSpacerItem(408, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            408, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem5)
         self.export_button = QtWidgets.QPushButton(self.layoutWidget1)
         self.export_button.setMinimumSize(QtCore.QSize(100, 30))
@@ -286,19 +322,39 @@ class Ui_MainWindow:
         self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_row_clicked)
         self.opacity_slider.valueChanged["int"].connect(MainWindow.opacity_changed)
-        self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
+        self.previous_image_button.clicked.connect(
+            MainWindow.previous_image_button_clicked
+        )
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.selection_all.clicked.connect(MainWindow.selection_all_clicked)
-        self.opacity_selection_slider.sliderPressed.connect(MainWindow.selection_slider_changed)
-        self.opacity_selection_slider.sliderMoved["int"].connect(MainWindow.selection_slider_moved)
-        self.manual_registration_button.clicked.connect(MainWindow.manual_registration_button_clicked)
-        self.tableWidget.cellChanged["int", "int"].connect(MainWindow.table_cell_modified)
-        self.auto_registration_button.clicked.connect(MainWindow.auto_registration_button_clicked)
-        self.grid_display_checkBox.clicked.connect(MainWindow.grid_display_checkBox_clicked)
-        self.grid_size_slider.sliderMoved["int"].connect(MainWindow.grid_size_slider_moved)
+        self.opacity_selection_slider.sliderPressed.connect(
+            MainWindow.selection_slider_changed
+        )
+        self.opacity_selection_slider.sliderMoved["int"].connect(
+            MainWindow.selection_slider_moved
+        )
+        self.manual_registration_button.clicked.connect(
+            MainWindow.manual_registration_button_clicked
+        )
+        self.tableWidget.cellChanged["int", "int"].connect(
+            MainWindow.table_cell_modified
+        )
+        self.auto_registration_button.clicked.connect(
+            MainWindow.auto_registration_button_clicked
+        )
+        self.grid_display_checkBox.clicked.connect(
+            MainWindow.grid_display_checkBox_clicked
+        )
+        self.grid_size_slider.sliderMoved["int"].connect(
+            MainWindow.grid_size_slider_moved
+        )
         self.grid_size_slider.sliderPressed.connect(MainWindow.grid_size_slider_pressed)
-        self.marker_registration_button.clicked.connect(MainWindow.markers_registration_button_clicked)
-        self.profiler_registration_button.clicked.connect(MainWindow.profiler_registration_button_clicked)
+        self.marker_registration_button.clicked.connect(
+            MainWindow.markers_registration_button_clicked
+        )
+        self.profiler_registration_button.clicked.connect(
+            MainWindow.profiler_registration_button_clicked
+        )
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -308,7 +364,9 @@ class Ui_MainWindow:
         self.auto_registration_button.setText(_translate("MainWindow", "Auto ..."))
         self.manual_registration_button.setText(_translate("MainWindow", "Manual ..."))
         self.marker_registration_button.setText(_translate("MainWindow", "Markers ..."))
-        self.profiler_registration_button.setText(_translate("MainWindow", "Profiler ..."))
+        self.profiler_registration_button.setText(
+            _translate("MainWindow", "Profiler ...")
+        )
         self.groupBox.setTitle(_translate("MainWindow", "Grid"))
         self.grid_display_checkBox.setText(_translate("MainWindow", "Display"))
         self.label_5.setText(_translate("MainWindow", "Size"))
@@ -335,7 +393,9 @@ class Ui_MainWindow:
         self.export_button.setText(_translate("MainWindow", "Export ..."))
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
         self.actionWater_Intake.setText(_translate("MainWindow", "Water Intake ..."))
-        self.actionImportedFilesMetadata.setText(_translate("MainWindow", "Imported Files and Metadata ..."))
+        self.actionImportedFilesMetadata.setText(
+            _translate("MainWindow", "Imported Files and Metadata ...")
+        )
         self.actionBy_Time_Stamp.setText(_translate("MainWindow", "by Time Stamp"))
         self.actionBy_File_Name.setText(_translate("MainWindow", "by File Name"))
         self.actionDsc_files.setText(_translate("MainWindow", "dsc files ..."))

@@ -54,10 +54,14 @@ class Ui_MainWindow:
         self.horizontalLayout_6.addWidget(self.display_size_label)
         self.grid_size_slider = QtWidgets.QSlider(self.groupBox)
         self.grid_size_slider.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.grid_size_slider.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.grid_size_slider.sizePolicy().hasHeightForWidth()
+        )
         self.grid_size_slider.setSizePolicy(sizePolicy)
         self.grid_size_slider.setMaximumSize(QtCore.QSize(16777215, 16777215))
         self.grid_size_slider.setMinimum(1)
@@ -125,7 +129,9 @@ class Ui_MainWindow:
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_7.addItem(spacerItem)
         self.label = QtWidgets.QLabel(self.groupBox_2)
         self.label.setObjectName("label")
@@ -215,7 +221,9 @@ class Ui_MainWindow:
         self.remove_roi_button.setFont(font)
         self.remove_roi_button.setObjectName("remove_roi_button")
         self.horizontalLayout_4.addWidget(self.remove_roi_button)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_4.addItem(spacerItem1)
         self.add_roi_button = QtWidgets.QPushButton(self.groupBox_2)
         font = QtGui.QFont()
@@ -255,7 +263,9 @@ class Ui_MainWindow:
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout.addWidget(self.pushButton)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem2)
         self.export_button = QtWidgets.QPushButton(self.centralwidget)
         self.export_button.setObjectName("export_button")
@@ -292,7 +302,9 @@ class Ui_MainWindow:
         self.tabWidget.setCurrentIndex(0)
         self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
         self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
-        self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
+        self.previous_image_button.clicked.connect(
+            MainWindow.previous_image_button_clicked
+        )
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
         self.pushButton.clicked.connect(MainWindow.help_button_clicked)
@@ -300,12 +312,24 @@ class Ui_MainWindow:
         self.add_roi_button.clicked.connect(MainWindow.add_row_button_clicked)
         self.grid_display_checkBox.clicked.connect(MainWindow.display_grid_clicked)
         self.grid_size_slider.sliderPressed.connect(MainWindow.grid_size_slider_clicked)
-        self.grid_size_slider.sliderMoved["int"].connect(MainWindow.grid_size_slider_moved)
-        self.transparency_slider.sliderPressed.connect(MainWindow.transparency_slider_clicked)
-        self.transparency_slider.sliderMoved["int"].connect(MainWindow.transparency_slider_moved)
-        self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)
-        self.tableWidget.cellChanged["int", "int"].connect(MainWindow.table_widget_cell_changed)
-        self.grid_size_slider.sliderReleased.connect(MainWindow.grid_size_slider_released)
+        self.grid_size_slider.sliderMoved["int"].connect(
+            MainWindow.grid_size_slider_moved
+        )
+        self.transparency_slider.sliderPressed.connect(
+            MainWindow.transparency_slider_clicked
+        )
+        self.transparency_slider.sliderMoved["int"].connect(
+            MainWindow.transparency_slider_moved
+        )
+        self.tableWidget.itemSelectionChanged.connect(
+            MainWindow.table_widget_selection_changed
+        )
+        self.tableWidget.cellChanged["int", "int"].connect(
+            MainWindow.table_widget_cell_changed
+        )
+        self.grid_size_slider.sliderReleased.connect(
+            MainWindow.grid_size_slider_released
+        )
         self.tabWidget.currentChanged["int"].connect(MainWindow.tab_changed)
         self.add_radioButton.clicked.connect(MainWindow.algo_changed)
         self.mean_readioButton.clicked.connect(MainWindow.algo_changed)
@@ -317,7 +341,9 @@ class Ui_MainWindow:
         self.groupBox.setTitle(_translate("MainWindow", "Grid"))
         self.grid_display_checkBox.setText(_translate("MainWindow", "Display"))
         self.display_size_label.setText(_translate("MainWindow", "Size"))
-        self.display_transparency_label.setText(_translate("MainWindow", "Transparency"))
+        self.display_transparency_label.setText(
+            _translate("MainWindow", "Transparency")
+        )
         self.previous_image_button.setText(_translate("MainWindow", "Prev. Image"))
         self.image_slider_value.setText(_translate("MainWindow", "0"))
         self.next_image_button.setText(_translate("MainWindow", "Next Image"))
@@ -335,22 +361,32 @@ class Ui_MainWindow:
         item.setText(_translate("MainWindow", "Width"))
         item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Height"))
-        self.label_3.setText(_translate("MainWindow", "ROI of selected row is displayed in RED"))
+        self.label_3.setText(
+            _translate("MainWindow", "ROI of selected row is displayed in RED")
+        )
         self.remove_roi_button.setText(_translate("MainWindow", "-"))
         self.add_roi_button.setText(_translate("MainWindow", "+"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Measurement"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Measurement")
+        )
         item = self.summary_table.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Files Name"))
         item = self.summary_table.horizontalHeaderItem(1)
         item.setText(_translate("MainWindow", "Time Stamp"))
         item = self.summary_table.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Relative Time (s)"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Summary"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Summary")
+        )
         self.pushButton.setText(_translate("MainWindow", "Help"))
-        self.export_button.setText(_translate("MainWindow", "Export Counts vs File Name and Time Stamp ..."))
+        self.export_button.setText(
+            _translate("MainWindow", "Export Counts vs File Name and Time Stamp ...")
+        )
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
         self.actionWater_Intake.setText(_translate("MainWindow", "Water Intake ..."))
-        self.actionImportedFilesMetadata.setText(_translate("MainWindow", "Imported Files and Metadata ..."))
+        self.actionImportedFilesMetadata.setText(
+            _translate("MainWindow", "Imported Files and Metadata ...")
+        )
         self.actionBy_Time_Stamp.setText(_translate("MainWindow", "by Time Stamp"))
         self.actionBy_File_Name.setText(_translate("MainWindow", "by File Name"))
         self.actionDsc_files.setText(_translate("MainWindow", "dsc files ..."))

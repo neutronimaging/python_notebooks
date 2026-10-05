@@ -1,7 +1,9 @@
 import glob
 from pathlib import Path
 
-from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
+from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import (
+    GroupImagesByCycle,
+)
 from notebooks.__code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import (
     SortImagesWithinEachCycle,
 )
@@ -16,7 +18,9 @@ class TestSortImagesWithinCycles:
         list_of_files.sort()
         self.list_of_files = list_of_files
 
-        full_tiff_path = Path(data_path) / "data" / "images" / "data_with_acquisition_cycle"
+        full_tiff_path = (
+            Path(data_path) / "data" / "images" / "data_with_acquisition_cycle"
+        )
         full_list_of_files = glob.glob(str(full_tiff_path) + "/*.tif")
         full_list_of_files.sort()
         self.full_list_of_files = full_list_of_files
@@ -25,7 +29,8 @@ class TestSortImagesWithinCycles:
 
     def test_sort_dictionary(self):
         o_group = GroupImagesByCycle(
-            list_of_files=self.full_list_of_files, list_of_metadata_key=self.list_of_metadata_key
+            list_of_files=self.full_list_of_files,
+            list_of_metadata_key=self.list_of_metadata_key,
         )
         o_group.run()
 
@@ -38,7 +43,8 @@ class TestSortImagesWithinCycles:
         }
 
         o_sort = SortImagesWithinEachCycle(
-            dict_groups_filename=dictionary_of_groups, dict_filename_metadata=dictionary_of_filename_metadata
+            dict_groups_filename=dictionary_of_groups,
+            dict_filename_metadata=dictionary_of_filename_metadata,
         )
         o_sort.sort(dict_how_to_sort=dict_how_to_sort)
 
@@ -47,5 +53,7 @@ class TestSortImagesWithinCycles:
         index_expected = [4, 5, 6, 3, 8, 7, 2, 1, 0]
         group0_sorted_expected = [raw_group0[_index] for _index in index_expected]
 
-        for _calculated, _expected in zip(group0_sorted_calculated, group0_sorted_expected, strict=False):
+        for _calculated, _expected in zip(
+            group0_sorted_calculated, group0_sorted_expected, strict=False
+        ):
             assert _calculated == _expected

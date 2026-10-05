@@ -13,7 +13,9 @@ from IPython.display import HTML, display
 from ipywidgets import widgets
 
 
-def calculate_file_temperature(left_T=-1, right_T=-1, left_time=-1, right_time=-1, file_time=-1):
+def calculate_file_temperature(
+    left_T=-1, right_T=-1, left_time=-1, right_time=-1, file_time=-1
+):
     coeff = (float(right_T) - float(left_T)) / (float(right_time) - float(left_time))
     part1 = coeff * (float(file_time) - float(left_time))
     return part1 + float(left_T)
@@ -44,13 +46,19 @@ def extract_temperature(index=-1, temperature_array=[], time_stamp_array=[]):
     file_time = time_stamp_array[index]
 
     file_temperature = calculate_file_temperature(
-        left_T=left_T, right_T=right_T, left_time=left_time, right_time=right_time, file_time=file_time
+        left_T=left_T,
+        right_T=right_T,
+        left_time=left_time,
+        right_time=right_time,
+        file_time=file_time,
     )
 
     return file_temperature
 
 
-def retrieve_T_from_file_vs_temperature_array(file_name="", file_array=[], temperature_array=[]):
+def retrieve_T_from_file_vs_temperature_array(
+    file_name="", file_array=[], temperature_array=[]
+):
     index = file_array.index(file_name)
     return temperature_array[index]
 
@@ -228,7 +236,9 @@ def rename_files(dict_old_new_names={}, new_output_folder=""):
         w1.value = _index + 1
 
 
-def copy_files(dict_old_new_names={}, input_folder_name=None, new_output_folder="", overwrite=True):
+def copy_files(
+    dict_old_new_names={}, input_folder_name=None, new_output_folder="", overwrite=True
+):
     make_dir(dir=new_output_folder, overwrite=overwrite)
 
     nbr_files = len(dict_old_new_names.keys())
@@ -311,7 +321,9 @@ class ListRunsParser:
 
         # remove the runs from list_runs and list_current_runs
         clean_list_runs = list(list_runs - _list_runs_to_remove)
-        clean_list_current_runs = list(set(self.list_current_runs) - _list_runs_to_remove)
+        clean_list_current_runs = list(
+            set(self.list_current_runs) - _list_runs_to_remove
+        )
 
         new_list_current_runs = clean_list_runs + clean_list_current_runs
         self.list_current_runs = new_list_current_runs
@@ -356,7 +368,9 @@ class ListRunsParser:
         # print("new list: {}".format(_our_list))
 
         while _our_list:
-            _ref_index = match_list(reference_list=_list_full_reference, our_list=_our_list)
+            _ref_index = match_list(
+                reference_list=_list_full_reference, our_list=_our_list
+            )
 
             _group = [_our_list[0], _our_list[_ref_index - 1]]
             # print("_group: {}".format(_group))

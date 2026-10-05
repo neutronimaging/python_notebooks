@@ -102,7 +102,9 @@ class Ui_MainWindow:
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.treeWidget = QtWidgets.QTreeWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.treeWidget.sizePolicy().hasHeightForWidth())
@@ -111,7 +113,9 @@ class Ui_MainWindow:
         self.treeWidget.setMaximumSize(QtCore.QSize(250, 16777215))
         self.treeWidget.setObjectName("treeWidget")
         self.verticalLayout_2.addWidget(self.treeWidget)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_2.addItem(spacerItem)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -124,7 +128,9 @@ class Ui_MainWindow:
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.h3_table.customContextMenuRequested["QPoint"].connect(MainWindow.h3_table_right_click)
+        self.h3_table.customContextMenuRequested["QPoint"].connect(
+            MainWindow.h3_table_right_click
+        )
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -173,4 +179,6 @@ class Ui_MainWindow:
         item = self.h3_table.item(0, 7)
         item.setText(_translate("MainWindow", "8"))
         self.h3_table.setSortingEnabled(__sortingEnabled)
-        self.treeWidget.headerItem().setText(0, _translate("MainWindow", "Columns Visibility"))
+        self.treeWidget.headerItem().setText(
+            0, _translate("MainWindow", "Columns Visibility")
+        )

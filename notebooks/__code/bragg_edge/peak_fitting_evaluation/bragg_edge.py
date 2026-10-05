@@ -6,18 +6,25 @@ from collections import OrderedDict
 import numpy as np
 import plotly.graph_objs as go
 import pyqtgraph as pg
+from __code import file_handler, load_ui
+from __code.ipywe import fileselector
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
 from neutronbraggedge.braggedge import BraggEdge as BraggEdgeLibrary
 from neutronbraggedge.experiment_handler import *
-from neutronbraggedge.material_handler.retrieve_material_metadata import RetrieveMaterialMetadata
+from neutronbraggedge.material_handler.retrieve_material_metadata import (
+    RetrieveMaterialMetadata,
+)
 from plotly.offline import iplot
 from qtpy import QtGui
-from qtpy.QtWidgets import QMainWindow, QProgressBar, QTableWidgetItem, QTableWidgetSelectionRange, QVBoxLayout
-
-from __code import file_handler, load_ui
-from __code.ipywe import fileselector
+from qtpy.QtWidgets import (
+    QMainWindow,
+    QProgressBar,
+    QTableWidgetItem,
+    QTableWidgetSelectionRange,
+    QVBoxLayout,
+)
 
 
 class BraggEdge:
@@ -37,14 +44,20 @@ class BraggEdge:
 
         box4 = widgets.HBox(
             [
-                widgets.Label("List of elements", layout=widgets.Layout(width=self.label_width)),
-                widgets.Select(options=self.list_returned, layout=widgets.Layout(width="20%")),
+                widgets.Label(
+                    "List of elements", layout=widgets.Layout(width=self.label_width)
+                ),
+                widgets.Select(
+                    options=self.list_returned, layout=widgets.Layout(width="20%")
+                ),
             ]
         )
 
         box5 = widgets.HBox(
             [
-                widgets.Label("Nbr Bragg Edges", layout=widgets.Layout(width=self.label_width)),
+                widgets.Label(
+                    "Nbr Bragg Edges", layout=widgets.Layout(width=self.label_width)
+                ),
                 widgets.IntText(8, layout=widgets.Layout(width="20%")),
             ]
         )
@@ -64,14 +77,20 @@ class BraggEdge:
 
         box4 = widgets.HBox(
             [
-                widgets.Label("List of elements", layout=widgets.Layout(width=self.label_width)),
-                widgets.Text(",".join(self.list_of_elements), layout=widgets.Layout(width="20%")),
+                widgets.Label(
+                    "List of elements", layout=widgets.Layout(width=self.label_width)
+                ),
+                widgets.Text(
+                    ",".join(self.list_of_elements), layout=widgets.Layout(width="20%")
+                ),
             ]
         )
 
         box5 = widgets.HBox(
             [
-                widgets.Label("Nbr Bragg Edges", layout=widgets.Layout(width=self.label_width)),
+                widgets.Label(
+                    "Nbr Bragg Edges", layout=widgets.Layout(width=self.label_width)
+                ),
                 widgets.Text(str(8), layout=widgets.Layout(width="20%")),
             ]
         )
@@ -92,7 +111,10 @@ class BraggEdge:
 
         box3 = widgets.HBox(
             [
-                widgets.Label("detector offset (microS)", layout=widgets.Layout(width=self.label_width)),
+                widgets.Label(
+                    "detector offset (microS)",
+                    layout=widgets.Layout(width=self.label_width),
+                ),
                 widgets.Text(str(3700), layout=widgets.Layout(width="20%")),
             ]
         )
@@ -109,7 +131,9 @@ class BraggEdge:
         list_of_elements = [_element.strip() for _element in list_of_elements]
         number_of_bragg_edges = int(self.nbr_bragg_edges_ui.value)
 
-        _handler = BraggEdgeLibrary(material=list_of_elements, number_of_bragg_edges=number_of_bragg_edges)
+        _handler = BraggEdgeLibrary(
+            material=list_of_elements, number_of_bragg_edges=number_of_bragg_edges
+        )
         self.bragg_edges = _handler.bragg_edges
         self.hkl = _handler.hkl
         self.handler = _handler
@@ -147,7 +171,11 @@ class BraggEdge:
         self.list_files = o_norm.data["sample"]["file_name"]
 
         display(
-            HTML('<span style="font-size: 20px; color:blue">' + str(len(list_files)) + " files have been loaded</span>")
+            HTML(
+                '<span style="font-size: 20px; color:blue">'
+                + str(len(list_files))
+                + " files have been loaded</span>"
+            )
         )
 
         # define time spectra file
@@ -179,7 +207,13 @@ class BraggEdge:
 
     def save_time_spectra(self, file):
         self.spectra_file = file
-        display(HTML('<span style="font-size: 20px; color:blue"> Spectra File : ' + self.spectra_file + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue"> Spectra File : '
+                + self.spectra_file
+                + "</span>"
+            )
+        )
 
     def select_time_spectra_file(self):
         self.working_dir = os.path.dirname(self.list_files[0])
@@ -209,11 +243,20 @@ class BraggEdge:
             init_value = 1
         box1 = widgets.HBox(
             [
-                widgets.Label("Nbr of images to use:", layout=widgets.Layout(width="15")),
-                widgets.IntSlider(value=init_value, max=nbr_images, min=1, layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Nbr of images to use:", layout=widgets.Layout(width="15")
+                ),
+                widgets.IntSlider(
+                    value=init_value,
+                    max=nbr_images,
+                    min=1,
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
-        box2 = widgets.Label("(The more you select, the longer it will take to display the preview!)")
+        box2 = widgets.Label(
+            "(The more you select, the longer it will take to display the preview!)"
+        )
         vbox = widgets.VBox([box1, box2])
         display(vbox)
         self.number_of_data_to_use_ui = box1.children[1]
@@ -221,7 +264,9 @@ class BraggEdge:
     def define_sample_roi(self):
         nbr_data_to_use = int(self.number_of_data_to_use_ui.value)
         nbr_images = len(self.data)
-        list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
+        list_of_indexes_to_keep = random.sample(
+            list(range(nbr_images)), nbr_data_to_use
+        )
         final_array = []
         for _index in list_of_indexes_to_keep:
             final_array.append(self.data[_index])
@@ -231,7 +276,9 @@ class BraggEdge:
     def define_integrated_sample_to_use(self):
         nbr_data_to_use = int(self.number_of_data_to_use_ui.value)
         nbr_images = len(self.data)
-        list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
+        list_of_indexes_to_keep = random.sample(
+            list(range(nbr_images)), nbr_data_to_use
+        )
         final_array = []
         for _index in list_of_indexes_to_keep:
             final_array.append(self.data[_index])
@@ -271,7 +318,9 @@ class BraggEdge:
                 _hkl_string.append(_hkl_s)
             _hkl_formated[_material] = _hkl_string
 
-        trace = go.Scatter(x=self.lambda_array, y=self.counts_vs_file_index, mode="markers")
+        trace = go.Scatter(
+            x=self.lambda_array, y=self.counts_vs_file_index, mode="markers"
+        )
 
         layout = go.Layout(
             width=1000,
@@ -349,9 +398,17 @@ class BraggEdge:
 
         output_file_name = os.path.join(output_folder, f"bragg_edges_of_{material}.txt")
 
-        file_handler.make_ascii_file(metadata=metadata, data=data, dim="1d", output_file_name=output_file_name)
+        file_handler.make_ascii_file(
+            metadata=metadata, data=data, dim="1d", output_file_name=output_file_name
+        )
 
-        display(HTML('<span style="font-size: 20px; color:blue">File created : ' + output_file_name + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">File created : '
+                + output_file_name
+                + "</span>"
+            )
+        )
 
     def select_folder(self, message="", next_function=None):
         folder_widget = fileselector.FileSelectorPanel(
@@ -390,7 +447,8 @@ class Interface(QMainWindow):
 
         super(QMainWindow, self).__init__(parent)
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_roi_selection.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_roi_selection.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
 
@@ -647,7 +705,9 @@ class Interface(QMainWindow):
             _roi = list_roi[_row]
 
             roi_id = _roi["id"]
-            region = roi_id.getArraySlice(self.integrated_image, self.ui.image_view.imageItem)
+            region = roi_id.getArraySlice(
+                self.integrated_image, self.ui.image_view.imageItem
+            )
 
             x0 = region[0][0].start
             x1 = region[0][0].stop
@@ -721,7 +781,9 @@ class Interface(QMainWindow):
             width_int = np.abs(x0_int - int(_x1))
             height_int = np.abs(y0_int - int(_y1))
 
-            _roi_id = self.init_roi(x0=x0_int, y0=y0_int, width=width_int, height=height_int)
+            _roi_id = self.init_roi(
+                x0=x0_int, y0=y0_int, width=width_int, height=height_int
+            )
             _roi["id"] = _roi_id
             list_roi[_row] = _roi
 
