@@ -1,14 +1,13 @@
 import logging
 import os
 
-from IPython.display import HTML, display
-from qtpy.QtWidgets import QMainWindow
-
 from __code import load_ui
 from __code.mcp_chips_corrector.event_handler import EventHandler
 from __code.mcp_chips_corrector.export import Export
 from __code.mcp_chips_corrector.get import Get
 from __code.mcp_chips_corrector.initialization import Initialization
+from IPython.display import HTML, display
+from qtpy.QtWidgets import QMainWindow
 
 
 class Interface(QMainWindow):
@@ -57,10 +56,11 @@ class Interface(QMainWindow):
             )
         )
 
-        super(Interface, self).__init__(parent)
+        super().__init__(parent)
 
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_mcp_chips_corrector.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_mcp_chips_corrector.ui"),
         )
 
         self.ui = load_ui(ui_full_path, baseinstance=self)

@@ -38,10 +38,14 @@ class Ui_MainWindow:
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.pyqtgraph_widget = QtWidgets.QWidget(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pyqtgraph_widget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pyqtgraph_widget.sizePolicy().hasHeightForWidth()
+        )
         self.pyqtgraph_widget.setSizePolicy(sizePolicy)
         self.pyqtgraph_widget.setObjectName("pyqtgraph_widget")
         self.horizontalLayout_2.addWidget(self.pyqtgraph_widget)
@@ -87,7 +91,9 @@ class Ui_MainWindow:
         self.use_calibration1_checkbox.setChecked(True)
         self.use_calibration1_checkbox.setObjectName("use_calibration1_checkbox")
         self.horizontalLayout_12.addWidget(self.use_calibration1_checkbox)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_12.addItem(spacerItem)
         self.verticalLayout_5.addLayout(self.horizontalLayout_12)
         self.gridLayout = QtWidgets.QGridLayout()
@@ -113,7 +119,9 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_x0_label.setPalette(palette)
-        self.calibration1_x0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.calibration1_x0_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration1_x0_label.setObjectName("calibration1_x0_label")
         self.gridLayout.addWidget(self.calibration1_x0_label, 0, 0, 1, 1)
         self.calibration1_x0 = QtWidgets.QLineEdit(self.tab_3)
@@ -202,7 +210,9 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_y0_label.setPalette(palette)
-        self.calibration1_y0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.calibration1_y0_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration1_y0_label.setObjectName("calibration1_y0_label")
         self.gridLayout.addWidget(self.calibration1_y0_label, 1, 0, 1, 1)
         self.calibration1_y0 = QtWidgets.QLineEdit(self.tab_3)
@@ -294,9 +304,13 @@ class Ui_MainWindow:
         self.calibration1_index.setPalette(palette)
         self.calibration1_index.setObjectName("calibration1_index")
         self.horizontalLayout_4.addWidget(self.calibration1_index)
-        self.calibration1_display_this_file_button = QtWidgets.QPushButton(self.calibration1_groupbox)
+        self.calibration1_display_this_file_button = QtWidgets.QPushButton(
+            self.calibration1_groupbox
+        )
         self.calibration1_display_this_file_button.setMinimumSize(QtCore.QSize(0, 40))
-        self.calibration1_display_this_file_button.setMaximumSize(QtCore.QSize(16777215, 40))
+        self.calibration1_display_this_file_button.setMaximumSize(
+            QtCore.QSize(16777215, 40)
+        )
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(26, 30, 220))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -317,7 +331,9 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_display_this_file_button.setPalette(palette)
-        self.calibration1_display_this_file_button.setObjectName("calibration1_display_this_file_button")
+        self.calibration1_display_this_file_button.setObjectName(
+            "calibration1_display_this_file_button"
+        )
         self.horizontalLayout_4.addWidget(self.calibration1_display_this_file_button)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.label_2 = QtWidgets.QLabel(self.calibration1_groupbox)
@@ -349,9 +365,13 @@ class Ui_MainWindow:
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
-        self.calibration1_use_current_file_button = QtWidgets.QPushButton(self.calibration1_groupbox)
+        self.calibration1_use_current_file_button = QtWidgets.QPushButton(
+            self.calibration1_groupbox
+        )
         self.calibration1_use_current_file_button.setMinimumSize(QtCore.QSize(0, 40))
-        self.calibration1_use_current_file_button.setMaximumSize(QtCore.QSize(16777215, 40))
+        self.calibration1_use_current_file_button.setMaximumSize(
+            QtCore.QSize(16777215, 40)
+        )
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(26, 30, 220))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -372,9 +392,13 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration1_use_current_file_button.setPalette(palette)
-        self.calibration1_use_current_file_button.setObjectName("calibration1_use_current_file_button")
+        self.calibration1_use_current_file_button.setObjectName(
+            "calibration1_use_current_file_button"
+        )
         self.verticalLayout.addWidget(self.calibration1_use_current_file_button)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout.addItem(spacerItem1)
         self.verticalLayout_5.addWidget(self.calibration1_groupbox)
         self.tabWidget_2.addTab(self.tab_3, "")
@@ -388,7 +412,9 @@ class Ui_MainWindow:
         self.use_calibration2_checkbox.setChecked(True)
         self.use_calibration2_checkbox.setObjectName("use_calibration2_checkbox")
         self.horizontalLayout_13.addWidget(self.use_calibration2_checkbox)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_13.addItem(spacerItem2)
         self.verticalLayout_6.addLayout(self.horizontalLayout_13)
         self.gridLayout_2 = QtWidgets.QGridLayout()
@@ -405,7 +431,9 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_x0_label.setPalette(palette)
-        self.calibration2_x0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.calibration2_x0_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration2_x0_label.setObjectName("calibration2_x0_label")
         self.gridLayout_2.addWidget(self.calibration2_x0_label, 0, 0, 1, 1)
         self.calibration2_x0 = QtWidgets.QLineEdit(self.tab_4)
@@ -467,7 +495,9 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_y0_label.setPalette(palette)
-        self.calibration2_y0_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.calibration2_y0_label.setAlignment(
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+        )
         self.calibration2_y0_label.setObjectName("calibration2_y0_label")
         self.gridLayout_2.addWidget(self.calibration2_y0_label, 1, 0, 1, 1)
         self.calibration2_y0 = QtWidgets.QLineEdit(self.tab_4)
@@ -532,9 +562,13 @@ class Ui_MainWindow:
         self.calibration2_index.setPalette(palette)
         self.calibration2_index.setObjectName("calibration2_index")
         self.horizontalLayout_5.addWidget(self.calibration2_index)
-        self.calibration2_display_this_file_button = QtWidgets.QPushButton(self.calibration2_groupbox)
+        self.calibration2_display_this_file_button = QtWidgets.QPushButton(
+            self.calibration2_groupbox
+        )
         self.calibration2_display_this_file_button.setMinimumSize(QtCore.QSize(0, 40))
-        self.calibration2_display_this_file_button.setMaximumSize(QtCore.QSize(16777215, 40))
+        self.calibration2_display_this_file_button.setMaximumSize(
+            QtCore.QSize(16777215, 40)
+        )
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(193, 22, 45))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -546,7 +580,9 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_display_this_file_button.setPalette(palette)
-        self.calibration2_display_this_file_button.setObjectName("calibration2_display_this_file_button")
+        self.calibration2_display_this_file_button.setObjectName(
+            "calibration2_display_this_file_button"
+        )
         self.horizontalLayout_5.addWidget(self.calibration2_display_this_file_button)
         self.verticalLayout_9.addLayout(self.horizontalLayout_5)
         self.label_4 = QtWidgets.QLabel(self.calibration2_groupbox)
@@ -569,9 +605,13 @@ class Ui_MainWindow:
         self.label_4.setAlignment(QtCore.Qt.AlignCenter)
         self.label_4.setObjectName("label_4")
         self.verticalLayout_9.addWidget(self.label_4)
-        self.calibration2_use_current_file_button = QtWidgets.QPushButton(self.calibration2_groupbox)
+        self.calibration2_use_current_file_button = QtWidgets.QPushButton(
+            self.calibration2_groupbox
+        )
         self.calibration2_use_current_file_button.setMinimumSize(QtCore.QSize(0, 40))
-        self.calibration2_use_current_file_button.setMaximumSize(QtCore.QSize(16777215, 40))
+        self.calibration2_use_current_file_button.setMaximumSize(
+            QtCore.QSize(16777215, 40)
+        )
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(193, 22, 45))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -583,10 +623,14 @@ class Ui_MainWindow:
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         self.calibration2_use_current_file_button.setPalette(palette)
-        self.calibration2_use_current_file_button.setObjectName("calibration2_use_current_file_button")
+        self.calibration2_use_current_file_button.setObjectName(
+            "calibration2_use_current_file_button"
+        )
         self.verticalLayout_9.addWidget(self.calibration2_use_current_file_button)
         self.verticalLayout_6.addWidget(self.calibration2_groupbox)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 305, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            20, 305, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_6.addItem(spacerItem3)
         self.tabWidget_2.addTab(self.tab_4, "")
         self.verticalLayout_11.addWidget(self.tabWidget_2)
@@ -619,7 +663,9 @@ class Ui_MainWindow:
         self.remove_row.setFont(font)
         self.remove_row.setObjectName("remove_row")
         self.horizontalLayout_6.addWidget(self.remove_row)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_6.addItem(spacerItem4)
         self.add_row = QtWidgets.QPushButton(self.page_2)
         self.add_row.setMinimumSize(QtCore.QSize(50, 40))
@@ -660,7 +706,9 @@ class Ui_MainWindow:
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout.addWidget(self.pushButton)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem5)
         self.export_button = QtWidgets.QPushButton(self.centralwidget)
         self.export_button.setObjectName("export_button")
@@ -699,25 +747,55 @@ class Ui_MainWindow:
         self.tabWidget_2.setCurrentIndex(0)
         self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
         self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
-        self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
+        self.previous_image_button.clicked.connect(
+            MainWindow.previous_image_button_clicked
+        )
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
-        self.use_calibration1_checkbox.clicked.connect(MainWindow.use_calibration1_checked)
+        self.use_calibration1_checkbox.clicked.connect(
+            MainWindow.use_calibration1_checked
+        )
         self.remove_row.clicked.connect(MainWindow.remove_row_button_clicked)
         self.add_row.clicked.connect(MainWindow.add_row_button_clicked)
-        self.calibration1_use_current_file_button.clicked.connect(MainWindow.use_current_calibration1_file)
-        self.calibration2_use_current_file_button.clicked.connect(MainWindow.use_current_calibration2_file)
-        self.calibration1_display_this_file_button.clicked.connect(MainWindow.display_this_cal1_file)
-        self.calibration2_display_this_file_button.clicked.connect(MainWindow.display_this_cal2_file)
-        self.calibration1_x0.returnPressed.connect(MainWindow.calibration1_widgets_changed)
-        self.calibration1_width.returnPressed.connect(MainWindow.calibration1_widgets_changed)
-        self.calibration1_y0.returnPressed.connect(MainWindow.calibration1_widgets_changed)
-        self.calibration1_height.returnPressed.connect(MainWindow.calibration1_widgets_changed)
-        self.calibration2_x0.returnPressed.connect(MainWindow.calibration2_widgets_changed)
-        self.calibration2_width.returnPressed.connect(MainWindow.calibration2_widgets_changed)
-        self.calibration2_y0.returnPressed.connect(MainWindow.calibration2_widgets_changed)
-        self.calibration2_height.returnPressed.connect(MainWindow.calibration2_widgets_changed)
-        self.use_calibration2_checkbox.clicked.connect(MainWindow.use_calibration2_checked)
+        self.calibration1_use_current_file_button.clicked.connect(
+            MainWindow.use_current_calibration1_file
+        )
+        self.calibration2_use_current_file_button.clicked.connect(
+            MainWindow.use_current_calibration2_file
+        )
+        self.calibration1_display_this_file_button.clicked.connect(
+            MainWindow.display_this_cal1_file
+        )
+        self.calibration2_display_this_file_button.clicked.connect(
+            MainWindow.display_this_cal2_file
+        )
+        self.calibration1_x0.returnPressed.connect(
+            MainWindow.calibration1_widgets_changed
+        )
+        self.calibration1_width.returnPressed.connect(
+            MainWindow.calibration1_widgets_changed
+        )
+        self.calibration1_y0.returnPressed.connect(
+            MainWindow.calibration1_widgets_changed
+        )
+        self.calibration1_height.returnPressed.connect(
+            MainWindow.calibration1_widgets_changed
+        )
+        self.calibration2_x0.returnPressed.connect(
+            MainWindow.calibration2_widgets_changed
+        )
+        self.calibration2_width.returnPressed.connect(
+            MainWindow.calibration2_widgets_changed
+        )
+        self.calibration2_y0.returnPressed.connect(
+            MainWindow.calibration2_widgets_changed
+        )
+        self.calibration2_height.returnPressed.connect(
+            MainWindow.calibration2_widgets_changed
+        )
+        self.use_calibration2_checkbox.clicked.connect(
+            MainWindow.use_calibration2_checked
+        )
         self.pushButton.clicked.connect(MainWindow.help_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -727,33 +805,58 @@ class Ui_MainWindow:
         self.previous_image_button.setText(_translate("MainWindow", "Prev. Image"))
         self.image_slider_value.setText(_translate("MainWindow", "0"))
         self.next_image_button.setText(_translate("MainWindow", "Next Image"))
-        self.use_calibration1_checkbox.setText(_translate("MainWindow", "Use Calibration"))
+        self.use_calibration1_checkbox.setText(
+            _translate("MainWindow", "Use Calibration")
+        )
         self.calibration1_x0_label.setText(_translate("MainWindow", "X0"))
         self.calibration1_width_label.setText(_translate("MainWindow", "width"))
         self.calibration1_value_label.setText(_translate("MainWindow", "Value"))
         self.calibration1_y0_label.setText(_translate("MainWindow", "y0"))
         self.calibration1_height_label.setText(_translate("MainWindow", "height"))
-        self.calibration1_groupbox.setTitle(_translate("MainWindow", "File to Use for this Calibration"))
+        self.calibration1_groupbox.setTitle(
+            _translate("MainWindow", "File to Use for this Calibration")
+        )
         self.label_38.setText(_translate("MainWindow", "Index"))
         self.calibration1_index.setText(_translate("MainWindow", "0"))
-        self.calibration1_display_this_file_button.setText(_translate("MainWindow", "Display This File"))
+        self.calibration1_display_this_file_button.setText(
+            _translate("MainWindow", "Display This File")
+        )
         self.label_2.setText(_translate("MainWindow", "or"))
-        self.calibration1_use_current_file_button.setText(_translate("MainWindow", "Use Current File"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_3), _translate("MainWindow", "Calibration 1"))
-        self.use_calibration2_checkbox.setText(_translate("MainWindow", "Use Calibration"))
+        self.calibration1_use_current_file_button.setText(
+            _translate("MainWindow", "Use Current File")
+        )
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.tab_3),
+            _translate("MainWindow", "Calibration 1"),
+        )
+        self.use_calibration2_checkbox.setText(
+            _translate("MainWindow", "Use Calibration")
+        )
         self.calibration2_x0_label.setText(_translate("MainWindow", "X0"))
         self.calibration2_width_label.setText(_translate("MainWindow", "width"))
         self.calibration2_value_label.setText(_translate("MainWindow", "Value"))
         self.calibration2_y0_label.setText(_translate("MainWindow", "y0"))
         self.calibration2_height_label.setText(_translate("MainWindow", "height"))
-        self.calibration2_groupbox.setTitle(_translate("MainWindow", "File to Use for this Calibration"))
+        self.calibration2_groupbox.setTitle(
+            _translate("MainWindow", "File to Use for this Calibration")
+        )
         self.label_45.setText(_translate("MainWindow", "Index"))
         self.calibration2_index.setText(_translate("MainWindow", "0"))
-        self.calibration2_display_this_file_button.setText(_translate("MainWindow", "Display This File"))
+        self.calibration2_display_this_file_button.setText(
+            _translate("MainWindow", "Display This File")
+        )
         self.label_4.setText(_translate("MainWindow", "or"))
-        self.calibration2_use_current_file_button.setText(_translate("MainWindow", "Use Current File"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_4), _translate("MainWindow", "Calibration 2"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page), _translate("MainWindow", "Calibration Regions"))
+        self.calibration2_use_current_file_button.setText(
+            _translate("MainWindow", "Use Current File")
+        )
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.tab_4),
+            _translate("MainWindow", "Calibration 2"),
+        )
+        self.toolBox.setItemText(
+            self.toolBox.indexOf(self.page),
+            _translate("MainWindow", "Calibration Regions"),
+        )
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "X0"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -764,20 +867,31 @@ class Ui_MainWindow:
         item.setText(_translate("MainWindow", "Height"))
         self.remove_row.setText(_translate("MainWindow", "-"))
         self.add_row.setText(_translate("MainWindow", "+"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("MainWindow", "Measurement Regions"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Measurement"))
+        self.toolBox.setItemText(
+            self.toolBox.indexOf(self.page_2),
+            _translate("MainWindow", "Measurement Regions"),
+        )
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Measurement")
+        )
         item = self.summary_table.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Files Name"))
         item = self.summary_table.horizontalHeaderItem(1)
         item.setText(_translate("MainWindow", "Time Stamp"))
         item = self.summary_table.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Relative Time (s)"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Summary"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Summary")
+        )
         self.pushButton.setText(_translate("MainWindow", "Help"))
-        self.export_button.setText(_translate("MainWindow", "Export Calibrated Transmission ..."))
+        self.export_button.setText(
+            _translate("MainWindow", "Export Calibrated Transmission ...")
+        )
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
         self.actionWater_Intake.setText(_translate("MainWindow", "Water Intake ..."))
-        self.actionImportedFilesMetadata.setText(_translate("MainWindow", "Imported Files and Metadata ..."))
+        self.actionImportedFilesMetadata.setText(
+            _translate("MainWindow", "Imported Files and Metadata ...")
+        )
         self.actionBy_Time_Stamp.setText(_translate("MainWindow", "by Time Stamp"))
         self.actionBy_File_Name.setText(_translate("MainWindow", "by File Name"))
         self.actionDsc_files.setText(_translate("MainWindow", "dsc files ..."))

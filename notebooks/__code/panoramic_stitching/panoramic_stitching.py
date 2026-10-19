@@ -1,12 +1,11 @@
 import os
 
 import inflect
-from IPython.display import HTML, display
-from qtpy.QtWidgets import QMainWindow
-
 from __code import load_ui
 from __code._utilities.error import NoFilesFound
-from __code._utilities.folder import get_list_of_folders_with_specified_file_type_and_same_number_of_files
+from __code._utilities.folder import (
+    get_list_of_folders_with_specified_file_type_and_same_number_of_files,
+)
 from __code._utilities.string import format_html_message
 from __code.ipywe import fileselector
 from __code.panoramic_stitching.automatically_stitch import AutomaticallyStitch
@@ -14,11 +13,17 @@ from __code.panoramic_stitching.data_initialization import DataInitialization
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.export import Export
 from __code.panoramic_stitching.gui_initialization import GuiInitialization
-from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN, ImageHandler
+from __code.panoramic_stitching.image_handler import (
+    HORIZONTAL_MARGIN,
+    VERTICAL_MARGIN,
+    ImageHandler,
+)
 from __code.panoramic_stitching.load_data import LoadData
 from __code.panoramic_stitching.profile import Profile
 from __code.panoramic_stitching.remote_control_handler import RemoteControlHandler
 from __code.panoramic_stitching.stitching_algorithms import StitchingAlgorithmType
+from IPython.display import HTML, display
+from qtpy.QtWidgets import QMainWindow
 
 SIMPLE_MANUAL_PIXEL_CHANGE = 1  # pixel
 DOUBLE_MANUAL_PIXEL_CHANGE = 5  # pixel
@@ -31,7 +36,7 @@ class PanoramicStitching:
 
     def select_input_folders(self):
         self.list_folder_widget = fileselector.FileSelectorPanel(
-            instruction="select all the folders of images to " "stitch",
+            instruction="select all the folders of images to stitch",
             start_dir=self.working_dir,
             type="directory",
             next=self.folder_selected,
@@ -42,11 +47,16 @@ class PanoramicStitching:
     def folder_selected(self, folder_selected):
         final_list_folders, list_folders_rejected = (
             get_list_of_folders_with_specified_file_type_and_same_number_of_files(
-                list_of_folders_to_check=folder_selected, file_extension=self.file_extension
+                list_of_folders_to_check=folder_selected,
+                file_extension=self.file_extension,
             )
         )
 
-        self.working_dir = os.path.dirname(final_list_folders[0]) if final_list_folders else self.working_dir
+        self.working_dir = (
+            os.path.dirname(final_list_folders[0])
+            if final_list_folders
+            else self.working_dir
+        )
         print("there")
         if not final_list_folders:
             str_list_ext = ", ".join(self.file_extension)
@@ -61,7 +71,12 @@ class PanoramicStitching:
 
         final_list_folders.sort()
         nbr_folder = len(final_list_folders)
-        display(format_html_message(pre_message=f"Notebook is about to work with {nbr_folder} folders!", spacer=""))
+        display(
+            format_html_message(
+                pre_message=f"Notebook is about to work with {nbr_folder} folders!",
+                spacer="",
+            )
+        )
 
         self.final_list_folders = final_list_folders
         self.list_folders_rejected = list_folders_rejected
@@ -72,7 +87,9 @@ class PanoramicStitching:
         list_folders_rejected = self.list_folders_rejected
 
         # gui initialization
-        o_interface = Interface(list_folders=final_list_folders, list_folders_rejected=list_folders_rejected)
+        o_interface = Interface(
+            list_folders=final_list_folders, list_folders_rejected=list_folders_rejected
+        )
         o_interface.show()
         try:
             o_interface.load_data()
@@ -169,7 +186,7 @@ class Interface(QMainWindow):
                 spacer="",
             )
         )
-        super(Interface, self).__init__(parent)
+        super().__init__(parent)
         ui_full_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             os.path.join("ui", "ui_panoramic_stitching_manual.ui"),
@@ -235,15 +252,21 @@ class Interface(QMainWindow):
 
     # event handler
     def remote_control_widget_pressed(self):
-        EventHandler.button_pressed(ui=self.ui.remote_control_widget, name="remote_control")
+        EventHandler.button_pressed(
+            ui=self.ui.remote_control_widget, name="remote_control"
+        )
         RemoteControlHandler(parent=self)
 
     def remote_control_widget_released(self):
-        EventHandler.button_released(ui=self.ui.remote_control_widget, name="remote_control")
+        EventHandler.button_released(
+            ui=self.ui.remote_control_widget, name="remote_control"
+        )
 
     def list_folder_combobox_value_changed(self, new_folder_selected=None):
         o_event = EventHandler(parent=self)
-        o_event.list_folder_combobox_value_changed(new_folder_selected=new_folder_selected)
+        o_event.list_folder_combobox_value_changed(
+            new_folder_selected=new_folder_selected
+        )
 
     def visibility_checkbox_changed(self, state=None, row=-1):
         o_event = EventHandler(parent=self)
@@ -319,7 +342,9 @@ class Interface(QMainWindow):
     def left_left_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.left_left_button, name="left_left")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def left_left_button_released(self):
@@ -328,7 +353,9 @@ class Interface(QMainWindow):
     def left_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.left_button, name="left")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def left_button_released(self):
@@ -337,7 +364,9 @@ class Interface(QMainWindow):
     def right_right_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.right_right_button, name="right_right")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def right_right_button_released(self):
@@ -346,7 +375,9 @@ class Interface(QMainWindow):
     def right_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.right_button, name="right")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="horizontal", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="horizontal", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.horizontal_profile_changed()
 
     def right_button_released(self):
@@ -355,7 +386,9 @@ class Interface(QMainWindow):
     def up_up_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.up_up_button, name="up_up")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=-DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def up_up_button_released(self):
@@ -364,7 +397,9 @@ class Interface(QMainWindow):
     def up_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.up_button, name="up")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=-SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def up_button_released(self):
@@ -373,7 +408,9 @@ class Interface(QMainWindow):
     def down_down_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.down_down_button, name="down_down")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=DOUBLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def down_down_button_released(self):
@@ -382,7 +419,9 @@ class Interface(QMainWindow):
     def down_button_pressed(self):
         EventHandler.button_pressed(ui=self.ui.down_button, name="down")
         o_event = EventHandler(parent=self)
-        o_event.manual_offset_changed(direction="vertical", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE)
+        o_event.manual_offset_changed(
+            direction="vertical", nbr_pixel=SIMPLE_MANUAL_PIXEL_CHANGE
+        )
         self.vertical_profile_changed()
 
     def down_button_released(self):

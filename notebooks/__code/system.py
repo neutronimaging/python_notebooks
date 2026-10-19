@@ -3,12 +3,11 @@ import glob
 import os
 import platform
 
-from IPython.display import HTML, display
-from ipywidgets import widgets
-
 from __code import LOGGER_FILE, config
 from __code._utilities.file import append_to_file
 from __code._utilities.time import get_current_time_in_special_file_name_format
+from IPython.display import HTML, display
+from ipywidgets import widgets
 
 list_instrument_per_facility = {"HFIR": ["CG1D"], "SNS": ["SNAP", "VENUS"]}
 
@@ -45,7 +44,9 @@ class System:
                        """)
             )
 
-            full_list_instruments = cls.get_full_list_instrument(instrument_to_exclude=instrument_to_exclude)
+            full_list_instruments = cls.get_full_list_instrument(
+                instrument_to_exclude=instrument_to_exclude
+            )
             full_list_instruments.sort()
             if instrument in full_list_instruments:
                 default_instrument = instrument
@@ -53,16 +54,22 @@ class System:
                 default_instrument = full_list_instruments[0]
 
             start_path = cls.get_start_path(
-                debugger_folder=debugger_folder, system_folder=system_folder, instrument=default_instrument
+                debugger_folder=debugger_folder,
+                system_folder=system_folder,
+                instrument=default_instrument,
             )
 
             cls.start_path = start_path
 
             select_instrument_ui = widgets.HBox(
                 [
-                    widgets.Label("Select Instrument", layout=widgets.Layout(width="20%")),
+                    widgets.Label(
+                        "Select Instrument", layout=widgets.Layout(width="20%")
+                    ),
                     widgets.Select(
-                        options=full_list_instruments, value=default_instrument, layout=widgets.Layout(width="20%")
+                        options=full_list_instruments,
+                        value=default_instrument,
+                        layout=widgets.Layout(width="20%"),
                     ),
                 ]
             )
@@ -76,7 +83,9 @@ class System:
                 [
                     widgets.Label("IPTS-"),
                     widgets.Text(value="", layout=widgets.Layout(width="10%")),
-                    widgets.Label("DOES NOT EXIST!", layout=widgets.Layout(width="20%")),
+                    widgets.Label(
+                        "DOES NOT EXIST!", layout=widgets.Layout(width="20%")
+                    ),
                 ]
             )
             cls.result_label = top_hbox.children[2]
@@ -92,12 +101,16 @@ class System:
                 [
                     widgets.Label("Select Folder", layout=widgets.Layout(width="20%")),
                     widgets.Select(
-                        options=user_list_folders, value=default_value, layout=widgets.Layout(height="300px")
+                        options=user_list_folders,
+                        value=default_value,
+                        layout=widgets.Layout(height="300px"),
                     ),
                 ]
             )
             cls.user_list_folders = user_list_folders
-            box = widgets.VBox([select_instrument_ui, top_hbox, or_label, bottom_hbox, help_ui])
+            box = widgets.VBox(
+                [select_instrument_ui, top_hbox, or_label, bottom_hbox, help_ui]
+            )
             display(box)
 
             cls.working_dir_ui = bottom_hbox.children[1]
@@ -114,7 +127,11 @@ class System:
         except:
             cls.working_dir = os.path.expanduser("~")
             display(
-                HTML('<span style="font-size: 15px; color:blue">working dir set to -> ' + cls.working_dir + "</span>")
+                HTML(
+                    '<span style="font-size: 15px; color:blue">working dir set to -> '
+                    + cls.working_dir
+                    + "</span>"
+                )
             )
 
         cls.log_use(notebook=notebook)
@@ -131,7 +148,7 @@ class System:
     @classmethod
     def get_full_list_instrument(cls, instrument_to_exclude=None):
         list_instrument = []
-        for _key in list_instrument_per_facility.keys():
+        for _key in list_instrument_per_facility:
             _facility_list_instrument = list_instrument_per_facility[_key]
             for _instr in _facility_list_instrument:
                 if instrument_to_exclude is not None:
@@ -151,13 +168,21 @@ class System:
             cls.start_path = start_path
 
         list_folders = sorted(glob.glob(os.path.join(start_path, "*")), reverse=True)
-        short_list_folders = [os.path.basename(_folder) for _folder in list_folders if os.path.isdir(_folder)]
+        short_list_folders = [
+            os.path.basename(_folder)
+            for _folder in list_folders
+            if os.path.isdir(_folder)
+        ]
         # short_list_folders = sorted(short_list_folders)
 
         # if user mode, only display folder user can access
         default_value = ""
         if not debugging:
-            user_list_folders = [os.path.basename(_folder) for _folder in list_folders if os.access(_folder, os.R_OK)]
+            user_list_folders = [
+                os.path.basename(_folder)
+                for _folder in list_folders
+                if os.access(_folder, os.R_OK)
+            ]
             if len(user_list_folders) > 0:
                 default_value = user_list_folders[0]
         else:  # debugging
@@ -193,7 +218,9 @@ class System:
 
     @classmethod
     def get_facility_selected(cls):
-        return cls.get_facility_from_instrument(instrument=cls.get_instrument_selected())
+        return cls.get_facility_from_instrument(
+            instrument=cls.get_instrument_selected()
+        )
 
     @classmethod
     def get_start_path(cls, debugger_folder="", system_folder="", instrument=""):
@@ -241,7 +268,9 @@ class System:
     def select_ipts_help(cls, value):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/tutorial/notebooks/select_ipts/")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/tutorial/notebooks/select_ipts/"
+        )
 
     @classmethod
     def check_instrument_input(cls, value_dict):

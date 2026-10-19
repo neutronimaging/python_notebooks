@@ -1,46 +1,44 @@
 import glob
 import logging
 import logging as notebook_logging
-from multiprocessing.util import debug
 import os
+from multiprocessing.util import debug
 from pathlib import Path
-from arrow import get
-from h11 import Data
-import notebook
-import numpy as np
-import pandas as pd
-import h5py
 
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-
-from IPython.display import HTML, display
-from ipywidgets import interactive
-from PIL import Image
-
-from __code.normalization_tof import Roi
+import numpy as np
+import pandas as pd
+from __code._utilities.is_it import is_it_a_folder
+from __code._utilities.json import load_json
 from __code._utilities.list import extract_list_of_runs_from_string
-from __code._utilities.nexus import extract_data_file_path_from_nexus, extract_acquisition_time_from_nexus, extract_proton_charge_from_nexus, retrieve_file_path_from_nexus
-from __code.normalization_tof import DataType
-from __code._utilities.time import get_current_time_in_special_file_name_format
-from __code._utilities.json import save_json, load_json
-from __code._utilities.is_it import is_it_a_folder, is_it_a_file
-from __code.ipywe.myfileselector import MyFileSelectorPanel
 from __code.ipywe.fileselector import FileSelectorPanel as MyFileSelectorPanel
+from __code.ipywe.myfileselector import MyFileSelectorPanel
+from __code.normalization_tof import DataType, Roi
+from __code.normalization_white_beam_at_venus import (
+    DataDict,
+    DataType,
+    DetectorType,
+    FolderPath,
+    Roi,
+)
 
 # from __code.normalization_tof import DetectorType, autoreduce_dir, distance_source_detector_m, raw_dir
 from __code.normalization_white_beam_at_venus.config import DEBUG_DATA
-from __code.normalization_white_beam_at_venus import DataType, Roi, DetectorType, DataDict, FolderPath
-from __code.normalization_white_beam_at_venus.utilities import extract_run_number_from_file_name, extract_metadata
+from __code.normalization_white_beam_at_venus.utilities import (
+    extract_metadata,
+    extract_run_number_from_file_name,
+)
+from IPython.display import HTML, display
+from ipywidgets import interactive
+from matplotlib import patches
 
 # from __code.normalization_tof.normalization_for_timepix1_timepix3 import (
-    # load_data_using_multithreading,
-    # # normalization,
-    # normalization_with_list_of_full_path,
-    # retrieve_list_of_tif,
+# load_data_using_multithreading,
+# # normalization,
+# normalization_with_list_of_full_path,
+# retrieve_list_of_tif,
 # )
-
 
 
 # class FolderPath:
@@ -59,38 +57,33 @@ from __code.normalization_white_beam_at_venus.utilities import extract_run_numbe
 #     data = None
 #     acquisition_time = None
 #     proton_charge = None
-    
+
 #     def __str__(self):
 #         return f"DataDict(full_path={self.full_path}, nexus_path={self.nexus_path}, acquisition_time={self.acquisition_time}, proton_charge={self.proton_charge})"
-    
+
 #     def __repr__(self):
 #         return self.__str__()
 
 
-
 class NormalizationWhiteBeamAtVenus:
-    
     folder_path = FolderPath()
-    master_dict = {DataType.sample: None, 
-                    DataType.ob: None, 
-                    DataType.dc: None,
-        }
+    master_dict = {
+        DataType.sample: None,
+        DataType.ob: None,
+        DataType.dc: None,
+    }
     detector_type = None
-    
-    sample_selected = None # list of things selected for sample (bottom widget)
+
+    sample_selected = None  # list of things selected for sample (bottom widget)
     ob_selected = None
     dc_selected = None
-    
-    
-    
-    
-    
+
     sample_folder = None
     sample_run_numbers = None
     sample_run_numbers_selected = None
-    
+
     # if the spectra file is missing, the program will create the spectra array on the fly
-    spectra_array = None 
+    spectra_array = None
     spectra_file_found = True
     list_spectra_file_found = []
 
@@ -107,7 +100,7 @@ class NormalizationWhiteBeamAtVenus:
     dc_run_numbers_selected = None
 
     output_folder = None
-    
+
     # {'full_path_data': {'data': None, 'nexus': None}}
     dict_sample = {}
     dict_ob = {}
@@ -121,18 +114,18 @@ class NormalizationWhiteBeamAtVenus:
     dict_dc_data = None
 
     roi = None  # full spectrum ROI
-    
+
     # container
-    container_roi = None # container only ROI
+    container_roi = None  # container only ROI
     default_roi = Roi(left=50, top=50, width=200, height=200)
     default_container_roi = Roi(left=150, top=150, width=40, height=40)
     we_need_to_automatically_save_the_container_roi = False
     rect_container = None
     container_roi_file = None
-    
+
     def initialize(self, working_dir=None, debug=False):
         LOG_PATH = "/SNS/VENUS/shared/log/"
-        file_name = f"normalization_white_beam_at_venus"
+        file_name = "normalization_white_beam_at_venus"
         user_name = os.getlogin()  # add user name to the log file name
         log_file_name = os.path.join(LOG_PATH, f"{file_name}_{user_name}.log")
         notebook_logging.basicConfig(
@@ -142,18 +135,22 @@ class NormalizationWhiteBeamAtVenus:
             level=notebook_logging.INFO,
         )
         notebook_logging.info(f"*** Starting a new script {file_name} ***")
-        display(HTML(f"<span style='color:green'>log book created: {log_file_name}</span>"))
-        
+        display(
+            HTML(f"<span style='color:green'>log book created: {log_file_name}</span>")
+        )
+
     # def __new__(cls, *args, **kwargs):
     #     logging.info(f"Creating instance of {cls.__name__}")
 
     def __init__(self, system=None, debug=False):
 
         self.working_dir = f"/SNS/{system.System.get_instrument_selected()}/IPTS-{system.System.get_ipts_selected()}"
-        
+
         self.initialize(working_dir=self.working_dir, debug=debug)
 
-        display(HTML("<span style='color:blue; font-size:16px'>Select detector type</span>"))
+        display(
+            HTML("<span style='color:blue; font-size:16px'>Select detector type</span>")
+        )
         self.detector_type_widget = widgets.Dropdown(
             options=[DetectorType.ikonxl, DetectorType.qhy600],
             value=DetectorType.ikonxl,
@@ -161,13 +158,14 @@ class NormalizationWhiteBeamAtVenus:
             disabled=False,
         )
         display(self.detector_type_widget)
- 
+
         # reset master dict
-        self.master_dict = {DataType.sample: None, 
-                            DataType.ob: None, 
-                            DataType.dc: None,
+        self.master_dict = {
+            DataType.sample: None,
+            DataType.ob: None,
+            DataType.dc: None,
         }
-        
+
     def reset_sample_dicts(self):
         self.dict_sample = {}
         self.dict_short_name_full_path["sample"] = {}
@@ -189,30 +187,47 @@ class NormalizationWhiteBeamAtVenus:
 
     def setup_paths(self):
         notebook_logging.info("Setting up paths...")
-        
+
         if debug:
-            self.folder_path.sample = Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type.value) / Path("raw/radiography")
-            self.folder_path.ob = Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type.value) / Path("raw/ob")
-            self.folder_path.dc = Path(DEBUG_DATA.working_dir) / Path("images") / Path(self.detector_type.value) / Path("raw/dc")
-            
+            self.folder_path.sample = (
+                Path(DEBUG_DATA.working_dir)
+                / Path("images")
+                / Path(self.detector_type.value)
+                / Path("raw/radiography")
+            )
+            self.folder_path.ob = (
+                Path(DEBUG_DATA.working_dir)
+                / Path("images")
+                / Path(self.detector_type.value)
+                / Path("raw/ob")
+            )
+            self.folder_path.dc = (
+                Path(DEBUG_DATA.working_dir)
+                / Path("images")
+                / Path(self.detector_type.value)
+                / Path("raw/dc")
+            )
+
         else:
             self.folder_path.sample = Path(self.working_dir) / Path("images")
             self.folder_path.ob = Path(self.working_dir) / Path("images")
             self.folder_path.dc = Path(self.working_dir) / Path("images")
-        
+
         self.debug = debug
-       
+
         notebook_logging.info(f"Working dir: {self.working_dir}")
         _, _facility, _beamline, ipts = self.working_dir.split("/")
-        
+
         self.folder_path.nexus = Path(self.working_dir) / Path("nexus")
-        
+
         self.ipts = ipts
         self.instrument = _beamline.upper()
 
         # self.autoreduce_dir = autoreduce_dir[_beamline][0] + str(ipts) + autoreduce_dir[_beamline][1]
         # self.shared_dir = str(Path(shared_dir[self.instrument][0]) / str(ipts) / shared_dir[self.instrument][1])
-        self.folder_path.shared = Path("/") / _facility / self.instrument / str(ipts) / "shared"
+        self.folder_path.shared = (
+            Path("/") / _facility / self.instrument / str(ipts) / "shared"
+        )
         self.folder_path.ipts = Path("/") / _facility / self.instrument / str(ipts)
 
         notebook_logging.info(f"Instrument: {self.instrument}")
@@ -224,8 +239,8 @@ class NormalizationWhiteBeamAtVenus:
     def select_sample_run_numbers(self):
         self.select_run_numbers(data_type=DataType.sample)
 
-    def select_run_numbers(self, data_type: DataType=DataType.sample):
-        
+    def select_run_numbers(self, data_type: DataType = DataType.sample):
+
         if data_type == DataType.sample:
             self.detector_type = self.detector_type_widget.value
             self.setup_paths()
@@ -239,7 +254,7 @@ class NormalizationWhiteBeamAtVenus:
                 list_runs = DEBUG_DATA.dc_runs_selected
             else:
                 raise ValueError(f"Invalid data type: {data_type}")
-                
+
             run_numbers_list = []
             for _run in list_runs:
                 _, number = _run.split("_")
@@ -252,14 +267,14 @@ class NormalizationWhiteBeamAtVenus:
             value=f"<b><font color='green'>List of {data_type} run numbers (ex: 8702, 8704-8706)</font></b>"
         )
         display(label)
-        
+
         _widget = widgets.Textarea(
-                value=str_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
-            )
+            value=str_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+        )
         display(_widget)
 
-        if data_type == DataType.sample:    
-            self.sample_run_numbers_widget = _widget    
+        if data_type == DataType.sample:
+            self.sample_run_numbers_widget = _widget
             next_function = self.save_sample_selected
         elif data_type == DataType.ob:
             self.ob_run_numbers_widget = _widget
@@ -281,15 +296,15 @@ class NormalizationWhiteBeamAtVenus:
         )
 
     def save_sample_selected(self, runs_selected):
-        """ save the list of tiff, or list of folder selected for the sample"""
+        """save the list of tiff, or list of folder selected for the sample"""
         self.sample_selected = runs_selected
-        
+
     def save_ob_selected(self, runs_selected):
-        """ save the list of tiff, or list of folder selected for the ob"""
+        """save the list of tiff, or list of folder selected for the ob"""
         self.ob_selected = runs_selected
-        
+
     def save_dc_selected(self, runs_selected):
-        """ save the list of tiff, or list of folder selected for the dc"""
+        """save the list of tiff, or list of folder selected for the dc"""
         self.dc_selected = runs_selected
 
     # def display_infos(self, input_full_path=None, spectra_file_found=True):
@@ -321,115 +336,135 @@ class NormalizationWhiteBeamAtVenus:
         Check if the sample folder and runs are valid.
         """
         self.reset_sample_dicts()
-        self.check_data(data_type=DataType.sample,
-                        run_numbers_widget_value=self.sample_run_numbers_widget.value,
-                        files_or_folders_selected=self.sample_selected)
-        
+        self.check_data(
+            data_type=DataType.sample,
+            run_numbers_widget_value=self.sample_run_numbers_widget.value,
+            files_or_folders_selected=self.sample_selected,
+        )
+
     def check_ob(self):
         self.reset_ob_dicts()
-        self.check_data(data_type=DataType.ob,
-                        run_numbers_widget_value=self.ob_run_numbers_widget.value,
-                        files_or_folders_selected=self.ob_selected)
-        
+        self.check_data(
+            data_type=DataType.ob,
+            run_numbers_widget_value=self.ob_run_numbers_widget.value,
+            files_or_folders_selected=self.ob_selected,
+        )
+
     def check_dc(self):
         self.reset_dc_dicts()
-        self.check_data(data_type=DataType.dc,
-                        run_numbers_widget_value=self.dc_run_numbers_widget.value,
-                        files_or_folders_selected=self.dc_selected)
-        
-    def check_data(self, data_type: DataType, 
-                   run_numbers_widget_value: str = "",
-                   files_or_folders_selected: list = None):
+        self.check_data(
+            data_type=DataType.dc,
+            run_numbers_widget_value=self.dc_run_numbers_widget.value,
+            files_or_folders_selected=self.dc_selected,
+        )
+
+    def check_data(
+        self,
+        data_type: DataType,
+        run_numbers_widget_value: str = "",
+        files_or_folders_selected: list = None,
+    ):
 
         notebook_logging.info(f"Checking {data_type.value} inputs...")
 
         if run_numbers_widget_value.strip() == "":
-            
             # we gonna retrieve the list of run numbers
             list_of_runs = []
-            
-            notebook_logging.info(f"{data_type.value} selection: {run_numbers_widget_value}")
-            
+
+            notebook_logging.info(
+                f"{data_type.value} selection: {run_numbers_widget_value}"
+            )
+
             if files_or_folders_selected is None:
-                display(HTML(f"<span style='color:red'>No {data_type.value} runs/folders selected!</span>"))
+                display(
+                    HTML(
+                        f"<span style='color:red'>No {data_type.value} runs/folders selected!</span>"
+                    )
+                )
                 return
-            
+
             list_of_full_path_images = []
             for _selection in files_or_folders_selected:
                 notebook_logging.info(f"\tworking with selection {_selection}:")
-            
+
                 if is_it_a_folder(_selection):
-                    notebook_logging.info(f"\t{_selection} is a folder, retrieving tiff files in that folder...")
+                    notebook_logging.info(
+                        f"\t{_selection} is a folder, retrieving tiff files in that folder..."
+                    )
                     # concatenate list_of_full_path_images with the existing list_of_full_path_images
-                    list_of_full_path_images.extend(glob.glob(os.path.join(_selection, "*.tif*")))
-                    
+                    list_of_full_path_images.extend(
+                        glob.glob(os.path.join(_selection, "*.tif*"))
+                    )
+
                 else:
-                    notebook_logging.info(f"\t{_selection} is a file, checking if it's a tiff file...")
+                    notebook_logging.info(
+                        f"\t{_selection} is a file, checking if it's a tiff file..."
+                    )
                     if _selection.endswith(".tif") or _selection.endswith(".tiff"):
-                        notebook_logging.info(f"\t{_selection} is a tiff file, adding to the list of images...")
+                        notebook_logging.info(
+                            f"\t{_selection} is a tiff file, adding to the list of images..."
+                        )
                         list_of_full_path_images.append(_selection)
-            
-            logging.info(f"\tTotal number of tiff files found: {len(list_of_full_path_images)}")
-            logging.info(f"\tExtracting run numbers from the file names...")
+
+            logging.info(
+                f"\tTotal number of tiff files found: {len(list_of_full_path_images)}"
+            )
+            logging.info("\tExtracting run numbers from the file names...")
             list_of_images_rejected = []
             for _full_path_image in list_of_full_path_images:
-                logging.info(f"\t\t{_full_path_image}") 
-                
+                logging.info(f"\t\t{_full_path_image}")
+
                 run_number = extract_run_number_from_file_name(_full_path_image)
                 logging.info(f"\t\tExtracted run number: {run_number}")
                 if run_number is None:
                     list_of_images_rejected.append(_full_path_image)
-                    
+
                 else:
                     list_of_runs.append(run_number)
-                
+
             if len(list_of_images_rejected) > 0:
-                display(HTML(f"<span style='color:orange'>List of images rejected (no run number found in the file name): {list_of_images_rejected}</span>"))
-            
-            logging.info(f"List of images rejected (no run number found in the file name): {list_of_images_rejected}")
-            logging.info(f"{data_type} run numbers extracted from the file names: {list_of_runs}")
-            
-        else:    
-         
-         
-         
-         
-         
-         
-         
-         
-            list_of_runs = extract_list_of_runs_from_string(self.sample_run_numbers_widget.value)
+                display(
+                    HTML(
+                        f"<span style='color:orange'>List of images rejected (no run number found in the file name): {list_of_images_rejected}</span>"
+                    )
+                )
+
+            logging.info(
+                f"List of images rejected (no run number found in the file name): {list_of_images_rejected}"
+            )
+            logging.info(
+                f"{data_type} run numbers extracted from the file names: {list_of_runs}"
+            )
+
+        else:
+            list_of_runs = extract_list_of_runs_from_string(
+                self.sample_run_numbers_widget.value
+            )
             notebook_logging.info(f"\t{list_of_runs = }")
 
-        display(HTML(f"<span style='color:green'>Sample run numbers selected: {list_of_runs}</span>"))
+        display(
+            HTML(
+                f"<span style='color:green'>Sample run numbers selected: {list_of_runs}</span>"
+            )
+        )
 
         o_sample = DataDict()
 
         for _run in list_of_runs:
-            
             logging.info(f"\tChecking sample run number {_run}...")
-            
+
             try:
                 _metadata_dict = extract_metadata(run_number=_run)
                 # display(HTML(f"<span style='color:green'>Full path for run number {_run}: {_metadata_dict.full_path}</span>"))
                 o_sample[_run] = _metadata_dict
-                
+
             except TypeError as e:
-                notebook_logging.error(f"Error extracting full path for run number {_run}: {e}")
+                notebook_logging.error(
+                    f"Error extracting full path for run number {_run}: {e}"
+                )
                 # display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
                 continue
 
-
-
-
-
-
-
-
-
-
-
-            
         #     for _run in self.sample_run_numbers_selected:
         #         _run = os.path.abspath(_run)
         #         if os.path.exists(_run):
@@ -443,13 +478,13 @@ class NormalizationWhiteBeamAtVenus:
         #                 notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
         #                 self.dict_sample[_run] = {}
         #                 self.dict_short_name_full_path["sample"][os.path.basename(_run)] = _run
-                                                                 
+
         #                 _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_run)
         #                 if not _is_spectra_file_found:
         #                     self.spectra_file_found = False
         #                 else:
         #                     self.list_spectra_file_found.append(spectra_file_name)
-                        
+
         #                 self.display_infos(input_full_path=_run,
         #                                    spectra_file_found=self.spectra_file_found)
         #             else:
@@ -457,38 +492,17 @@ class NormalizationWhiteBeamAtVenus:
         #         else:
         #             display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
         #             notebook_logging.info(f"\tSample run number {_run} - NOT FOUND!")
-            
+
         #     self.sample_run_numbers_selected = None
 
         # if len(set(self.check_nbr_tiff[DataType.sample])) > 1:
         #     display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected sample runs: {self.check_nbr_tiff[DataType.sample]}</span>"))
         #     notebook_logging.info(f"WARNING:Different number of TIFF files found in selected sample runs: {self.check_nbr_tiff[DataType.sample]}")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def select_ob_folder(self):
-        self.select_folder(instruction="Browse ob top folder", next_function=self.ob_folder_selected)
+        self.select_folder(
+            instruction="Browse ob top folder", next_function=self.ob_folder_selected
+        )
 
     def select_ob_run_numbers(self):
 
@@ -505,10 +519,14 @@ class NormalizationWhiteBeamAtVenus:
         else:
             str_ob_run_numbers = ""
 
-        ob_label = widgets.HTML(value="<b><font color='green'>List of ob run numbers (ex: 8705, 8707)</font></b>")
+        ob_label = widgets.HTML(
+            value="<b><font color='green'>List of ob run numbers (ex: 8705, 8707)</font></b>"
+        )
 
         self.ob_run_numbers_widget = widgets.Textarea(
-            value=str_ob_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+            value=str_ob_run_numbers,
+            placeholder="",
+            layout=widgets.Layout(width="400px"),
         )
         vertical_layout = widgets.VBox(
             [
@@ -537,7 +555,9 @@ class NormalizationWhiteBeamAtVenus:
         self.reset_ob_dicts()
 
         if self.ob_run_numbers_widget.value.strip() != "":
-            list_of_runs = extract_list_of_runs_from_string(self.ob_run_numbers_widget.value)
+            list_of_runs = extract_list_of_runs_from_string(
+                self.ob_run_numbers_widget.value
+            )
             notebook_logging.info(f"\t{list_of_runs = }")
 
             list_of_ob_full_path = []
@@ -546,43 +566,75 @@ class NormalizationWhiteBeamAtVenus:
                     _full_path = self.extract_full_path(run_number=_run)
                     list_of_ob_full_path.append(_full_path)
                 except TypeError as e:
-                    notebook_logging.error(f"Error extracting full path for run number {_run}: {e}")
-                    display(HTML(f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"))
+                    notebook_logging.error(
+                        f"Error extracting full path for run number {_run}: {e}"
+                    )
+                    display(
+                        HTML(
+                            f"<span style='color:red'>Error extracting full path for run number {_run}: File not found!</span>"
+                        )
+                    )
                     continue
 
             for _file_full_path in list_of_ob_full_path:
                 if os.path.exists(_file_full_path):
                     notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND")
-                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    is_valid_run, report_dict = self.check_folder_is_valid(
+                        _file_full_path
+                    )
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
                         self.check_nbr_tiff[DataType.ob].append(nbr_tiff)
-                        notebook_logging.info(f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
-                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        notebook_logging.info(
+                            f"\tOB run number {_file_full_path} - FOUND with {nbr_tiff} tif* files"
+                        )
+                        display(
+                            HTML(
+                                f"<span style='color:green'>{_file_full_path}</span> - OK"
+                            )
+                        )
                         self.dict_ob[_file_full_path] = {}
-                        self.dict_short_name_full_path["ob"][os.path.basename(_file_full_path)] = _file_full_path
-                    
-                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_file_full_path)
+                        self.dict_short_name_full_path["ob"][
+                            os.path.basename(_file_full_path)
+                        ] = _file_full_path
+
+                        _is_spectra_file_found, spectra_file_name = (
+                            self._is_spectra_file_found_and_list(_file_full_path)
+                        )
                         if not _is_spectra_file_found:
                             self.spectra_file_found = False
                         else:
                             self.list_spectra_file_found.append(spectra_file_name)
-                      
-                        self.display_infos(input_full_path=_file_full_path,
-                                           spectra_file_found=self.spectra_file_found)
-                    
+
+                        self.display_infos(
+                            input_full_path=_file_full_path,
+                            spectra_file_found=self.spectra_file_found,
+                        )
+
                     else:
-                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
+                        display(
+                            HTML(
+                                f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"
+                            )
+                        )
                 else:
-                    notebook_logging.info(f"\tOB run number {_file_full_path} - NOT FOUND")
-                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+                    notebook_logging.info(
+                        f"\tOB run number {_file_full_path} - NOT FOUND"
+                    )
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"
+                        )
+                    )
 
         else:
-            notebook_logging.info(f"OB run numbers selected: {self.ob_run_numbers_selected}")
+            notebook_logging.info(
+                f"OB run numbers selected: {self.ob_run_numbers_selected}"
+            )
             if self.ob_run_numbers_selected is None:
-                display(HTML(f"<span style='color:red'>No OB runs selected!</span>"))
+                display(HTML("<span style='color:red'>No OB runs selected!</span>"))
                 return
-            
+
             for _run in self.ob_run_numbers_selected:
                 _run = os.path.abspath(_run)
                 if os.path.exists(_run):
@@ -593,37 +645,64 @@ class NormalizationWhiteBeamAtVenus:
                         nbr_tiff = report_dict["nbr_tiff"]
                         self.check_nbr_tiff[DataType.ob].append(nbr_tiff)
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
-                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-                        self.dict_short_name_full_path["ob"][os.path.basename(_run)] = _run
+                        notebook_logging.info(
+                            f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files"
+                        )
+                        self.dict_short_name_full_path["ob"][os.path.basename(_run)] = (
+                            _run
+                        )
                         self.dict_ob[_run] = {}
 
-                        _is_spectra_file_found, spectra_file_name = self._is_spectra_file_found_and_list(_run)
+                        _is_spectra_file_found, spectra_file_name = (
+                            self._is_spectra_file_found_and_list(_run)
+                        )
                         if not _is_spectra_file_found:
                             self.spectra_file_found = False
                         else:
                             self.list_spectra_file_found.append(spectra_file_name)
-                        
-                        self.display_infos(input_full_path=_run,
-                                           spectra_file_found=self.spectra_file_found)
-               
+
+                        self.display_infos(
+                            input_full_path=_run,
+                            spectra_file_found=self.spectra_file_found,
+                        )
+
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
-                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"
+                        )
+                    )
                     notebook_logging.info(f"\tOB run number {_run} - NOT FOUND!")
             self.ob_run_numbers_selected = None
 
         if len(set(self.check_nbr_tiff[DataType.ob])) > 1:
-            display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}</span>"))
-            notebook_logging.info(f"WARNING: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}")
+            display(
+                HTML(
+                    f"<span style='color:red'>Warning: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}</span>"
+                )
+            )
+            notebook_logging.info(
+                f"WARNING: Different number of TIFF files found in selected OB runs: {self.check_nbr_tiff[DataType.ob]}"
+            )
 
         else:
-            if self.check_nbr_tiff[DataType.ob][0] != self.check_nbr_tiff[DataType.sample][0]:
-                display(HTML(f"<span style='color:red'>Not valid OB runs found (different number of OB and sample TIFF files)!</span>"))
+            if (
+                self.check_nbr_tiff[DataType.ob][0]
+                != self.check_nbr_tiff[DataType.sample][0]
+            ):
+                display(
+                    HTML(
+                        "<span style='color:red'>Not valid OB runs found (different number of OB and sample TIFF files)!</span>"
+                    )
+                )
                 notebook_logging.info("WARNING: Not valid OB runs found!")
 
     def select_dc_run_numbers(self):
-        self.select_folder(instruction="Browse dc top folder", next_function=self.dc_folder_selected)
+        self.select_folder(
+            instruction="Browse dc top folder", next_function=self.dc_folder_selected
+        )
 
     def select_dc_run_numbers(self):
 
@@ -641,10 +720,14 @@ class NormalizationWhiteBeamAtVenus:
         else:
             str_dc_run_numbers = ""
 
-        dc_label = widgets.HTML(value="<b><font color='green'>List of dc run numbers (ex: 8705, 8707)</font></b>")
+        dc_label = widgets.HTML(
+            value="<b><font color='green'>List of dc run numbers (ex: 8705, 8707)</font></b>"
+        )
 
         self.dc_run_numbers_widget = widgets.Textarea(
-            value=str_dc_run_numbers, placeholder="", layout=widgets.Layout(width="400px")
+            value=str_dc_run_numbers,
+            placeholder="",
+            layout=widgets.Layout(width="400px"),
         )
         vertical_layout = widgets.VBox(
             [
@@ -673,7 +756,9 @@ class NormalizationWhiteBeamAtVenus:
         self.reset_dc_dicts()
 
         if self.dc_run_numbers_widget.value.strip() != "":
-            list_of_runs = extract_list_of_runs_from_string(self.dc_run_numbers_widget.value)
+            list_of_runs = extract_list_of_runs_from_string(
+                self.dc_run_numbers_widget.value
+            )
             notebook_logging.info(f"\t{list_of_runs = }")
 
             list_of_dc_full_path = []
@@ -684,25 +769,47 @@ class NormalizationWhiteBeamAtVenus:
             for _file_full_path in list_of_dc_full_path:
                 if os.path.exists(_file_full_path):
                     notebook_logging.info(f"\tDC run number {_file_full_path} - FOUND")
-                    is_valid_run, report_dict = self.check_folder_is_valid(_file_full_path)
+                    is_valid_run, report_dict = self.check_folder_is_valid(
+                        _file_full_path
+                    )
                     if is_valid_run:
                         nbr_tiff = report_dict["nbr_tiff"]
                         self.check_nbr_tiff[DataType.dc].append(nbr_tiff)
-                        notebook_logging.info(f"\tDC run number {_file_full_path} - FOUND with {nbr_tiff} tif* files")
-                        display(HTML(f"<span style='color:green'>{_file_full_path}</span> - OK"))
+                        notebook_logging.info(
+                            f"\tDC run number {_file_full_path} - FOUND with {nbr_tiff} tif* files"
+                        )
+                        display(
+                            HTML(
+                                f"<span style='color:green'>{_file_full_path}</span> - OK"
+                            )
+                        )
                         self.dict_dc[_file_full_path] = {}
-                        self.dict_short_name_full_path["dc"][os.path.basename(_file_full_path)] = _file_full_path
+                        self.dict_short_name_full_path["dc"][
+                            os.path.basename(_file_full_path)
+                        ] = _file_full_path
                         self.display_infos(input_full_path=_file_full_path)
                     else:
-                        display(HTML(f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"))
+                        display(
+                            HTML(
+                                f"<span style='color:red'>{_file_full_path} - EMPTY!</span>"
+                            )
+                        )
                 else:
-                    notebook_logging.info(f"\tDC run number {_file_full_path} - NOT FOUND")
-                    display(HTML(f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"))
+                    notebook_logging.info(
+                        f"\tDC run number {_file_full_path} - NOT FOUND"
+                    )
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_file_full_path} - NOT FOUND!</span>"
+                        )
+                    )
 
         else:
-            notebook_logging.info(f"DC run numbers selected: {self.dc_run_numbers_selected}")
+            notebook_logging.info(
+                f"DC run numbers selected: {self.dc_run_numbers_selected}"
+            )
             if self.dc_run_numbers_selected is None:
-                display(HTML(f"<span style='color:red'>No DC runs selected!</span>"))
+                display(HTML("<span style='color:red'>No DC runs selected!</span>"))
                 return
 
             for _run in self.dc_run_numbers_selected:
@@ -715,24 +822,45 @@ class NormalizationWhiteBeamAtVenus:
                         nbr_tiff = report_dict["nbr_tiff"]
                         self.check_nbr_tiff[DataType.dc].append(nbr_tiff)
                         display(HTML(f"<span style='color:green'>{_run}</span> - OK"))
-                        notebook_logging.info(f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files")
-                        self.dict_short_name_full_path["dc"][os.path.basename(_run)] = _run
+                        notebook_logging.info(
+                            f"\tfolder seems to be a valid folder containing {nbr_tiff} tif* files"
+                        )
+                        self.dict_short_name_full_path["dc"][os.path.basename(_run)] = (
+                            _run
+                        )
                         self.dict_dc[_run] = {}
                         self.display_infos(input_full_path=_run)
                     else:
                         display(HTML(f"<span style='color:red'>{_run} - EMPTY!</span>"))
                 else:
-                    display(HTML(f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"))
+                    display(
+                        HTML(
+                            f"<span style='color:red'>{_run} - NOT FOUND!</span> - ERROR!"
+                        )
+                    )
                     notebook_logging.info(f"\tDC run number {_run} - NOT FOUND!")
             self.dc_run_numbers_selected = None
 
         if len(set(self.check_nbr_tiff[DataType.dc])) > 1:
-            display(HTML(f"<span style='color:red'>Warning: Different number of TIFF files found in selected DC runs: {self.check_nbr_tiff[DataType.dc]}</span>"))
-            notebook_logging.info(f"WARNING: Different number of TIFF files found in selected DC runs: {self.check_nbr_tiff[DataType.dc]}")
+            display(
+                HTML(
+                    f"<span style='color:red'>Warning: Different number of TIFF files found in selected DC runs: {self.check_nbr_tiff[DataType.dc]}</span>"
+                )
+            )
+            notebook_logging.info(
+                f"WARNING: Different number of TIFF files found in selected DC runs: {self.check_nbr_tiff[DataType.dc]}"
+            )
 
         else:
-            if self.check_nbr_tiff[DataType.dc][0] != self.check_nbr_tiff[DataType.sample][0]:
-                display(HTML(f"<span style='color:red'>No valid DC runs found (different number of DC and sample TIFF files)</span>"))
+            if (
+                self.check_nbr_tiff[DataType.dc][0]
+                != self.check_nbr_tiff[DataType.sample][0]
+            ):
+                display(
+                    HTML(
+                        "<span style='color:red'>No valid DC runs found (different number of DC and sample TIFF files)</span>"
+                    )
+                )
                 notebook_logging.info("WARNING: No valid DC runs found!")
 
     def _load_and_get_integrated_ob(self, full_path):
@@ -746,11 +874,17 @@ class NormalizationWhiteBeamAtVenus:
         if self.dict_ob[full_path].get("data") is None:
             notebook_logging.info("No data found for this OB run, loading it now...")
             # load the data from the OB run
-            notebook_logging.info(f"\tFull path to OB run: {os.path.basename(full_path)}")
+            notebook_logging.info(
+                f"\tFull path to OB run: {os.path.basename(full_path)}"
+            )
             list_tiff = retrieve_list_of_tif(full_path)
             notebook_logging.info(f"\tNumber of TIFF files found: {len(list_tiff)}")
             if len(list_tiff) == 0:
-                display(HTML(f"<span style='color:red'>No TIFF files found in {full_path}!</span>"))
+                display(
+                    HTML(
+                        f"<span style='color:red'>No TIFF files found in {full_path}!</span>"
+                    )
+                )
                 notebook_logging.error(f"No TIFF files found in {full_path}!")
                 return None
             data = load_data_using_multithreading(list_tiff, combine_tof=True)
@@ -787,7 +921,9 @@ class NormalizationWhiteBeamAtVenus:
             im = ax.imshow(integrated_ob, cmap="viridis", aspect="auto")
             ax.set_aspect("equal")
             ax.set_title(f"Integrated OB run: {list_ob_short_runs[0]}")
-            fig.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.8)
+            fig.colorbar(
+                im, ax=ax, orientation="vertical", label="Intensity", shrink=0.8
+            )
             plt.show()
 
         else:
@@ -826,30 +962,47 @@ class NormalizationWhiteBeamAtVenus:
 
     def checking_spectra_files(self):
         if not self.spectra_file_found:
-
             if len(self.list_spectra_file_found) > 0:
-                display(HTML("<span style='color:orange; font-size:16px'>Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!</span>"))
-                notebook_logging.info("Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!")
+                display(
+                    HTML(
+                        "<span style='color:orange; font-size:16px'>Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!</span>"
+                    )
+                )
+                notebook_logging.info(
+                    "Some spectra files were NOT found but on the good side, some spectra files were found. The first one of those spectra file will be used for all!"
+                )
 
                 spectra_file_to_use = self.list_spectra_file_found[0]
                 pd_spectra = pd.read_csv(spectra_file_to_use, sep=",", header=0)
                 self.spectra_array = np.array(pd_spectra["shutter_time"].values)
 
-                notebook_logging.info(f"Using spectra file: {spectra_file_to_use} with {len(self.spectra_array)} TOF channels.")
+                notebook_logging.info(
+                    f"Using spectra file: {spectra_file_to_use} with {len(self.spectra_array)} TOF channels."
+                )
 
             else:
-                display(HTML("<span style='color:red; font-size:16px'>Error: No spectra files were found in the selected runs! We need to create the spectra file.</span>"))
-                notebook_logging.error("Error: No spectra files were found in the selected runs! Manually creating the spectra file needed!")
-                
+                display(
+                    HTML(
+                        "<span style='color:red; font-size:16px'>Error: No spectra files were found in the selected runs! We need to create the spectra file.</span>"
+                    )
+                )
+                notebook_logging.error(
+                    "Error: No spectra files were found in the selected runs! Manually creating the spectra file needed!"
+                )
+
                 self.manually_create_spectra_array()
-       
+
         else:
-            display(HTML("<span style='color:green; font-size:16px'>All selected runs have the spectra file.</span>"))
+            display(
+                HTML(
+                    "<span style='color:green; font-size:16px'>All selected runs have the spectra file.</span>"
+                )
+            )
             notebook_logging.info("All selected runs have the spectra file.")
 
     def manually_create_spectra_array(self):
 
-        label = widgets.Label(f"Enter the TOF bins size (in nS)")
+        label = widgets.Label("Enter the TOF bins size (in nS)")
         self.tof_bin_size_widget = widgets.IntText(
             value=700,
             min=100,
@@ -870,37 +1023,57 @@ class NormalizationWhiteBeamAtVenus:
 
     def create_spectra_arrays_clicked(self, b):
         tof_bin_size = self.tof_bin_size_widget.value
-        notebook_logging.info(f"Creating spectra arrays with TOF bin size: {tof_bin_size} nS")
+        notebook_logging.info(
+            f"Creating spectra arrays with TOF bin size: {tof_bin_size} nS"
+        )
 
         # get the number of TOF channels from the first sample run
         first_sample_run = list(self.dict_sample.keys())[0]
         list_tiff = retrieve_list_of_tif(first_sample_run)
-        if len(list_tiff) == 0: 
-            display(HTML(f"<span style='color:red'>No TIFF files found in {first_sample_run}!</span>"))
+        if len(list_tiff) == 0:
+            display(
+                HTML(
+                    f"<span style='color:red'>No TIFF files found in {first_sample_run}!</span>"
+                )
+            )
             notebook_logging.error(f"No TIFF files found in {first_sample_run}!")
             return
         nbr_files = len(list_tiff)
         tof_bin_size_in_s = tof_bin_size * 1e-9  # convert nS to seconds
-        
-        spectra_array = np.arange(0.0001e-7, nbr_files * tof_bin_size_in_s, tof_bin_size_in_s) # do not start at 0 to avoid log binning issues in iBeatles
+
+        spectra_array = np.arange(
+            0.0001e-7, nbr_files * tof_bin_size_in_s, tof_bin_size_in_s
+        )  # do not start at 0 to avoid log binning issues in iBeatles
         self.spectra_array = spectra_array
 
-        display(HTML(f"<span style='color:blue; font-size:16px'>Created spectra arrays with TOF bin size: {tof_bin_size} nS!</span>"))
-        notebook_logging.info(f"Created spectra arrays with TOF bin size: {tof_bin_size} nS and {len(spectra_array) = } ... Done!")
+        display(
+            HTML(
+                f"<span style='color:blue; font-size:16px'>Created spectra arrays with TOF bin size: {tof_bin_size} nS!</span>"
+            )
+        )
+        notebook_logging.info(
+            f"Created spectra arrays with TOF bin size: {tof_bin_size} nS and {len(spectra_array) = } ... Done!"
+        )
 
     def select_output_folder(self):
 
         if (self.spectra_file_found is False) and (self.spectra_array is None):
-            display(HTML("<span style='color:red; font-size:16px'>You need to create the spectra arrays before selecting the output folder!</span>"))
-            notebook_logging.error("You need to create the spectra arrays before selecting the output folder!")
+            display(
+                HTML(
+                    "<span style='color:red; font-size:16px'>You need to create the spectra arrays before selecting the output folder!</span>"
+                )
+            )
+            notebook_logging.error(
+                "You need to create the spectra arrays before selecting the output folder!"
+            )
             return
 
         if self.debug:
             self.output_folder_selected(DEBUG_DATA.output_folder)
         else:
             self.select_folder(
-                instruction="Select output folder", 
-                start_dir=self.output_dir, 
+                instruction="Select output folder",
+                start_dir=self.output_dir,
                 next_function=self.output_folder_selected,
                 newdir_toolbar_button=True,
             )
@@ -908,11 +1081,13 @@ class NormalizationWhiteBeamAtVenus:
     def retrieve_nexus_file_path(self):
         """
         Retrieve the NeXus file paths for sample, OB and DC.
-        
+
         This function assumes that the NeXus files are named in a specific format"""
 
         all_nexus_files_found = True
-        notebook_logging.info("Retrieving NeXus file paths for sample, OB and DC runs...")
+        notebook_logging.info(
+            "Retrieving NeXus file paths for sample, OB and DC runs..."
+        )
 
         notebook_logging.info("\tworking with sample runs:")
         for full_path in self.dict_sample.keys():
@@ -976,8 +1151,8 @@ class NormalizationWhiteBeamAtVenus:
         return all_nexus_files_found
 
     def _on_remove_container_flag_change(self, change):
-        if change['new']:
-           # enable the widgets
+        if change["new"]:
+            # enable the widgets
             disable_widgets = False
         else:
             # disable the widgets
@@ -988,7 +1163,11 @@ class NormalizationWhiteBeamAtVenus:
 
         # check here that the user selected a folder for output
         if self.output_folder is None:
-            display(HTML("<span style='color:red; font-size: 16px;'>You forgot to select an output folder!</span>"))
+            display(
+                HTML(
+                    "<span style='color:red; font-size: 16px;'>You forgot to select an output folder!</span>"
+                )
+            )
             return
 
         all_nexus_found = self.retrieve_nexus_file_path()
@@ -997,43 +1176,70 @@ class NormalizationWhiteBeamAtVenus:
         tpx3_disabled_flag = True if self.detector_type == DetectorType.tpx3 else False
 
         # regular normalization
-        display(HTML("<span style='font-size: 16px; color:red'>Normalization pixel by pixel</span>"))
-        display(widgets.Checkbox(description="Normalization of images pixel by pixel", 
-                                 value=True, 
-                                 disabled=True,
-                                 layout=widgets.Layout(width="600px")))
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:red'>Normalization pixel by pixel</span>"
+            )
+        )
+        display(
+            widgets.Checkbox(
+                description="Normalization of images pixel by pixel",
+                value=True,
+                disabled=True,
+                layout=widgets.Layout(width="600px"),
+            )
+        )
         display(HTML("<hr>"))
 
         # normalization of full spectrum of ROI
-        display(HTML("<span style='font-size: 16px; color:red'>Normalization of full spectrum of ROI</span>"))
-        display(HTML("<span style='font-size: 12px;'>If checked, normalization will be done as follows. After selecting a region of interest (ROI), for each image, the total counts of that region of the sample will be divided by the total" \
-        " counts of the same region of the OB. This will produce a profile of this normalization value for each image.</span>"))
-        self.full_spectrum_roi_flag = widgets.Checkbox(description="Work on full spectrum of ROI", value=False)
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:red'>Normalization of full spectrum of ROI</span>"
+            )
+        )
+        display(
+            HTML(
+                "<span style='font-size: 12px;'>If checked, normalization will be done as follows. After selecting a region of interest (ROI), for each image, the total counts of that region of the sample will be divided by the total"
+                " counts of the same region of the OB. This will produce a profile of this normalization value for each image.</span>"
+            )
+        )
+        self.full_spectrum_roi_flag = widgets.Checkbox(
+            description="Work on full spectrum of ROI", value=False
+        )
         display(self.full_spectrum_roi_flag)
         display(HTML("<hr>"))
 
         # how to combine sample runs if more than 1 sample provided
         self.combine_sample_runs_flag = widgets.Checkbox(
-            description="Combine sample runs (all sample will produce one normalization output)", 
-            value=False, 
+            description="Combine sample runs (all sample will produce one normalization output)",
+            value=False,
             disabled=False,
             layout=widgets.Layout(width="600px"),
         )
         if len(self.dict_sample) > 1:
-            display(HTML("<span style='font-size: 16px; color:red'>How to treat the sample runs</span>"))
+            display(
+                HTML(
+                    "<span style='font-size: 16px; color:red'>How to treat the sample runs</span>"
+                )
+            )
             display(self.combine_sample_runs_flag)
             display(HTML("<hr>"))
 
         # remove container option
-        display(HTML("<span style='font-size: 16px; color:red'>Remove container</span>"))
-        self.remove_container_flag = widgets.Checkbox(description="Do you want to remove container signal?", 
-                                                      value=False,
-                                                      layout=widgets.Layout(width="600px"))
-        self.remove_container_flag.observe(self._on_remove_container_flag_change, names='value')
+        display(
+            HTML("<span style='font-size: 16px; color:red'>Remove container</span>")
+        )
+        self.remove_container_flag = widgets.Checkbox(
+            description="Do you want to remove container signal?",
+            value=False,
+            layout=widgets.Layout(width="600px"),
+        )
+        self.remove_container_flag.observe(
+            self._on_remove_container_flag_change, names="value"
+        )
         display(self.remove_container_flag)
 
-        white_space = widgets.Label("\t\t",
-                                    layout=widgets.Layout(width="150px"))
+        white_space = widgets.Label("\t\t", layout=widgets.Layout(width="150px"))
         self.remove_container_options_flag = widgets.RadioButtons(
             options=[
                 "Select a ROI of the sample containing only the container signal",
@@ -1043,44 +1249,47 @@ class NormalizationWhiteBeamAtVenus:
             disabled=True,
             layout=widgets.Layout(width="500px"),
         )
-        
-        hori_layout = widgets.HBox([white_space, 
-                                    self.remove_container_options_flag],
-                                  layout=widgets.Layout(align_items="center",
-                                                         width="100%"))
+
+        hori_layout = widgets.HBox(
+            [white_space, self.remove_container_options_flag],
+            layout=widgets.Layout(align_items="center", width="100%"),
+        )
         display(hori_layout)
 
         display(HTML("<hr>"))
 
         # normalization options
-        display(HTML("<span style='font-size: 16px; color:red'>What to take into account for the normalization</span>"))
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:red'>What to take into account for the normalization</span>"
+            )
+        )
 
         if all_nexus_found:
             _value = True
-            _disabled=False
+            _disabled = False
         else:
             _value = False
             _disabled = True
-        self.proton_charge_flag = widgets.Checkbox(description="Proton charge", 
-                                                   value=_value,
-                                                   disabled=_disabled)
-        
-        self.monitor_counts_flag = widgets.Checkbox(description="Monitor counts", 
-                                                   value=False,
-                                                   disabled=_disabled)
+        self.proton_charge_flag = widgets.Checkbox(
+            description="Proton charge", value=_value, disabled=_disabled
+        )
 
-        
+        self.monitor_counts_flag = widgets.Checkbox(
+            description="Monitor counts", value=False, disabled=_disabled
+        )
+
         ## FIXME
         shutter_counts_value = False
         # shutter_counts_value = not tpx3_disabled_flag
-        
+
         self.shutter_counts_flag = widgets.Checkbox(
-            description="Shutter counts", value=shutter_counts_value, disabled=tpx3_disabled_flag
+            description="Shutter counts",
+            value=shutter_counts_value,
+            disabled=tpx3_disabled_flag,
         )
         self.correct_chips_alignment_flag = widgets.Checkbox(
-            description="Correct chips alignment", 
-            disabled=False,         
-            value=True             
+            description="Correct chips alignment", disabled=False, value=True
         )
 
         vertical_layout = widgets.VBox(
@@ -1095,41 +1304,74 @@ class NormalizationWhiteBeamAtVenus:
 
         display(HTML("<hr>"))
 
-        display(HTML("<span style='font-size: 16px; color:red'>How to handle OB zeros - <i>May take much more time!</i></span>"))
-        
-        display(widgets.Checkbox(description="Ignore zeros in OB during normalization", 
-                                 value=True,
-                                 disabled=True,
-                                 layout=widgets.Layout(width="600px")))
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:red'>How to handle OB zeros - <i>May take much more time!</i></span>"
+            )
+        )
 
-        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(description="Replace zeros by local median", 
-                                                                      value=False,
-                                                                      layout=widgets.Layout(width="500px"))
-        self.replace_ob_zeros_by_local_median_flag.observe(self._on_replace_ob_zeros_by_local_median_flag_change, 
-                                                           names='value')
-       
+        display(
+            widgets.Checkbox(
+                description="Ignore zeros in OB during normalization",
+                value=True,
+                disabled=True,
+                layout=widgets.Layout(width="600px"),
+            )
+        )
+
+        self.replace_ob_zeros_by_local_median_flag = widgets.Checkbox(
+            description="Replace zeros by local median",
+            value=False,
+            layout=widgets.Layout(width="500px"),
+        )
+        self.replace_ob_zeros_by_local_median_flag.observe(
+            self._on_replace_ob_zeros_by_local_median_flag_change, names="value"
+        )
+
         display(self.replace_ob_zeros_by_local_median_flag)
 
-        kernel_size_label = widgets.Label(value="Kernel size for local median (odd number):", 
-                                          layout=widgets.Layout(width="300"))
-        self.kernel_size_for_local_median_y = widgets.BoundedIntText(description="y axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        kernel_size_label = widgets.Label(
+            value="Kernel size for local median (odd number):",
+            layout=widgets.Layout(width="300"),
         )
-        self.kernel_size_for_local_median_x = widgets.BoundedIntText(description="x axis:",
-            value=3, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        self.kernel_size_for_local_median_y = widgets.BoundedIntText(
+            description="y axis:",
+            value=3,
+            min=1,
+            max=99,
+            step=2,
+            layout=widgets.Layout(width="150px"),
         )
-        self.kernel_size_for_local_median_tof = widgets.BoundedIntText(description="tof axis:",
-            value=1, min=1, max=99, step=2, layout=widgets.Layout(width="150px")
+        self.kernel_size_for_local_median_x = widgets.BoundedIntText(
+            description="x axis:",
+            value=3,
+            min=1,
+            max=99,
+            step=2,
+            layout=widgets.Layout(width="150px"),
         )
-        hori_layout = widgets.HBox([kernel_size_label, 
-                                    self.kernel_size_for_local_median_y, 
-                                    self.kernel_size_for_local_median_x,
-                                    self.kernel_size_for_local_median_tof],
-                                    hori_layout=widgets.Layout(align_items="center",
-                                                               width="100%"))
+        self.kernel_size_for_local_median_tof = widgets.BoundedIntText(
+            description="tof axis:",
+            value=1,
+            min=1,
+            max=99,
+            step=2,
+            layout=widgets.Layout(width="150px"),
+        )
+        hori_layout = widgets.HBox(
+            [
+                kernel_size_label,
+                self.kernel_size_for_local_median_y,
+                self.kernel_size_for_local_median_x,
+                self.kernel_size_for_local_median_tof,
+            ],
+            hori_layout=widgets.Layout(align_items="center", width="100%"),
+        )
         display(hori_layout)
 
-        _label = widgets.Label(value="Maximum number of iterations:", layout=widgets.Layout(width="300px")) 
+        _label = widgets.Label(
+            value="Maximum number of iterations:", layout=widgets.Layout(width="300px")
+        )
         self.maximum_iterations_ui = widgets.BoundedIntText(
             value=2,
             min=1,
@@ -1137,23 +1379,32 @@ class NormalizationWhiteBeamAtVenus:
             step=1,
             layout=widgets.Layout(width="50px"),
         )
-        hori_layout = widgets.HBox([_label, self.maximum_iterations_ui],
-                                   hori_layout=widgets.Layout(align_items="center",
-                                                              width="100%"))
+        hori_layout = widgets.HBox(
+            [_label, self.maximum_iterations_ui],
+            hori_layout=widgets.Layout(align_items="center", width="100%"),
+        )
         display(hori_layout)
 
         display(HTML("<hr>"))
 
-        label = widgets.Label(value="Distance source detector (m)", layout=widgets.Layout(width="150px"))
+        label = widgets.Label(
+            value="Distance source detector (m)", layout=widgets.Layout(width="150px")
+        )
         self.distance_source_detector = widgets.FloatText(
-            value=distance_source_detector_m[self.instrument], disabled=False, layout=widgets.Layout(width="150px")
+            value=distance_source_detector_m[self.instrument],
+            disabled=False,
+            layout=widgets.Layout(width="150px"),
         )
         hori_layout = widgets.HBox([label, self.distance_source_detector])
         display(hori_layout)
 
         if self.instrument == "SNAP":
-            label = widgets.Label(value="Detector offset (us)", layout=widgets.Layout(width="150px"))
-            self.detector_offset_us = widgets.FloatText(value=0.0, disabled=False, layout=widgets.Layout(width="150px"))
+            label = widgets.Label(
+                value="Detector offset (us)", layout=widgets.Layout(width="150px")
+            )
+            self.detector_offset_us = widgets.FloatText(
+                value=0.0, disabled=False, layout=widgets.Layout(width="150px")
+            )
             hori_layout = widgets.HBox([label, self.detector_offset_us])
             display(hori_layout)
 
@@ -1171,8 +1422,8 @@ class NormalizationWhiteBeamAtVenus:
         self.roi_container_file = MyFileSelectorPanel(
             instruction="Select ROI container file",
             start_dir=self.output_dir,
-            filters={"ROI container files": ["*_container_roi.tiff"]},  # scitiff file 
-            type='file',
+            filters={"ROI container files": ["*_container_roi.tiff"]},  # scitiff file
+            type="file",
             multiple=False,
             next=self.load_container_roi_from_file,
         )
@@ -1181,24 +1432,34 @@ class NormalizationWhiteBeamAtVenus:
     def load_container_roi_from_file(self, file_path):
         self.container_roi_file = file_path
         notebook_logging.info(f"Loading container ROI from file: {file_path} ...")
-        display(HTML(f"<span style='color:blue; font-size:16px'>Will use the container ROI file: {file_path}!</span>"))
-       
+        display(
+            HTML(
+                f"<span style='color:blue; font-size:16px'>Will use the container ROI file: {file_path}!</span>"
+            )
+        )
+
         master_dict = load_json(file_path)
         self.container_integrated_image = master_dict["integrated_image"]
-        self.container_roi = Roi(left=master_dict["container_roi"]["left"], 
-                                 top=master_dict["container_roi"]["top"], 
-                                 width=master_dict["container_roi"]["width"], 
-                                 height=master_dict["container_roi"]["height"])
-           
+        self.container_roi = Roi(
+            left=master_dict["container_roi"]["left"],
+            top=master_dict["container_roi"]["top"],
+            width=master_dict["container_roi"]["width"],
+            height=master_dict["container_roi"]["height"],
+        )
+
     def select_container(self):
 
-       # load first sample and display integrated image to select ROI
+        # load first sample and display integrated image to select ROI
         if not self.dict_sample:
             display(HTML("<span style='color:red'>No sample runs selected!</span>"))
             return
 
-        display(HTML("<span style='font-size: 16px; color:blue'>Select ROI of ONLY the container!</span>"))
-        logging.info(f"Selecting ROI of ONLY the container ...")
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:blue'>Select ROI of ONLY the container!</span>"
+            )
+        )
+        logging.info("Selecting ROI of ONLY the container ...")
 
         if self.integrated_data is None:
             self.integrated_data = self.get_integrated_data(self.dict_sample)
@@ -1213,61 +1474,91 @@ class NormalizationWhiteBeamAtVenus:
         vmin = 0
         vmax = int(np.max(integrated_data))
         self.vrange_container = [vmin, vmax]
-    
+
         def container_roi_selection(vrange, left_right, top_bottom):
-            
+
             fig, ax = plt.subplots(figsize=(10, 10))
-            im = ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vrange[0], vmax=vrange[1])
-            cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
+            im = ax.imshow(
+                integrated_data,
+                cmap="viridis",
+                aspect="auto",
+                vmin=vrange[0],
+                vmax=vrange[1],
+            )
+            cbar = plt.colorbar(
+                im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5
+            )
 
             logging.info("Updating rectangle ...")
             if self.rect_container:
                 self.rect_container.remove()
-        
-            self.rect_container = patches.Rectangle((left_right[0], top_bottom[0]), left_right[1]-left_right[0], top_bottom[1]-top_bottom[0], linewidth=1, edgecolor='r', facecolor='none')
+
+            self.rect_container = patches.Rectangle(
+                (left_right[0], top_bottom[0]),
+                left_right[1] - left_right[0],
+                top_bottom[1] - top_bottom[0],
+                linewidth=1,
+                edgecolor="r",
+                facecolor="none",
+            )
             ax.add_patch(self.rect_container)
-            ax.set_title(f"Select ROI containing only the container")
-            
-            self.container_roi = Roi(left=left_right[0], top=top_bottom[0], width=left_right[1]-left_right[0], height=top_bottom[1]-top_bottom[0])
+            ax.set_title("Select ROI containing only the container")
+
+            self.container_roi = Roi(
+                left=left_right[0],
+                top=top_bottom[0],
+                width=left_right[1] - left_right[0],
+                height=top_bottom[1] - top_bottom[0],
+            )
 
         widgets_width = "800px"
         self.interactive_plot = interactive(
             container_roi_selection,
-            vrange = widgets.IntRangeSlider(min=0, 
-                                            max=int(np.max(integrated_data)), 
-                                            step=1, 
-                                            value=[0, int(np.max(integrated_data))], 
-                                            description="vrange", 
-                                            layout=widgets.Layout(width=widgets_width)),
-            left_right = widgets.IntRangeSlider(min=0, 
-                                max=integrated_data.shape[1]-1, 
-                                step=1, 
-                                value=[default_left, default_left+default_width],
-                                description="left_right",
-                                layout=widgets.Layout(width=widgets_width)),
-            top_bottom = widgets.IntRangeSlider(min=0,
-                                               max=integrated_data.shape[0]-1,
-                                               step=1,
-                                               value=[default_top, default_top+default_height],
-                                               description="top_bottom",
-                                               layout=widgets.Layout(width=widgets_width)),
+            vrange=widgets.IntRangeSlider(
+                min=0,
+                max=int(np.max(integrated_data)),
+                step=1,
+                value=[0, int(np.max(integrated_data))],
+                description="vrange",
+                layout=widgets.Layout(width=widgets_width),
+            ),
+            left_right=widgets.IntRangeSlider(
+                min=0,
+                max=integrated_data.shape[1] - 1,
+                step=1,
+                value=[default_left, default_left + default_width],
+                description="left_right",
+                layout=widgets.Layout(width=widgets_width),
+            ),
+            top_bottom=widgets.IntRangeSlider(
+                min=0,
+                max=integrated_data.shape[0] - 1,
+                step=1,
+                value=[default_top, default_top + default_height],
+                description="top_bottom",
+                layout=widgets.Layout(width=widgets_width),
+            ),
         )
         display(self.interactive_plot)
 
     def select_roi(self):
 
-        logging.info(f"Selecting ROI for full spectrum normalization...")
+        logging.info("Selecting ROI for full spectrum normalization...")
 
         # load first sample and display integrated image to select ROI
         if not self.dict_sample:
             display(HTML("<span style='color:red'>No sample runs selected!</span>"))
             return
 
-        display(HTML("<span style='font-size: 16px; color:blue'>Select ROI for full spectrum normalization!</span>"))
+        display(
+            HTML(
+                "<span style='font-size: 16px; color:blue'>Select ROI for full spectrum normalization!</span>"
+            )
+        )
 
         if self.integrated_data is None:
             self.integrated_data = self.get_integrated_data(self.dict_sample)
-        
+
         integrated_data = self.integrated_data
 
         default_left = self.default_roi.left
@@ -1275,112 +1566,145 @@ class NormalizationWhiteBeamAtVenus:
         default_width = self.default_roi.width
         default_height = self.default_roi.height
 
-        self.roi = Roi(left=default_left, top=default_top,
-                       width=default_width, height=default_height)
+        self.roi = Roi(
+            left=default_left,
+            top=default_top,
+            width=default_width,
+            height=default_height,
+        )
 
-        
         def roi_selection(vrange, left_right, top_bottom):
-            
+
             left, right = left_right
             width = right - left
-            
+
             top, bottom = top_bottom
             height = bottom - top
-            
+
             vmin, vmax = vrange
-            
+
             fig, ax = plt.subplots(figsize=(10, 10))
-            ax.imshow(integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax)
-            rect = patches.Rectangle((left, top), width, height, linewidth=1, edgecolor='r', facecolor='none')
+            ax.imshow(
+                integrated_data, cmap="viridis", aspect="auto", vmin=vmin, vmax=vmax
+            )
+            rect = patches.Rectangle(
+                (left, top), width, height, linewidth=1, edgecolor="r", facecolor="none"
+            )
             ax.add_patch(rect)
-            ax.set_title(f"Select ROI for full spectrum normalization")
+            ax.set_title("Select ROI for full spectrum normalization")
             plt.show()
-            logging.info(f"Selected ROI - left: {left}, top: {top}, width: {width}, height: {height}")
+            logging.info(
+                f"Selected ROI - left: {left}, top: {top}, width: {width}, height: {height}"
+            )
             self.roi = Roi(left=left, top=top, width=width, height=height)
 
         widgets_width = "800px"
         interactive_plot = interactive(
             roi_selection,
-            vrange = widgets.IntRangeSlider(min=0, 
-                                            max=int(np.max(integrated_data)), 
-                                            step=1, 
-                                            value=[0, int(np.max(integrated_data))], 
-                                            description="vrange", 
-                                            layout=widgets.Layout(width=widgets_width)),
-            left_right=widgets.IntRangeSlider(min=0, 
-                                              max=integrated_data.shape[1]-1, 
-                                              step=1, 
-                                              value=[default_left, default_left+default_width],
-                                              description="left_right",
-                                              layout=widgets.Layout(width=widgets_width)),
-            top_bottom=widgets.IntRangeSlider(min=0,
-                                              max=integrated_data.shape[0]-1,
-                                              step=1,
-                                              value=[default_top, default_top+default_height],
-                                              description="top_bottom",
-                                              layout=widgets.Layout(width=widgets_width)),
+            vrange=widgets.IntRangeSlider(
+                min=0,
+                max=int(np.max(integrated_data)),
+                step=1,
+                value=[0, int(np.max(integrated_data))],
+                description="vrange",
+                layout=widgets.Layout(width=widgets_width),
+            ),
+            left_right=widgets.IntRangeSlider(
+                min=0,
+                max=integrated_data.shape[1] - 1,
+                step=1,
+                value=[default_left, default_left + default_width],
+                description="left_right",
+                layout=widgets.Layout(width=widgets_width),
+            ),
+            top_bottom=widgets.IntRangeSlider(
+                min=0,
+                max=integrated_data.shape[0] - 1,
+                step=1,
+                value=[default_top, default_top + default_height],
+                description="top_bottom",
+                layout=widgets.Layout(width=widgets_width),
+            ),
         )
-            
+
         display(interactive_plot)
 
     def post_settings(self):
-        
+
         at_least_one_option = False
         if self.full_spectrum_roi_flag.value:
             self.select_roi()
             at_least_one_option = True
 
         if self.remove_container_flag.value:
-
             if self.full_spectrum_roi_flag.value:
-                display(HTML("<hr>")) # to improve readability
+                display(HTML("<hr>"))  # to improve readability
 
-            if self.remove_container_options_flag.value == "Use previously saved ROI containing only the container signal":
+            if (
+                self.remove_container_options_flag.value
+                == "Use previously saved ROI containing only the container signal"
+            ):
                 self.select_container_from_file()
                 self.container_roi_from_file = True
-            
+
             else:
                 self.select_container()
                 self.container_roi_from_file = False
                 self.we_need_to_automatically_save_the_container_roi = True
-            
+
             at_least_one_option = True
 
         if not at_least_one_option:
             self.roi = None
             self.container_roi = None
-            display(HTML("<span style='color:blue'>Info: You are good to go, nothing to do here!</span>"))
+            display(
+                HTML(
+                    "<span style='color:blue'>Info: You are good to go, nothing to do here!</span>"
+                )
+            )
 
     def preview_roi_selection_container_imported(self):
-         # preview of the roi selected
+        # preview of the roi selected
         if self.container_roi is not None:
-            
             if self.container_roi_from_file:
-                
-                display(HTML("<span style='font-size: 16px; color:blue'>Preview of the loaded ROI from file ...</span>"))
+                display(
+                    HTML(
+                        "<span style='font-size: 16px; color:blue'>Preview of the loaded ROI from file ...</span>"
+                    )
+                )
 
                 integrated_data = self.container_integrated_image
 
                 fig, ax = plt.subplots(figsize=(5, 5))
                 im = ax.imshow(integrated_data, cmap="viridis", aspect="auto")
-                cbar = plt.colorbar(im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5)
+                cbar = plt.colorbar(
+                    im, ax=ax, orientation="vertical", label="Intensity", shrink=0.5
+                )
 
-                rect = patches.Rectangle((self.container_roi.left, self.container_roi.top), 
-                                        self.container_roi.width, 
-                                        self.container_roi.height, 
-                                        linewidth=1, edgecolor='r', facecolor='none')
+                rect = patches.Rectangle(
+                    (self.container_roi.left, self.container_roi.top),
+                    self.container_roi.width,
+                    self.container_roi.height,
+                    linewidth=1,
+                    edgecolor="r",
+                    facecolor="none",
+                )
                 ax.add_patch(rect)
-                ax.set_title(f"Loaded ROI containing only the container from file")
+                ax.set_title("Loaded ROI containing only the container from file")
                 plt.show()
-                
+
             else:
-                display(HTML("<span style='font-size: 14px; color:blue'>ROI container selected within that notebook (no need to preview again)!</span>"))
-            
+                display(
+                    HTML(
+                        "<span style='font-size: 14px; color:blue'>ROI container selected within that notebook (no need to preview again)!</span>"
+                    )
+                )
+
         else:
             display(HTML("<span style='color:blue'>No container ROI selected!</span>"))
 
     def _on_replace_ob_zeros_by_local_median_flag_change(self, change):
-        if change['new']:
+        if change["new"]:
             self.kernel_size_for_local_median_y.disabled = False
             self.kernel_size_for_local_median_x.disabled = False
             self.kernel_size_for_local_median_tof.disabled = False
@@ -1392,19 +1716,21 @@ class NormalizationWhiteBeamAtVenus:
             self.maximum_iterations_ui.disabled = True
 
     def what_to_export(self):
-        
+
         if self.combine_sample_runs_flag.value:
             combined_flag = True
         else:
             combined_flag = False
-        
+
         display(HTML("<span style='font-size: 16px; color:red'>Stack of images</span>"))
         self.export_corrected_stack_of_sample_data = widgets.Checkbox(
-            description="Export corrected stack of sample data", layout=widgets.Layout(width="100%"), value=False
+            description="Export corrected stack of sample data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
         self.export_corrected_stack_of_ob_data = widgets.Checkbox(
-            description="Export corrected stack of ob data", 
-            layout=widgets.Layout(width="100%"), 
+            description="Export corrected stack of ob data",
+            layout=widgets.Layout(width="100%"),
             value=False,
             disabled=True,
         )
@@ -1423,37 +1749,39 @@ class NormalizationWhiteBeamAtVenus:
         #     disabled=True,
         # )
 
-        list_widget_to_display =  [
-                self.export_corrected_stack_of_sample_data,
-                # self.export_corrected_stack_of_ob_data,
-                self.export_corrected_stack_of_normalized_data,
+        list_widget_to_display = [
+            self.export_corrected_stack_of_sample_data,
+            # self.export_corrected_stack_of_ob_data,
+            self.export_corrected_stack_of_normalized_data,
         ]
         # if self.combine_sample_runs_flag.value:
         #     list_widget_to_display.append(self.export_corrected_stack_of_combined_normalized_data)
-        label = widgets.Label(value="Note: Any of the stacks exported will also contain the original spectra file")
+        label = widgets.Label(
+            value="Note: Any of the stacks exported will also contain the original spectra file"
+        )
         list_widget_to_display.append(label)
 
-        vertical_layout = widgets.VBox(
-            list_widget_to_display
-        )
+        vertical_layout = widgets.VBox(list_widget_to_display)
 
         display(vertical_layout)
-        display(HTML("<span style='font-size: 16px; color:red'>Integrated images</span>"))
+        display(
+            HTML("<span style='font-size: 16px; color:red'>Integrated images</span>")
+        )
         self.export_corrected_integrated_sample_data = widgets.Checkbox(
-            description="Export corrected integrated sample data", 
-            layout=widgets.Layout(width="100%"), 
-            value=False
+            description="Export corrected integrated sample data",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
         self.export_corrected_integrated_ob_data = widgets.Checkbox(
-            description="Export corrected integrated ob data", 
-            layout=widgets.Layout(width="100%"), 
+            description="Export corrected integrated ob data",
+            layout=widgets.Layout(width="100%"),
             value=False,
             disabled=True,
         )
         self.export_corrected_integrated_normalized_data = widgets.Checkbox(
-            description="Export integrated normalized data (integrated sample divide by integrated ob)", 
-            layout=widgets.Layout(width="100%"), 
-            value=False
+            description="Export integrated normalized data (integrated sample divide by integrated ob)",
+            layout=widgets.Layout(width="100%"),
+            value=False,
         )
 
         self.export_corrected_integrated_combined_normalized_data = widgets.Checkbox(
@@ -1463,13 +1791,15 @@ class NormalizationWhiteBeamAtVenus:
             disabled=False,
         )
 
-        list_widget_to_display =  [
-                self.export_corrected_integrated_sample_data,
-                # self.export_corrected_integrated_ob_data,
-                self.export_corrected_integrated_normalized_data,
+        list_widget_to_display = [
+            self.export_corrected_integrated_sample_data,
+            # self.export_corrected_integrated_ob_data,
+            self.export_corrected_integrated_normalized_data,
         ]
         if self.combine_sample_runs_flag.value:
-            list_widget_to_display.append(self.export_corrected_integrated_combined_normalized_data)
+            list_widget_to_display.append(
+                self.export_corrected_integrated_combined_normalized_data
+            )
 
         vertical_layout = widgets.VBox(
             list_widget_to_display,
@@ -1477,23 +1807,27 @@ class NormalizationWhiteBeamAtVenus:
 
         display(vertical_layout)
 
-        if not (self.spectra_array is None) or (self.we_need_to_automatically_save_the_container_roi):
+        if not (self.spectra_array is None) or (
+            self.we_need_to_automatically_save_the_container_roi
+        ):
             display(HTML("<span style='font-size: 16px; color:red'>Others</span>"))
-            
+
         if self.spectra_array is None:
             self.export_spectra_file = widgets.Checkbox(
-                description="Export spectra file used for normalization", 
-                layout=widgets.Layout(width="100%"), 
-                value=True)
+                description="Export spectra file used for normalization",
+                layout=widgets.Layout(width="100%"),
+                value=True,
+            )
             display(self.export_spectra_file)
-            
+
         if self.we_need_to_automatically_save_the_container_roi:
             self.export_container_roi = widgets.Checkbox(
-                description="Export container ROI file used for normalization", 
-                layout=widgets.Layout(width="100%"), 
-                value=True)
+                description="Export container ROI file used for normalization",
+                layout=widgets.Layout(width="100%"),
+                value=True,
+            )
             display(self.export_container_roi)
-            
+
     def check_folder_is_valid(self, full_path):
         list_tiff = glob.glob(os.path.join(full_path, "*.tif*"))
         if list_tiff:
@@ -1503,37 +1837,60 @@ class NormalizationWhiteBeamAtVenus:
 
     def sample_folder_selected(self, folder_selected):
         self.sample_folder = folder_selected
-        display(HTML(f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"))
+        display(
+            HTML(
+                f"Sample folder selected: <span style='color:blue'>{folder_selected}</span>"
+            )
+        )
 
     def ob_folder_selected(self, folder_selected):
         self.ob_folder = folder_selected
-        display(HTML(f"Open beam folder selected: <span style='color:blue'>{folder_selected}</span>"))
+        display(
+            HTML(
+                f"Open beam folder selected: <span style='color:blue'>{folder_selected}</span>"
+            )
+        )
 
     def dc_folder_selected(self, folder_selected):
         self.dc_folder = folder_selected
-        display(HTML(f"Dark current folder selected: <span style='color:blue'>{folder_selected}</span>"))
+        display(
+            HTML(
+                f"Dark current folder selected: <span style='color:blue'>{folder_selected}</span>"
+            )
+        )
 
     def save_ob_run_numbers_selected(self, folder_selected):
         self.ob_run_numbers_selected = folder_selected
-     
+
     def save_dc_run_numbers_selected(self, folder_selected):
         self.dc_run_numbers_selected = folder_selected
-        
+
     def output_folder_selected(self, folder_selected):
         self.output_folder = folder_selected
         display(HTML("Output folder selected:"))
         if os.path.exists(folder_selected):
-            display(HTML(f"<span style='color:green'>{folder_selected} - FOUND!</span>"))
+            display(
+                HTML(f"<span style='color:green'>{folder_selected} - FOUND!</span>")
+            )
             notebook_logging.info(f"Output folder selected: {folder_selected} - FOUND")
         else:
-            display(HTML(f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"))
-            notebook_logging.info(f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!")
+            display(
+                HTML(
+                    f"<span style='color:blue'>{folder_selected} - DOES NOT EXIST and will be CREATED!</span>"
+                )
+            )
+            notebook_logging.info(
+                f"Output folder selected: {folder_selected} - NOT FOUND and will be CREATED!"
+            )
 
-    def select_folder(self, instruction="Select a folder",
-                       next_function=None, 
-                       start_dir=None, 
-                       multiple=False,
-                       newdir_toolbar_button=False):
+    def select_folder(
+        self,
+        instruction="Select a folder",
+        next_function=None,
+        start_dir=None,
+        multiple=False,
+        newdir_toolbar_button=False,
+    ):
         # go straight to autoreduce/mcp folder
         if start_dir is None:
             start_dir = self.autoreduce_dir
@@ -1621,9 +1978,11 @@ class NormalizationWhiteBeamAtVenus:
             # shutter_counts_flag=self.shutter_counts_flag.value,
             # replace_ob_zeros_by_nan_flag=self.replace_ob_zeros_by_nan_flag.value,
             replace_ob_zeros_by_local_median_flag=self.replace_ob_zeros_by_local_median_flag.value,
-            kernel_size_for_local_median=(self.kernel_size_for_local_median_y.value,
-                                          self.kernel_size_for_local_median_x.value,
-                                          self.kernel_size_for_local_median_tof.value),
+            kernel_size_for_local_median=(
+                self.kernel_size_for_local_median_y.value,
+                self.kernel_size_for_local_median_x.value,
+                self.kernel_size_for_local_median_tof.value,
+            ),
             max_iterations=self.maximum_iterations_ui.value,
             correct_chips_alignment_flag=self.correct_chips_alignment_flag.value,
             correct_chips_alignment_config=correct_chips_alignment_config,
@@ -1636,12 +1995,12 @@ class NormalizationWhiteBeamAtVenus:
             combine_samples=self.combine_sample_runs_flag.value,
             roi=self.roi,
             container_roi=self.container_roi,
-            container_roi_file=self.container_roi_file
+            container_roi_file=self.container_roi_file,
         )
-        
+
         display(HTML("<span style='color:blue'>Normalization completed</span>"))
         # display(HTML("Log file: /SNS/VENUS/shared/logs/normalization_for_timepix.log"))
-        
+
     def profile_of_roi(self):
         normalized_data = self.normalized_dict.data
 
@@ -1653,10 +2012,12 @@ class NormalizationWhiteBeamAtVenus:
 
             _normalized_data = normalized_data[index]
             _integrated = np.nanmean(_normalized_data, axis=0)
-            _profile = np.nanmean(_normalized_data[:, top : top + height, left : left + width], axis=0)
-            fig, axs = plt.subplots(ncols=2, nrows=2,figsize=(10, 6))
-            im = axs[0,0].imshow(_integrated, cmap="viridis")
-            axs[0,0].add_patch(
+            _profile = np.nanmean(
+                _normalized_data[:, top : top + height, left : left + width], axis=0
+            )
+            fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(10, 6))
+            im = axs[0, 0].imshow(_integrated, cmap="viridis")
+            axs[0, 0].add_patch(
                 patches.Rectangle(
                     (left, top),
                     width,
@@ -1667,21 +2028,56 @@ class NormalizationWhiteBeamAtVenus:
                 )
             )
 
-            axs[0,0].set_title(f"Integrated normalized data - {index}")
-            fig.colorbar(im, ax=axs[0,0], orientation="vertical", label="Intensity")
-            axs[1,0].plot(lambda_array, _profile)
-            axs[1,0].set_title(f"Profile of ROI - {index}")
-            axs[1,0].set_xlabel("lambda_array")
-            axs[1,0].set_ylabel("Intensity (a.u.)")
+            axs[0, 0].set_title(f"Integrated normalized data - {index}")
+            fig.colorbar(im, ax=axs[0, 0], orientation="vertical", label="Intensity")
+            axs[1, 0].plot(lambda_array, _profile)
+            axs[1, 0].set_title(f"Profile of ROI - {index}")
+            axs[1, 0].set_xlabel("lambda_array")
+            axs[1, 0].set_ylabel("Intensity (a.u.)")
 
-        _plot_normalized = interactive(widgets.Dropdown(options=list(normalized_data.keys()), 
-                                                       description="Sample run:",
-                                                       layout=widgets.Layout(width="300px")),
-                                      left=widgets.BoundedIntText(value=0, min=0, max=512, step=1, description="left:", layout=widgets.Layout(width="200px")),
-                                      top=widgets.BoundedIntText(value=0, min=0, max=512, step=1, description="top:", layout=widgets.Layout(width="200px")),
-                                      width=widgets.BoundedIntText(value=50, min=1, max=512, step=1, description="width:", layout=widgets.Layout(width="200px")),
-                                      height=widgets.BoundedIntText(value=50, min=1, max=512, step=1, description="height:", layout=widgets.Layout(width="200px")),
-                                      function=widgets.Dropdown(options=["mean", "median"], description="Function:", layout=widgets.Layout(width="200px")),
+        _plot_normalized = interactive(
+            widgets.Dropdown(
+                options=list(normalized_data.keys()),
+                description="Sample run:",
+                layout=widgets.Layout(width="300px"),
+            ),
+            left=widgets.BoundedIntText(
+                value=0,
+                min=0,
+                max=512,
+                step=1,
+                description="left:",
+                layout=widgets.Layout(width="200px"),
+            ),
+            top=widgets.BoundedIntText(
+                value=0,
+                min=0,
+                max=512,
+                step=1,
+                description="top:",
+                layout=widgets.Layout(width="200px"),
+            ),
+            width=widgets.BoundedIntText(
+                value=50,
+                min=1,
+                max=512,
+                step=1,
+                description="width:",
+                layout=widgets.Layout(width="200px"),
+            ),
+            height=widgets.BoundedIntText(
+                value=50,
+                min=1,
+                max=512,
+                step=1,
+                description="height:",
+                layout=widgets.Layout(width="200px"),
+            ),
+            function=widgets.Dropdown(
+                options=["mean", "median"],
+                description="Function:",
+                layout=widgets.Layout(width="200px"),
+            ),
         )
         display(_plot_normalized)
 
@@ -1689,9 +2085,13 @@ class NormalizationWhiteBeamAtVenus:
     def legend(cls) -> None:
         display(HTML("<hr style='height:2px'/>"))
         display(HTML("<h2>Legend</h2>"))
-        display(HTML("<ul>"
-                     "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data preparation and reconstruction.</li>"
-                     "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data preparation and reconstruction.</li>"
-                     "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your reconstruction.</li>"
-                     "</ul>"))
+        display(
+            HTML(
+                "<ul>"
+                "<li><b><font color='red'>Mandatory steps</font></b> must be performed to ensure proper data preparation and reconstruction.</li>"
+                "<li><b><font color='orange'>Optional but recommended steps</font></b> are not mandatory but should be performed to ensure proper data preparation and reconstruction.</li>"
+                "<li><b><font color='purple'>Optional steps</font></b> are not mandatory but highly recommended to improve the quality of your reconstruction.</li>"
+                "</ul>"
+            )
+        )
         display(HTML("<hr style='height:2px'/>"))

@@ -23,7 +23,9 @@
 # + run_control={"frozen": false, "read_only": false}
 
 from __code import system
-from __code.timepix3_event_hdf5_he3_detector.timepix3_event_hdf5_he3_detector import Timepix3EventHdf5
+from __code.timepix3_event_hdf5_he3_detector.timepix3_event_hdf5_he3_detector import (
+    Timepix3EventHdf5,
+)
 
 system.System.select_working_dir(facility="SNS", instrument="SNAP")
 from __code.__all import custom_style

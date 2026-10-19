@@ -14,5 +14,5 @@ class TomvizJs(base.DOMWidget):
     url = Unicode("").tag(sync=True)
 
     def __init__(self, url=None):
-        super(TomvizJs, self).__init__()
+        super().__init__()
         self.url = url

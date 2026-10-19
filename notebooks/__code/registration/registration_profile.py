@@ -3,6 +3,13 @@ import os
 
 import numpy as np
 import pyqtgraph as pg
+from __code import load_ui
+from __code._utilities.color import Color
+from __code._utilities.file import make_or_reset_folder
+from __code.registration import interact_me_style, normal_style
+from __code.registration.calculate_profiles_difference import (
+    CalculateProfilesDifference,
+)
 from changepy import pelt
 from changepy.costs import normal_var
 from IPython.display import HTML, display
@@ -23,12 +30,6 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 from scipy.ndimage.interpolation import shift
-
-from __code import load_ui
-from __code._utilities.color import Color
-from __code._utilities.file import make_or_reset_folder
-from __code.registration import interact_me_style, normal_style
-from __code.registration.calculate_profiles_difference import CalculateProfilesDifference
 
 
 class RegistrationProfileLauncher:
@@ -370,7 +371,9 @@ class RegistrationProfileUi(QMainWindow):
             self.reference_image_short_name = self.parent.reference_image_short_name
         else:
             self.reference_image = self.data_dict["data"][self.reference_image_index]
-            self.reference_image_short_name = os.path.basename(self.data_dict["file_name"][self.reference_image_index])
+            self.reference_image_short_name = os.path.basename(
+                self.data_dict["file_name"][self.reference_image_index]
+            )
 
     def init_table(self):
         data_dict = self.data_dict
@@ -554,7 +557,9 @@ class RegistrationProfileUi(QMainWindow):
 
     def update_selected_file_profile_plots(self, is_horizontal=True):
         index_selected = self._get_selected_row()
-        self.update_single_profile(file_selected=index_selected, is_horizontal=is_horizontal)
+        self.update_single_profile(
+            file_selected=index_selected, is_horizontal=is_horizontal
+        )
 
     def update_single_profile(self, file_selected=-1, is_horizontal=True):
         if is_horizontal:
@@ -568,7 +573,9 @@ class RegistrationProfileUi(QMainWindow):
         profile_2d_ui.clear()
 
         # always display the reference image
-        [xaxis, ref_profile] = self.get_profile(image_index=self.reference_image_index, is_horizontal=is_horizontal)
+        [xaxis, ref_profile] = self.get_profile(
+            image_index=self.reference_image_index, is_horizontal=is_horizontal
+        )
 
         try:
             profile_2d_ui.plot(xaxis, ref_profile, pen=self.roi[label]["color-peak"])
@@ -576,10 +583,16 @@ class RegistrationProfileUi(QMainWindow):
             pass
 
         if file_selected != self.reference_image_index:
-            [xaxis, selected_profile] = self.get_profile(image_index=file_selected, is_horizontal=is_horizontal)
+            [xaxis, selected_profile] = self.get_profile(
+                image_index=file_selected, is_horizontal=is_horizontal
+            )
 
             try:
-                profile_2d_ui.plot(xaxis, selected_profile, pen=self.list_rgb_profile_color[file_selected])
+                profile_2d_ui.plot(
+                    xaxis,
+                    selected_profile,
+                    pen=self.list_rgb_profile_color[file_selected],
+                )
             except Exception:
                 pass
 
@@ -628,10 +641,14 @@ class RegistrationProfileUi(QMainWindow):
 
     def calculate_profile(self, file_index=-1, is_horizontal=True):
         if is_horizontal:
-            [xaxis, profile] = self.get_profile(image_index=file_index, is_horizontal=True)
+            [xaxis, profile] = self.get_profile(
+                image_index=file_index, is_horizontal=True
+            )
             label = "horizontal"
         else:
-            [xaxis, profile] = self.get_profile(image_index=file_index, is_horizontal=False)
+            [xaxis, profile] = self.get_profile(
+                image_index=file_index, is_horizontal=False
+            )
             label = "vertical"
 
         _profile = {}
@@ -744,7 +761,9 @@ class RegistrationProfileUi(QMainWindow):
         self.eventProgress.setVisible(False)
         QApplication.processEvents()
 
-    def calculate_and_display_current_peak(self, force_recalculation=True, is_horizontal=True):
+    def calculate_and_display_current_peak(
+        self, force_recalculation=True, is_horizontal=True
+    ):
         if is_horizontal:
             label = "horizontal"
         else:
@@ -757,16 +776,18 @@ class RegistrationProfileUi(QMainWindow):
                 force_recalculation = True
             else:
                 peak = self.peak[label]
-                if peak is None:
-                    force_recalculation = True
-                elif peak[index_selected] == 0:
+                if peak is None or peak[index_selected] == 0:
                     force_recalculation = True
                 else:
                     self.display_current_peak(is_horizontal=is_horizontal)
 
         if force_recalculation:
-            self.calculate_profile(file_index=index_selected, is_horizontal=is_horizontal)
-            self.recalculate_current_peak(file_index=index_selected, is_horizontal=is_horizontal)
+            self.calculate_profile(
+                file_index=index_selected, is_horizontal=is_horizontal
+            )
+            self.recalculate_current_peak(
+                file_index=index_selected, is_horizontal=is_horizontal
+            )
 
         self.display_current_peak(is_horizontal=is_horizontal)
 
@@ -802,8 +823,12 @@ class RegistrationProfileUi(QMainWindow):
             self.verti_infinite_line_ui = infinite_line_ui
 
     def calculate_and_display_hori_and_verti_peaks(self, force_recalculation=True):
-        self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=True)
-        self.calculate_and_display_current_peak(force_recalculation=force_recalculation, is_horizontal=False)
+        self.calculate_and_display_current_peak(
+            force_recalculation=force_recalculation, is_horizontal=True
+        )
+        self.calculate_and_display_current_peak(
+            force_recalculation=force_recalculation, is_horizontal=False
+        )
 
     def copy_register_parameters_to_main_table(self):
         nbr_row = self.ui.tableWidget.rowCount()
@@ -825,7 +850,9 @@ class RegistrationProfileUi(QMainWindow):
     def vertical_roi_moved(self):
         """when the vertical roi is moved, we need to make sure the width stays within the max we defined
         and we need refresh the peak calculation"""
-        region = self.vertical_profile.getArraySlice(self.live_image, self.ui.image_view.imageItem)
+        region = self.vertical_profile.getArraySlice(
+            self.live_image, self.ui.image_view.imageItem
+        )
 
         x0 = region[0][0].start
         x1 = region[0][0].stop
@@ -846,7 +873,9 @@ class RegistrationProfileUi(QMainWindow):
     def horizontal_roi_moved(self):
         """when the horizontal roi is moved, we need to make sure the height stays within the max we defined
         and we need to refresh the peak calculation"""
-        region = self.horizontal_profile.getArraySlice(self.live_image, self.ui.image_view.imageItem)
+        region = self.horizontal_profile.getArraySlice(
+            self.live_image, self.ui.image_view.imageItem
+        )
 
         x0 = region[0][0].start
         x1 = region[0][0].stop
@@ -891,7 +920,9 @@ class RegistrationProfileUi(QMainWindow):
     def help_button_clicked(self):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/registration/")
+        webbrowser.open(
+            "https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/registration/"
+        )
 
     def slider_file_changed(self, value):
         self._select_table_row(value)
@@ -939,10 +970,17 @@ class RegistrationProfileUi(QMainWindow):
         """save registered images back to the main UI"""
         # self.registered_all_images_button_clicked()
         _export_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         if _export_folder:
-            o_export = ExportRegistration(parent=self, input_working_dir=self.working_dir, export_folder=_export_folder)
+            o_export = ExportRegistration(
+                parent=self,
+                input_working_dir=self.working_dir,
+                export_folder=_export_folder,
+            )
             o_export.run()
             QApplication.processEvents()
 
@@ -1058,7 +1096,9 @@ class ExportRegistration:
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
 
-        export_folder = os.path.join(self.export_folder, self.input_dir_name + "_registered")
+        export_folder = os.path.join(
+            self.export_folder, self.input_dir_name + "_registered"
+        )
         make_or_reset_folder(export_folder)
 
         for _row, _data in enumerate(data_dict["data"]):

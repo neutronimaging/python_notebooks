@@ -4,7 +4,9 @@ from __code.metadata_handler import MetadataHandler
 
 
 class GroupImagesByCycle:
-    def __init__(self, list_of_files=None, list_of_metadata_key=None, tolerance_value=0.1):
+    def __init__(
+        self, list_of_files=None, list_of_metadata_key=None, tolerance_value=0.1
+    ):
         """
 
         :param list_of_files: [file1, file2, file3, ...]

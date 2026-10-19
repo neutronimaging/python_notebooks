@@ -3,11 +3,6 @@ import random
 
 import numpy as np
 import pyqtgraph as pg
-from IPython.display import HTML, display
-from neutronbraggedge.experiment_handler import *
-from qtpy import QtGui
-from qtpy.QtWidgets import QMainWindow
-
 from __code import load_ui
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge as BraggEdgeParent
 from __code.bragg_edge.bragg_edge_selection_tab import BraggEdgeSelectionTab
@@ -17,6 +12,10 @@ from __code.dual_energy.get import Get
 from __code.dual_energy.interface_initialization import Initialization
 from __code.dual_energy.selection_tab import SelectionTab
 from __code.utilities import find_nearest_index
+from IPython.display import HTML, display
+from neutronbraggedge.experiment_handler import *
+from qtpy import QtGui
+from qtpy.QtWidgets import QMainWindow
 
 DEBUGGING = True
 
@@ -30,7 +29,10 @@ class DualEnergy(BraggEdgeParent):
 class Interface(QMainWindow):
     live_image = None  # image displayed on the left (integrated sample images)
 
-    profile_selection_range = [5, 20]  # in index units, the min and max ROI ranges in the right plot (profile plot)
+    profile_selection_range = [
+        5,
+        20,
+    ]  # in index units, the min and max ROI ranges in the right plot (profile plot)
     profile_selection_range_ui = None  # ROI ui of profile
 
     # # relative index of the bragg peak only part (kropff and March-Dollase)
@@ -47,7 +49,9 @@ class Interface(QMainWindow):
 
     selection_roi_rgb = (62, 13, 244)
     roi_settings = {
-        "color": QtGui.QColor(selection_roi_rgb[0], selection_roi_rgb[1], selection_roi_rgb[2]),
+        "color": QtGui.QColor(
+            selection_roi_rgb[0], selection_roi_rgb[1], selection_roi_rgb[2]
+        ),
         "border_width": 0.01,
         "position": [10, 10],
     }
@@ -55,7 +59,9 @@ class Interface(QMainWindow):
 
     bin_roi_rgb = (50, 50, 50, 200)
     bin_line_settings = {
-        "color": QtGui.QColor(bin_roi_rgb[0], bin_roi_rgb[1], bin_roi_rgb[2], bin_roi_rgb[3]),
+        "color": QtGui.QColor(
+            bin_roi_rgb[0], bin_roi_rgb[1], bin_roi_rgb[2], bin_roi_rgb[3]
+        ),
         "width": 0.005,
     }
 
@@ -81,7 +87,11 @@ class Interface(QMainWindow):
     # image_size = {'width': None,
     #               'height': None}
     # roi_id = None
-    xaxis_label = {"index": "File index", "tof": "TOF (\u00b5s)", "lambda": "\u03bb (\u212b)"}
+    xaxis_label = {
+        "index": "File index",
+        "tof": "TOF (\u00b5s)",
+        "lambda": "\u03bb (\u212b)",
+    }
     xaxis_units = {"index": "File #", "tof": "\u00b5s", "lambda": "\u212b"}
 
     # fitting_rois = {'kropff': {'step1': None,
@@ -125,9 +135,10 @@ class Interface(QMainWindow):
             )
         )
 
-        super(Interface, self).__init__(parent)
+        super().__init__(parent)
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_dual_energy.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_dual_energy.ui"),
         )
 
         self.ui = load_ui(ui_full_path, baseinstance=self)
@@ -169,7 +180,9 @@ class Interface(QMainWindow):
             distance_source_detector_m = float(self.ui.distance_detector_sample.text())
             self.ui.statusbar.showMessage("", 100)  # 10s
         except ValueError:
-            self.ui.statusbar.showMessage("distance source detector input is WRONG", 120000)  # 2mn
+            self.ui.statusbar.showMessage(
+                "distance source detector input is WRONG", 120000
+            )  # 2mn
             self.ui.statusbar.setStyleSheet("color: red")
             return
 
@@ -177,7 +190,9 @@ class Interface(QMainWindow):
             detector_offset_micros = float(self.ui.detector_offset.text())
             self.ui.statusbar.showMessage("", 100)  # 10s
         except ValueError:
-            self.ui.statusbar.showMessage("detector offset input is WRONG", 120000)  # 2mn
+            self.ui.statusbar.showMessage(
+                "detector offset input is WRONG", 120000
+            )  # 2mn
             self.ui.statusbar.setStyleSheet("color: red")
             return
 
@@ -197,7 +212,9 @@ class Interface(QMainWindow):
             _data = self.o_norm.data["sample"]["data"]
 
             nbr_images = len(_data)
-            list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
+            list_of_indexes_to_keep = random.sample(
+                list(range(nbr_images)), nbr_data_to_use
+            )
 
             final_array = []
             for _index in list_of_indexes_to_keep:
@@ -241,7 +258,10 @@ class Interface(QMainWindow):
 
     def reset_profile_of_bin_size_slider(self):
         max_value = np.min(
-            [int(str(self.ui.profile_of_bin_size_width.text())), int(str(self.ui.profile_of_bin_size_height.text()))]
+            [
+                int(str(self.ui.profile_of_bin_size_width.text())),
+                int(str(self.ui.profile_of_bin_size_height.text())),
+            ]
         )
         self.ui.profile_of_bin_size_slider.setMaximum(max_value)
         self.ui.profile_of_bin_size_slider.setValue(max_value)
@@ -275,7 +295,6 @@ class Interface(QMainWindow):
             self.kropff_fitting_range[_key] = [left_index, right_index]
 
         # TBD tab
-        pass
 
     def profile_of_bin_size_slider_changed_after_import(self, new_value):
         dict_rois_imported = self.dict_rois_imported
@@ -315,12 +334,19 @@ class Interface(QMainWindow):
         o_get = Get(parent=self)
         x_axis, x_axis_label = o_get.x_axis()
 
-        bragg_edge_range = [x_axis[self.bragg_edge_range[0]], x_axis[self.bragg_edge_range[1]]]
+        bragg_edge_range = [
+            x_axis[self.bragg_edge_range[0]],
+            x_axis[self.bragg_edge_range[1]],
+        ]
 
         if self.bragg_edge_range_ui:
             self.ui.profile.removeItem(self.bragg_edge_range_ui)
         self.bragg_edge_range_ui = pg.LinearRegionItem(
-            values=bragg_edge_range, orientation=None, brush=None, movable=True, bounds=None
+            values=bragg_edge_range,
+            orientation=None,
+            brush=None,
+            movable=True,
+            bounds=None,
         )
         self.bragg_edge_range_ui.sigRegionChanged.connect(self.bragg_edge_range_changed)
         self.bragg_edge_range_ui.setZValue(-10)

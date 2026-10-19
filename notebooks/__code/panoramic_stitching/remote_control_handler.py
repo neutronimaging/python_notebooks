@@ -1,14 +1,16 @@
 import os
 
-from qtpy.QtGui import QIcon
-from qtpy.QtWidgets import QApplication, QMainWindow
-
 from __code import load_ui
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.config_buttons import button
 from __code.panoramic_stitching.event_handler import EventHandler
 from __code.panoramic_stitching.image_handler import ImageHandler
-from __code.panoramic_stitching.utilities import make_full_file_name_to_static_folder_of, set_widget_size
+from __code.panoramic_stitching.utilities import (
+    make_full_file_name_to_static_folder_of,
+    set_widget_size,
+)
+from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QApplication, QMainWindow
 
 BORDER_RANGE = 50
 
@@ -41,7 +43,9 @@ class RemoteControlWindow(QMainWindow):
 
     def initialize_widget(self):
         _file_path = os.path.dirname(__file__)
-        bring_to_focus_released = make_full_file_name_to_static_folder_of(button["bring_to_focus"]["released"])
+        bring_to_focus_released = make_full_file_name_to_static_folder_of(
+            button["bring_to_focus"]["released"]
+        )
         self.ui.bring_to_focus.setIcon(QIcon(bring_to_focus_released))
         set_widget_size(widget=self.ui.bring_to_focus, width=500, height=203)
         self.check_previous_next_buttons_status()
@@ -89,7 +93,9 @@ class RemoteControlWindow(QMainWindow):
         horizontal_profile["y"] = y0 + BORDER_RANGE
         self.parent.horizontal_profile = horizontal_profile
 
-        is_horizontal_profile_enabled = self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
+        is_horizontal_profile_enabled = (
+            self.parent.ui.enable_horizontal_profile_checkbox.isChecked()
+        )
 
         o_event = EventHandler(parent=self.parent)
         o_event.horizontal_profile(enabled=is_horizontal_profile_enabled)
@@ -106,7 +112,9 @@ class RemoteControlWindow(QMainWindow):
         vertical_profile["x"] = x0 + BORDER_RANGE
         self.parent.vertical_profile = vertical_profile
 
-        is_vertical_profile_enabled = self.parent.ui.enable_vertical_profile_checkbox.isChecked()
+        is_vertical_profile_enabled = (
+            self.parent.ui.enable_vertical_profile_checkbox.isChecked()
+        )
 
         o_event = EventHandler(parent=self.parent)
         o_event.vertical_profile(enabled=is_vertical_profile_enabled)

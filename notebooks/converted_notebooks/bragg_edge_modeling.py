@@ -117,7 +117,9 @@ plt.plot(wavelengths, coh_el_xs, label="coherent elastic")
 plt.plot(wavelengths, inc_el_xs, label="incoherent elastic")
 plt.plot(wavelengths, inel_xs, label="inelastic")
 plt.plot(wavelengths, abs_xs, label="absorption")
-plt.plot(wavelengths, abs_xs + coh_el_xs + inc_el_xs + inel_xs + inc_inel_xs, label="sum")
+plt.plot(
+    wavelengths, abs_xs + coh_el_xs + inc_el_xs + inel_xs + inc_inel_xs, label="sum"
+)
 plt.legend()
 
 # # With texture

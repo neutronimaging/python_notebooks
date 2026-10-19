@@ -67,7 +67,9 @@ csv_file = [
 
 for angle in angle_values:
     angle_value_as_list = angle.split(".")
-    angle_values_as_list_padded = [f"{int(_value):03d}" for _value in angle_value_as_list]
+    angle_values_as_list_padded = [
+        f"{int(_value):03d}" for _value in angle_value_as_list
+    ]
     angle_value = "_".join(angle_values_as_list_padded)
     for pro in np.arange(nbr_projections_per_angle):
         file_name = f"image_{angle_value}"

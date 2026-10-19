@@ -19,7 +19,9 @@ class Ui_MainWindow:
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
         self.widget = QtWidgets.QWidget(self.splitter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -40,7 +42,9 @@ class Ui_MainWindow:
         self.file_index_slider.setOrientation(QtCore.Qt.Horizontal)
         self.file_index_slider.setObjectName("file_index_slider")
         self.horizontalLayout_2.addWidget(self.file_index_slider)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_2.addItem(spacerItem)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.table_profile = QtWidgets.QTableWidget(self.layoutWidget)
@@ -87,7 +91,9 @@ class Ui_MainWindow:
         self.add_profile_2.setFont(font)
         self.add_profile_2.setObjectName("add_profile_2")
         self.horizontalLayout.addWidget(self.add_profile_2)
-        spacerItem1 = QtWidgets.QSpacerItem(408, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            408, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem1)
         self.pushButton = QtWidgets.QPushButton(self.layoutWidget)
         self.pushButton.setMinimumSize(QtCore.QSize(53, 46))
@@ -96,7 +102,9 @@ class Ui_MainWindow:
         self.horizontalLayout.addWidget(self.pushButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayout_2.addWidget(self.splitter)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_2.addItem(spacerItem2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -144,4 +152,6 @@ class Ui_MainWindow:
         self.add_profile_2.setText(_translate("MainWindow", "-"))
         self.pushButton.setText(_translate("MainWindow", "OK"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.actionExport_Profile.setText(_translate("MainWindow", "Export Profile ..."))
+        self.actionExport_Profile.setText(
+            _translate("MainWindow", "Export Profile ...")
+        )

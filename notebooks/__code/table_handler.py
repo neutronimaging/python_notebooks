@@ -12,7 +12,9 @@ class TableHandler:
     def select_everything(self, state):
         nbr_row = self.table_ui.rowCount()
         nbr_column = self.table_ui.columnCount()
-        selection_range = QtGui.QTableWidgetSelectionRange(0, 0, nbr_row - 1, nbr_column - 1)
+        selection_range = QtGui.QTableWidgetSelectionRange(
+            0, 0, nbr_row - 1, nbr_column - 1
+        )
         self.table_ui.setRangeSelected(selection_range, state)
 
     def select_rows(self, list_of_rows=None):
@@ -21,7 +23,9 @@ class TableHandler:
         nbr_column = self.table_ui.columnCount()
 
         for _row in list_of_rows:
-            selection_range = QtGui.QTableWidgetSelectionRange(_row, 0, _row, nbr_column - 1)
+            selection_range = QtGui.QTableWidgetSelectionRange(
+                _row, 0, _row, nbr_column - 1
+            )
             self.table_ui.setRangeSelected(selection_range, True)
 
     def remove_all_rows(self):
@@ -82,8 +86,7 @@ class TableHandler:
         self.table_ui.setRangeSelected(range_selected, True)
 
     def select_row(self, row=0):
-        if row < 0:
-            row = 0
+        row = max(row, 0)
         self.table_ui.selectRow(row)
 
     def set_column_names(self, column_names=None):
