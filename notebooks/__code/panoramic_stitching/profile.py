@@ -1,5 +1,4 @@
 import numpy as np
-
 from __code._utilities.table_handler import TableHandler
 from __code.panoramic_stitching.get import Get
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
@@ -15,7 +14,9 @@ class Profile:
     def horizontal_profile_changed(self):
         if self.parent.ui.enable_horizontal_profile_checkbox.isChecked():
             roi_id = self.parent.horizontal_profile["id"]
-            horizontal_roi_dimensions = Profile.get_x_y_width_height_of_roi(roi_id=roi_id)
+            horizontal_roi_dimensions = Profile.get_x_y_width_height_of_roi(
+                roi_id=roi_id
+            )
             self.plot_profile(
                 x=horizontal_roi_dimensions["x"],
                 y=horizontal_roi_dimensions["y"],
@@ -36,7 +37,9 @@ class Profile:
                 profile_type="vertical",
             )
 
-    def plot_profile(self, x=None, y=None, width=None, height=None, profile_type="horizontal"):
+    def plot_profile(
+        self, x=None, y=None, width=None, height=None, profile_type="horizontal"
+    ):
         if profile_type == "horizontal":
             plot_ui = self.parent.horizontal_profile_plot
             dim_to_keep = 0
@@ -88,15 +91,23 @@ class Profile:
 
             # find part of profile that is inside image
             x_left_for_profile = np.max([x, left_of_image]) - left_of_image
-            x_right_for_profile = np.min([x + width, left_of_image + image_width]) - left_of_image
+            x_right_for_profile = (
+                np.min([x + width, left_of_image + image_width]) - left_of_image
+            )
 
             y_top_for_profile = np.max([y, top_of_image]) - top_of_image
-            y_bottom_for_profile = np.min([y + height, top_of_image + image_height]) - top_of_image
+            y_bottom_for_profile = (
+                np.min([y + height, top_of_image + image_height]) - top_of_image
+            )
 
             if profile_type == "horizontal":
-                x_axis_of_profile = np.arange(x_left_for_profile, x_right_for_profile) + left_of_image
+                x_axis_of_profile = (
+                    np.arange(x_left_for_profile, x_right_for_profile) + left_of_image
+                )
             else:
-                x_axis_of_profile = np.arange(y_top_for_profile, y_bottom_for_profile) + top_of_image
+                x_axis_of_profile = (
+                    np.arange(y_top_for_profile, y_bottom_for_profile) + top_of_image
+                )
 
             y_axis_of_profile = data_dictionary[_file].data[
                 y_top_for_profile:y_bottom_for_profile,

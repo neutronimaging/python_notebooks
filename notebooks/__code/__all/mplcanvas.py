@@ -11,4 +11,4 @@ class MplCanvas(FigureCanvasQTAgg):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         self.fig = fig
-        super(MplCanvas, self).__init__(fig)
+        super().__init__(fig)

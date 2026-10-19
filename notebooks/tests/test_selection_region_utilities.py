@@ -21,9 +21,11 @@ class TestSelectionRegionUtilities:
             (5, 10, 5, 1, 6, 10, 3, 1),
         ],
     )
-    def test_next_doll_region(self, x0, y0, width, height, new_x0, new_y0, new_width, new_height):
-        x0_returned, y0_returned, width_returned, height_returned = SelectionRegionUtilities.produce_next_doll_region(
-            x0, y0, width, height
+    def test_next_doll_region(
+        self, x0, y0, width, height, new_x0, new_y0, new_width, new_height
+    ):
+        x0_returned, y0_returned, width_returned, height_returned = (
+            SelectionRegionUtilities.produce_next_doll_region(x0, y0, width, height)
         )
         assert x0_returned == new_x0
         assert y0_returned == new_y0

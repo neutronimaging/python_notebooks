@@ -2,11 +2,6 @@ import os
 import warnings
 
 import numpy as np
-from IPython.display import HTML, display
-from qtpy import QtCore, QtGui
-from qtpy.QtWidgets import QApplication, QFileDialog, QMainWindow
-from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
-
 from __code import file_handler, load_ui
 from __code._utilities.color import Color
 from __code._utilities.folder import make_or_reset_folder
@@ -14,6 +9,10 @@ from __code._utilities.metadata_handler import MetadataHandler
 from __code.radial_profile.display import Display
 from __code.radial_profile.event_handler import EventHandler
 from __code.radial_profile.initialization import Initialization
+from IPython.display import HTML, display
+from qtpy import QtCore, QtGui
+from qtpy.QtWidgets import QApplication, QFileDialog, QMainWindow
+from sectorizedradialprofile.calculate_radial_profile import CalculateRadialProfile
 
 warnings.filterwarnings("ignore")
 
@@ -36,7 +35,9 @@ class RadialProfile:
         self.short_list_files = [os.path.basename(_file) for _file in list_files]
 
         color = Color()
-        self.list_rgb_profile_color = color.get_list_rgb(nbr_color=len(self.working_data))
+        self.list_rgb_profile_color = color.get_list_rgb(
+            nbr_color=len(self.working_data)
+        )
 
     def calculate(self, center=None, angle_range=None, max_radius=None):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -68,7 +69,9 @@ class RadialProfile:
 
         for _index in np.arange(nbr_files):
             o_calculation = CalculateRadialProfile(data=self.working_data[_index])
-            o_calculation.add_params(center=center, angle_range=angle_range, radius=max_radius)
+            o_calculation.add_params(
+                center=center, angle_range=angle_range, radius=max_radius
+            )
             o_calculation.calculate()
 
             _short_file_name = self.short_list_files[_index]
@@ -105,13 +108,18 @@ class RadialProfile:
             make_or_reset_folder(output_folder)
 
             for _index, _file in enumerate(self.list_images):
-                time_stamp_of_that_file = MetadataHandler.get_time_stamp(file_name=_file)
+                time_stamp_of_that_file = MetadataHandler.get_time_stamp(
+                    file_name=_file
+                )
                 [input_image_base_name, ext] = os.path.splitext(os.path.basename(_file))
                 output_file_name = os.path.join(
                     output_folder,
                     input_image_base_name
                     + "_profile_c_x{}_y{}_angle_{}_to_{}".format(
-                        self.center["x0"], self.center["y0"], self.angle_range["from"], self.angle_range["to"]
+                        self.center["x0"],
+                        self.center["y0"],
+                        self.angle_range["from"],
+                        self.angle_range["to"],
                     ),
                 )
                 if self.max_radius:
@@ -121,7 +129,11 @@ class RadialProfile:
 
                 text = [f"# source image: {_file}"]
                 text.append(f"# timestamp: {time_stamp_of_that_file}")
-                text.append("# center [x0, y0]: [{},{}]".format(self.center["x0"], self.center["y0"]))
+                text.append(
+                    "# center [x0, y0]: [{},{}]".format(
+                        self.center["x0"], self.center["y0"]
+                    )
+                )
                 text.append(
                     "# angular range from {}degrees to {}degrees".format(
                         self.angle_range["from"], self.angle_range["to"]
@@ -129,11 +141,21 @@ class RadialProfile:
                 )
                 text.append("")
                 text.append("#pixel_from_center, Average_counts")
-                data = list(zip(np.arange(len(self.profile_data[_index])), self.profile_data[_index], strict=False))
+                data = list(
+                    zip(
+                        np.arange(len(self.profile_data[_index])),
+                        self.profile_data[_index],
+                        strict=False,
+                    )
+                )
 
-                file_handler.make_ascii_file(metadata=text, data=data, output_file_name=output_file_name)
+                file_handler.make_ascii_file(
+                    metadata=text, data=data, output_file_name=output_file_name
+                )
 
-        self.parent_ui.ui.statusbar.showMessage(f"Profiles Exported in {output_folder}!", 10000)
+        self.parent_ui.ui.statusbar.showMessage(
+            f"Profiles Exported in {output_folder}!", 10000
+        )
         self.parent_ui.ui.statusbar.setStyleSheet("color: green")
 
 
@@ -152,7 +174,12 @@ class SelectRadialParameters(QMainWindow):
 
     sector_range = {"from": 0, "to": 90}
 
-    corners = {"top_right": np.nan, "bottom_right": np.nan, "bottom_left": np.nan, "top_left": np.nan}
+    corners = {
+        "top_right": np.nan,
+        "bottom_right": np.nan,
+        "bottom_left": np.nan,
+        "top_left": np.nan,
+    }
 
     hLine = None
     vLine = None
@@ -184,7 +211,8 @@ class SelectRadialParameters(QMainWindow):
 
         super(QMainWindow, self).__init__(parent)
         ui_full_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), os.path.join("ui", "ui_radial_profile.ui")
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            os.path.join("ui", "ui_radial_profile.ui"),
         )
         self.ui = load_ui(ui_full_path, baseinstance=self)
         self.setWindowTitle("Define center and sector of profile")
@@ -226,7 +254,9 @@ class SelectRadialParameters(QMainWindow):
     def help_button_clicked(self):
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/tutorial/notebooks/radial_profile/")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/tutorial/notebooks/radial_profile/"
+        )
 
     def grid_slider_moved(self, value):
         self.grid_size_changed()
@@ -282,10 +312,19 @@ class SelectRadialParameters(QMainWindow):
 
     def calculate_profiles_clicked(self):
         o_profile = RadialProfile(
-            parent_ui=self, data=self.working_data, list_files=self.list_images, working_dir=self.working_dir
+            parent_ui=self,
+            data=self.working_data,
+            list_files=self.list_images,
+            working_dir=self.working_dir,
         )
-        radius = self.ui.max_radius_slider.value() if self.ui.max_radius_radioButton.isChecked() else None
-        o_profile.calculate(center=self.center, angle_range=self.angle_range, max_radius=radius)
+        radius = (
+            self.ui.max_radius_slider.value()
+            if self.ui.max_radius_radioButton.isChecked()
+            else None
+        )
+        o_profile.calculate(
+            center=self.center, angle_range=self.angle_range, max_radius=radius
+        )
 
         self.profile_data = o_profile.profile_data
         self.o_profile = o_profile
@@ -293,7 +332,10 @@ class SelectRadialParameters(QMainWindow):
 
     def export_profiles_clicked(self):
         _export_folder = QFileDialog.getExistingDirectory(
-            self, directory=self.working_dir, caption="Select Output Folder", options=QFileDialog.ShowDirsOnly
+            self,
+            directory=self.working_dir,
+            caption="Select Output Folder",
+            options=QFileDialog.ShowDirsOnly,
         )
         QApplication.processEvents()
         if _export_folder:

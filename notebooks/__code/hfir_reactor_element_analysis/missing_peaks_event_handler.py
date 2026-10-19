@@ -1,7 +1,6 @@
+from __code._utilities.table_handler import TableHandler
 from qtpy import QtGui
 from qtpy.QtWidgets import QMenu
-
-from __code._utilities.table_handler import TableHandler
 
 
 class MissingPeaksEventHandler:

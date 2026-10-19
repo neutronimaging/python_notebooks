@@ -3,13 +3,12 @@ from collections import namedtuple
 
 import matplotlib.pyplot as plt
 import numpy as np
+from __code.file_folder_browser import FileFolderBrowser
+from __code.file_handler import make_folder, save_data
 from IPython import display as display_ipython
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
-
-from __code.file_folder_browser import FileFolderBrowser
-from __code.file_handler import make_folder, save_data
 
 
 class FixImages(FileFolderBrowser):
@@ -35,7 +34,7 @@ class FixImages(FileFolderBrowser):
     dropdown_selection = DropdownSelection(neg="NaN", inf="NaN", nan="NaN")
 
     def __init__(self, working_dir=""):
-        super(FixImages, self).__init__(working_dir=working_dir)
+        super().__init__(working_dir=working_dir)
 
     def load(self):
         self.list_files = self.list_images_ui.selected
@@ -102,28 +101,41 @@ class FixImages(FileFolderBrowser):
             nan_values = stat.nbr_nan
             nan_percentage = stat.percentage_nan
 
-            box1 = widgets.HBox([widgets.Label("File Name:"), widgets.Label(_file, layout=widgets.Layout(width="80%"))])
+            box1 = widgets.HBox(
+                [
+                    widgets.Label("File Name:"),
+                    widgets.Label(_file, layout=widgets.Layout(width="80%")),
+                ]
+            )
             box2 = widgets.HBox(
                 [
-                    widgets.Label("Total number of pixels:", layout=widgets.Layout(width="15%")),
+                    widgets.Label(
+                        "Total number of pixels:", layout=widgets.Layout(width="15%")
+                    ),
                     widgets.Label(str(number_of_pixels)),
                 ]
             )
 
             box3 = widgets.HBox(
                 [
-                    widgets.Label("Negative values:", layout=widgets.Layout(width="30%")),
                     widgets.Label(
-                        f"{negative_values} pixels ({negative_percentage:.3}%)", layout=widgets.Layout(width="15%")
+                        "Negative values:", layout=widgets.Layout(width="30%")
+                    ),
+                    widgets.Label(
+                        f"{negative_values} pixels ({negative_percentage:.3}%)",
+                        layout=widgets.Layout(width="15%"),
                     ),
                 ]
             )
 
             box4 = widgets.HBox(
                 [
-                    widgets.Label("Infinite values:", layout=widgets.Layout(width="30%")),
                     widgets.Label(
-                        f"{infinite_values} pixels ({infinite_percentage:.3}%)", layout=widgets.Layout(width="15%")
+                        "Infinite values:", layout=widgets.Layout(width="30%")
+                    ),
+                    widgets.Label(
+                        f"{infinite_values} pixels ({infinite_percentage:.3}%)",
+                        layout=widgets.Layout(width="15%"),
                     ),
                 ]
             )
@@ -131,7 +143,10 @@ class FixImages(FileFolderBrowser):
             box5 = widgets.HBox(
                 [
                     widgets.Label("NaN values:", layout=widgets.Layout(width="30%")),
-                    widgets.Label(f"{nan_values} pixels ({nan_percentage:.3}%)", layout=widgets.Layout(width="15%")),
+                    widgets.Label(
+                        f"{nan_values} pixels ({nan_percentage:.3}%)",
+                        layout=widgets.Layout(width="15%"),
+                    ),
                 ]
             )
 
@@ -141,7 +156,12 @@ class FixImages(FileFolderBrowser):
         tmp3 = widgets.interact(
             __give_statistics,
             index=widgets.IntSlider(
-                min=0, max=len(list_files) - 1, step=1, value=0, description="File Index", continuous_update=False
+                min=0,
+                max=len(list_files) - 1,
+                step=1,
+                value=0,
+                description="File Index",
+                continuous_update=False,
             ),
         )
 
@@ -160,7 +180,9 @@ class FixImages(FileFolderBrowser):
         _data_corrected = self.data_corrected[index]
         _file = self.list_files[index]
 
-        self.fig, [[self.ax0, self.ax1], [self.ax2, self.ax3]] = plt.subplots(ncols=2, nrows=2, figsize=(15, 10))
+        self.fig, [[self.ax0, self.ax1], [self.ax2, self.ax3]] = plt.subplots(
+            ncols=2, nrows=2, figsize=(15, 10)
+        )
 
         # plt.title(os.path.basename(_files[index]))
         cax0 = self.ax0.imshow(_raw_data, cmap="viridis", interpolation=None)
@@ -169,7 +191,11 @@ class FixImages(FileFolderBrowser):
 
         histo_error = False
         try:
-            self.ax1.hist(_raw_data.ravel(), range=(np.nanmin(_raw_data), np.nanmax(_raw_data)), bins=256)
+            self.ax1.hist(
+                _raw_data.ravel(),
+                range=(np.nanmin(_raw_data), np.nanmax(_raw_data)),
+                bins=256,
+            )
         except:
             histo_error = True
         self.ax1.set_title("Raw Histogram")
@@ -180,7 +206,11 @@ class FixImages(FileFolderBrowser):
         tmp1 = self.fig.colorbar(cax2, ax=self.ax2)  # colorbar
 
         #        self.ax3.hist(_data.ravel(), range=(np.nanmin(_data), np.nanmax(_data)), bins=256)
-        self.ax3.hist(_data_corrected.ravel(), range=(np.nanmin(_data_corrected), np.nanmax(_data_corrected)), bins=256)
+        self.ax3.hist(
+            _data_corrected.ravel(),
+            range=(np.nanmin(_data_corrected), np.nanmax(_data_corrected)),
+            bins=256,
+        )
         self.ax3.set_title("New Histogram")
 
         self.fig.tight_layout()
@@ -192,7 +222,9 @@ class FixImages(FileFolderBrowser):
 
         if histo_error:
             display(
-                HTML('<span style="font-size: 20px; color:red">Histogram of raw images can not be displayed!</span>')
+                HTML(
+                    '<span style="font-size: 20px; color:red">Histogram of raw images can not be displayed!</span>'
+                )
             )
 
         if refresh:
@@ -203,7 +235,9 @@ class FixImages(FileFolderBrowser):
             _new_index = change["new"]["index"]
             _list = change["owner"].options
             _new_selection = _list[_new_index]
-            self.dropdown_selection = self.dropdown_selection._replace(neg=_new_selection)
+            self.dropdown_selection = self.dropdown_selection._replace(
+                neg=_new_selection
+            )
             self.counter += 1
             self.plot(refresh=True)
         elif self.counter == 4:
@@ -216,7 +250,9 @@ class FixImages(FileFolderBrowser):
             _new_index = change["new"]["index"]
             _list = change["owner"].options
             _new_selection = _list[_new_index]
-            self.dropdown_selection = self.dropdown_selection._replace(inf=_new_selection)
+            self.dropdown_selection = self.dropdown_selection._replace(
+                inf=_new_selection
+            )
             self.counter += 1
             self.plot(refresh=True)
         elif self.counter == 4:
@@ -229,7 +265,9 @@ class FixImages(FileFolderBrowser):
             _new_index = change["new"]["index"]
             _list = change["owner"].options
             _new_selection = _list[_new_index]
-            self.dropdown_selection = self.dropdown_selection._replace(nan=_new_selection)
+            self.dropdown_selection = self.dropdown_selection._replace(
+                nan=_new_selection
+            )
             self.counter += 1
             self.plot(refresh=True)
         elif self.counter == 4:
@@ -265,8 +303,12 @@ class FixImages(FileFolderBrowser):
 
         box3 = widgets.HBox(
             [
-                widgets.Label("Replace Negative values by", layout=widgets.Layout(width="20%")),
-                widgets.Dropdown(options=["NaN", "0"], value=self.dropdown_selection.neg),
+                widgets.Label(
+                    "Replace Negative values by", layout=widgets.Layout(width="20%")
+                ),
+                widgets.Dropdown(
+                    options=["NaN", "0"], value=self.dropdown_selection.neg
+                ),
             ]
         )
 
@@ -275,8 +317,12 @@ class FixImages(FileFolderBrowser):
 
         box4 = widgets.HBox(
             [
-                widgets.Label("Replace Infinite values by", layout=widgets.Layout(width="20%")),
-                widgets.Dropdown(options=["NaN", "0"], value=self.dropdown_selection.inf),
+                widgets.Label(
+                    "Replace Infinite values by", layout=widgets.Layout(width="20%")
+                ),
+                widgets.Dropdown(
+                    options=["NaN", "0"], value=self.dropdown_selection.inf
+                ),
             ]
         )
 
@@ -285,8 +331,12 @@ class FixImages(FileFolderBrowser):
 
         box5 = widgets.HBox(
             [
-                widgets.Label("Replace NaN values by", layout=widgets.Layout(width="20%")),
-                widgets.Dropdown(options=["NaN", "0"], value=self.dropdown_selection.nan),
+                widgets.Label(
+                    "Replace NaN values by", layout=widgets.Layout(width="20%")
+                ),
+                widgets.Dropdown(
+                    options=["NaN", "0"], value=self.dropdown_selection.nan
+                ),
             ]
         )
 
@@ -328,7 +378,9 @@ class FixImages(FileFolderBrowser):
         self.data_corrected = _all_data_corrected
 
     def export(self, output_folder):
-        base_input_folder = os.path.basename(os.path.dirname(os.path.abspath(self.list_files[0])))
+        base_input_folder = os.path.basename(
+            os.path.dirname(os.path.abspath(self.list_files[0]))
+        )
         new_folder_name = base_input_folder + "_cleaned"
         output_folder = os.path.join(output_folder, new_folder_name)
         make_folder(output_folder)
@@ -342,7 +394,11 @@ class FixImages(FileFolderBrowser):
             save_data(data=_data, filename=_full_output_file_name)
 
         display(
-            HTML('<span style="font-size: 20px; color:blue">Files have been created in ' + output_folder + "</span>")
+            HTML(
+                '<span style="font-size: 20px; color:blue">Files have been created in '
+                + output_folder
+                + "</span>"
+            )
         )
 
     def select_folder_and_export_images(self):

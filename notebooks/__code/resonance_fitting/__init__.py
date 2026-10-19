@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 autoreduce_dir = {
     "VENUS": ["/SNS/VENUS/", "/shared/autoreduce/mcp/images"],
     "SNAP": ["/SNS/SNAP/", "/shared/autoreduce/mcp/"],
@@ -44,11 +43,12 @@ autoreduce_dir = {
     },
 }
 
-VENUS_RES_FUNC=Path("/SNS/VENUS/shared/instrument/resonance/_fts_bl10_0p5meV_1keV_25pts.txt")
-SAMMY_EXE_PATH=Path("/SNS/software/sammy/bin/sammy")
+VENUS_RES_FUNC = Path(
+    "/SNS/VENUS/shared/instrument/resonance/_fts_bl10_0p5meV_1keV_25pts.txt"
+)
+SAMMY_EXE_PATH = Path("/SNS/software/sammy/bin/sammy")
+
 
 class Parent:
-
     def __init__(self, parent=None):
         self.parent = parent
-        

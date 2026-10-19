@@ -90,7 +90,9 @@ o_bragg.exp_setup()
 
 # # Calculate Bragg Edges Data
 
-o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
+o_bragg.calculate_counts_vs_file_index_of_regions_selected(
+    list_roi=o_interface.list_roi
+)
 o_bragg.load_time_spectra()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

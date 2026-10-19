@@ -5,7 +5,9 @@ import shutil
 import numpy as np
 
 
-def get_list_of_folders_with_specified_file_type(list_of_folders_to_check=None, file_extension=["tiff", "tif"]):
+def get_list_of_folders_with_specified_file_type(
+    list_of_folders_to_check=None, file_extension=["tiff", "tif"]
+):
     """
     check in the list of folder given (list_of_folders_to_check) if files of the type specified are there.
     If no file can be found in that folder with that type, the folder name is removed from the list
@@ -71,14 +73,14 @@ def get_list_of_folders_with_specified_file_type_and_same_number_of_files(
                 list_of_files[_folder].append(_file)
 
     list_len = []
-    for _folder in list_of_files.keys():
+    for _folder in list_of_files:
         list_len.append(len(list_of_files[_folder]))
     max_len = np.max(list_len)
 
     # checking size
     list_of_folders_checked = []
     list_of_folders_rejected = []
-    for _folder in list_of_files.keys():
+    for _folder in list_of_files:
         _local_list_of_files = list_of_files[_folder]
         if len(_local_list_of_files) == max_len:
             list_of_folders_checked.append(_folder)

@@ -1,11 +1,10 @@
 import collections
-from enum import Enum
 import logging
-
-from IPython.display import HTML, display
+from enum import Enum
 
 from __code import file_handler, metadata_handler
 from __code._utilities.dictionary import combine_dictionaries
+from IPython.display import HTML, display
 
 
 class MetadataName(Enum):
@@ -56,21 +55,32 @@ class MetadataHandler:
         if not list_of_files:
             return {}
 
-        logging.info(f"\t -> retrieve_metadata for {label} with {len(list_of_files)} files")
+        logging.info(
+            f"\t -> retrieve_metadata for {label} with {len(list_of_files)} files"
+        )
 
         _dict = file_handler.retrieve_time_stamp(list_of_files, label=label)
         _time_metadata_dict = MetadataHandler._reformat_dict(dictionary=_dict)
 
-        _beamline_metadata_dict = MetadataHandler.retrieve_beamline_metadata(list_of_files)
+        _beamline_metadata_dict = MetadataHandler.retrieve_beamline_metadata(
+            list_of_files
+        )
         _metadata_dict = combine_dictionaries(
-            master_dictionary=_time_metadata_dict, servant_dictionary=_beamline_metadata_dict
+            master_dictionary=_time_metadata_dict,
+            servant_dictionary=_beamline_metadata_dict,
         )
 
-        logging.info(f"\t after combining the time metadata and the beamline metadata, the dict is: {_metadata_dict =}")
+        logging.info(
+            f"\t after combining the time metadata and the beamline metadata, the dict is: {_metadata_dict =}"
+        )
 
         if display_infos:
             display(
-                HTML('<span style="font-size: 20px; color:blue">Nbr of images: ' + str(len(_metadata_dict)) + "</span")
+                HTML(
+                    '<span style="font-size: 20px; color:blue">Nbr of images: '
+                    + str(len(_metadata_dict))
+                    + "</span"
+                )
             )
             display(
                 HTML(
@@ -98,9 +108,9 @@ class MetadataHandler:
         - slits positions ->
         - aperture value
         """
-        
+
         logging.info(f"\t -> retrieve_beamline_metadata for {len(list_files)} files")
-        
+
         list_metadata = METADATA_KEYS["all"]
         _dict = metadata_handler.MetadataHandler.retrieve_metadata(
             list_files=list_files, list_metadata=list_metadata, using_enum_object=True
@@ -123,9 +133,9 @@ class MetadataHandler:
                 else:
                     _file_dict[_pv.value] = {}
             _dict[_file_key] = _file_dict
-        
+
         logging.info(f"\t returning the divt {_dict =}")
-        
+
         return _dict
 
     @staticmethod
