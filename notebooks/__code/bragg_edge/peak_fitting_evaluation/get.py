@@ -1,5 +1,4 @@
 import numpy as np
-
 from __code._utilities.get import Get as TopGet
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.peak_fitting_evaluation import LOG_FILENAME
@@ -86,7 +85,9 @@ class Get(TopGet):
             # collect initial selection size (x0, y0, width, height)
             [x0, y0, x1, y1, width, height] = self.selection_roi_dimension()
             # create profile for all the fitting region inside that first box
-            o_regions = SelectionRegionUtilities(x0=x0, y0=y0, width=width, height=height)
+            o_regions = SelectionRegionUtilities(
+                x0=x0, y0=y0, width=width, height=height
+            )
             dict_regions = o_regions.get_all_russian_doll_regions()
             self.parent.add_profile_to_dict_of_all_regions(dict_regions=dict_regions)
         return dict_regions
@@ -97,7 +98,9 @@ class Get(TopGet):
         x0, y0, x1, y1, width, height = None, None, None, None, None, None
 
         if roi_id:
-            region = roi_id.getArraySlice(self.parent.final_image, self.parent.ui.image_view.imageItem)
+            region = roi_id.getArraySlice(
+                self.parent.final_image, self.parent.ui.image_view.imageItem
+            )
             x0 = region[0][0].start
             x1 = region[0][0].stop
             y0 = region[0][1].start
@@ -110,7 +113,9 @@ class Get(TopGet):
 
         return [x0, y0, x1, y1, width, height]
 
-    def profile_of_roi(self, x0=None, y0=None, x1=None, y1=None, width=None, height=None):
+    def profile_of_roi(
+        self, x0=None, y0=None, x1=None, y1=None, width=None, height=None
+    ):
         profile_value = []
 
         if width:
@@ -126,11 +131,17 @@ class Get(TopGet):
 
     def requested_xaxis(self, xaxis_label="index"):
         if xaxis_label == "index":
-            return self.parent.dict_profile_to_fit["xaxis"]["index"], self.parent.xaxis_label["index"]
+            return self.parent.dict_profile_to_fit["xaxis"][
+                "index"
+            ], self.parent.xaxis_label["index"]
         elif xaxis_label == "tof":
-            return self.parent.dict_profile_to_fit["xaxis"]["tof"], self.parent.xaxis_label["tof"]
+            return self.parent.dict_profile_to_fit["xaxis"][
+                "tof"
+            ], self.parent.xaxis_label["tof"]
         elif xaxis_label == "lambda":
-            return self.parent.dict_profile_to_fit["xaxis"]["lambda"], self.parent.xaxis_label["lambda"]
+            return self.parent.dict_profile_to_fit["xaxis"][
+                "lambda"
+            ], self.parent.xaxis_label["lambda"]
 
     def fitting_profile_xaxis(self):
         if self.parent.ui.fitting_tof_radiobutton.isChecked():
@@ -152,7 +163,10 @@ class Get(TopGet):
 
         page_index = self.parent.ui.kropff_toolBox.currentIndex()
 
-        return {"name_of_page": list_pages[page_index], "table_ui": list_table_ui[page_index]}
+        return {
+            "name_of_page": list_pages[page_index],
+            "table_ui": list_table_ui[page_index],
+        }
 
     def y_axis_data_of_selected_row(self, row_selected):
         selected_roi = self.parent.fitting_input_dictionary["rois"][row_selected]

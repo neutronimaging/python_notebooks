@@ -1,15 +1,14 @@
 import os
 
-import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
+from __code import file_handler, ipywe
+from __code.metadata_handler import MetadataHandler
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from ipywidgets.widgets import interact
+from matplotlib import gridspec
 from NeuNorm.normalization import Normalization
-
-from __code import file_handler, ipywe
-from __code.metadata_handler import MetadataHandler
 
 
 class DisplayExportScreenshots:
@@ -19,7 +18,9 @@ class DisplayExportScreenshots:
 
     def select_image_folder(self):
         self.folder_ui = ipywe.fileselector.FileSelectorPanel(
-            instruction="Select Raw Image Folder ...", start_dir=self.working_dir, type="directory"
+            instruction="Select Raw Image Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
         )
         self.folder_ui.show()
 
@@ -31,7 +32,11 @@ class DisplayExportScreenshots:
 
     def retrieve_time_stamp(self):
         self.image_folder = self.folder_ui.selected
-        [list_files, ext] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=self.image_folder)
+        [list_files, ext] = (
+            file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+                folder=self.image_folder
+            )
+        )
         self.list_files = list_files
 
         if ext.lower() in [".tiff", ".tif"]:
@@ -43,8 +48,15 @@ class DisplayExportScreenshots:
 
         box = widgets.HBox(
             [
-                widgets.Label("Retrieving Time Stamp", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(min=0, max=len(list_files), value=0, layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Retrieving Time Stamp", layout=widgets.Layout(width="20%")
+                ),
+                widgets.IntProgress(
+                    min=0,
+                    max=len(list_files),
+                    value=0,
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
         progress_bar = box.children[1]
@@ -80,31 +92,56 @@ class DisplayExportScreenshots:
             ax = plt.subplot(gs[0, 0])
             im = ax.imshow(self.images_array[index], interpolation="nearest")
             plt.title(f"image index {index}")
-            plt.text(text_x, text_y, f"{pre_text} {self.list_time_offset[index]:.2f}{post_text}", fontdict=font)
+            plt.text(
+                text_x,
+                text_y,
+                f"{pre_text} {self.list_time_offset[index]:.2f}{post_text}",
+                fontdict=font,
+            )
             fig.colorbar(im)
             plt.show()
 
-            return {"text_x": text_x, "text_y": text_y, "pre_text": pre_text, "post_text": post_text, "color": color}
+            return {
+                "text_x": text_x,
+                "text_y": text_y,
+                "pre_text": pre_text,
+                "post_text": post_text,
+                "color": color,
+            }
 
         self.preview = interact(
             display_selected_image,
-            index=widgets.IntSlider(min=0, max=len(self.list_files), continuous_update=False),
+            index=widgets.IntSlider(
+                min=0, max=len(self.list_files), continuous_update=False
+            ),
             text_x=widgets.IntSlider(
-                min=0, max=width, value=text_x, description="Text x_offset", continuous_update=False
+                min=0,
+                max=width,
+                value=text_x,
+                description="Text x_offset",
+                continuous_update=False,
             ),
             text_y=widgets.IntSlider(
-                min=0, max=height, value=text_y, description="Text y_offset", continuous_upadte=False
+                min=0,
+                max=height,
+                value=text_y,
+                description="Text y_offset",
+                continuous_upadte=False,
             ),
             pre_text=widgets.Text(value="Time Offset", description="Pre text"),
             post_text=widgets.Text(value="(s)", description="Post text"),
             color=widgets.RadioButtons(
-                options=["red", "blue", "white", "black", "yellow"], value="red", description="Text Color"
+                options=["red", "blue", "white", "black", "yellow"],
+                value="red",
+                description="Text Color",
             ),
         )
 
     def select_export_folder(self):
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(
-            instruction="Select output Folder ...", start_dir=self.working_dir, type="directory"
+            instruction="Select output Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
         )
         self.output_folder_ui.show()
 
@@ -112,7 +149,9 @@ class DisplayExportScreenshots:
         output_folder = self.output_folder_ui.selected
 
         input_folder_basename = os.path.basename(self.image_folder)
-        output_folder = os.path.join(output_folder, input_folder_basename + "_with_timestamp_info")
+        output_folder = os.path.join(
+            output_folder, input_folder_basename + "_with_timestamp_info"
+        )
         if os.path.exists(output_folder):
             import shutil
 
@@ -127,7 +166,9 @@ class DisplayExportScreenshots:
 
         def plot_selected_image(index):
             _short_file = os.path.basename(self.list_files[index])
-            output_file_name = os.path.abspath(os.path.join(output_folder, _short_file + ".png"))
+            output_file_name = os.path.abspath(
+                os.path.join(output_folder, _short_file + ".png")
+            )
 
             font = {"family": "serif", "color": color, "weight": "normal", "size": 16}
 
@@ -136,7 +177,12 @@ class DisplayExportScreenshots:
             ax = plt.subplot(gs[0, 0])
             im = ax.imshow(self.images_array[index], interpolation="nearest")
             plt.title(f"image index {index}")
-            plt.text(text_x, text_y, f"{pre_text}{self.list_time_offset[index]:.2f}{post_text}", fontdict=font)
+            plt.text(
+                text_x,
+                text_y,
+                f"{pre_text}{self.list_time_offset[index]:.2f}{post_text}",
+                fontdict=font,
+            )
             fig.colorbar(im)
             plt.savefig(output_file_name)
             plt.close(fig)
@@ -144,7 +190,11 @@ class DisplayExportScreenshots:
         box = widgets.HBox(
             [
                 widgets.Label("Exporting Images:", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(min=0, max=len(self.list_files) - 1, layout=widgets.Layout(width="50%")),
+                widgets.IntProgress(
+                    min=0,
+                    max=len(self.list_files) - 1,
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
         progress_bar = box.children[1]

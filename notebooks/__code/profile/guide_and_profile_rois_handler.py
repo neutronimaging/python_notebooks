@@ -18,14 +18,19 @@ class GuideAndProfileRoisHandler:
 
     def update(self):
         self._define_profile()
-        self.parent.ui.image_view.removeItem(self.parent.list_profile_pyqt_roi[self.row])
+        self.parent.ui.image_view.removeItem(
+            self.parent.list_profile_pyqt_roi[self.row]
+        )
         self.parent.list_profile_pyqt_roi[self.row] = self.__profile
 
     def _define_guide(self):
         """define the guide"""
         guide_roi = pg.RectROI(
             [self.parent.default_guide_roi["x0"], self.parent.default_guide_roi["y0"]],
-            [self.parent.default_guide_roi["width"], self.parent.default_guide_roi["height"]],
+            [
+                self.parent.default_guide_roi["width"],
+                self.parent.default_guide_roi["height"],
+            ],
             pen=self.parent.default_guide_roi["color_activated"],
         )
         guide_roi.addScaleHandle([1, 1], [0, 0])
@@ -82,7 +87,13 @@ class GuideAndProfileRoisHandler:
         line_color = tuple(_list_line_color)
         lines = np.array(
             [line_color for n in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
 
         profile = pg.GraphItem()

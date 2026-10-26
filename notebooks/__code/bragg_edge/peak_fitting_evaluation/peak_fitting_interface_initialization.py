@@ -7,13 +7,12 @@ import numpy as np
 matplotlib.use("Qt5Agg")
 
 import pyqtgraph as pg
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from qtpy import QtGui
-from qtpy.QtWidgets import QProgressBar, QVBoxLayout
-
 from __code.bragg_edge.bragg_edge_peak_fitting_gui_utility import GuiUtility
 from __code.bragg_edge.mplcanvas import MplCanvas
 from __code.table_handler import TableHandler
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from qtpy import QtGui
+from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 
 
 class Initialization:
@@ -61,7 +60,10 @@ class Initialization:
             self.parent.o_norm.data["sample"]["data"][_index_data] = normalized_data
 
     def block_signals(self, flag):
-        list_ui = [self.parent.ui.profile_of_bin_size_slider, self.parent.ui.tab_algorithm]
+        list_ui = [
+            self.parent.ui.profile_of_bin_size_slider,
+            self.parent.ui.tab_algorithm,
+        ]
         for _ui in list_ui:
             _ui.blockSignals(flag)
 
@@ -105,9 +107,15 @@ class Initialization:
             widget.setLayout(layout)
             return sc
 
-        self.parent.kropff_high_plot = _matplotlib(parent=self.parent, widget=self.parent.ui.high_widget)
-        self.parent.kropff_low_plot = _matplotlib(parent=self.parent, widget=self.parent.ui.low_widget)
-        self.parent.kropff_bragg_peak_plot = _matplotlib(parent=self.parent, widget=self.parent.ui.bragg_peak_widget)
+        self.parent.kropff_high_plot = _matplotlib(
+            parent=self.parent, widget=self.parent.ui.high_widget
+        )
+        self.parent.kropff_low_plot = _matplotlib(
+            parent=self.parent, widget=self.parent.ui.low_widget
+        )
+        self.parent.kropff_bragg_peak_plot = _matplotlib(
+            parent=self.parent, widget=self.parent.ui.bragg_peak_widget
+        )
 
         self.parent.march_dollase_plot = _matplotlib(
             parent=self.parent, widget=self.parent.ui.march_dollase_graph_widget
@@ -126,7 +134,13 @@ class Initialization:
     def kropff_fitting_table(self):
         ## Kropff
         # high lambda
-        column_names = ["x\u2080; y\u2080; width; height", "a\u2080", "b\u2080", "a\u2080_error", "b\u2080_error"]
+        column_names = [
+            "x\u2080; y\u2080; width; height",
+            "a\u2080",
+            "b\u2080",
+            "a\u2080_error",
+            "b\u2080_error",
+        ]
         column_sizes = [150, 100, 100, 100, 100]
         o_high = TableHandler(table_ui=self.parent.ui.high_lda_tableWidget)
         for _col_index, _col_name in enumerate(column_names):
@@ -135,7 +149,13 @@ class Initialization:
         o_high.set_column_sizes(column_sizes=column_sizes)
 
         # low lambda
-        column_names = ["x\u2080; y\u2080; width; height", "a_hkl", "b_hkl", "a_hkl_error", "b_hkl_error"]
+        column_names = [
+            "x\u2080; y\u2080; width; height",
+            "a_hkl",
+            "b_hkl",
+            "a_hkl_error",
+            "b_hkl_error",
+        ]
         column_sizes = [150, 100, 100, 100, 100]
         o_low = TableHandler(table_ui=self.parent.ui.low_lda_tableWidget)
         for _col_index, _col_name in enumerate(column_names):
@@ -144,7 +164,15 @@ class Initialization:
         o_low.set_column_sizes(column_sizes=column_sizes)
 
         # bragg edge
-        column_names = ["x0; y0; width; height", "t_hkl", "tau", "sigma", "t_hkl_error", "tau_error", "sigma_error"]
+        column_names = [
+            "x0; y0; width; height",
+            "t_hkl",
+            "tau",
+            "sigma",
+            "t_hkl_error",
+            "tau_error",
+            "sigma_error",
+        ]
         column_sizes = [150, 100, 100, 100, 100, 100, 100]
         o_bragg = TableHandler(table_ui=self.parent.ui.bragg_edge_tableWidget)
         for _col_index, _col_name in enumerate(column_names):
@@ -153,15 +181,23 @@ class Initialization:
         o_bragg.set_column_sizes(column_sizes=column_sizes)
 
     def march_dollase(self):
-        self.parent.march_dollase_history_state_full_reset = copy.deepcopy(self.march_dollase_history_state)
+        self.parent.march_dollase_history_state_full_reset = copy.deepcopy(
+            self.march_dollase_history_state
+        )
 
         # init widgets
         _file_path = os.path.dirname(__file__)
-        up_arrow_file = os.path.abspath(os.path.join(_file_path, "../static/up_arrow_black.png"))
+        up_arrow_file = os.path.abspath(
+            os.path.join(_file_path, "../static/up_arrow_black.png")
+        )
         self.parent.ui.march_dollase_user_input_up.setIcon(QtGui.QIcon(up_arrow_file))
 
-        down_arrow_file = os.path.abspath(os.path.join(_file_path, "../static/down_arrow_black.png"))
-        self.parent.ui.march_dollase_user_input_down.setIcon(QtGui.QIcon(down_arrow_file))
+        down_arrow_file = os.path.abspath(
+            os.path.join(_file_path, "../static/down_arrow_black.png")
+        )
+        self.parent.ui.march_dollase_user_input_down.setIcon(
+            QtGui.QIcon(down_arrow_file)
+        )
 
         o_gui = GuiUtility(parent=self.parent)
         o_gui.fill_march_dollase_table(
@@ -169,7 +205,9 @@ class Initialization:
             initial_parameters=self.parent.march_dollase_fitting_initial_parameters,
         )
 
-        self.parent.march_dollase_fitting_history_table = self.march_dollase_history_state
+        self.parent.march_dollase_fitting_history_table = (
+            self.march_dollase_history_state
+        )
         self.parent.march_dollase_fitting_history_table_default_new_row = copy.deepcopy(
             self.march_dollase_history_state[0]
         )
@@ -191,16 +229,36 @@ class Initialization:
             "A\u2085_error",
             "A\u2086_error",
         ]
-        column_sizes = [150, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+        column_sizes = [
+            150,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+        ]
         o_march = TableHandler(table_ui=self.parent.ui.march_dollase_result_table)
         for _col_index, _col_name in enumerate(column_names):
             o_march.insert_column(_col_index)
         o_march.set_column_names(column_names=column_names)
         o_march.set_column_sizes(column_sizes=column_sizes)
 
-        state_advanced_columns = not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+        state_advanced_columns = (
+            not self.parent.ui.march_dollase_advanced_mode_checkBox.isChecked()
+        )
         o_gui.set_columns_hidden(
-            table_ui=self.parent.ui.march_dollase_user_input_table, list_of_columns=[5, 6], state=state_advanced_columns
+            table_ui=self.parent.ui.march_dollase_user_input_table,
+            list_of_columns=[5, 6],
+            state=state_advanced_columns,
         )
 
         # table
@@ -217,17 +275,29 @@ class Initialization:
         self.parent.ui.fitting_lambda_radiobutton.setText("\u03bb (\u212b)")
 
     def text_fields(self):
-        self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
+        self.parent.ui.distance_detector_sample.setText(
+            str(self.distance_detector_sample)
+        )
         self.parent.ui.detector_offset.setText(str(self.detector_offset))
 
-        self.parent.ui.kropff_high_lda_a0_init.setText(str(self.parent.fitting_parameters_init["kropff"]["a0"]))
-        self.parent.ui.kropff_high_lda_b0_init.setText(str(self.parent.fitting_parameters_init["kropff"]["b0"]))
-        self.parent.ui.kropff_low_lda_ahkl_init.setText(str(self.parent.fitting_parameters_init["kropff"]["ahkl"]))
-        self.parent.ui.kropff_low_lda_bhkl_init.setText(str(self.parent.fitting_parameters_init["kropff"]["bhkl"]))
+        self.parent.ui.kropff_high_lda_a0_init.setText(
+            str(self.parent.fitting_parameters_init["kropff"]["a0"])
+        )
+        self.parent.ui.kropff_high_lda_b0_init.setText(
+            str(self.parent.fitting_parameters_init["kropff"]["b0"])
+        )
+        self.parent.ui.kropff_low_lda_ahkl_init.setText(
+            str(self.parent.fitting_parameters_init["kropff"]["ahkl"])
+        )
+        self.parent.ui.kropff_low_lda_bhkl_init.setText(
+            str(self.parent.fitting_parameters_init["kropff"]["bhkl"])
+        )
         self.parent.ui.kropff_bragg_peak_ldahkl_init.setText(
             str(self.parent.fitting_parameters_init["kropff"]["ldahkl"])
         )
-        self.parent.ui.kropff_bragg_peak_tau_init.setText(str(self.parent.fitting_parameters_init["kropff"]["tau"]))
+        self.parent.ui.kropff_bragg_peak_tau_init.setText(
+            str(self.parent.fitting_parameters_init["kropff"]["tau"])
+        )
         # list_sigma = self.parent.fitting_parameters_init['kropff']['sigma']
         # list_sigma = [str(_value) for _value in list_sigma]
         # str_list_sigma = ", ".join(list_sigma)
@@ -241,7 +311,9 @@ class Initialization:
         self.parent.ui.splitter.setSizes([500, 400])
 
         self.parent.ui.roi_size_slider.setMinimum(1)
-        max_value = np.min([self.parent.image_size["width"], self.parent.image_size["height"]])
+        max_value = np.min(
+            [self.parent.image_size["width"], self.parent.image_size["height"]]
+        )
         self.parent.ui.roi_size_slider.setMaximum(max_value)
         default_roi_size = int(max_value / 3)
         self.parent.ui.roi_size_slider.setValue(default_roi_size)

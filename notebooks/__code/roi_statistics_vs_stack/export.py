@@ -1,10 +1,9 @@
 import os
 
 import numpy as np
-from qtpy.QtWidgets import QFileDialog
-
 from __code._utilities.file import make_ascii_file
 from __code._utilities.status_message import StatusMessageStatus, show_status_message
+from qtpy.QtWidgets import QFileDialog
 
 
 class Export:
@@ -14,12 +13,16 @@ class Export:
     def export(self):
         base_folder = os.path.basename(self.parent.working_folder)
         _export_folder = QFileDialog.getExistingDirectory(
-            self.parent, directory=os.path.dirname(base_folder), caption="Select Output Folder"
+            self.parent,
+            directory=os.path.dirname(base_folder),
+            caption="Select Output Folder",
         )
 
         if _export_folder:
             output_base_file_name = str(base_folder) + "_statistics.txt"
-            full_output_base_file_name = os.path.join(_export_folder, output_base_file_name)
+            full_output_base_file_name = os.path.join(
+                _export_folder, output_base_file_name
+            )
 
             x_axis = self.parent.x_axis
             time_offset_array = x_axis["time_offset"]
@@ -37,10 +40,13 @@ class Export:
             metadata = ["# Statistics created with roi_statistics_vs_stack notebook"]
             metadata.append(f"# working dir: {self.parent.working_folder}")
             metadata.append(
-                f"# roi selected: x0:{roi['x0']}, y0:{roi['y0']}, " f"width:{roi['width']}, height:{roi['height']}"
+                f"# roi selected: x0:{roi['x0']}, y0:{roi['y0']}, "
+                f"width:{roi['width']}, height:{roi['height']}"
             )
             metadata.append("#")
-            metadata.append("#file index, file name, time offset (s), min, max, mean, median, standard deviation")
+            metadata.append(
+                "#file index, file name, time offset (s), min, max, mean, median, standard deviation"
+            )
 
             data = []
             for _row in np.arange(len(list_of_images)):
@@ -53,12 +59,26 @@ class Export:
                 _median = median_array[_row]
                 _std = std_array[_row]
 
-                _row = [_file_index, _file_name, _time_offset, _min, _max, _mean, _median, _std]
+                _row = [
+                    _file_index,
+                    _file_name,
+                    _time_offset,
+                    _min,
+                    _max,
+                    _mean,
+                    _median,
+                    _std,
+                ]
                 _row_str = [str(_entry) for _entry in _row]
                 _row_str_formatted = ",".join(_row_str)
                 data.append(_row_str_formatted)
 
-            make_ascii_file(metadata=metadata, data=data, output_file_name=full_output_base_file_name, dim="1d")
+            make_ascii_file(
+                metadata=metadata,
+                data=data,
+                output_file_name=full_output_base_file_name,
+                dim="1d",
+            )
 
             show_status_message(
                 parent=self.parent,

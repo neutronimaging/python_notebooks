@@ -2,7 +2,14 @@ from copy import deepcopy
 
 import numpy as np
 
-KROPFF_HIGH = {"a0": None, "b0": None, "a0_error": None, "b0_error": None, "xaxis_to_fit": None, "yaxis_fitted": None}
+KROPFF_HIGH = {
+    "a0": None,
+    "b0": None,
+    "a0_error": None,
+    "b0_error": None,
+    "xaxis_to_fit": None,
+    "yaxis_fitted": None,
+}
 KROPFF_LOW = {
     "ahkl": None,
     "bhkl": None,

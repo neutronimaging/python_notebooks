@@ -7,4 +7,3 @@ def is_it_a_folder(path):
 
 def is_it_a_file(path):
     return Path(path).is_file()
-

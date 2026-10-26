@@ -6,21 +6,21 @@ plus an offline mode that bypasses widgets and sets a fixed working directory.
 
 import getpass
 import glob
-import os
 import logging
-
-from IPython.display import HTML, display
-from ipywidgets import widgets
+import os
 
 from __code import LOGGER_FILE
 from __code._utilities.file import append_to_file
 from __code._utilities.time import get_current_time_in_special_file_name_format
+from IPython.display import HTML, display
+from ipywidgets import widgets
 
 INSTRUMENT_TO_START_PATH = {
     "MARS": "/HFIR/CG1D/",
     "VENUS": "/SNS/VENUS/",
     "SNAP": "/SNS/SNAP/",
 }
+
 
 def initialize_logging():
     LOG_PATH = "/SNS/VENUS/shared/log/"
@@ -82,7 +82,7 @@ class System:
         if verbose:
             cls.verbose = True
             initialize_logging()
-        
+
         if offline:
             cls.working_dir = os.path.expanduser(default_working_dir)
             cls.start_path = ""
@@ -134,7 +134,9 @@ class System:
 
             if len(full_list_instruments) == 1:
                 cls.instrument_ui = widgets.Select(
-                    options=full_list_instruments, value=default_instrument, layout=widgets.Layout(width="20%")
+                    options=full_list_instruments,
+                    value=default_instrument,
+                    layout=widgets.Layout(width="20%"),
                 )
                 select_instrument_ui = widgets.HBox(
                     [
@@ -145,9 +147,14 @@ class System:
             else:
                 select_instrument_ui = widgets.HBox(
                     [
-                        widgets.HTML("<b>Select Instrument</b>", layout=widgets.Layout(width="20%")),
+                        widgets.HTML(
+                            "<b>Select Instrument</b>",
+                            layout=widgets.Layout(width="20%"),
+                        ),
                         widgets.Select(
-                            options=full_list_instruments, value=default_instrument, layout=widgets.Layout(width="20%")
+                            options=full_list_instruments,
+                            value=default_instrument,
+                            layout=widgets.Layout(width="20%"),
                         ),
                     ]
                 )
@@ -161,7 +168,9 @@ class System:
                 [
                     widgets.HTML("<b>IPTS-</b>"),
                     widgets.Text(value="", layout=widgets.Layout(width="10%")),
-                    widgets.Label("DOES NOT EXIST!", layout=widgets.Layout(width="20%")),
+                    widgets.Label(
+                        "DOES NOT EXIST!", layout=widgets.Layout(width="20%")
+                    ),
                 ]
             )
             cls.result_label = top_hbox.children[2]
@@ -171,8 +180,10 @@ class System:
 
             list_and_default_folders = cls.get_list_folders(start_path=start_path)
             if verbose:
-                logging.info(f"All IPTS folders found: {list_and_default_folders['user_list_folders']}")
-                
+                logging.info(
+                    f"All IPTS folders found: {list_and_default_folders['user_list_folders']}"
+                )
+
             user_list_folders = list_and_default_folders["user_list_folders"]
             if verbose:
                 logging.info(f"User-readable IPTS folders found: {user_list_folders}")
@@ -182,14 +193,20 @@ class System:
 
             bottom_hbox = widgets.HBox(
                 [
-                    widgets.HTML("<b>Select Folder</b>", layout=widgets.Layout(width="20%")),
+                    widgets.HTML(
+                        "<b>Select Folder</b>", layout=widgets.Layout(width="20%")
+                    ),
                     widgets.Select(
-                        options=user_list_folders, value=default_value, layout=widgets.Layout(height="300px")
+                        options=user_list_folders,
+                        value=default_value,
+                        layout=widgets.Layout(height="300px"),
                     ),
                 ]
             )
             cls.user_list_folders = user_list_folders
-            box = widgets.VBox([select_instrument_ui, top_hbox, or_label, bottom_hbox, help_ui])
+            box = widgets.VBox(
+                [select_instrument_ui, top_hbox, or_label, bottom_hbox, help_ui]
+            )
             display(box)
 
             cls.working_dir_ui = bottom_hbox.children[1]
@@ -209,7 +226,11 @@ class System:
         except Exception:
             cls.working_dir = os.path.expanduser("~")
             display(
-                HTML('<span style="font-size: 15px; color:blue">working dir set to -> ' + cls.working_dir + "</span>")
+                HTML(
+                    '<span style="font-size: 15px; color:blue">working dir set to -> '
+                    + cls.working_dir
+                    + "</span>"
+                )
             )
 
         cls.log_use(notebook=notebook)
@@ -235,7 +256,9 @@ class System:
         user_list_folders = [
             os.path.basename(_folder)
             for _folder in list_folders
-            if os.path.isdir(_folder) and os.path.basename(_folder).startswith("IPTS-") and os.access(_folder, os.R_OK)
+            if os.path.isdir(_folder)
+            and os.path.basename(_folder).startswith("IPTS-")
+            and os.access(_folder, os.R_OK)
         ]
 
         default_value = user_list_folders[0] if user_list_folders else ""
@@ -254,14 +277,18 @@ class System:
     @classmethod
     def get_start_path(cls, instrument="VENUS"):
         """Map an instrument name to its base filesystem path."""
-        return INSTRUMENT_TO_START_PATH.get(instrument, INSTRUMENT_TO_START_PATH["VENUS"])
+        return INSTRUMENT_TO_START_PATH.get(
+            instrument, INSTRUMENT_TO_START_PATH["VENUS"]
+        )
 
     @classmethod
     def select_ipts_help(cls, value):
         """Open the online help page for IPTS selection."""
         import webbrowser
 
-        webbrowser.open("https://neutronimaging.pages.ornl.gov/tutorial/notebooks/select_ipts/")
+        webbrowser.open(
+            "https://neutronimaging.pages.ornl.gov/tutorial/notebooks/select_ipts/"
+        )
 
     @classmethod
     def check_instrument_input(cls, value_dict):

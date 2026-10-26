@@ -25,14 +25,20 @@ class Display:
         self.parent.live_raw_image = _image
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.raw_histogram_level[0], self.parent.raw_histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.raw_histogram_level[0], self.parent.raw_histogram_level[1]
+            )
 
         # histogram
         self.parent.ui.raw_histogram_plot.clear()
         min = 0
         max = np.max(_image)
-        y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.parent.nbr_histo_bins))
-        self.parent.ui.raw_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+        y, x = np.histogram(
+            _image, bins=np.linspace(min, max + 1, self.parent.nbr_histo_bins)
+        )
+        self.parent.ui.raw_histogram_plot.plot(
+            x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150)
+        )
 
     def filtered_image(self, data):
         _view = self.parent.ui.filtered_image_view.getView()
@@ -54,14 +60,21 @@ class Display:
         self.parent.live_filtered_image = _image
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.filtered_histogram_level[0], self.parent.filtered_histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.filtered_histogram_level[0],
+                self.parent.filtered_histogram_level[1],
+            )
 
         # histogram
         self.parent.ui.filtered_histogram_plot.clear()
         min = 0
         max = np.max(_image)
-        y, x = np.histogram(_image, bins=np.linspace(min, max + 1, self.parent.nbr_histo_bins))
-        self.parent.ui.filtered_histogram_plot.plot(x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150))
+        y, x = np.histogram(
+            _image, bins=np.linspace(min, max + 1, self.parent.nbr_histo_bins)
+        )
+        self.parent.ui.filtered_histogram_plot.plot(
+            x, y, stepMode=True, fillLevel=0, brush=(0, 0, 255, 150)
+        )
 
         # re-attaching the x and y axis
         self.parent.ui.raw_image_view.view.getViewBox().setYLink("filtered_image")
