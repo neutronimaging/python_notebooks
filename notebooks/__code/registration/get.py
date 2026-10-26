@@ -14,7 +14,9 @@ class Get:
         list_row_selected = self.list_row_selected()
         full_list_files = np.array(self.parent.data_dict["file_name"])
         list_file_selected = full_list_files[list_row_selected]
-        list_short_file_selected = [os.path.basename(_file) for _file in list_file_selected]
+        list_short_file_selected = [
+            os.path.basename(_file) for _file in list_file_selected
+        ]
         return list_short_file_selected
 
     def list_row_selected(self):
@@ -40,7 +42,9 @@ class Get:
             return []
 
         table_selection = table_selection[0]
-        top_row = table_selection.topRow()  # offset because first image is reference image
+        top_row = (
+            table_selection.topRow()
+        )  # offset because first image is reference image
         bottom_row = table_selection.bottomRow() + 1
 
         _image = np.mean(self.parent.data_dict["data"][top_row:bottom_row], axis=0)

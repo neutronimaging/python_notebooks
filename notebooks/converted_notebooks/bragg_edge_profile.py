@@ -24,7 +24,9 @@ from __code import system
 from __code.bragg_edge.bragg_edge import Interface
 from __code.bragg_edge.bragg_edge_normalization import BraggEdge
 
-system.System.select_working_dir(facility="SNS", instrument="VENUS", notebook="bragg_edge_profile")
+system.System.select_working_dir(
+    facility="SNS", instrument="VENUS", notebook="bragg_edge_profile"
+)
 from __code.__all import custom_style
 
 custom_style.style()
@@ -72,7 +74,9 @@ o_interface_sample.show()
 # ## Calculate
 
 # o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
-o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface_sample.roi_selected)
+o_bragg.calculate_counts_vs_file_index_of_regions_selected(
+    list_roi=o_interface_sample.roi_selected
+)
 o_bragg.load_time_spectra()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

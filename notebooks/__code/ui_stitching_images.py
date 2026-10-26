@@ -82,7 +82,9 @@ class Ui_MainWindow:
         self.cancel_button = QtWidgets.QPushButton(self.centralwidget)
         self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout.addWidget(self.cancel_button)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem)
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")

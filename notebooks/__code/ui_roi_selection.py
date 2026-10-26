@@ -20,7 +20,9 @@ class Ui_MainWindow:
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.widget = QtWidgets.QWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -32,7 +34,9 @@ class Ui_MainWindow:
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.table_roi = QtWidgets.QTableWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.table_roi.sizePolicy().hasHeightForWidth())
@@ -75,13 +79,17 @@ class Ui_MainWindow:
         self.add_roi_button.setObjectName("add_roi_button")
         self.horizontalLayout_3.addWidget(self.add_roi_button)
         self.verticalLayout.addLayout(self.horizontalLayout_3)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout.addItem(spacerItem)
         self.instruction = QtWidgets.QLabel(self.centralwidget)
         self.instruction.setText("")
         self.instruction.setObjectName("instruction")
         self.verticalLayout.addWidget(self.instruction)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout_4.addLayout(self.verticalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
@@ -90,7 +98,9 @@ class Ui_MainWindow:
         self.cancel_button = QtWidgets.QPushButton(self.centralwidget)
         self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout.addWidget(self.cancel_button)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem2)
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
@@ -110,7 +120,9 @@ class Ui_MainWindow:
         self.apply_button.clicked.connect(MainWindow.apply_clicked)
         self.remove_roi_button.clicked.connect(MainWindow.remove_roi_button_clicked)
         self.add_roi_button.clicked.connect(MainWindow.add_roi_button_clicked)
-        self.table_roi.itemChanged["QTableWidgetItem*"].connect(MainWindow.update_table_roi)
+        self.table_roi.itemChanged["QTableWidgetItem*"].connect(
+            MainWindow.update_table_roi
+        )
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

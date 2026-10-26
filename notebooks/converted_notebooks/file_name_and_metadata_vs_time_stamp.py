@@ -84,7 +84,9 @@ import plotly.graph_objs as go
 # # Select Image Folder
 
 # + run_control={"frozen": false, "read_only": false}
-o_meta_file_time = FileNameMetadataTimeStamp(working_dir=system.System.get_working_dir())
+o_meta_file_time = FileNameMetadataTimeStamp(
+    working_dir=system.System.get_working_dir()
+)
 o_meta_file_time.select_image_folder()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

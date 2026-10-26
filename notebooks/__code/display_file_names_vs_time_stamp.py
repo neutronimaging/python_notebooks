@@ -2,6 +2,8 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+from __code import ipywe
+from __code.metadata_handler import MetadataHandler
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from ipywidgets.widgets import interact
@@ -11,9 +13,6 @@ from ipywidgets.widgets import interact
 # from plotly.offline import iplot
 # init_notebook_mode()
 from NeuNorm.normalization import Normalization
-
-from __code import ipywe
-from __code.metadata_handler import MetadataHandler
 
 
 class DisplayFileNamesVsTimeStamp:
@@ -49,8 +48,15 @@ class DisplayFileNamesVsTimeStamp:
 
         box = widgets.HBox(
             [
-                widgets.Label("Retrieving Time Stamp", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(min=0, max=len(self.list_files), value=0, layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Retrieving Time Stamp", layout=widgets.Layout(width="20%")
+                ),
+                widgets.IntProgress(
+                    min=0,
+                    max=len(self.list_files),
+                    value=0,
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
         progress_bar = box.children[1]
@@ -105,7 +111,9 @@ class DisplayFileNamesVsTimeStamp:
             timestamp_text_area.append(_text)
         timestamp_text_area = "\n".join(timestamp_text_area)
 
-        relative_text_area = ["file name -> (current image acquistion time - previous image acquisition time) \n"]
+        relative_text_area = [
+            "file name -> (current image acquistion time - previous image acquisition time) \n"
+        ]
         for _index, _file in enumerate(self.list_files):
             _short_file = os.path.basename(_file)
             _relative_time = self.relative_time_offset[_index]
@@ -113,7 +121,9 @@ class DisplayFileNamesVsTimeStamp:
             relative_text_area.append(_text)
         relative_text_area = "\n".join(relative_text_area)
 
-        absolute_text_area = ["file name -> (current image acquistion time - first image acquisition time) \n"]
+        absolute_text_area = [
+            "file name -> (current image acquistion time - first image acquisition time) \n"
+        ]
         for _index, _file in enumerate(self.list_files):
             _short_file = os.path.basename(_file)
             _absolute_time = self.absolute_time_offset[_index]
@@ -162,31 +172,56 @@ class DisplayFileNamesVsTimeStamp:
             ax = plt.subplot(gs[0, 0])
             im = ax.imshow(self.images_array[index], interpolation="nearest")
             plt.title(f"image index {index}")
-            plt.text(text_x, text_y, f"{pre_text} {self.list_time_offset[index]:.2f}{post_text}", fontdict=font)
+            plt.text(
+                text_x,
+                text_y,
+                f"{pre_text} {self.list_time_offset[index]:.2f}{post_text}",
+                fontdict=font,
+            )
             fig.colorbar(im)
             plt.show()
 
-            return {"text_x": text_x, "text_y": text_y, "pre_text": pre_text, "post_text": post_text, "color": color}
+            return {
+                "text_x": text_x,
+                "text_y": text_y,
+                "pre_text": pre_text,
+                "post_text": post_text,
+                "color": color,
+            }
 
         self.preview = interact(
             display_selected_image,
-            index=widgets.IntSlider(min=0, max=len(self.list_files), continuous_update=False),
+            index=widgets.IntSlider(
+                min=0, max=len(self.list_files), continuous_update=False
+            ),
             text_x=widgets.IntSlider(
-                min=0, max=width, value=text_x, description="Text x_offset", continuous_update=False
+                min=0,
+                max=width,
+                value=text_x,
+                description="Text x_offset",
+                continuous_update=False,
             ),
             text_y=widgets.IntSlider(
-                min=0, max=height, value=text_y, description="Text y_offset", continuous_upadte=False
+                min=0,
+                max=height,
+                value=text_y,
+                description="Text y_offset",
+                continuous_upadte=False,
             ),
             pre_text=widgets.Text(value="Time Offset", description="Pre text"),
             post_text=widgets.Text(value="(s)", description="Post text"),
             color=widgets.RadioButtons(
-                options=["red", "blue", "white", "black", "yellow"], value="red", description="Text Color"
+                options=["red", "blue", "white", "black", "yellow"],
+                value="red",
+                description="Text Color",
             ),
         )
 
     def select_export_folder(self):
         self.output_folder_ui = ipywe.fileselector.FileSelectorPanel(
-            instruction="Select output Folder ...", start_dir=self.working_dir, type="directory"
+            instruction="Select output Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
         )
         self.output_folder_ui.show()
 
@@ -220,7 +255,9 @@ class DisplayFileNamesVsTimeStamp:
             return
 
         input_folder_basename = os.path.basename(os.path.abspath(self.image_folder))
-        output_file = os.path.abspath(os.path.join(output_folder, input_folder_basename + "_timestamp_infos.txt"))
+        output_file = os.path.abspath(
+            os.path.join(output_folder, input_folder_basename + "_timestamp_infos.txt")
+        )
         if os.path.exists(output_file):
             os.remove(output_file)
 
@@ -238,4 +275,6 @@ class DisplayFileNamesVsTimeStamp:
         with open(output_file, "w") as f:
             f.write(text)
 
-        display(HTML("<span>File Created: " + os.path.basename(output_file) + "</span>"))
+        display(
+            HTML("<span>File Created: " + os.path.basename(output_file) + "</span>")
+        )

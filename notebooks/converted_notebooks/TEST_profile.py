@@ -52,7 +52,10 @@ o_selection.select_data()
 # # Launch UI
 
 # + run_control={"frozen": false, "read_only": false}
-o_profile = ProfileUi(working_dir=system.System.get_working_dir(), data_dict=o_selection.data_dict["sample"])
+o_profile = ProfileUi(
+    working_dir=system.System.get_working_dir(),
+    data_dict=o_selection.data_dict["sample"],
+)
 o_profile.show()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}
@@ -81,7 +84,10 @@ list_files = glob.glob(file_dir + "*.tif")
 o_selection = FileSelection()
 o_selection.load_files(list_files)
 
-o_profile = ProfileUi(working_dir=os.path.dirname(list_files[0]), data_dict=o_selection.data_dict["sample"])
+o_profile = ProfileUi(
+    working_dir=os.path.dirname(list_files[0]),
+    data_dict=o_selection.data_dict["sample"],
+)
 o_profile.show()
 
 

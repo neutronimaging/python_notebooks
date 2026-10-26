@@ -4,15 +4,18 @@ import os
 from collections import OrderedDict
 
 import numpy as np
-from IPython.display import display
-from ipywidgets import widgets
-
 from __code import file_handler
 from __code._utilities.string import format_html_message
 from __code.file_handler import copy_and_rename_files_to_folder, make_or_reset_folder
-from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import GroupImagesByCycle
-from __code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import SortImagesWithinEachCycle
+from __code.group_images_by_cycle_for_panoramic_stitching.group_images_by_cycle import (
+    GroupImagesByCycle,
+)
+from __code.group_images_by_cycle_for_panoramic_stitching.sort_images_within_each_cycle import (
+    SortImagesWithinEachCycle,
+)
 from __code.ipywe import fileselector
+from IPython.display import display
+from ipywidgets import widgets
 
 METADATA_ERROR = 1  # range +/- for which a metadata will be considered identical
 THIS_FILE_PATH = os.path.dirname(__file__)
@@ -77,7 +80,11 @@ class GroupImages:
         display(format_html_message("Input folder ", selected))
         display(format_html_message("Nbr files ", str(len(self.list_images))))
         if "tif" not in self.file_extension:
-            display(format_html_message("This notebook only works with TIFF images!", is_error=True))
+            display(
+                format_html_message(
+                    "This notebook only works with TIFF images!", is_error=True
+                )
+            )
             return
 
         # group the images
@@ -100,7 +107,9 @@ class GroupImages:
         )
         o_group.run()
         self.dictionary_of_groups_unsorted = o_group.dictionary_of_groups
-        dict_new_names = GroupImages.make_dictionary_of_groups_new_names(self.dictionary_of_groups_unsorted)
+        dict_new_names = GroupImages.make_dictionary_of_groups_new_names(
+            self.dictionary_of_groups_unsorted
+        )
         self.dictionary_of_groups_new_names = dict_new_names
         self.dictionary_file_vs_metadata = o_group.master_dictionary
 
@@ -126,7 +135,10 @@ class GroupImages:
         vbox_left = widgets.VBox(
             [
                 widgets.Label("Select Group:"),
-                widgets.Select(options=group_label, layout=widgets.Layout(width="100px", height="300px")),
+                widgets.Select(
+                    options=group_label,
+                    layout=widgets.Layout(width="100px", height="300px"),
+                ),
             ]
         )
         select_group_ui = vbox_left.children[1]
@@ -147,17 +159,24 @@ class GroupImages:
         vbox_right = widgets.VBox(
             [
                 widgets.Label("Metadata:"),
-                widgets.Textarea(value="", layout=widgets.Layout(width="200px", height="300px")),
+                widgets.Textarea(
+                    value="", layout=widgets.Layout(width="200px", height="300px")
+                ),
             ]
         )
         self.metadata_ui = vbox_right.children[1]
-        self.list_of_files_changed(value={"new": self.get_list_of_files_basename_only(0)[0]})
+        self.list_of_files_changed(
+            value={"new": self.get_list_of_files_basename_only(0)[0]}
+        )
 
         hbox = widgets.HBox([vbox_left, vbox_center, vbox_right])
         display(hbox)
 
         bottom_hbox = widgets.HBox(
-            [widgets.Label("Images are in:"), widgets.Label(self.data_path, layout=widgets.Layout(width="90%"))]
+            [
+                widgets.Label("Images are in:"),
+                widgets.Label(self.data_path, layout=widgets.Layout(width="90%")),
+            ]
         )
         self.path_ui = bottom_hbox.children[1]
         display(bottom_hbox)
@@ -178,7 +197,9 @@ class GroupImages:
         file_selected = value["new"]
         full_file_name_selected = os.path.join(self.data_path, file_selected)
         string_to_display = ""
-        for _key, _value in dictionary_file_vs_metadata[full_file_name_selected].items():
+        for _key, _value in dictionary_file_vs_metadata[
+            full_file_name_selected
+        ].items():
             string_to_display += f"{_key}: {_value}\n"
         self.metadata_ui.value = string_to_display
 
@@ -193,7 +214,9 @@ class GroupImages:
                     value=self.metadata_name_to_select[0],
                     layout=widgets.Layout(width="400px", height="50px"),
                 ),
-                widgets.RadioButtons(options=["Ascending", "Descending"], value="Ascending"),
+                widgets.RadioButtons(
+                    options=["Ascending", "Descending"], value="Ascending"
+                ),
             ]
         )
         name_of_first_metadata_ui = vbox1.children[1]
@@ -215,11 +238,15 @@ class GroupImages:
                     value=self.metadata_name_to_select[1],
                     layout=widgets.Layout(width="400px", height="50px"),
                 ),
-                widgets.RadioButtons(options=["Ascending", "Descending"], value="Ascending"),
+                widgets.RadioButtons(
+                    options=["Ascending", "Descending"], value="Ascending"
+                ),
             ]
         )
         name_of_second_metadata_ui = vbox2.children[1]
-        name_of_second_metadata_ui.observe(self.name_of_second_metadata_changed, "value")
+        name_of_second_metadata_ui.observe(
+            self.name_of_second_metadata_changed, "value"
+        )
         self.name_of_second_metadata_ui = name_of_second_metadata_ui
         sorting_type_var2_ui = vbox2.children[2]
         sorting_type_var2_ui.observe(self.sorting_algorithm_variable2_changed, "value")
@@ -229,7 +256,9 @@ class GroupImages:
             "is_ascending": is_ascending,
         }
 
-        self.how_to_sort_within_cycle["2nd_variable"]["name"] = name_of_second_metadata_ui.value
+        self.how_to_sort_within_cycle["2nd_variable"]["name"] = (
+            name_of_second_metadata_ui.value
+        )
 
         tab = widgets.Tab([vbox1, vbox2])
         [tab.set_title(i, title) for i, title in enumerate(tab_titles)]
@@ -239,7 +268,9 @@ class GroupImages:
         hori1 = widgets.HBox(
             [
                 widgets.Label("Select Group", layout=widgets.Layout(width="100px")),
-                widgets.Dropdown(options=self.list_group_label, layout=widgets.Layout(width="150px")),
+                widgets.Dropdown(
+                    options=self.list_group_label, layout=widgets.Layout(width="150px")
+                ),
             ]
         )
         self.select_group_ui = hori1.children[1]
@@ -248,14 +279,18 @@ class GroupImages:
         vbox3 = widgets.VBox(
             [
                 widgets.Label("Old name", layout=widgets.Layout(width="200px")),
-                widgets.Select(options="", layout=widgets.Layout(width="400px", height="300px")),
+                widgets.Select(
+                    options="", layout=widgets.Layout(width="400px", height="300px")
+                ),
             ]
         )
 
         vbox4 = widgets.VBox(
             [
                 widgets.Label("New name", layout=widgets.Layout(width="200px")),
-                widgets.Select(options="", layout=widgets.Layout(width="400px", height="300px")),
+                widgets.Select(
+                    options="", layout=widgets.Layout(width="400px", height="300px")
+                ),
             ]
         )
 
@@ -278,7 +313,9 @@ class GroupImages:
 
         group_number_selected = self._get_group_number_selected()
         list_files_sorted = self.dictionary_of_groups_sorted[group_number_selected]
-        short_list_files_sorted = [os.path.basename(_file) for _file in list_files_sorted]
+        short_list_files_sorted = [
+            os.path.basename(_file) for _file in list_files_sorted
+        ]
         self.old_name_ui.options = short_list_files_sorted
 
     def _get_group_number_selected(self):
@@ -333,14 +370,21 @@ class GroupImages:
         if not output_folder:
             return
 
-        output_folder_basename = os.path.basename(self.folder_selected) + "_sorted_by_cycle"
+        output_folder_basename = (
+            os.path.basename(self.folder_selected) + "_sorted_by_cycle"
+        )
         output_folder = os.path.join(output_folder, output_folder_basename)
         output_folder = os.path.abspath(output_folder)
 
         dictionary_of_groups_sorted = self.dictionary_of_groups_sorted
         dictionary_of_groups_new_names = self.dictionary_of_groups_new_names
         nbr_groups = len(dictionary_of_groups_sorted.keys())
-        hbox = widgets.HBox([widgets.IntProgress(value=0, min=0, max=nbr_groups), widgets.Label(f"0/{nbr_groups}")])
+        hbox = widgets.HBox(
+            [
+                widgets.IntProgress(value=0, min=0, max=nbr_groups),
+                widgets.Label(f"0/{nbr_groups}"),
+            ]
+        )
         progress_ui = hbox.children[0]
         label_ui = hbox.children[1]
         display(hbox)
@@ -354,8 +398,12 @@ class GroupImages:
                 output_folder=full_folder_name,
             )
             progress_ui.value = _group_index + 1
-            label_ui.value = f"{_group_index+1}/{nbr_groups}"
+            label_ui.value = f"{_group_index + 1}/{nbr_groups}"
 
         hbox.close()
         message = f"{nbr_groups} folders have been created"
-        display(format_html_message(pre_message=message, spacer=" in ", message=output_folder))
+        display(
+            format_html_message(
+                pre_message=message, spacer=" in ", message=output_folder
+            )
+        )

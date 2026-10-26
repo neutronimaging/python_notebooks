@@ -22,7 +22,15 @@ class Utilities:
         height = master_dict["height"]
         return [x0, y0, width, height]
 
-    def set_roi_to_master_dict(self, row=0, data_type="reference", x0=None, y0=None, width=np.nan, height=np.nan):
+    def set_roi_to_master_dict(
+        self,
+        row=0,
+        data_type="reference",
+        x0=None,
+        y0=None,
+        width=np.nan,
+        height=np.nan,
+    ):
         roi_key = f"{data_type}_roi"
         roi_dict = self.parent.master_dict[row][roi_key]
         if x0:
@@ -54,7 +62,9 @@ class Utilities:
 
     def get_image_for_this_row(self, data_type="reference", row=0):
         if data_type == "reference":
-            combobox_index_selected = self.get_reference_index_selected_from_row(row=row)
+            combobox_index_selected = self.get_reference_index_selected_from_row(
+                row=row
+            )
         else:
             combobox_index_selected = self.get_target_index_selected_from_row(row=row)
         return self.parent.list_reference["data"][combobox_index_selected]
@@ -99,12 +109,16 @@ class Utilities:
 
     @staticmethod
     def button_pressed(ui=None, name="left"):
-        full_file = Utilities.__make_full_file_name_to_static_folder_of(config.button[name]["pressed"])
+        full_file = Utilities.__make_full_file_name_to_static_folder_of(
+            config.button[name]["pressed"]
+        )
         ui.setIcon(QtGui.QIcon(full_file))
 
     @staticmethod
     def button_released(ui=None, name="left"):
-        full_file = Utilities.__make_full_file_name_to_static_folder_of(config.button[name]["released"])
+        full_file = Utilities.__make_full_file_name_to_static_folder_of(
+            config.button[name]["released"]
+        )
         ui.setIcon(QtGui.QIcon(full_file))
 
     @staticmethod
