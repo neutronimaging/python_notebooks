@@ -27,9 +27,8 @@
 import os
 
 import ipywe.fileselector
-from IPython.display import HTML
-
 from __code.time_utility import RetrieveTimeStamp
+from IPython.display import HTML
 
 
 class FilenameMetadataMatch:
@@ -53,7 +52,11 @@ class FilenameMetadataMatch:
 
     def select_input_folder_done(self, folder):
         self.data_folder = folder
-        display(HTML('Folder Selected: <span style="font-size: 20px; color:green">' + folder))
+        display(
+            HTML(
+                'Folder Selected: <span style="font-size: 20px; color:green">' + folder
+            )
+        )
 
     def select_metadata_file(self):
         _instruction = "Select Metadata File ..."
@@ -66,7 +69,12 @@ class FilenameMetadataMatch:
 
     def select_metadata_file_done(self, metadata_file):
         self.metadata_file = metadata_file
-        display(HTML('Metadata File Selected: <span style="font-size: 20px; color:green">' + metadata_file))
+        display(
+            HTML(
+                'Metadata File Selected: <span style="font-size: 20px; color:green">'
+                + metadata_file
+            )
+        )
 
     def retrieve_time_stamp(self):
         o_retriever = RetrieveTimeStamp(folder=self.data_folder)
@@ -85,7 +93,9 @@ class FilenameMetadataMatch:
 
 # + run_control={"frozen": false, "read_only": false}
 # o_match = FilenameMetadataMatch(working_dir=system.System.get_working_dir())
-o_match = FilenameMetadataMatch(working_dir="/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20444-Regina/")
+o_match = FilenameMetadataMatch(
+    working_dir="/Volumes/my_book_thunderbolt_duo/IPTS/IPTS-20444-Regina/"
+)
 o_match.select_input_folder()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

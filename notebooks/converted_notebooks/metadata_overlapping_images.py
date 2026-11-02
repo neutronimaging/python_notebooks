@@ -24,7 +24,9 @@
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
 from __code.ipywe.myfileselector import FileSelection
-from __code.metadata_overlapping_images.metadata_overlapping_images import MetadataOverlappingImagesUi
+from __code.metadata_overlapping_images.metadata_overlapping_images import (
+    MetadataOverlappingImagesUi,
+)
 
 system.System.select_working_dir(notebook="metadata_overlapping_images")
 from __code.__all import custom_style
@@ -49,7 +51,8 @@ o_selection.select_data()
 
 # + run_control={"frozen": false, "read_only": false}
 o_profile = MetadataOverlappingImagesUi(
-    working_dir=system.System.get_working_dir(), data_dict=o_selection.data_dict["sample"]
+    working_dir=system.System.get_working_dir(),
+    data_dict=o_selection.data_dict["sample"],
 )
 o_profile.show()
 # -

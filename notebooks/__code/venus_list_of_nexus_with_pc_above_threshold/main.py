@@ -4,12 +4,11 @@ import os
 import h5py
 import ipywidgets as widgets
 import numpy as np
-from IPython.display import display
-from neutronbraggedge.experiment_handler import *
-
 from __code._utilities.file import get_full_home_file_name
 from __code._utilities.json import save_json
 from __code.ipywe import fileselector
+from IPython.display import display
+from neutronbraggedge.experiment_handler import *
 
 LOG_FILE_NAME = ".venus_monitor_hdf5.log"
 
@@ -34,7 +33,9 @@ class VenusNexusListPCAboveThreshold:
     def proton_charge_threshold(self):
         pc_ui = widgets.VBox(
             [
-                widgets.Label("Proton charge threshold (C):", layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Proton charge threshold (C):", layout=widgets.Layout(width="50%")
+                ),
                 widgets.FloatText(1, layout=widgets.Layout(width="200px")),
             ]
         )

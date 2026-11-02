@@ -1,9 +1,8 @@
 import os
 
+from __code import load_ui
 from qtpy.QtGui import QPixmap
 from qtpy.QtWidgets import QDialog
-
-from __code import load_ui
 
 
 class RegistrationAutoConfirmationLauncher:
@@ -35,7 +34,9 @@ class RegistrationManualAutoConfirmation(QDialog):
 
     def initialize_widgets(self):
         _file_path = os.path.dirname(__file__)
-        warning_image_file = os.path.abspath(os.path.join(_file_path, "../static/warning_icon.png"))
+        warning_image_file = os.path.abspath(
+            os.path.join(_file_path, "../static/warning_icon.png")
+        )
         warning_image = QPixmap(warning_image_file)
         self.ui.warning_label.setPixmap(warning_image)
 

@@ -107,7 +107,9 @@ class Ui_MainWindow:
         self.label_8 = QtWidgets.QLabel(self.layer_groupBox)
         self.label_8.setObjectName("label_8")
         self.horizontalLayout_9.addWidget(self.label_8)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_9.addItem(spacerItem)
         self.label_9 = QtWidgets.QLabel(self.layer_groupBox)
         self.label_9.setObjectName("label_9")
@@ -120,7 +122,9 @@ class Ui_MainWindow:
         self.label_10 = QtWidgets.QLabel(self.layer_groupBox)
         self.label_10.setObjectName("label_10")
         self.horizontalLayout_9.addWidget(self.label_10)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_9.addItem(spacerItem1)
         self.deltaE_label = QtWidgets.QLabel(self.layer_groupBox)
         self.deltaE_label.setObjectName("deltaE_label")
@@ -134,7 +138,9 @@ class Ui_MainWindow:
         self.label_16.setObjectName("label_16")
         self.horizontalLayout_9.addWidget(self.label_16)
         self.horizontalLayout.addLayout(self.horizontalLayout_9)
-        spacerItem2 = QtWidgets.QSpacerItem(17, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            17, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem2)
         self.validate_table_iinputs = QtWidgets.QPushButton(self.layer_groupBox)
         self.validate_table_iinputs.setObjectName("validate_table_iinputs")
@@ -156,7 +162,9 @@ class Ui_MainWindow:
         self.layer_name_combobox = QtWidgets.QComboBox(self.check_groupBox)
         self.layer_name_combobox.setObjectName("layer_name_combobox")
         self.horizontalLayout_4.addWidget(self.layer_name_combobox)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_4.addItem(spacerItem3)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
@@ -185,7 +193,9 @@ class Ui_MainWindow:
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem4)
         self.label_11 = QtWidgets.QLabel(self.check_groupBox)
         self.label_11.setObjectName("label_11")
@@ -193,7 +203,9 @@ class Ui_MainWindow:
         self.element_name_combobox = QtWidgets.QComboBox(self.check_groupBox)
         self.element_name_combobox.setObjectName("element_name_combobox")
         self.horizontalLayout_5.addWidget(self.element_name_combobox)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_5.addItem(spacerItem5)
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
         self.gridLayout_2 = QtWidgets.QGridLayout()
@@ -247,7 +259,9 @@ class Ui_MainWindow:
         self.verticalLayout_3.addWidget(self.element_table)
         self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
-        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem6 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_8.addItem(spacerItem6)
         self.label_3 = QtWidgets.QLabel(self.check_groupBox)
         self.label_3.setObjectName("label_3")
@@ -255,16 +269,22 @@ class Ui_MainWindow:
         self.total_iso_ratio = QtWidgets.QLabel(self.check_groupBox)
         self.total_iso_ratio.setObjectName("total_iso_ratio")
         self.horizontalLayout_8.addWidget(self.total_iso_ratio)
-        spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem7 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_8.addItem(spacerItem7)
         self.verticalLayout_3.addLayout(self.horizontalLayout_8)
         self.horizontalLayout_6.addLayout(self.verticalLayout_3)
         self.verticalLayout_4.addWidget(self.check_groupBox)
-        spacerItem8 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem8 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_4.addItem(spacerItem8)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        spacerItem9 = QtWidgets.QSpacerItem(17, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem9 = QtWidgets.QSpacerItem(
+            17, 17, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_7.addItem(spacerItem9)
         self.ok_button = QtWidgets.QPushButton(self.centralwidget)
         self.ok_button.setEnabled(False)
@@ -282,10 +302,18 @@ class Ui_MainWindow:
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.validate_table_iinputs.clicked.connect(MainWindow.validate_table_input_clicked)
-        self.layer_name_combobox.currentIndexChanged["QString"].connect(MainWindow.layer_combobox_clicked)
-        self.element_name_combobox.currentIndexChanged["QString"].connect(MainWindow.element_combobox_clicked)
-        self.element_table.cellChanged["int", "int"].connect(MainWindow.element_table_edited)
+        self.validate_table_iinputs.clicked.connect(
+            MainWindow.validate_table_input_clicked
+        )
+        self.layer_name_combobox.currentIndexChanged["QString"].connect(
+            MainWindow.layer_combobox_clicked
+        )
+        self.element_name_combobox.currentIndexChanged["QString"].connect(
+            MainWindow.element_combobox_clicked
+        )
+        self.element_table.cellChanged["int", "int"].connect(
+            MainWindow.element_table_edited
+        )
         self.ok_button.clicked.connect(MainWindow.ok_button_clicked)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -355,7 +383,9 @@ class Ui_MainWindow:
         self.deltaE_label.setText(_translate("MainWindow", "DE"))
         self.deltaE_lineEdit.setText(_translate("MainWindow", "0.01"))
         self.label_16.setText(_translate("MainWindow", "eV"))
-        self.validate_table_iinputs.setText(_translate("MainWindow", "Validate Table Inputs"))
+        self.validate_table_iinputs.setText(
+            _translate("MainWindow", "Validate Table Inputs")
+        )
         self.check_groupBox.setTitle(_translate("MainWindow", "Check"))
         self.label.setText(_translate("MainWindow", "Layer's Name"))
         self.label_2.setText(_translate("MainWindow", "Thickness"))

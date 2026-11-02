@@ -4,13 +4,12 @@ import numpy as np
 matplotlib.use("Qt5Agg")
 
 import pyqtgraph as pg
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from qtpy import QtGui
-from qtpy.QtWidgets import QAbstractItemView, QProgressBar, QVBoxLayout
-
 from __code.bragg_edge.mplcanvas import MplCanvas
 from __code.dual_energy.my_table_widget import MyTableWidget
 from __code.table_handler import TableHandler
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from qtpy import QtGui
+from qtpy.QtWidgets import QAbstractItemView, QProgressBar, QVBoxLayout
 
 
 class Initialization:
@@ -122,9 +121,13 @@ class Initialization:
         self.parent.ui.selection_lambda_radiobutton.setText("\u03bb (\u212b)")
 
     def text_fields(self):
-        self.parent.ui.distance_detector_sample.setText(str(self.distance_detector_sample))
+        self.parent.ui.distance_detector_sample.setText(
+            str(self.distance_detector_sample)
+        )
         self.parent.ui.detector_offset.setText(str(self.detector_offset))
-        self.parent.ui.selection_bin_size_value.setText(str(self.parent.bin_size_value["index"]))
+        self.parent.ui.selection_bin_size_value.setText(
+            str(self.parent.bin_size_value["index"])
+        )
 
     def widgets(self):
         self.parent.ui.splitter.setSizes([500, 400])
@@ -133,8 +136,12 @@ class Initialization:
         self.parent.ui.calculation_bin_table.cellClicked["int", "int"].connect(
             self.parent.calculation_table_cell_clicked
         )
-        self.parent.ui.calculation_bin_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.parent.ui.verticalLayout_table.addWidget(self.parent.ui.calculation_bin_table)
+        self.parent.ui.calculation_bin_table.setEditTriggers(
+            QAbstractItemView.NoEditTriggers
+        )
+        self.parent.ui.verticalLayout_table.addWidget(
+            self.parent.ui.calculation_bin_table
+        )
 
     def roi_setup(self):
         [x0, y0] = self.parent.roi_settings["position"]
