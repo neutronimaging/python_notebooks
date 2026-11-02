@@ -3,15 +3,14 @@ from collections import OrderedDict
 
 import numpy as np
 import pyqtgraph as pg
-from NeuNorm.normalization import Normalization
-from qtpy import QtGui
-from qtpy.QtWidgets import QDialog, QFileDialog, QVBoxLayout
-
 from __code import load_ui
 from __code.file_handler import make_or_reset_folder
 from __code.panoramic_stitching.get import Get
 from __code.panoramic_stitching.image_handler import HORIZONTAL_MARGIN, VERTICAL_MARGIN
 from __code.panoramic_stitching.stitching_algorithms import StitchingAlgorithmType
+from NeuNorm.normalization import Normalization
+from qtpy import QtGui
+from qtpy.QtWidgets import QDialog, QFileDialog, QVBoxLayout
 
 
 class Export:
@@ -27,7 +26,8 @@ class Export:
         output_folder = QFileDialog.getExistingDirectory(
             self.parent,
             directory=self.parent.working_dir,
-            caption="Select where the folder containing the " "panoramic images will be created!",
+            caption="Select where the folder containing the "
+            "panoramic images will be created!",
             options=QFileDialog.ShowDirsOnly,
         )
         if output_folder:
@@ -72,43 +72,58 @@ class Export:
 
                 if _file_index == 0:
                     panoramic_image[
-                        yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                        xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                        yoffset + VERTICAL_MARGIN : yoffset
+                        + image_height
+                        + VERTICAL_MARGIN,
+                        xoffset + HORIZONTAL_MARGIN : xoffset
+                        + image_width
+                        + HORIZONTAL_MARGIN,
                     ] = image
                     continue
 
                 temp_big_image = np.zeros((panoramic_height, panoramic_width))
                 temp_big_image[
-                    yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                    xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                    yoffset + VERTICAL_MARGIN : yoffset
+                    + image_height
+                    + VERTICAL_MARGIN,
+                    xoffset + HORIZONTAL_MARGIN : xoffset
+                    + image_width
+                    + HORIZONTAL_MARGIN,
                 ] = image
 
                 # where_panoramic_image_has_value_only = np.where((panoramic_image != 0) & (temp_big_image == 0))
-                where_temp_big_image_has_value_only = np.where((temp_big_image != 0) & (panoramic_image == 0))
-                where_both_images_overlap = np.where((panoramic_image != 0) & (temp_big_image != 0))
+                where_temp_big_image_has_value_only = np.where(
+                    (temp_big_image != 0) & (panoramic_image == 0)
+                )
+                where_both_images_overlap = np.where(
+                    (panoramic_image != 0) & (temp_big_image != 0)
+                )
 
                 if stitching_algorithm == StitchingAlgorithmType.minimum:
-                    panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
-                        where_temp_big_image_has_value_only
-                    ]
+                    panoramic_image[where_temp_big_image_has_value_only] = (
+                        temp_big_image[where_temp_big_image_has_value_only]
+                    )
                     panoramic_image[where_both_images_overlap] = np.minimum(
-                        panoramic_image[where_both_images_overlap], temp_big_image[where_both_images_overlap]
+                        panoramic_image[where_both_images_overlap],
+                        temp_big_image[where_both_images_overlap],
                     )
 
                 elif stitching_algorithm == StitchingAlgorithmType.maximum:
-                    panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
-                        where_temp_big_image_has_value_only
-                    ]
+                    panoramic_image[where_temp_big_image_has_value_only] = (
+                        temp_big_image[where_temp_big_image_has_value_only]
+                    )
                     panoramic_image[where_both_images_overlap] = np.maximum(
-                        panoramic_image[where_both_images_overlap], temp_big_image[where_both_images_overlap]
+                        panoramic_image[where_both_images_overlap],
+                        temp_big_image[where_both_images_overlap],
                     )
 
                 elif stitching_algorithm == StitchingAlgorithmType.mean:
-                    panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
-                        where_temp_big_image_has_value_only
-                    ]
+                    panoramic_image[where_temp_big_image_has_value_only] = (
+                        temp_big_image[where_temp_big_image_has_value_only]
+                    )
                     panoramic_image[where_both_images_overlap] = (
-                        panoramic_image[where_both_images_overlap] + temp_big_image[where_both_images_overlap]
+                        panoramic_image[where_both_images_overlap]
+                        + temp_big_image[where_both_images_overlap]
                     ) / 2
 
             panoramic_images_dict[_group_name] = panoramic_image
@@ -122,9 +137,14 @@ class Export:
 
     def export_images(self, output_folder=None):
         stitching_algorithm = self.parent.stitching_algorithm
-        new_folder_name = os.path.basename(self.parent.working_dir) + f"_panoramic_{stitching_algorithm}"
+        new_folder_name = (
+            os.path.basename(self.parent.working_dir)
+            + f"_panoramic_{stitching_algorithm}"
+        )
         self.parent.ui.statusbar.setStyleSheet("color: blue")
-        self.parent.ui.statusbar.showMessage(f"Exporting images in folder {new_folder_name}")
+        self.parent.ui.statusbar.showMessage(
+            f"Exporting images in folder {new_folder_name}"
+        )
         QtGui.QGuiApplication.processEvents()
         new_output_folder_name = os.path.join(output_folder, new_folder_name)
 
@@ -142,7 +162,9 @@ class Export:
         o_norm.data["sample"]["filename"] = list_filename
         o_norm.export(new_output_folder_name, data_type="sample")
         self.parent.ui.statusbar.setStyleSheet("color: green")
-        self.parent.ui.statusbar.showMessage(f"{new_output_folder_name} has been created!", 10000)  # 10s
+        self.parent.ui.statusbar.showMessage(
+            f"{new_output_folder_name} has been created!", 10000
+        )  # 10s
 
 
 class SelectStitchingAlgorithm(QDialog):
@@ -162,7 +184,9 @@ class SelectStitchingAlgorithm(QDialog):
 
     def display_plot(self):
         self.top_parent.ui.statusbar.setStyleSheet("color: blue")
-        self.top_parent.ui.statusbar.showMessage("Calculating previews of current working group ...")
+        self.top_parent.ui.statusbar.showMessage(
+            "Calculating previews of current working group ..."
+        )
         QtGui.QGuiApplication.processEvents()
 
         o_get = Get(parent=self.top_parent)
@@ -192,16 +216,28 @@ class SelectStitchingAlgorithm(QDialog):
 
             if _file_index == 0:
                 minimum_panoramic_image[
-                    yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                    xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                    yoffset + VERTICAL_MARGIN : yoffset
+                    + image_height
+                    + VERTICAL_MARGIN,
+                    xoffset + HORIZONTAL_MARGIN : xoffset
+                    + image_width
+                    + HORIZONTAL_MARGIN,
                 ] = image
                 maximum_panoramic_image[
-                    yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                    xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                    yoffset + VERTICAL_MARGIN : yoffset
+                    + image_height
+                    + VERTICAL_MARGIN,
+                    xoffset + HORIZONTAL_MARGIN : xoffset
+                    + image_width
+                    + HORIZONTAL_MARGIN,
                 ] = image
                 mean_panoramic_image[
-                    yoffset + VERTICAL_MARGIN : yoffset + image_height + VERTICAL_MARGIN,
-                    xoffset + HORIZONTAL_MARGIN : xoffset + image_width + HORIZONTAL_MARGIN,
+                    yoffset + VERTICAL_MARGIN : yoffset
+                    + image_height
+                    + VERTICAL_MARGIN,
+                    xoffset + HORIZONTAL_MARGIN : xoffset
+                    + image_width
+                    + HORIZONTAL_MARGIN,
                 ] = image
                 continue
 
@@ -212,29 +248,36 @@ class SelectStitchingAlgorithm(QDialog):
             ] = image
 
             # where_panoramic_image_has_value_only = np.where((panoramic_image != 0) & (temp_big_image == 0))
-            where_temp_big_image_has_value_only = np.where((temp_big_image != 0) & (minimum_panoramic_image == 0))
-            where_both_images_overlap = np.where((minimum_panoramic_image != 0) & (temp_big_image != 0))
+            where_temp_big_image_has_value_only = np.where(
+                (temp_big_image != 0) & (minimum_panoramic_image == 0)
+            )
+            where_both_images_overlap = np.where(
+                (minimum_panoramic_image != 0) & (temp_big_image != 0)
+            )
 
             # minimum algorithm
-            minimum_panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
-                where_temp_big_image_has_value_only
-            ]
+            minimum_panoramic_image[where_temp_big_image_has_value_only] = (
+                temp_big_image[where_temp_big_image_has_value_only]
+            )
             minimum_panoramic_image[where_both_images_overlap] = np.minimum(
-                minimum_panoramic_image[where_both_images_overlap], temp_big_image[where_both_images_overlap]
+                minimum_panoramic_image[where_both_images_overlap],
+                temp_big_image[where_both_images_overlap],
             )
             # maximum algorithm
-            maximum_panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
-                where_temp_big_image_has_value_only
-            ]
+            maximum_panoramic_image[where_temp_big_image_has_value_only] = (
+                temp_big_image[where_temp_big_image_has_value_only]
+            )
             maximum_panoramic_image[where_both_images_overlap] = np.maximum(
-                maximum_panoramic_image[where_both_images_overlap], temp_big_image[where_both_images_overlap]
+                maximum_panoramic_image[where_both_images_overlap],
+                temp_big_image[where_both_images_overlap],
             )
             # mean algorithm
             mean_panoramic_image[where_temp_big_image_has_value_only] = temp_big_image[
                 where_temp_big_image_has_value_only
             ]
             mean_panoramic_image[where_both_images_overlap] = (
-                mean_panoramic_image[where_both_images_overlap] + temp_big_image[where_both_images_overlap]
+                mean_panoramic_image[where_both_images_overlap]
+                + temp_big_image[where_both_images_overlap]
             ) / 2
 
             self.top_parent.eventProgress.setValue(_file_index + 1)
@@ -334,4 +377,6 @@ class SelectStitchingAlgorithm(QDialog):
         elif self.ui.use_linear_integration_radioButton.isChecked():
             return StitchingAlgorithmType.linear_integration
         else:
-            raise NotImplementedError("Stitching algorithm has not been implemented yet!")
+            raise NotImplementedError(
+                "Stitching algorithm has not been implemented yet!"
+            )

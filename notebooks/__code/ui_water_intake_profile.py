@@ -27,7 +27,9 @@ class Ui_MainWindow:
         self.splitter.setHandleWidth(22)
         self.splitter.setObjectName("splitter")
         self.widget = QtWidgets.QWidget(self.splitter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
@@ -42,7 +44,9 @@ class Ui_MainWindow:
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.tableWidget = QtWidgets.QTableWidget(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
@@ -60,7 +64,9 @@ class Ui_MainWindow:
         self.verticalLayout_4.addWidget(self.tableWidget)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_3.addItem(spacerItem)
         self.export_table_button = QtWidgets.QPushButton(self.layoutWidget)
         self.export_table_button.setObjectName("export_table_button")
@@ -72,7 +78,9 @@ class Ui_MainWindow:
         self.verticalLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
@@ -102,11 +110,15 @@ class Ui_MainWindow:
         self.x_axis_integration_radioButton = QtWidgets.QRadioButton(self.groupBox_4)
         self.x_axis_integration_radioButton.setEnabled(True)
         self.x_axis_integration_radioButton.setChecked(True)
-        self.x_axis_integration_radioButton.setObjectName("x_axis_integration_radioButton")
+        self.x_axis_integration_radioButton.setObjectName(
+            "x_axis_integration_radioButton"
+        )
         self.verticalLayout_5.addWidget(self.x_axis_integration_radioButton)
         self.y_axis_integration_radioButton = QtWidgets.QRadioButton(self.groupBox_4)
         self.y_axis_integration_radioButton.setEnabled(True)
-        self.y_axis_integration_radioButton.setObjectName("y_axis_integration_radioButton")
+        self.y_axis_integration_radioButton.setObjectName(
+            "y_axis_integration_radioButton"
+        )
         self.verticalLayout_5.addWidget(self.y_axis_integration_radioButton)
         self.verticalLayout_3.addWidget(self.groupBox_4)
         self.groupBox_6 = QtWidgets.QGroupBox(self.centralwidget)
@@ -116,7 +128,9 @@ class Ui_MainWindow:
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.groupBox_6)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.label = QtWidgets.QLabel(self.groupBox_6)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(2)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
@@ -148,7 +162,9 @@ class Ui_MainWindow:
         self.change_point_checkBox.setObjectName("change_point_checkBox")
         self.verticalLayout_6.addWidget(self.change_point_checkBox)
         self.verticalLayout_3.addWidget(self.groupBox_5)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout_3.addItem(spacerItem1)
         self.horizontalLayout_2.addLayout(self.verticalLayout_3)
         self.verticalLayout_7.addLayout(self.horizontalLayout_2)
@@ -160,10 +176,14 @@ class Ui_MainWindow:
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.sort_files_by_time_radioButton = QtWidgets.QRadioButton(self.groupBox_3)
         self.sort_files_by_time_radioButton.setChecked(True)
-        self.sort_files_by_time_radioButton.setObjectName("sort_files_by_time_radioButton")
+        self.sort_files_by_time_radioButton.setObjectName(
+            "sort_files_by_time_radioButton"
+        )
         self.horizontalLayout_7.addWidget(self.sort_files_by_time_radioButton)
         self.sort_files_by_name_radioButton = QtWidgets.QRadioButton(self.groupBox_3)
-        self.sort_files_by_name_radioButton.setObjectName("sort_files_by_name_radioButton")
+        self.sort_files_by_name_radioButton.setObjectName(
+            "sort_files_by_name_radioButton"
+        )
         self.horizontalLayout_7.addWidget(self.sort_files_by_name_radioButton)
         self.time_between_runs_label = QtWidgets.QLabel(self.groupBox_3)
         self.time_between_runs_label.setEnabled(False)
@@ -184,7 +204,9 @@ class Ui_MainWindow:
         self.time_between_runs_units_label.setEnabled(False)
         self.time_between_runs_units_label.setMinimumSize(QtCore.QSize(20, 0))
         self.time_between_runs_units_label.setMaximumSize(QtCore.QSize(20, 16777215))
-        self.time_between_runs_units_label.setObjectName("time_between_runs_units_label")
+        self.time_between_runs_units_label.setObjectName(
+            "time_between_runs_units_label"
+        )
         self.horizontalLayout_7.addWidget(self.time_between_runs_units_label)
         self.horizontalLayout_6.addWidget(self.groupBox_3)
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
@@ -220,7 +242,9 @@ class Ui_MainWindow:
         self.ignore_first_image_checkbox.setChecked(True)
         self.ignore_first_image_checkbox.setObjectName("ignore_first_image_checkbox")
         self.horizontalLayout_6.addWidget(self.ignore_first_image_checkbox)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_6.addItem(spacerItem2)
         self.verticalLayout_7.addLayout(self.horizontalLayout_6)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -230,7 +254,9 @@ class Ui_MainWindow:
         self.help_button.setMaximumSize(QtCore.QSize(100, 30))
         self.help_button.setObjectName("help_button")
         self.horizontalLayout.addWidget(self.help_button)
-        spacerItem3 = QtWidgets.QSpacerItem(408, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            408, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem3)
         self.ok_button = QtWidgets.QPushButton(self.centralwidget)
         self.ok_button.setMinimumSize(QtCore.QSize(100, 30))
@@ -281,24 +307,46 @@ class Ui_MainWindow:
         self.ok_button.clicked.connect(MainWindow.ok_button_clicked)  # type: ignore
         self.help_button.clicked.connect(MainWindow.help_button_clicked)  # type: ignore
         self.actionExport_Profile.triggered.connect(MainWindow.export_profile_clicked)  # type: ignore
-        self.actionWater_Intake.triggered.connect(MainWindow.export_water_intake_clicked)  # type: ignore
+        self.actionWater_Intake.triggered.connect(
+            MainWindow.export_water_intake_clicked
+        )  # type: ignore
         self.add_radioButton.clicked.connect(MainWindow.profile_algo_changed)  # type: ignore
         self.mean_radioButton.clicked.connect(MainWindow.profile_algo_changed)  # type: ignore
         self.median_radioButton.clicked.connect(MainWindow.profile_algo_changed)  # type: ignore
-        self.sort_files_by_time_radioButton.clicked.connect(MainWindow.sorting_files_checkbox_clicked)  # type: ignore
-        self.sort_files_by_name_radioButton.clicked.connect(MainWindow.sorting_files_checkbox_clicked)  # type: ignore
-        self.time_between_runs_spinBox.editingFinished.connect(MainWindow.time_between_runs_spinBox_changed)  # type: ignore
-        self.pixel_radioButton.clicked.connect(MainWindow._water_intake_yaxis_checkbox_changed)  # type: ignore
-        self.distance_radioButton.clicked.connect(MainWindow._water_intake_yaxis_checkbox_changed)  # type: ignore
-        self.pixel_size_spinBox.editingFinished.connect(MainWindow._pixel_size_spinBox_changed)  # type: ignore
+        self.sort_files_by_time_radioButton.clicked.connect(
+            MainWindow.sorting_files_checkbox_clicked
+        )  # type: ignore
+        self.sort_files_by_name_radioButton.clicked.connect(
+            MainWindow.sorting_files_checkbox_clicked
+        )  # type: ignore
+        self.time_between_runs_spinBox.editingFinished.connect(
+            MainWindow.time_between_runs_spinBox_changed
+        )  # type: ignore
+        self.pixel_radioButton.clicked.connect(
+            MainWindow._water_intake_yaxis_checkbox_changed
+        )  # type: ignore
+        self.distance_radioButton.clicked.connect(
+            MainWindow._water_intake_yaxis_checkbox_changed
+        )  # type: ignore
+        self.pixel_size_spinBox.editingFinished.connect(
+            MainWindow._pixel_size_spinBox_changed
+        )  # type: ignore
         self.actionDsc_files.triggered.connect(MainWindow.import_dsc_clicked)  # type: ignore
         self.export_table_button.pressed.connect(MainWindow.export_table_button_clicked)  # type: ignore
         self.actionProfiles.triggered.connect(MainWindow.export_profile_clicked)  # type: ignore
-        self.actionWater_Intake_2.triggered.connect(MainWindow.export_water_intake_clicked)  # type: ignore
+        self.actionWater_Intake_2.triggered.connect(
+            MainWindow.export_water_intake_clicked
+        )  # type: ignore
         self.actionDsc.triggered.connect(MainWindow.import_dsc_clicked)  # type: ignore
-        self.x_axis_integration_radioButton.clicked.connect(MainWindow.integration_direction_changed)  # type: ignore
-        self.y_axis_integration_radioButton.clicked.connect(MainWindow.integration_direction_changed)  # type: ignore
-        self.ignore_first_image_checkbox.clicked.connect(MainWindow.ignore_first_image_checkbox_clicked)  # type: ignore
+        self.x_axis_integration_radioButton.clicked.connect(
+            MainWindow.integration_direction_changed
+        )  # type: ignore
+        self.y_axis_integration_radioButton.clicked.connect(
+            MainWindow.integration_direction_changed
+        )  # type: ignore
+        self.ignore_first_image_checkbox.clicked.connect(
+            MainWindow.ignore_first_image_checkbox_clicked
+        )  # type: ignore
         self.sliding_average_checkBox.clicked.connect(MainWindow.algorithm_changed)  # type: ignore
         self.error_function_checkBox.clicked.connect(MainWindow.algorithm_changed)  # type: ignore
         self.rebin_spinBox.valueChanged["int"].connect(MainWindow.rebin_slider_changed)  # type: ignore
@@ -320,25 +368,39 @@ class Ui_MainWindow:
         self.mean_radioButton.setText(_translate("MainWindow", "Mean"))
         self.median_radioButton.setText(_translate("MainWindow", "Median"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Integration Direction"))
-        self.x_axis_integration_radioButton.setText(_translate("MainWindow", "along x-axis"))
-        self.y_axis_integration_radioButton.setText(_translate("MainWindow", "along y-axis"))
+        self.x_axis_integration_radioButton.setText(
+            _translate("MainWindow", "along x-axis")
+        )
+        self.y_axis_integration_radioButton.setText(
+            _translate("MainWindow", "along y-axis")
+        )
         self.groupBox_6.setTitle(_translate("MainWindow", "Rebin"))
         self.label.setText(_translate("MainWindow", "Pixels"))
         self.groupBox_5.setTitle(_translate("MainWindow", "Algorithm"))
-        self.sliding_average_checkBox.setText(_translate("MainWindow", "Sliding Average"))
+        self.sliding_average_checkBox.setText(
+            _translate("MainWindow", "Sliding Average")
+        )
         self.error_function_checkBox.setText(_translate("MainWindow", "Error Function"))
         self.change_point_checkBox.setText(_translate("MainWindow", "Change Point"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Sorting Files"))
-        self.sort_files_by_time_radioButton.setText(_translate("MainWindow", "by Time Stamp"))
+        self.sort_files_by_time_radioButton.setText(
+            _translate("MainWindow", "by Time Stamp")
+        )
         self.sort_files_by_name_radioButton.setText(_translate("MainWindow", "by Name"))
-        self.time_between_runs_label.setText(_translate("MainWindow", "-> Time Between Runs"))
+        self.time_between_runs_label.setText(
+            _translate("MainWindow", "-> Time Between Runs")
+        )
         self.time_between_runs_units_label.setText(_translate("MainWindow", "s"))
         self.groupBox.setTitle(_translate("MainWindow", "Water Intake Y Axis"))
         self.pixel_radioButton.setText(_translate("MainWindow", "Pixel"))
         self.distance_radioButton.setText(_translate("MainWindow", "Distance"))
-        self.water_intake_distance_label.setText(_translate("MainWindow", "-> 1 pixel = "))
+        self.water_intake_distance_label.setText(
+            _translate("MainWindow", "-> 1 pixel = ")
+        )
         self.pixel_size_units.setText(_translate("MainWindow", "mm"))
-        self.ignore_first_image_checkbox.setText(_translate("MainWindow", "Ignore first image"))
+        self.ignore_first_image_checkbox.setText(
+            _translate("MainWindow", "Ignore first image")
+        )
         self.help_button.setText(_translate("MainWindow", "HELP"))
         self.ok_button.setText(_translate("MainWindow", "OK"))
         self.menuFile_2.setTitle(_translate("MainWindow", "File"))
@@ -346,7 +408,9 @@ class Ui_MainWindow:
         self.menuExport.setTitle(_translate("MainWindow", "Export"))
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
         self.actionWater_Intake.setText(_translate("MainWindow", "Water Intake ..."))
-        self.actionImportedFilesMetadata.setText(_translate("MainWindow", "Imported Files and Metadata ..."))
+        self.actionImportedFilesMetadata.setText(
+            _translate("MainWindow", "Imported Files and Metadata ...")
+        )
         self.actionBy_Time_Stamp.setText(_translate("MainWindow", "by Time Stamp"))
         self.actionBy_File_Name.setText(_translate("MainWindow", "by File Name"))
         self.actionDsc_files.setText(_translate("MainWindow", "dsc files ..."))

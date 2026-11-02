@@ -10,7 +10,9 @@ class TableLoader:
         self.filename = filename
 
     def load_table(self):
-        table = pd.read_csv(self.filename, sep=",", comment="#", names=["filename", "metadata"])
+        table = pd.read_csv(
+            self.filename, sep=",", comment="#", names=["filename", "metadata"]
+        )
         table_dict = {}
         for _row in table.values:
             _key, _value = _row

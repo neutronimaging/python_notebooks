@@ -3,13 +3,12 @@ import os
 
 import numpy as np
 import pyqtgraph as pg
-from qtpy.QtWidgets import QMainWindow, QVBoxLayout
-
 from __code import load_ui
 from __code._utilities.list_widget import ListWidget
 from __code.extract_evenly_spaced_files.get import Get
 from __code.extract_evenly_spaced_files.load import load_file
 from __code.extract_evenly_spaced_files.statistics import Statistics
+from qtpy.QtWidgets import QMainWindow, QVBoxLayout
 
 
 class Interface:
@@ -28,7 +27,7 @@ class InterfaceHandler(QMainWindow):
         logging.info("*** Starting Manual mode UI ***")
         self.parent = parent
 
-        super(InterfaceHandler, self).__init__(parent)
+        super().__init__(parent)
         ui_full_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
             os.path.join("ui", "ui_extract_evenly_spaced_files_replace_with.ui"),
@@ -61,7 +60,9 @@ class InterfaceHandler(QMainWindow):
     def update_current_image_name(self):
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
         index_file_selected = o_list.get_current_row()
-        file_name = self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
+        file_name = self.parent.basename_list_of_files_that_will_be_extracted[
+            index_file_selected
+        ]
         self.ui.name_of_current_file.setText(file_name)
 
     def close_clicked(self):
@@ -78,10 +79,14 @@ class InterfaceHandler(QMainWindow):
         new_file = self.ui.replace_by_comboBox.currentText()
 
         o_list = ListWidget(ui=self.parent.ui.list_of_files_listWidget)
-        self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected] = os.path.basename(new_file)
+        self.parent.basename_list_of_files_that_will_be_extracted[
+            index_file_selected
+        ] = os.path.basename(new_file)
 
         self.parent.ui.list_of_files_listWidget.clear()
-        self.parent.ui.list_of_files_listWidget.addItems(self.parent.basename_list_of_files_that_will_be_extracted)
+        self.parent.ui.list_of_files_listWidget.addItems(
+            self.parent.basename_list_of_files_that_will_be_extracted
+        )
 
         self.parent.list_data[index_file_selected] = self.new_data
         self.parent.image_selected_changed()
@@ -119,29 +124,40 @@ class InterfaceHandler(QMainWindow):
 
         # index_file_selected_in_full_list = index_file_selected * extracting_value
         o_get = Get(parent=self.parent)
-        base_file_name = self.parent.basename_list_of_files_that_will_be_extracted[index_file_selected]
-        index_file_selected_in_full_list = o_get.index_of_file_selected_in_full_list(base_file_name)
+        base_file_name = self.parent.basename_list_of_files_that_will_be_extracted[
+            index_file_selected
+        ]
+        index_file_selected_in_full_list = o_get.index_of_file_selected_in_full_list(
+            base_file_name
+        )
 
         logging.info(f"base_file_name: {base_file_name}")
-        logging.info(f"index_file_selected_in_full_list: {index_file_selected_in_full_list}")
+        logging.info(
+            f"index_file_selected_in_full_list: {index_file_selected_in_full_list}"
+        )
 
         if index_file_selected == 0:
             list_of_option_of_files_to_replace_with = full_list_of_files[
-                index_file_selected_in_full_list : index_file_selected_in_full_list + extracting_value
+                index_file_selected_in_full_list : index_file_selected_in_full_list
+                + extracting_value
             ]
         elif index_file_selected == (o_list.get_number_elements() - 1):
             list_of_option_of_files_to_replace_with = full_list_of_files[
-                index_file_selected_in_full_list - extracting_value : index_file_selected_in_full_list
+                index_file_selected_in_full_list
+                - extracting_value : index_file_selected_in_full_list
             ]
         else:
             list_of_option_of_files_to_replace_with = []
             for _file in full_list_of_files[
-                index_file_selected_in_full_list + 1 - extracting_value : index_file_selected_in_full_list
+                index_file_selected_in_full_list
+                + 1
+                - extracting_value : index_file_selected_in_full_list
             ]:
                 list_of_option_of_files_to_replace_with.append(_file)
 
             for _file in full_list_of_files[
-                index_file_selected_in_full_list : index_file_selected_in_full_list + extracting_value
+                index_file_selected_in_full_list : index_file_selected_in_full_list
+                + extracting_value
             ]:
                 list_of_option_of_files_to_replace_with.append(_file)
 

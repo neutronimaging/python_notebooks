@@ -53,7 +53,8 @@ o_selection.select_data(check_shape=False)
 
 # + run_control={"frozen": false, "read_only": false}
 o_select = SelectRadialParameters(
-    working_dir=system.System.get_working_dir(), data_dict=o_selection.data_dict["sample"]
+    working_dir=system.System.get_working_dir(),
+    data_dict=o_selection.data_dict["sample"],
 )
 o_select.show()
 # -

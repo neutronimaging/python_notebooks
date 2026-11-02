@@ -72,7 +72,10 @@ o_interface.show()
 import os
 
 from __code import system
-from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_peak_fitting import BraggEdge, Interface
+from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_peak_fitting import (
+    BraggEdge,
+    Interface,
+)
 
 # small data set
 # data_path = "/Volumes/G-DRIVE/IPTS/VENUS/shared/testing_normalized/"
@@ -93,17 +96,24 @@ o_bragg = BraggEdge(working_dir=data_path)
 o_bragg.load_data(data_path)
 # -
 
-o_interface = Interface(o_bragg=o_bragg, working_dir=data_path, spectra_file=spectra_file)
+o_interface = Interface(
+    o_bragg=o_bragg, working_dir=data_path, spectra_file=spectra_file
+)
 o_interface.show()
 
 
 # # DEBUGGING using import straight
 
 from __code import system
-from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_peak_fitting import BraggEdge, Interface
+from __code.bragg_edge.peak_fitting_evaluation.bragg_edge_peak_fitting import (
+    BraggEdge,
+    Interface,
+)
 
 # %gui qt
 
-data_path = "/Volumes/G-Drive/IPTS/SNAP/Si_normalized/Si_powder_1_Angs_20C_corrected_normalized"
+data_path = (
+    "/Volumes/G-Drive/IPTS/SNAP/Si_normalized/Si_powder_1_Angs_20C_corrected_normalized"
+)
 o_interface = Interface(working_dir=data_path)
 o_interface.show()

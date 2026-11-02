@@ -1,17 +1,16 @@
 import collections
 import os
 
+from __code import file_handler
+from __code.file_folder_browser import FileFolderBrowser
 from IPython.display import display
 from ipywidgets import widgets
 from PIL import Image
 
-from __code import file_handler
-from __code.file_folder_browser import FileFolderBrowser
-
 
 class DisplayMetadata(FileFolderBrowser):
     def __init__(self, working_dir=""):
-        super(DisplayMetadata, self).__init__(working_dir=working_dir)
+        super().__init__(working_dir=working_dir)
 
     def display_metadata_list(self):
         self.list_images = self.list_images_ui.selected
@@ -28,7 +27,11 @@ class DisplayMetadata(FileFolderBrowser):
         self.box1 = widgets.HBox(
             [
                 widgets.Label("Select Metadata:", layout=widgets.Layout(width="10%")),
-                widgets.Dropdown(options=display_format, value=display_format[0], layout=widgets.Layout(width="50%")),
+                widgets.Dropdown(
+                    options=display_format,
+                    value=display_format[0],
+                    layout=widgets.Layout(width="50%"),
+                ),
             ]
         )
         display(self.box1)
@@ -64,7 +67,12 @@ class DisplayMetadata(FileFolderBrowser):
 
         parent_folder = self.list_images[0].split(os.path.sep)[-2]
         metadata_name = f"metadata#{self.key}"
-        output_file_name = os.path.join(output_folder, f"{parent_folder}_{metadata_name}.txt")
+        output_file_name = os.path.join(
+            output_folder, f"{parent_folder}_{metadata_name}.txt"
+        )
         file_handler.make_ascii_file(
-            metadata=["#Metadata: " + self.key], data=self.export_txt, dim="1d", output_file_name=output_file_name
+            metadata=["#Metadata: " + self.key],
+            data=self.export_txt,
+            dim="1d",
+            output_file_name=output_file_name,
         )

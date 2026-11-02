@@ -38,7 +38,9 @@ class Get(BraggEdgeGet):
         roi_id = self.parent.roi_id
 
         if roi_id:
-            region = roi_id.getArraySlice(self.parent.live_image, self.parent.ui.image_view.imageItem)
+            region = roi_id.getArraySlice(
+                self.parent.live_image, self.parent.ui.image_view.imageItem
+            )
             x0 = region[0][0].start
             x1 = region[0][0].stop
             y0 = region[0][1].start
