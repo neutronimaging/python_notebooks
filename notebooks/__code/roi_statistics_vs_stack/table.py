@@ -13,8 +13,33 @@ class Table:
         reset_value = "NaN"
         for _row in data_dict.keys():
             _entry = data_dict[_row]
-            o_table.insert_item(row=_row, column=StatisticsColumnIndex.min, value=reset_value, editable=False)
-            o_table.insert_item(row=_row, column=StatisticsColumnIndex.max, value=reset_value, editable=False)
-            o_table.insert_item(row=_row, column=StatisticsColumnIndex.mean, value=reset_value, editable=False)
-            o_table.insert_item(row=_row, column=StatisticsColumnIndex.median, value=reset_value, editable=False)
-            o_table.insert_item(row=_row, column=StatisticsColumnIndex.std, value=reset_value, editable=False)
+            o_table.insert_item(
+                row=_row,
+                column=StatisticsColumnIndex.min,
+                value=reset_value,
+                editable=False,
+            )
+            o_table.insert_item(
+                row=_row,
+                column=StatisticsColumnIndex.max,
+                value=reset_value,
+                editable=False,
+            )
+            o_table.insert_item(
+                row=_row,
+                column=StatisticsColumnIndex.mean,
+                value=reset_value,
+                editable=False,
+            )
+            o_table.insert_item(
+                row=_row,
+                column=StatisticsColumnIndex.median,
+                value=reset_value,
+                editable=False,
+            )
+            o_table.insert_item(
+                row=_row,
+                column=StatisticsColumnIndex.std,
+                value=reset_value,
+                editable=False,
+            )

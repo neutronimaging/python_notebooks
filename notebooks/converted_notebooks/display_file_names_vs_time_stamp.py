@@ -35,7 +35,9 @@ custom_style.style()
 # # Select Images
 
 # + run_control={"frozen": false, "read_only": false}
-o_file_time_stamp = DisplayFileNamesVsTimeStamp(working_dir=system.System.get_working_dir())
+o_file_time_stamp = DisplayFileNamesVsTimeStamp(
+    working_dir=system.System.get_working_dir()
+)
 o_file_time_stamp.select_image_folder()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

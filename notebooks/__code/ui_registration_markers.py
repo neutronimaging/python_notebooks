@@ -24,7 +24,9 @@ class Ui_Dialog:
         self.add_marker_button = QtWidgets.QPushButton(Dialog)
         self.add_marker_button.setObjectName("add_marker_button")
         self.verticalLayout.addWidget(self.add_marker_button)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout.addItem(spacerItem)
         self.remove_marker_button = QtWidgets.QPushButton(Dialog)
         self.remove_marker_button.setObjectName("remove_marker_button")
@@ -45,7 +47,9 @@ class Ui_Dialog:
         self.marker_color_widget.addItem("")
         self.marker_color_widget.addItem("")
         self.horizontalLayout_2.addWidget(self.marker_color_widget)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_2.addItem(spacerItem1)
         self.run_registration_button = QtWidgets.QPushButton(Dialog)
         self.run_registration_button.setObjectName("run_registration_button")
@@ -56,9 +60,13 @@ class Ui_Dialog:
         self.tabWidget.setCurrentIndex(-1)
         self.add_marker_button.clicked.connect(Dialog.add_marker_button_clicked)
         self.remove_marker_button.clicked.connect(Dialog.remove_marker_button_clicked)
-        self.marker_color_widget.currentIndexChanged["QString"].connect(Dialog.marker_color_changed)
+        self.marker_color_widget.currentIndexChanged["QString"].connect(
+            Dialog.marker_color_changed
+        )
         self.tabWidget.currentChanged["int"].connect(Dialog.marker_tab_changed)
-        self.run_registration_button.clicked.connect(Dialog.run_registration_button_clicked)
+        self.run_registration_button.clicked.connect(
+            Dialog.run_registration_button_clicked
+        )
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -73,4 +81,6 @@ class Ui_Dialog:
         self.marker_color_widget.setItemText(3, _translate("Dialog", "red"))
         self.marker_color_widget.setItemText(4, _translate("Dialog", "blue"))
         self.marker_color_widget.setItemText(5, _translate("Dialog", "black"))
-        self.run_registration_button.setText(_translate("Dialog", "Align Images Using Markers"))
+        self.run_registration_button.setText(
+            _translate("Dialog", "Align Images Using Markers")
+        )

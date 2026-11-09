@@ -20,9 +20,13 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.display_and_export_images_with_metadata_profile import DisplayExportScreenshots
+from __code.display_and_export_images_with_metadata_profile import (
+    DisplayExportScreenshots,
+)
 
-system.System.select_working_dir(notebook="display_and_export_images_with_metadata_profile")
+system.System.select_working_dir(
+    notebook="display_and_export_images_with_metadata_profile"
+)
 from __code.__all import custom_style
 
 custom_style.style()

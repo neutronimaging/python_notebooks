@@ -23,7 +23,9 @@
 from __code import system
 from __code.combine_images_without_outliers.combine_images import Interface
 
-system.System.select_working_dir(facility="SNS", instrument="VENUS", notebook="combine_images_without_outliers")
+system.System.select_working_dir(
+    facility="SNS", instrument="VENUS", notebook="combine_images_without_outliers"
+)
 from __code.__all import custom_style
 
 custom_style.style()

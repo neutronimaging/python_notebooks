@@ -135,7 +135,9 @@ def convert_to_cross_section(from_unit, to_unit):
     return conversion_factors[from_unit] / conversion_factors[to_unit]
 
 
-def convert_from_wavelength_to_energy_ev(wavelength, unit_from=DistanceUnitOptions.angstrom):
+def convert_from_wavelength_to_energy_ev(
+    wavelength, unit_from=DistanceUnitOptions.angstrom
+):
     """Convert wavelength to energy based on the given units.
 
     Args:
@@ -177,15 +179,21 @@ def convert_array_from_time_to_lambda(
         np.ndarray: Array of wavelength values.
     """
     time_array_s = time_array * convert_time_units(time_unit, TimeUnitOptions.s)
-    detector_offset_s = detector_offset * convert_time_units(detector_offset_unit, TimeUnitOptions.s)
+    detector_offset_s = detector_offset * convert_time_units(
+        detector_offset_unit, TimeUnitOptions.s
+    )
     distance_source_detector_m = distance_source_detector * convert_distance_units(
         distance_source_detector_unit, DistanceUnitOptions.m
     )
 
     h_over_mn = h / m_n
-    lambda_m = h_over_mn * (time_array_s + detector_offset_s) / distance_source_detector_m
+    lambda_m = (
+        h_over_mn * (time_array_s + detector_offset_s) / distance_source_detector_m
+    )
 
-    lambda_converted = lambda_m * convert_distance_units(DistanceUnitOptions.m, lambda_unit)
+    lambda_converted = lambda_m * convert_distance_units(
+        DistanceUnitOptions.m, lambda_unit
+    )
 
     return lambda_converted
 
@@ -225,13 +233,22 @@ def convert_array_from_time_to_energy(
     detector_units_factor = convert_time_units(detector_offset_unit, TimeUnitOptions.s)
     detector_offset = detector_units_factor * detector_offset
 
-    distance_source_detector_factor = convert_distance_units(distance_source_detector_unit, DistanceUnitOptions.m)
-    distance_source_detector_m = distance_source_detector * distance_source_detector_factor
+    distance_source_detector_factor = convert_distance_units(
+        distance_source_detector_unit, DistanceUnitOptions.m
+    )
+    distance_source_detector_m = (
+        distance_source_detector * distance_source_detector_factor
+    )
 
     # Calculate the energy in eV using the formula E_ev = 1/2 m_n (L/t_tof)^2 / electron_volt
 
     full_time_array_s = time_array_s + detector_offset
-    energy_array_ev = 0.5 * m_n * (distance_source_detector_m / full_time_array_s) ** 2 / electron_volt
+    energy_array_ev = (
+        0.5
+        * m_n
+        * (distance_source_detector_m / full_time_array_s) ** 2
+        / electron_volt
+    )
 
     energy_array_factor = convert_to_energy(EnergyUnitOptions.eV, energy_unit)
     energy_array = energy_array_ev * energy_array_factor

@@ -20,7 +20,8 @@ class DisplayImages:
             angle = self.parent.rotation_angle
             # rotate all images
             self.parent.data_dict["data"] = [
-                transform.rotate(_image, angle) for _image in self.parent.data_dict_raw["data"]
+                transform.rotate(_image, angle)
+                for _image in self.parent.data_dict_raw["data"]
             ]
 
         _image = self.parent.data_dict["data"][slider_index]
@@ -44,7 +45,9 @@ class DisplayImages:
         _view_box.setState(_state)
 
         if not first_update:
-            _histo_widget.setLevels(self.parent.histogram_level[0], self.parent.histogram_level[1])
+            _histo_widget.setLevels(
+                self.parent.histogram_level[0], self.parent.histogram_level[1]
+            )
 
 
 class DisplayScalePyqtUi:
@@ -83,7 +86,10 @@ class DisplayScalePyqtUi:
         adj = []
 
         x0 = self.parent.ui.scale_position_x.value()
-        y0 = self.parent.ui.scale_position_y.maximum() - self.parent.ui.scale_position_y.value()
+        y0 = (
+            self.parent.ui.scale_position_y.maximum()
+            - self.parent.ui.scale_position_y.value()
+        )
 
         one_edge = [x0, y0]
         if self.parent.ui.scale_horizontal_orientation.isChecked():
@@ -111,12 +117,18 @@ class DisplayScalePyqtUi:
         line_color = tuple(list_line_color)
         lines = np.array(
             [line_color for n in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
 
         scale = pg.GraphItem()
         view.addItem(scale)
-        
+
         scale.setData(pos=pos, adj=adj, pen=lines)
         if save_it:
             self.parent.scale_pyqt_ui = scale
@@ -126,7 +138,11 @@ class DisplayScalePyqtUi:
         legend = o_get.scale_legend()
         color = o_get.color(source="scale", color_type="html")
         text = pg.TextItem(
-            html='<div style="text-align=center"><span style="color: ' + color + ';">' + legend + "</span></div>",
+            html='<div style="text-align=center"><span style="color: '
+            + color
+            + ';">'
+            + legend
+            + "</span></div>",
             angle=angle,
         )
         view.addItem(text)
@@ -163,7 +179,7 @@ class DisplayMetadataPyqtUi:
                 "position_x": self.parent.ui.metadata_position_x_4,
                 "position_y": self.parent.ui.metadata_position_y_4,
                 "enable_ui": self.parent.ui.checkBox_4,
-            }
+            },
         }
 
     def clear_pyqt_items(self, view=None):
@@ -204,7 +220,7 @@ class DisplayMetadataPyqtUi:
         self.display_graph(save_it=save_it)
 
     def display_text(self, save_it=True, metadata_index=1):
-        
+
         if not self.list_ui[metadata_index]["enable_ui"].isChecked():
             return
 
@@ -212,7 +228,10 @@ class DisplayMetadataPyqtUi:
 
         font_size = self.list_ui[metadata_index]["font_size_slider"].value()
         x0 = self.list_ui[metadata_index]["position_x"].value()
-        y0 = self.list_ui[metadata_index]["position_y"].maximum() - self.list_ui[metadata_index]["position_y"].value()
+        y0 = (
+            self.list_ui[metadata_index]["position_y"].maximum()
+            - self.list_ui[metadata_index]["position_y"].value()
+        )
 
         o_get = Get(parent=self.parent)
         metadata_text = o_get.metadata_text(metadata_index=metadata_index)
@@ -247,18 +266,26 @@ class DisplayMetadataPyqtUi:
     def clean_and_format_x_axis(self, x_axis=None):
         x_axis_column_index = self.parent.x_axis_column_index
         metadata_operation = self.parent.metadata_operation[x_axis_column_index]
-        x_axis = self.clean_and_format_axis(metadata_operation=metadata_operation, input_axis=x_axis)
+        x_axis = self.clean_and_format_axis(
+            metadata_operation=metadata_operation, input_axis=x_axis
+        )
         return x_axis
 
     def clean_and_format_y_axis(self, y_axis=None):
         y_axis_column_index = self.parent.y_axis_column_index
         metadata_operation = self.parent.metadata_operation[y_axis_column_index]
-        y_axis = self.clean_and_format_axis(metadata_operation=metadata_operation, input_axis=y_axis)
+        y_axis = self.clean_and_format_axis(
+            metadata_operation=metadata_operation, input_axis=y_axis
+        )
         return y_axis
 
     def clean_and_format_axis(self, metadata_operation=None, input_axis=None):
-        first_part_of_string_to_remove = metadata_operation["first_part_of_string_to_remove"]
-        last_part_of_string_to_remove = metadata_operation["last_part_of_string_to_remove"]
+        first_part_of_string_to_remove = metadata_operation[
+            "first_part_of_string_to_remove"
+        ]
+        last_part_of_string_to_remove = metadata_operation[
+            "last_part_of_string_to_remove"
+        ]
         math_1 = metadata_operation["math_1"]
         math_2 = metadata_operation["math_2"]
         value_1 = metadata_operation["value_1"]
@@ -276,7 +303,11 @@ class DisplayMetadataPyqtUi:
                 return None
 
             value_cleaned_math = linear_operation(
-                input_parameter=value_cleaned, math_1=math_1, math_2=math_2, value_1=value_1, value_2=value_2
+                input_parameter=value_cleaned,
+                math_1=math_1,
+                math_2=math_2,
+                value_1=value_1,
+                value_2=value_2,
             )
 
             if value_cleaned_math == "":
@@ -341,9 +372,7 @@ class DisplayMetadataPyqtUi:
             x_name = self.parent.ui.graph_x_axis_name.text()
             x_unit = self.parent.ui.graph_x_axis_units.text()
             if x_unit:
-                x_axis_label = (
-                    f'<html><p><font color="{color}" size="{graph_font_size}">{x_name} ({x_unit})</font></html>'
-                )
+                x_axis_label = f'<html><p><font color="{color}" size="{graph_font_size}">{x_name} ({x_unit})</font></html>'
             else:
                 x_axis_label = f'<html><p><font color="{color}" size="{graph_font_size}">{x_name}</font></html>'
 
@@ -370,11 +399,16 @@ class DisplayMetadataPyqtUi:
             )
 
             if self.parent.ui.display_red_vertical_marker_checkbox.isChecked():
-                _inf_line = pg.InfiniteLine(clean_and_format_x_axis[current_index], pen=_pen)
+                _inf_line = pg.InfiniteLine(
+                    clean_and_format_x_axis[current_index], pen=_pen
+                )
                 graph.addItem(_inf_line)
 
             x0 = self.parent.ui.graph_position_x.value()
-            y0 = self.parent.ui.graph_position_y.maximum() - self.parent.ui.graph_position_y.value()
+            y0 = (
+                self.parent.ui.graph_position_y.maximum()
+                - self.parent.ui.graph_position_y.value()
+            )
 
             view.addItem(graph)
             graph.setPos(x0, y0)

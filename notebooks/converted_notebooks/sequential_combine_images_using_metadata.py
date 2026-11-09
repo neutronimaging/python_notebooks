@@ -20,7 +20,9 @@
 
 # + run_control={"frozen": false, "read_only": false}
 from __code import system
-from __code.sequential_combine_images_using_metadata import SequentialCombineImagesUsingMetadata
+from __code.sequential_combine_images_using_metadata import (
+    SequentialCombineImagesUsingMetadata,
+)
 
 system.System.select_working_dir(notebook="sequential_combine_images_using_metadata")
 from __code.__all import custom_style
@@ -31,7 +33,9 @@ custom_style.style()
 # # Select Folder containing all images to merge
 
 # + run_control={"frozen": false, "read_only": false}
-o_merge = SequentialCombineImagesUsingMetadata(working_dir=system.System.get_working_dir())
+o_merge = SequentialCombineImagesUsingMetadata(
+    working_dir=system.System.get_working_dir()
+)
 o_merge.select_folder()
 # -
 

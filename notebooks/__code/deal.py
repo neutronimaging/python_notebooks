@@ -2,10 +2,9 @@ import glob
 import os
 import shutil
 
+from __code.ipywe import fileselector
 from IPython.display import HTML, display
 from ipywidgets import widgets
-
-from __code.ipywe import fileselector
 
 
 class Deal:
@@ -61,7 +60,9 @@ class Deal:
 
     def __split(self, list_images=[]):
         # splitting name using hypothesis that name is defined as /path/image###_####.fits
-        list_folder = set([os.path.basename(_file).split("_")[0] for _file in list_images])
+        list_folder = set(
+            [os.path.basename(_file).split("_")[0] for _file in list_images]
+        )
         output_folder_dict = {}
         for _folder in list_folder:
             output_folder_dict[_folder] = []
@@ -71,7 +72,9 @@ class Deal:
             _key = os.path.basename(_image).split("_")[0]
             output_folder_dict[_key].append(_image)
 
-        nbr_images_per_folder = len(output_folder_dict[list(output_folder_dict.keys())[0]])
+        nbr_images_per_folder = len(
+            output_folder_dict[list(output_folder_dict.keys())[0]]
+        )
         nbr_folders = len(list(output_folder_dict.keys()))
 
         return {
@@ -81,7 +84,12 @@ class Deal:
         }
 
     def __deal(
-        self, prefix_name="image", nbr_images_per_folder=0, nbr_folders=0, output_folder="", output_folder_dict={}
+        self,
+        prefix_name="image",
+        nbr_images_per_folder=0,
+        nbr_folders=0,
+        output_folder="",
+        output_folder_dict={},
     ):
         """
         copy the images into their corresponding new output folder
@@ -125,7 +133,9 @@ class Deal:
             for _input_image in _input_list_images:
                 _basename_image = os.path.basename(_input_image)
                 [part1, part2] = _basename_image.split("_")
-                new_name = os.path.join(output_folder, _folder, prefix_name + "_" + part2)
+                new_name = os.path.join(
+                    output_folder, _folder, prefix_name + "_" + part2
+                )
                 shutil.copyfile(_input_image, new_name)
                 _index2 += 1
                 w1.value = _index2

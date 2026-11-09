@@ -38,7 +38,9 @@ class LoadData:
         master_dict = OrderedDict()
         integrated_images_dict = OrderedDict()
         for _folder_index, _folder in enumerate(self.list_folders):
-            self.parent.ui.statusbar.showMessage(f"Loading data from folder {os.path.basename(_folder)}")
+            self.parent.ui.statusbar.showMessage(
+                f"Loading data from folder {os.path.basename(_folder)}"
+            )
             QtGui.QGuiApplication.processEvents()
 
             o_norm = Normalization()
@@ -49,7 +51,9 @@ class LoadData:
 
             # record size of images
             if _folder_index == 0:
-                self.parent.image_height, self.parent.image_width = np.shape(o_norm.data["sample"]["data"][0])
+                self.parent.image_height, self.parent.image_width = np.shape(
+                    o_norm.data["sample"]["data"][0]
+                )
 
             local_dict = OrderedDict()
             self.parent.nbr_files_per_folder = len(list_files)
@@ -76,10 +80,14 @@ class LoadData:
 
         coarse_images_dictionary = OrderedDict()
         for _folder in self.parent.integrated_images.keys():
-            coarse_images_dictionary[os.path.basename(_folder)] = self.parent.integrated_images[_folder]
+            coarse_images_dictionary[os.path.basename(_folder)] = (
+                self.parent.integrated_images[_folder]
+            )
         self.parent.coarse_images_dictionary = coarse_images_dictionary
 
-        self.parent.ui.statusbar.showMessage(f"Done Loading data from {nbr_folder} folders!", 5000)
+        self.parent.ui.statusbar.showMessage(
+            f"Done Loading data from {nbr_folder} folders!", 5000
+        )
         QApplication.restoreOverrideCursor()
 
     @staticmethod
