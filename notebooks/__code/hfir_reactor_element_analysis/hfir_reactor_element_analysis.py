@@ -1,8 +1,7 @@
 import pandas as pd
-from IPython.display import HTML, clear_output, display
-
 from __code.file_handler import read_ascii
 from __code.ipywe import fileselector
+from IPython.display import HTML, clear_output, display
 
 
 class HfirReactorElementAnalysis:
@@ -24,7 +23,11 @@ class HfirReactorElementAnalysis:
         ascii_file_ui.show()
 
     def load_ascii(self, ascii_file_name):
-        display(HTML('<span style="font-size: 20px; color:Blue">Loading data set ... PROCESSING!</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:Blue">Loading data set ... PROCESSING!</span>'
+            )
+        )
 
         # retrieving metadata and column names
         ascii_contain = read_ascii(filename=ascii_file_name)
@@ -44,8 +47,17 @@ class HfirReactorElementAnalysis:
 
         # retrieving data with pandas
         self.pandas_obj = pd.read_csv(
-            ascii_file_name, skiprows=_line_number + 2, delimiter=", ", names=column_labels, dtype=float, index_col=0
+            ascii_file_name,
+            skiprows=_line_number + 2,
+            delimiter=", ",
+            names=column_labels,
+            dtype=float,
+            index_col=0,
         )
 
         clear_output(wait=False)
-        display(HTML('<span style="font-size: 20px; color:green">Loading data set ... DONE!</span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:green">Loading data set ... DONE!</span>'
+            )
+        )

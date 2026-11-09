@@ -1,14 +1,13 @@
 import os
 
 import numpy as np
+from __code._utilities.check import is_float
+from __code._utilities.table_handler import TableHandler
+from __code.registration.calculate import Calculate
 from qtpy import QtGui
 from qtpy.QtWidgets import QMenu
 from scipy.ndimage.interpolation import shift
 from skimage import transform
-
-from __code._utilities.check import is_float
-from __code._utilities.table_handler import TableHandler
-from __code.registration.calculate import Calculate
 
 
 class EventHandler:
@@ -68,7 +67,9 @@ class EventHandler:
         self.parent.ui.tableWidget.blockSignals(True)
 
         for _row in row_selected:
-            o_table.set_item_with_str(row=_row, column=column, cell_str=self.parent.value_to_copy)
+            o_table.set_item_with_str(
+                row=_row, column=column, cell_str=self.parent.value_to_copy
+            )
 
         self.parent.ui.tableWidget.blockSignals(False)
 
@@ -77,7 +78,9 @@ class EventHandler:
 
         o_table = TableHandler(table_ui=self.parent.ui.tableWidget)
 
-        def should_row_be_visible(row_value=None, filter_algo_selected="<=", filter_value=None):
+        def should_row_be_visible(
+            row_value=None, filter_algo_selected="<=", filter_value=None
+        ):
             if is_float(filter_value):
                 o_table.set_all_row_hidden(False)
                 return
@@ -91,7 +94,9 @@ class EventHandler:
 
         if filter_flag:
             # select only rows according to filter
-            filter_column_selected = self.parent.ui.filter_column_name_comboBox.currentText()
+            filter_column_selected = (
+                self.parent.ui.filter_column_name_comboBox.currentText()
+            )
             filter_algo_selected = self.parent.ui.filter_logic_comboBox.currentText()
             filter_value = self.parent.ui.filter_value.text()
 
@@ -106,9 +111,13 @@ class EventHandler:
 
             nbr_row = o_table.row_count()
             for _row in np.arange(nbr_row):
-                _row_value = float(o_table.get_item_str_from_cell(row=_row, column=filter_column_index))
+                _row_value = float(
+                    o_table.get_item_str_from_cell(row=_row, column=filter_column_index)
+                )
                 _should_row_be_visible = should_row_be_visible(
-                    row_value=_row_value, filter_algo_selected=filter_algo_selected, filter_value=filter_value
+                    row_value=_row_value,
+                    filter_algo_selected=filter_algo_selected,
+                    filter_value=filter_value,
                 )
                 o_table.set_row_hidden(_row, not _should_row_be_visible)
         else:
@@ -144,7 +153,9 @@ class EventHandler:
 
         self.parent.legend = self.parent.ui.profile.addLegend()
 
-        region = self.parent.ui.profile_line.getArraySlice(self.parent.live_image, self.parent.ui.image_view.imageItem)
+        region = self.parent.ui.profile_line.getArraySlice(
+            self.parent.live_image, self.parent.ui.image_view.imageItem
+        )
 
         x0 = region[0][0].start + 3
         x1 = region[0][0].stop - 3
@@ -169,20 +180,36 @@ class EventHandler:
                         continue
 
                     _data = np.transpose(self.parent.data_dict["data"][_index])
-                    _filename = os.path.basename(self.parent.data_dict["file_name"][_index])
-                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                    _filename = os.path.basename(
+                        self.parent.data_dict["file_name"][_index]
+                    )
+                    _profile = [
+                        _data[_point[0], _point[1]] for _point in intermediate_points
+                    ]
                     self.parent.ui.profile.plot(
-                        xaxis, _profile, name=_filename, pen=self.parent.list_rgb_profile_color[_index]
+                        xaxis,
+                        _profile,
+                        name=_filename,
+                        pen=self.parent.list_rgb_profile_color[_index],
                     )
 
             else:  # selection slider
-                slider_index = self.parent.ui.opacity_selection_slider.sliderPosition() / 100
+                slider_index = (
+                    self.parent.ui.opacity_selection_slider.sliderPosition() / 100
+                )
                 from_index = int(slider_index)
                 _data = np.transpose(self.parent.data_dict["data"][from_index])
-                _filename = os.path.basename(self.parent.data_dict["file_name"][from_index])
-                _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                _filename = os.path.basename(
+                    self.parent.data_dict["file_name"][from_index]
+                )
+                _profile = [
+                    _data[_point[0], _point[1]] for _point in intermediate_points
+                ]
                 self.parent.ui.profile.plot(
-                    xaxis, _profile, name=_filename, pen=self.parent.list_rgb_profile_color[from_index]
+                    xaxis,
+                    _profile,
+                    name=_filename,
+                    pen=self.parent.list_rgb_profile_color[from_index],
                 )
 
                 if from_index == slider_index:
@@ -191,10 +218,17 @@ class EventHandler:
                 else:
                     to_index = int(slider_index + 1)
                     _data = np.transpose(self.parent.data_dict["data"][to_index])
-                    _filename = os.path.basename(self.parent.data_dict["file_name"][to_index])
-                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                    _filename = os.path.basename(
+                        self.parent.data_dict["file_name"][to_index]
+                    )
+                    _profile = [
+                        _data[_point[0], _point[1]] for _point in intermediate_points
+                    ]
                     self.parent.ui.profile.plot(
-                        xaxis, _profile, name=_filename, pen=self.parent.list_rgb_profile_color[to_index]
+                        xaxis,
+                        _profile,
+                        name=_filename,
+                        pen=self.parent.list_rgb_profile_color[to_index],
                     )
 
         else:
@@ -205,10 +239,17 @@ class EventHandler:
 
                 if not row_selected == self.parent.reference_image_index:
                     _data = np.transpose(self.parent.data_dict["data"][row_selected])
-                    _filename = os.path.basename(self.parent.data_dict["file_name"][row_selected])
-                    _profile = [_data[_point[0], _point[1]] for _point in intermediate_points]
+                    _filename = os.path.basename(
+                        self.parent.data_dict["file_name"][row_selected]
+                    )
+                    _profile = [
+                        _data[_point[0], _point[1]] for _point in intermediate_points
+                    ]
                     self.parent.ui.profile.plot(
-                        xaxis, _profile, name=_filename, pen=self.parent.list_rgb_profile_color[row_selected]
+                        xaxis,
+                        _profile,
+                        name=_filename,
+                        pen=self.parent.list_rgb_profile_color[row_selected],
                     )
 
         # selected_image = self.parent.live_image
@@ -219,11 +260,18 @@ class EventHandler:
 
         # Always display profile reference
         reference_image = np.transpose(self.parent.reference_image)
-        profile_reference = [reference_image[_point[0], _point[1]] for _point in intermediate_points]
+        profile_reference = [
+            reference_image[_point[0], _point[1]] for _point in intermediate_points
+        ]
 
-        reference_file_name = os.path.basename(self.parent.data_dict["file_name"][self.parent.reference_image_index])
+        reference_file_name = os.path.basename(
+            self.parent.data_dict["file_name"][self.parent.reference_image_index]
+        )
         self.parent.ui.profile.plot(
-            xaxis, profile_reference, pen=self.parent.color_reference_profile, name=f"Ref.: {reference_file_name}"
+            xaxis,
+            profile_reference,
+            pen=self.parent.color_reference_profile,
+            name=f"Ref.: {reference_file_name}",
         )
 
     def modified_images(self, list_row=[], all_row=False):

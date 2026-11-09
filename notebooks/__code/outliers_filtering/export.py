@@ -2,11 +2,10 @@ import os
 from pathlib import Path
 
 import numpy as np
-from qtpy.QtWidgets import QApplication, QFileDialog
-
 from __code._utilities.file import make_or_increment_folder_name
 from __code.outliers_filtering.algorithm import Algorithm
 from __code.outliers_filtering.event_handler import EventHandler
+from qtpy.QtWidgets import QApplication, QFileDialog
 
 
 class Export:
@@ -21,7 +20,9 @@ class Export:
         )
 
         if _export_folder:
-            export_folder_name = os.path.join(_export_folder, str(base_folder.name) + "_outliers_corrected")
+            export_folder_name = os.path.join(
+                _export_folder, str(base_folder.name) + "_outliers_corrected"
+            )
             export_folder_name = make_or_increment_folder_name(export_folder_name)
             list_file = self.parent.list_files
             o_event = EventHandler(parent=self.parent)
@@ -31,7 +32,9 @@ class Export:
             self.parent.eventProgress.setVisible(True)
             for _row, _file in enumerate(list_file):
                 o_norm = o_event.load_data_object(file_name=_file)
-                o_algo = Algorithm(parent=self.parent, data=np.squeeze(o_norm.data["sample"]["data"]))
+                o_algo = Algorithm(
+                    parent=self.parent, data=np.squeeze(o_norm.data["sample"]["data"])
+                )
                 o_algo.run()
                 data_corrected = o_algo.get_processed_data()
                 o_norm.data["sample"]["data"][0] = data_corrected

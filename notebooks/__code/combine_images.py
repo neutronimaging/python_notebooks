@@ -1,13 +1,12 @@
 import os
 
 import numpy as np
+from __code import file_handler
+from __code.ipywe import fileselector
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
 from scipy.stats.mstats import gmean
-
-from __code import file_handler
-from __code.ipywe import fileselector
 
 
 class CombineImages:
@@ -20,9 +19,9 @@ class CombineImages:
 
     def select_files(self):
         self.files_list_widget = fileselector.FileSelectorPanel(
-            instruction="select files to combine", 
-            start_dir=self.input_working_dir, 
-            multiple=True
+            instruction="select files to combine",
+            start_dir=self.input_working_dir,
+            multiple=True,
         )
         self.files_list_widget.show()
 
@@ -45,7 +44,8 @@ class CombineImages:
         )
 
         self.combine_method = widgets.RadioButtons(
-            options=["add", "arithmetic mean", "geometric mean", "median"], value="arithmetic mean"
+            options=["add", "arithmetic mean", "geometric mean", "median"],
+            value="arithmetic mean",
         )
 
         vertical = widgets.VBox([alge_box, geo_box, self.combine_method])
@@ -80,17 +80,23 @@ class CombineImages:
         short_list_files = [os.path.basename(_file) for _file in list_files]
 
         merging_algo = self.__get_formated_merging_algo_name()
-        [default_new_name, ext] = self.__create_merged_file_name(list_files_names=short_list_files)
+        [default_new_name, ext] = self.__create_merged_file_name(
+            list_files_names=short_list_files
+        )
 
         display(widgets.HTML(value="<hr>"))
 
-        top_label = widgets.Label("Define the new output file name", layout=widgets.Layout(width="100%"))
+        top_label = widgets.Label(
+            "Define the new output file name", layout=widgets.Layout(width="100%")
+        )
 
         folder_name = os.path.dirname(list_files[0])
 
         box1 = widgets.HBox(
             [
-                widgets.Label("Original folder name", layout=widgets.Layout(width="20%")),
+                widgets.Label(
+                    "Original folder name", layout=widgets.Layout(width="20%")
+                ),
                 widgets.Label(f"{folder_name}", layout=widgets.Layout(width="80%")),
             ]
         )
@@ -99,8 +105,14 @@ class CombineImages:
         box = widgets.HBox(
             [
                 widgets.Label("File Name", layout=widgets.Layout(width="20%")),
-                widgets.Text("", placeholder="Your file name here", layout=widgets.Layout(width="60%")),
-                widgets.Label(f"_{merging_algo}{ext}", layout=widgets.Layout(width="20%")),
+                widgets.Text(
+                    "",
+                    placeholder="Your file name here",
+                    layout=widgets.Layout(width="60%"),
+                ),
+                widgets.Label(
+                    f"_{merging_algo}{ext}", layout=widgets.Layout(width="20%")
+                ),
             ]
         )
         self.default_filename_ui = box.children[1]
@@ -137,7 +149,10 @@ class CombineImages:
         _metadata = o_load.data["sample"]["metadata"]
 
         merging_ui = widgets.HBox(
-            [widgets.Label("Merging Progress", layout=widgets.Layout(width="20%")), widgets.IntProgress(max=2)]
+            [
+                widgets.Label("Merging Progress", layout=widgets.Layout(width="20%")),
+                widgets.IntProgress(max=2),
+            ]
         )
         display(merging_ui)
         w1 = merging_ui.children[1]
@@ -149,7 +164,9 @@ class CombineImages:
         _new_name = self.default_filename_ui.value + self.ext_ui.value
         output_file_name = os.path.join(output_folder, _new_name)
 
-        file_handler.save_data(data=combined_data, filename=output_file_name, metadata=_metadata[0])
+        file_handler.save_data(
+            data=combined_data, filename=output_file_name, metadata=_metadata[0]
+        )
 
         w1.value = 2
 
@@ -160,7 +177,13 @@ class CombineImages:
                 + "</span>"
             )
         )
-        display(HTML('<span style="font-size: 20px; color:blue">In Folder: ' + output_folder + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">In Folder: '
+                + output_folder
+                + "</span>"
+            )
+        )
 
     def __create_merged_file_name(self, list_files_names=[]):
         """Create the new base name using a combine name of all the input file

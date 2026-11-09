@@ -5,7 +5,6 @@ from IPython.display import HTML, display
 def js_alert(m):
     js = "<script>alert('%s');</script>" % m
     display(HTML(js))
-    return
 
 
 layout_reserved_keys = ["keys", "comm"]
@@ -40,7 +39,6 @@ def updateLayout(this, other):
 def close(w):
     "recursively close a widget"
     recursive_op(w, lambda x: x.close())
-    return
 
 
 def disable(w):
@@ -50,7 +48,6 @@ def disable(w):
         w.disabled = True
 
     recursive_op(w, _)
-    return
 
 
 def enable(w):
@@ -60,7 +57,6 @@ def enable(w):
         w.disabled = False
 
     recursive_op(w, _)
-    return
 
 
 def recursive_op(w, single_op):
@@ -69,4 +65,3 @@ def recursive_op(w, single_op):
             recursive_op(c, single_op)
             continue
     single_op(w)
-    return

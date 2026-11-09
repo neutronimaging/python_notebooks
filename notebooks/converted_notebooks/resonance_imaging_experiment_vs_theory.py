@@ -44,11 +44,10 @@ from __code.ui_builder import UiBuilder
 o_builder = UiBuilder(ui_name="ui_resonance_imaging_experiment_vs_theory.ui")
 o_builder = UiBuilder(ui_name="ui_resonance_imaging_layers_input.ui")
 
-from NeuNorm.normalization import Normalization
-
 from __code import utilities
 from __code.display_counts_of_region_vs_stack_vs_theory import ImageWindow
 from __code.display_imaging_resonance_sample_definition import SampleWindow
+from NeuNorm.normalization import Normalization
 
 if debugging:
     ipts = IPTS
@@ -64,7 +63,10 @@ print(f"Working dir: {working_dir}")
 
 # + format="tab" run_control={"frozen": false, "read_only": false}
 input_folder_ui = ipywe.fileselector.FileSelectorPanel(
-    instruction="Select Input Folder", type="directory", start_dir=working_dir, multiple=False
+    instruction="Select Input Folder",
+    type="directory",
+    start_dir=working_dir,
+    multiple=False,
 )
 input_folder_ui.show()
 
@@ -89,7 +91,9 @@ _sample.show()
 # + run_control={"frozen": false, "read_only": false}
 o_reso = _sample.o_reso
 
-_image = ImageWindow(stack=(o_norm.data["sample"]["data"]), working_folder=working_folder, o_reso=o_reso)
+_image = ImageWindow(
+    stack=(o_norm.data["sample"]["data"]), working_folder=working_folder, o_reso=o_reso
+)
 _image.show()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

@@ -1,29 +1,29 @@
 import copy
-from glob import glob
-from importlib.resources import files
 import os
 from collections import OrderedDict
+from glob import glob
 
+import ipywidgets as widgets
+from __code import load_ui
+from __code.metadata_overlapping_images import HELP_PAGE
+from __code.metadata_overlapping_images.config import debug_input_folders
+from __code.metadata_overlapping_images.export_images_and_video import (
+    ExportImagesAndVideo,
+)
 from IPython.display import HTML, display
 from NeuNorm.normalization import Normalization
 from qtpy import QtGui
 from qtpy.QtWidgets import QFileDialog, QMainWindow
-import ipywidgets as widgets
-
-from __code import load_ui
-from __code.metadata_overlapping_images import HELP_PAGE
-from __code.metadata_overlapping_images.export_images_and_video import ExportImagesAndVideo
 
 from .display import DisplayImages, DisplayMetadataPyqtUi, DisplayScalePyqtUi
 from .event_handler import MetadataTableHandler
 from .export_table import ExportTable
 from .initialization import Initializer
-from __code.metadata_overlapping_images.config import debug_input_folders
 
 
 class MetadataOverlappingImagesUi(QMainWindow):
     x_axis_column_index = 0
-    y_axis_column_index = 2 # default value
+    y_axis_column_index = 2  # default value
     xy_axis_menu_logo = {
         "enable": "\u2713  ",  # \u25CF (dark circle)
         "disable": "     ",
@@ -97,7 +97,14 @@ class MetadataOverlappingImagesUi(QMainWindow):
     graph_pyqt_ui = None
 
     # size of tables
-    guide_table_width = [40, 400, 150, 150, 150, 150] # width of the table columns (checkbox, name, value, operation 1, value 1, operation 2, value 2)
+    guide_table_width = [
+        40,
+        400,
+        150,
+        150,
+        150,
+        150,
+    ]  # width of the table columns (checkbox, name, value, operation 1, value 1, operation 2, value 2)
 
     live_image = []
     display_ui = []
@@ -110,7 +117,10 @@ class MetadataOverlappingImagesUi(QMainWindow):
     list_metadata = []
     dict_list_metadata = OrderedDict()  #  {0: '10', 1: 'hfir', ...}
     list_scale_units = ["mm", "\u00b5m", "nm"]
-    list_scale_units = {"string": ["mm", "\u00b5m", "nm"], "html": ["mm", "<span>&#181;m</span>", "nm"]}
+    list_scale_units = {
+        "string": ["mm", "\u00b5m", "nm"],
+        "html": ["mm", "<span>&#181;m</span>", "nm"],
+    }
 
     rgba_color = {
         "white": (255, 255, 255, 255, None),
@@ -128,7 +138,13 @@ class MetadataOverlappingImagesUi(QMainWindow):
         "black": (0, 0, 0),
     }
 
-    html_color = {"white": "#FFF", "red": "#F00", "green": "#0F0", "blue": "#00F", "black": "#000"}
+    html_color = {
+        "white": "#FFF",
+        "red": "#F00",
+        "green": "#0F0",
+        "blue": "#00F",
+        "black": "#000",
+    }
 
     # ui of pop up window that allows to define metadata column value (format it)
     metadata_string_format_ui = None
@@ -141,7 +157,7 @@ class MetadataOverlappingImagesUi(QMainWindow):
             )
         )
 
-        super(MetadataOverlappingImagesUi, self).__init__(parent)
+        super().__init__(parent)
 
         ui_full_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -153,19 +169,20 @@ class MetadataOverlappingImagesUi(QMainWindow):
         if debug:
             debug_input_folder = None
             for _debug_input_folder in debug_input_folders:
-                
                 if os.path.exists(_debug_input_folder):
                     debug_input_folder = _debug_input_folder
                     break
-                
+
             if debug_input_folder is None:
-                raise FileNotFoundError(f"Debug input folder not found: {_debug_input_folder}")
+                raise FileNotFoundError(
+                    f"Debug input folder not found: {_debug_input_folder}"
+                )
 
             list_images = glob(os.path.join(debug_input_folder, "*.tif*"))
             list_images.sort()
             self.out = widgets.Output()
             display(self.out)
-            
+
             with self.out:
                 o_norm = Normalization()
                 o_norm.load(file=list_images, notebook=True, check_shape=False)
@@ -206,12 +223,12 @@ class MetadataOverlappingImagesUi(QMainWindow):
     def table_widget_cell_clicked(self, row, column):
         o_metadata_table = MetadataTableHandler(parent=self)
         o_metadata_table.cell_clicked(row, column)
-        
+
     def table_widget_selection_changed(self):
         column = self.ui.tableWidget.currentColumn()
         o_metadata_table = MetadataTableHandler(parent=self)
         o_metadata_table.cell_clicked(-1, column)
-        
+
     def previous_image_button_clicked(self):
         self.change_slider(offset=-1)
         self.update_metadata_pyqt_ui()

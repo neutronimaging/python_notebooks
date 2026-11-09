@@ -26,7 +26,9 @@ warnings.filterwarnings("ignore")
 from __code import system
 from __code.group_images_by_cycle_for_grating_experiment.group_images import GroupImages
 
-system.System.select_working_dir(notebook="group_images_by_cycle_for_grating_experiment")
+system.System.select_working_dir(
+    notebook="group_images_by_cycle_for_grating_experiment"
+)
 from __code.__all import custom_style
 
 custom_style.style()

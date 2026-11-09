@@ -28,8 +28,12 @@ class Ui_MainWindow:
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.splitter_between_previews_and_table = QtWidgets.QSplitter(self.tab)
         self.splitter_between_previews_and_table.setOrientation(QtCore.Qt.Vertical)
-        self.splitter_between_previews_and_table.setObjectName("splitter_between_previews_and_table")
-        self.splitter_between_previews = QtWidgets.QSplitter(self.splitter_between_previews_and_table)
+        self.splitter_between_previews_and_table.setObjectName(
+            "splitter_between_previews_and_table"
+        )
+        self.splitter_between_previews = QtWidgets.QSplitter(
+            self.splitter_between_previews_and_table
+        )
         self.splitter_between_previews.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_between_previews.setObjectName("splitter_between_previews")
         self.groupBox_2 = QtWidgets.QGroupBox(self.splitter_between_previews)
@@ -52,7 +56,9 @@ class Ui_MainWindow:
         self.target_widget.setObjectName("target_widget")
         self.horizontalLayout_2.addWidget(self.target_widget)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
-        self.tableWidget = QtWidgets.QTableWidget(self.splitter_between_previews_and_table)
+        self.tableWidget = QtWidgets.QTableWidget(
+            self.splitter_between_previews_and_table
+        )
         self.tableWidget.setMaximumSize(QtCore.QSize(16777215, 200))
         self.tableWidget.setAlternatingRowColors(True)
         self.tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
@@ -108,7 +114,9 @@ class Ui_MainWindow:
         self.up_button.setFlat(True)
         self.up_button.setObjectName("up_button")
         self.gridLayout.addWidget(self.up_button, 1, 3, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
         self.left_left_button = QtWidgets.QPushButton(self.groupBox_4)
         self.left_left_button.setStyleSheet("border: None")
@@ -125,7 +133,9 @@ class Ui_MainWindow:
         self.left_button.setFlat(True)
         self.left_button.setObjectName("left_button")
         self.gridLayout.addWidget(self.left_button, 2, 2, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout.addItem(spacerItem1, 2, 3, 1, 1)
         self.right_button = QtWidgets.QPushButton(self.groupBox_4)
         self.right_button.setStyleSheet("border: None")
@@ -139,7 +149,9 @@ class Ui_MainWindow:
         self.right_right_button.setFlat(True)
         self.right_right_button.setObjectName("right_right_button")
         self.gridLayout.addWidget(self.right_right_button, 2, 5, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout.addItem(spacerItem2, 2, 6, 1, 1)
         self.down_button = QtWidgets.QPushButton(self.groupBox_4)
         self.down_button.setStyleSheet("border: None")
@@ -157,7 +169,9 @@ class Ui_MainWindow:
         self.verticalLayout_7.addWidget(self.groupBox_4)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_4.addItem(spacerItem3)
         self.label_2 = QtWidgets.QLabel(self.tab_2)
         self.label_2.setObjectName("label_2")
@@ -202,7 +216,9 @@ class Ui_MainWindow:
         self.cancel_button = QtWidgets.QPushButton(self.centralwidget)
         self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout.addWidget(self.cancel_button)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem4)
         self.export_button = QtWidgets.QPushButton(self.centralwidget)
         self.export_button.setObjectName("export_button")
@@ -225,8 +241,12 @@ class Ui_MainWindow:
         self.tabWidget.setCurrentIndex(0)
         self.cancel_button.clicked.connect(MainWindow.cancel_clicked)  # type: ignore
         self.export_button.clicked.connect(MainWindow.apply_clicked)  # type: ignore
-        self.tableWidget.itemSelectionChanged.connect(MainWindow.table_widget_selection_changed)  # type: ignore
-        self.run_stitching_button.clicked.connect(MainWindow.run_stitching_button_clicked)  # type: ignore
+        self.tableWidget.itemSelectionChanged.connect(
+            MainWindow.table_widget_selection_changed
+        )  # type: ignore
+        self.run_stitching_button.clicked.connect(
+            MainWindow.run_stitching_button_clicked
+        )  # type: ignore
         self.left_button.pressed.connect(MainWindow.left_button_pressed)  # type: ignore
         self.left_button.released.connect(MainWindow.left_button_released)  # type: ignore
         self.left_left_button.pressed.connect(MainWindow.left_left_button_pressed)  # type: ignore
@@ -257,12 +277,16 @@ class Ui_MainWindow:
         item = self.tableWidget.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "Status"))
         self.run_stitching_button.setText(_translate("MainWindow", "Run Stitching "))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Step 1"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Step 1")
+        )
         self.label.setText(_translate("MainWindow", "File Names"))
         self.groupBox_4.setTitle(_translate("MainWindow", "Manual Mode"))
         self.label_2.setText(_translate("MainWindow", "->"))
         self.label_5.setText(_translate("MainWindow", "->>"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Step 2"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Step 2")
+        )
         self.groupBox_3.setTitle(_translate("MainWindow", "Stiched Image"))
         self.cancel_button.setText(_translate("MainWindow", "Close"))
         self.export_button.setText(_translate("MainWindow", "Export ..."))
