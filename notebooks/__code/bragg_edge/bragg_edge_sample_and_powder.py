@@ -6,18 +6,17 @@ from pathlib import Path
 
 import numpy as np
 import plotly.graph_objs as go
+from __code import file_handler, ipywe
+from __code._utilities.file import get_full_home_file_name
+from __code.bragg_edge.bragg_edge import BraggEdge as BraggEdgeParent
+from __code.bragg_edge.bragg_edge import Interface
+from __code.file_folder_browser import FileFolderBrowser
 from IPython.display import HTML, display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
 from NeuNorm.roi import ROI
 from neutronbraggedge.experiment_handler import *
 from plotly.offline import iplot
-
-from __code import file_handler, ipywe
-from __code._utilities.file import get_full_home_file_name
-from __code.bragg_edge.bragg_edge import BraggEdge as BraggEdgeParent
-from __code.bragg_edge.bragg_edge import Interface
-from __code.file_folder_browser import FileFolderBrowser
 
 LOG_FILE_NAME = ".bragg_edge_normalization.log"
 
@@ -27,7 +26,7 @@ class BraggEdge(BraggEdgeParent):
     select_ob_widget = None
 
     def __init__(self, working_dir="./"):
-        super(BraggEdge, self).__init__(working_dir=working_dir)
+        super().__init__(working_dir=working_dir)
 
         self.log_file_name = get_full_home_file_name(LOG_FILE_NAME)
         logging.basicConfig(
@@ -63,7 +62,9 @@ class BraggEdge(BraggEdgeParent):
 
         else:
             # ask for spectra file
-            logging.info("-> spectra file NOT FOUND! Asking user to select time spectra file")
+            logging.info(
+                "-> spectra file NOT FOUND! Asking user to select time spectra file"
+            )
             self.select_time_spectra_file()
 
     def select_time_spectra_file(self):
@@ -78,7 +79,9 @@ class BraggEdge(BraggEdgeParent):
 
         self.time_spectra_ui.show()
         self.cancel_button = widgets.Button(
-            description="or Do Not Select any Time Spectra", button_style="info", layout=widgets.Layout(width="100%")
+            description="or Do Not Select any Time Spectra",
+            button_style="info",
+            layout=widgets.Layout(width="100%"),
         )
         display(self.cancel_button)
         self.cancel_button.on_click(self.cancel_time_spectra_selection)
@@ -92,7 +95,11 @@ class BraggEdge(BraggEdgeParent):
         logging.info("User cancel loading time spectra!")
         self.time_spectra_ui.remove()
         self.cancel_button.close()
-        display(HTML('<span style="font-size: 20px; color:blue">NO Spectra File loaded! </span>'))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">NO Spectra File loaded! </span>'
+            )
+        )
 
     def load_files(self, data_type="sample", folder=None):
         self.starting_dir = os.path.dirname(folder)
@@ -145,7 +152,9 @@ class BraggEdge(BraggEdgeParent):
 
         ## button
         self.select_ob_widget = widgets.Button(
-            description="Select OB ...", button_style="success", layout=widgets.Layout(width="100%")
+            description="Select OB ...",
+            button_style="success",
+            layout=widgets.Layout(width="100%"),
         )
         self.select_ob_widget.on_click(self.select_ob_folder)
 
@@ -153,15 +162,23 @@ class BraggEdge(BraggEdgeParent):
         spacer = widgets.HTML(value="<hr>")
 
         ## nbr of images to use
-        nbr_images_to_use_label = widgets.Label("Nbr of images to use in preview", layout=widgets.Layout(width="20%"))
+        nbr_images_to_use_label = widgets.Label(
+            "Nbr of images to use in preview", layout=widgets.Layout(width="20%")
+        )
         nbr_of_images_to_use_in_preview = self.get_nbr_of_images_to_use_in_preview()
         self.nbr_images_slider_with_ob = widgets.IntSlider(
-            min=2, max=len(self.list_files), value=nbr_of_images_to_use_in_preview, layout=widgets.Layout(width="80%")
+            min=2,
+            max=len(self.list_files),
+            value=nbr_of_images_to_use_in_preview,
+            layout=widgets.Layout(width="80%"),
         )
         hbox_1 = widgets.HBox([nbr_images_to_use_label, self.nbr_images_slider_with_ob])
 
         self.select_roi_widget_with_ob = widgets.Button(
-            description="OPTIONAL: Select Region of interest away from " "sample " "to " "improve normalization",
+            description="OPTIONAL: Select Region of interest away from "
+            "sample "
+            "to "
+            "improve normalization",
             layout=widgets.Layout(width="100%"),
         )
         self.select_roi_widget_with_ob.on_click(self.select_roi_with_ob)
@@ -179,18 +196,25 @@ class BraggEdge(BraggEdgeParent):
 
         ## nbr of images to use
         self.nbr_images_slider_without_ob = widgets.IntSlider(
-            min=2, max=len(self.list_files), value=nbr_of_images_to_use_in_preview, layout=widgets.Layout(width="80%")
+            min=2,
+            max=len(self.list_files),
+            value=nbr_of_images_to_use_in_preview,
+            layout=widgets.Layout(width="80%"),
         )
-        hbox_without_ob = widgets.HBox([nbr_images_to_use_label, self.nbr_images_slider_without_ob])
+        hbox_without_ob = widgets.HBox(
+            [nbr_images_to_use_label, self.nbr_images_slider_without_ob]
+        )
 
         select_roi_widget_without_ob = widgets.Button(
-            description="MANDATORY: Select region of interest " "away from " "sample",
+            description="MANDATORY: Select region of interest away from sample",
             button_style="success",
             layout=widgets.Layout(width="100%"),
         )
         select_roi_widget_without_ob.on_click(self.select_roi_without_ob)
 
-        vbox_without_ob = widgets.VBox([hbox_without_ob, spacer, select_roi_widget_without_ob])
+        vbox_without_ob = widgets.VBox(
+            [hbox_without_ob, spacer, select_roi_widget_without_ob]
+        )
 
         self.accordion = widgets.Accordion(children=[vbox_with_ob, vbox_without_ob])
         self.accordion.set_title(0, "With OB")
@@ -243,17 +267,37 @@ class BraggEdge(BraggEdgeParent):
         len_sample = len(self.o_norm.data["sample"]["file_name"])
 
         if len_ob == len_sample:
-            display(HTML('<span style="font-size: 15px; color:green"> Sample and OB have the same size!</span>'))
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:green"> Sample and OB have the same size!</span>'
+                )
+            )
             return
 
         if len_ob < len_sample:
-            self.o_norm.data["sample"]["data"] = self.o_norm.data["sample"]["data"][0:len_ob]
-            self.o_norm.data["sample"]["file_name"] = self.o_norm.data["sample"]["file_name"][0:len_ob]
-            display(HTML('<span style="font-size: 15px; color:green"> Truncated Sample array to match OB!</span>'))
+            self.o_norm.data["sample"]["data"] = self.o_norm.data["sample"]["data"][
+                0:len_ob
+            ]
+            self.o_norm.data["sample"]["file_name"] = self.o_norm.data["sample"][
+                "file_name"
+            ][0:len_ob]
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:green"> Truncated Sample array to match OB!</span>'
+                )
+            )
         else:
-            self.o_norm.data["ob"]["data"] = self.o_norm.data["ob"]["data"][0:len_sample]
-            self.o_norm.data["ob"]["file_name"] = self.o_norm.data["ob"]["file_name"][0:len_sample]
-            display(HTML('<span style="font-size: 15px; color:green"> Truncated OB array to match Sample!</span>'))
+            self.o_norm.data["ob"]["data"] = self.o_norm.data["ob"]["data"][
+                0:len_sample
+            ]
+            self.o_norm.data["ob"]["file_name"] = self.o_norm.data["ob"]["file_name"][
+                0:len_sample
+            ]
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:green"> Truncated OB array to match Sample!</span>'
+                )
+            )
 
     def load_time_spectra(self):
         _tof_handler = TOF(filename=self.spectra_file)
@@ -275,12 +319,16 @@ class BraggEdge(BraggEdgeParent):
             init_value = 1
         box1 = widgets.HBox(
             [
-                widgets.Label("Nbr of images to use:", layout=widgets.Layout(width="15")),
+                widgets.Label(
+                    "Nbr of images to use:", layout=widgets.Layout(width="15")
+                ),
                 widgets.IntSlider(value=init_value, max=nbr_images, min=1),
             ]
         )
         # layout=widgets.Layout(width='50%'))])
-        box2 = widgets.Label("(The more you select, the longer it will take to display the preview!)")
+        box2 = widgets.Label(
+            "(The more you select, the longer it will take to display the preview!)"
+        )
         vbox = widgets.VBox([box1, box2])
         display(vbox)
         self.number_of_data_to_use_ui = box1.children[1]
@@ -289,7 +337,9 @@ class BraggEdge(BraggEdgeParent):
         _data = self.o_norm.data["sample"]["data"]
 
         nbr_images = len(_data)
-        list_of_indexes_to_keep = random.sample(list(range(nbr_images)), nbr_data_to_use)
+        list_of_indexes_to_keep = random.sample(
+            list(range(nbr_images)), nbr_data_to_use
+        )
 
         final_array = []
         for _index in list_of_indexes_to_keep:
@@ -317,8 +367,14 @@ class BraggEdge(BraggEdgeParent):
     def normalization_without_ob(self, list_rois):
         logging.info("Running normalization without OB")
         if list_rois is None:
-            logging.info("-> no ROIs found! At least one ROI must be provided. Normalization Aborted!")
-            display(HTML('<span style="font-size: 15px; color:red"> You need to provide a ROI!</span>'))
+            logging.info(
+                "-> no ROIs found! At least one ROI must be provided. Normalization Aborted!"
+            )
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:red"> You need to provide a ROI!</span>'
+                )
+            )
             return
 
         else:
@@ -333,8 +389,14 @@ class BraggEdge(BraggEdgeParent):
                 list_o_roi.append(ROI(x0=_x0, y0=_y0, x1=_x1, y1=_y1))
 
                 logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
-                self.o_norm.normalization(roi=list_o_roi, use_only_sample=True, notebook=True, force=True)
-        display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
+                self.o_norm.normalization(
+                    roi=list_o_roi, use_only_sample=True, notebook=True, force=True
+                )
+        display(
+            HTML(
+                '<span style="font-size: 15px; color:green"> Normalization DONE! </span>'
+            )
+        )
         logging.info("-> Done!")
 
     def normalization_with_ob(self, list_rois):
@@ -355,21 +417,31 @@ class BraggEdge(BraggEdgeParent):
 
             logging.info(f"-> Normalization with {len(list_o_roi)} ROIs")
             self.o_norm.normalization(roi=list_o_roi, notebook=True, force=True)
-        display(HTML('<span style="font-size: 15px; color:green"> Normalization DONE! </span>'))
+        display(
+            HTML(
+                '<span style="font-size: 15px; color:green"> Normalization DONE! </span>'
+            )
+        )
         logging.info("-> Done!")
 
     def export_normalized_data(self):
         self.o_folder = FileFolderBrowser(
-            working_dir=self.working_dir, next_function=self.export_normalized_data_step2, ipts_folder=self.ipts_folder
+            working_dir=self.working_dir,
+            next_function=self.export_normalized_data_step2,
+            ipts_folder=self.ipts_folder,
         )
-        self.o_folder.select_output_folder_with_new(instruction="Select where to create the normalized data ...")
+        self.o_folder.select_output_folder_with_new(
+            instruction="Select where to create the normalized data ..."
+        )
 
     def export_normalized_data_step2(self, output_folder):
         logging.info("export normalized data")
         logging.info(f"-> output_folder: {output_folder}")
         output_folder = os.path.abspath(output_folder)
         self.o_folder.list_output_folders_ui.shortcut_buttons.close()
-        normalized_export_folder = str(Path(output_folder) / (self.data_folder_name + "_normalized"))
+        normalized_export_folder = str(
+            Path(output_folder) / (self.data_folder_name + "_normalized")
+        )
         file_handler.make_or_reset_folder(normalized_export_folder)
 
         self.o_norm.export(folder=normalized_export_folder)
@@ -382,8 +454,14 @@ class BraggEdge(BraggEdgeParent):
         )
         if self.spectra_file:
             logging.info("-> time spectra copied to output folder!")
-            file_handler.copy_files_to_folder(list_files=[self.spectra_file], output_folder=normalized_export_folder)
-            display(HTML('<span style="font-size: 15px; color:green"> Copied time spectra file to same folder </span>'))
+            file_handler.copy_files_to_folder(
+                list_files=[self.spectra_file], output_folder=normalized_export_folder
+            )
+            display(
+                HTML(
+                    '<span style="font-size: 15px; color:green"> Copied time spectra file to same folder </span>'
+                )
+            )
         else:
             logging.info("->No time spectra copied!")
 
@@ -394,8 +472,12 @@ class BraggEdge(BraggEdgeParent):
         nbr_data = len(data)
         box_ui = widgets.HBox(
             [
-                widgets.Label("Calculate Counts vs lambda", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(min=0, max=nbr_data, value=0, layout=widgets.Layout(width="50%")),
+                widgets.Label(
+                    "Calculate Counts vs lambda", layout=widgets.Layout(width="20%")
+                ),
+                widgets.IntProgress(
+                    min=0, max=nbr_data, value=0, layout=widgets.Layout(width="50%")
+                ),
             ]
         )
         progress_bar = box_ui.children[1]
@@ -424,7 +506,9 @@ class BraggEdge(BraggEdgeParent):
         box_ui.close()
 
     def plot(self):
-        trace = go.Scatter(x=self.lambda_array, y=self.counts_vs_file_index, mode="markers")
+        trace = go.Scatter(
+            x=self.lambda_array, y=self.counts_vs_file_index, mode="markers"
+        )
 
         layout = go.Layout(
             height=500,
@@ -487,8 +571,12 @@ class BraggEdge(BraggEdgeParent):
         iplot(figure)
 
     def select_output_data_folder(self):
-        o_folder = FileFolderBrowser(working_dir=self.working_dir, next_function=self.export_data)
-        o_folder.select_output_folder(instruction="Select where to create the ascii file...")
+        o_folder = FileFolderBrowser(
+            working_dir=self.working_dir, next_function=self.export_data
+        )
+        o_folder.select_output_folder(
+            instruction="Select where to create the ascii file..."
+        )
 
     def make_output_file_name(self, output_folder="", input_folder=""):
         file_name = os.path.basename(input_folder) + "_counts_vs_lambda_tof.txt"
@@ -496,7 +584,9 @@ class BraggEdge(BraggEdgeParent):
 
     def export_data(self, output_folder):
         input_folder = os.path.dirname(self.o_norm.data["sample"]["file_name"][0])
-        output_file_name = self.make_output_file_name(output_folder=output_folder, input_folder=input_folder)
+        output_file_name = self.make_output_file_name(
+            output_folder=output_folder, input_folder=input_folder
+        )
 
         lambda_array = self.lambda_array
         counts_vs_file_index = self.counts_vs_file_index
@@ -514,15 +604,21 @@ class BraggEdge(BraggEdgeParent):
                 _y0 = roi["y0"]
                 _x1 = roi["x1"]
                 _y1 = roi["y1"]
-                metadata.append(f"# ROI {index}: x0={_x0}, y0={_y0}, x1={_x1}, y1={_y1}")
+                metadata.append(
+                    f"# ROI {index}: x0={_x0}, y0={_y0}, x1={_x1}, y1={_y1}"
+                )
         metadata.append("#")
         metadata.append("# tof (micros), lambda (Angstroms), Average transmission")
 
         data = []
-        for _t, _l, _c in zip(tof_array, lambda_array, counts_vs_file_index, strict=False):
+        for _t, _l, _c in zip(
+            tof_array, lambda_array, counts_vs_file_index, strict=False
+        ):
             data.append(f"{_t}, {_l}, {_c}")
 
-        file_handler.make_ascii_file(metadata=metadata, data=data, output_file_name=output_file_name, dim="1d")
+        file_handler.make_ascii_file(
+            metadata=metadata, data=data, output_file_name=output_file_name, dim="1d"
+        )
 
         if os.path.exists(output_file_name):
             display(
@@ -543,7 +639,9 @@ class BraggEdge(BraggEdgeParent):
             )
 
     def select_output_table_folder(self):
-        o_folder = FileFolderBrowser(working_dir=self.working_dir, next_function=self.export_table)
+        o_folder = FileFolderBrowser(
+            working_dir=self.working_dir, next_function=self.export_table
+        )
         o_folder.select_output_folder()
 
     def export_table(self, output_folder):
@@ -570,9 +668,17 @@ class BraggEdge(BraggEdgeParent):
 
         output_file_name = os.path.join(output_folder, f"bragg_edges_of_{material}.txt")
 
-        file_handler.make_ascii_file(metadata=metadata, data=data, dim="1d", output_file_name=output_file_name)
+        file_handler.make_ascii_file(
+            metadata=metadata, data=data, dim="1d", output_file_name=output_file_name
+        )
 
-        display(HTML('<span style="font-size: 20px; color:blue">File created : ' + output_file_name + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">File created : '
+                + output_file_name
+                + "</span>"
+            )
+        )
 
     def select_folder(self, message="", next_function=None):
         folder_widget = ipywe.fileselector.FileSelectorPanel(

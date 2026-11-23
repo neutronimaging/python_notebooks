@@ -2,9 +2,8 @@ import re
 
 import numpy as np
 import pandas as pd
-from IPython.display import HTML, display
-
 from __code._utilities.file import retrieve_metadata_value_from_ascii_file
+from IPython.display import HTML, display
 
 
 def loading_linear_profile_file(file_name):
@@ -15,7 +14,7 @@ def loading_linear_profile_file(file_name):
     nbr_files = 0
     this_line_contains_the_original_image_file_name = False
     with open(file_name) as f:
-        for line in f.readlines():
+        for line in f:
             if line.startswith("##"):
                 axis_legend = line[1:].split(",")
 
@@ -82,11 +81,22 @@ def loading_radial_profile_file(list_of_ascii_files):
     list_of_original_image_files = []
     list_of_timestamp = []
     for _file in list_of_ascii_files:
-        _data = pd.read_csv(_file, skiprows=6, delimiter=",", names=["mean counts"], dtype=float, index_col=0)
+        _data = pd.read_csv(
+            _file,
+            skiprows=6,
+            delimiter=",",
+            names=["mean counts"],
+            dtype=float,
+            index_col=0,
+        )
         list_of_data.append(_data)
-        _original_image_file = retrieve_metadata_value_from_ascii_file(filename=_file, metadata_name="# source image")
+        _original_image_file = retrieve_metadata_value_from_ascii_file(
+            filename=_file, metadata_name="# source image"
+        )
         list_of_original_image_files.append(_original_image_file)
-        _time_stamp = retrieve_metadata_value_from_ascii_file(filename=_file, metadata_name="# timestamp")
+        _time_stamp = retrieve_metadata_value_from_ascii_file(
+            filename=_file, metadata_name="# timestamp"
+        )
         list_of_timestamp.append(_time_stamp)
 
     nbr_files = str(len(list_of_ascii_files))

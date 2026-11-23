@@ -4,14 +4,13 @@ import time
 from collections import OrderedDict
 
 import numpy as np
+from __code import file_handler
+from __code.metadata_handler import MetadataHandler
 from dateutil.parser import parse
 from dateutil.relativedelta import relativedelta
 from IPython.display import display
 from ipywidgets import widgets
 from PIL import Image
-
-from __code import file_handler
-from __code.metadata_handler import MetadataHandler
 
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -38,7 +37,13 @@ def format_time_stamp(file_name=None, time_stamp=None):
     [hours, minutes, seconds] = hours.split(":")
     _dict_time = {"hours": hours, "minutes": minutes, "seconds": seconds}
 
-    _dict_time_stamp = {"week_day": week_day, "month": month, "day": day, "hours": _dict_time, "year": year}
+    _dict_time_stamp = {
+        "week_day": week_day,
+        "month": month,
+        "day": day,
+        "hours": _dict_time,
+        "year": year,
+    }
 
     return [_short_file_name, _dict_time_stamp]
 
@@ -118,8 +123,10 @@ class RetrieveTimeStamp:
         self.__is_notebook = is_notebook
 
     def _run(self):
-        [list_files, ext] = file_handler.retrieve_list_of_most_dominant_extension_from_folder(
-            folder=self.folder, files=self.input_list_files
+        [list_files, ext] = (
+            file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+                folder=self.folder, files=self.input_list_files
+            )
         )
         self.output_list_files = list_files
 
@@ -133,8 +140,15 @@ class RetrieveTimeStamp:
         if self.__is_notebook:
             box = widgets.HBox(
                 [
-                    widgets.Label("Retrieving Time Stamp", layout=widgets.Layout(width="20%")),
-                    widgets.IntProgress(min=0, max=len(list_files), value=0, layout=widgets.Layout(width="50%")),
+                    widgets.Label(
+                        "Retrieving Time Stamp", layout=widgets.Layout(width="20%")
+                    ),
+                    widgets.IntProgress(
+                        min=0,
+                        max=len(list_files),
+                        value=0,
+                        layout=widgets.Layout(width="50%"),
+                    ),
                 ]
             )
             progress_bar = box.children[1]
@@ -171,7 +185,12 @@ class TimestampFormatter:
         "%Y-%m-%dT%I:%M:%S-",
     ]
 
-    def __init__(self, timestamp="", input_timestamp_format=None, output_timestamp_format=TIMESTAMP_FORMAT):
+    def __init__(
+        self,
+        timestamp="",
+        input_timestamp_format=None,
+        output_timestamp_format=TIMESTAMP_FORMAT,
+    ):
         self.timestamp = timestamp
         if input_timestamp_format is None:
             self.input_timestamp_format = self.list_input_timestamp
@@ -208,7 +227,9 @@ class TimestampFormatter:
         o_time = None
         for _input_timestamp_format in input_timestamp_format:
             # print("trying this format {} with this {}".format(_input_timestamp_format, timestamp))
-            o_time = TimestampFormatter.get_time_dict(timestamp=timestamp, input_time_format=_input_timestamp_format)
+            o_time = TimestampFormatter.get_time_dict(
+                timestamp=timestamp, input_time_format=_input_timestamp_format
+            )
             if o_time:
                 break
 
@@ -247,11 +268,15 @@ class TimestampFormatter:
 class AbsoluteTimeHandler:
     def __init__(self, initial_absolute_time=None):
         if initial_absolute_time is None:
-            raise ValueError("Please provide an initial absolute time format as 'YYYY-MM-DDTHH:MM:SS.SSSSSS-05:00")
+            raise ValueError(
+                "Please provide an initial absolute time format as 'YYYY-MM-DDTHH:MM:SS.SSSSSS-05:00"
+            )
 
         self.formatted_initial_absolute_time = parse(initial_absolute_time)
 
-    def get_absolute_time_for_this_delta_time_array(self, delta_time_array=None, units="seconds"):
+    def get_absolute_time_for_this_delta_time_array(
+        self, delta_time_array=None, units="seconds"
+    ):
         """
 
         :param delta_time_array: list of time offset
@@ -273,7 +298,10 @@ class AbsoluteTimeHandler:
 
         self.delta_time_formated = delta_time_formated
 
-        absolute_time = [delta_time + self.formatted_initial_absolute_time for delta_time in delta_time_formated]
+        absolute_time = [
+            delta_time + self.formatted_initial_absolute_time
+            for delta_time in delta_time_formated
+        ]
         return absolute_time
 
 
@@ -287,7 +315,9 @@ class RelativeTimeHandler:
 
     def __init__(self, master_initial_time=None, local_initial_time=None):
         if (master_initial_time is None) or (local_initial_time is None):
-            raise ValueError("Please provide an initial absolute time format as 'YYYY-MM-DDTHH:MM:SS.SSSSSS-05:00")
+            raise ValueError(
+                "Please provide an initial absolute time format as 'YYYY-MM-DDTHH:MM:SS.SSSSSS-05:00"
+            )
 
         formatted_master_initial_time = parse(master_initial_time)
         formatted_local_initial_time = parse(local_initial_time)
@@ -295,7 +325,9 @@ class RelativeTimeHandler:
         if formatted_local_initial_time < formatted_master_initial_time:
             raise ValueError("Master time should be before local time!")
 
-        time_offset_calculated = formatted_local_initial_time - formatted_master_initial_time
+        time_offset_calculated = (
+            formatted_local_initial_time - formatted_master_initial_time
+        )
         self.time_offset_calculated_s = time_offset_calculated.seconds
 
     def get_relative_time_for_this_time_array(self, time_array=None):

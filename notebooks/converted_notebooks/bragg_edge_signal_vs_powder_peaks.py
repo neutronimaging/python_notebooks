@@ -78,7 +78,9 @@ o_bragg.exp_setup()
 # # Display Bragg Edges vs Signal
 
 # + run_control={"frozen": false, "read_only": false}
-o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
+o_bragg.calculate_counts_vs_file_index_of_regions_selected(
+    list_roi=o_interface.list_roi
+)
 o_bragg.load_time_spectra()
 o_bragg.plot()
 # -

@@ -46,7 +46,8 @@ o_selection = FileSelection()
 o_selection.load_files(list_files)
 
 o_scale = ScaleOverlappingImagesUi(
-    working_dir=os.path.dirname(list_files[0]), data_dict=o_selection.data_dict["sample"]
+    working_dir=os.path.dirname(list_files[0]),
+    data_dict=o_selection.data_dict["sample"],
 )
 o_scale.show()
 

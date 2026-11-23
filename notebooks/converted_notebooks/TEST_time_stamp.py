@@ -54,7 +54,11 @@ class MetadataHandler:
                 except:
                     time_stamp = o_dict[65000]
 
-                time_stamp = MetadataHandler._convert_epics_timestamp_to_rfc3339_timestamp(time_stamp)
+                time_stamp = (
+                    MetadataHandler._convert_epics_timestamp_to_rfc3339_timestamp(
+                        time_stamp
+                    )
+                )
             except:
                 time_stamp = os.path.getctime(file_name)
         elif ext == "fits":
@@ -105,7 +109,10 @@ class MetadataHandler:
 
 for _index, _file in enumerate(list_files):
     _time_stamp = MetadataHandler.get_time_stamp(file_name=_file, ext="tif")
-    assert MetadataHandler.convert_to_human_readable_format(_time_stamp) == expected_user_time_stamp[_index]
+    assert (
+        MetadataHandler.convert_to_human_readable_format(_time_stamp)
+        == expected_user_time_stamp[_index]
+    )
 
 # Testing the type of the metadata
 

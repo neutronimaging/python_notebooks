@@ -2,10 +2,9 @@ import copy
 from pathlib import Path
 
 import numpy as np
+from __code._utilities.metadata_handler import MetadataHandler
 from NeuNorm.normalization import Normalization
 from qtpy.QtWidgets import QApplication
-
-from __code._utilities.metadata_handler import MetadataHandler
 
 
 class Load:
@@ -29,7 +28,9 @@ class Load:
             o_norm = Normalization()
             o_norm.load(file=_file, auto_gamma_filter=False, manual_gamma_filter=False)
             data = np.squeeze(o_norm.data["sample"]["data"][0])
-            time_stamp = MetadataHandler.get_time_stamp(file_name=_file, ext=file_extension)
+            time_stamp = MetadataHandler.get_time_stamp(
+                file_name=_file, ext=file_extension
+            )
             if acquisition_time_of_first_image == -1:
                 acquisition_time_of_first_image = time_stamp
                 time_stamp = 0

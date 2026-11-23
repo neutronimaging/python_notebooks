@@ -32,7 +32,9 @@ custom_style.style()
 # # Select Input Folder
 # -
 
-o_integrated = DisplayIntegratedStackOfImages(working_dir=system.System.get_working_dir())
+o_integrated = DisplayIntegratedStackOfImages(
+    working_dir=system.System.get_working_dir()
+)
 o_integrated.select_input_folder()
 
 # + [markdown] run_control={"frozen": false, "read_only": false}

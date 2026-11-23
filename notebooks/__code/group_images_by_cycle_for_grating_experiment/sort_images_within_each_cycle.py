@@ -55,7 +55,10 @@ class SortImagesWithinEachCycle:
         result = pd.concat(frames)
 
         new_result_sorted = result.sort_values(
-            by=[dict_how_to_sort["1st_variable"]["name"], dict_how_to_sort["2nd_variable"]["name"]],
+            by=[
+                dict_how_to_sort["1st_variable"]["name"],
+                dict_how_to_sort["2nd_variable"]["name"],
+            ],
             ascending=[
                 dict_how_to_sort["1st_variable"]["is_ascending"],
                 dict_how_to_sort["2nd_variable"]["is_ascending"],

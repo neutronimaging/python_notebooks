@@ -1,17 +1,16 @@
 import os
 
-import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from IPython.display import HTML, display
-from ipywidgets import widgets
-from ipywidgets.widgets import interact
-from NeuNorm.normalization import Normalization
-
 from __code import file_handler
 from __code.ipywe import fileselector
 from __code.ipywe.fileselector import FileSelectorPanel
+from IPython.display import HTML, display
+from ipywidgets import widgets
+from ipywidgets.widgets import interact
+from matplotlib import gridspec
+from NeuNorm.normalization import Normalization
 
 
 class DisplayExportScreenshots:
@@ -20,7 +19,10 @@ class DisplayExportScreenshots:
 
     def select_input_folder(self):
         self.folder_ui = FileSelectorPanel(
-            instruction="Select Input Folder ...", start_dir=self.working_dir, type="directory", multiple=False
+            instruction="Select Input Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
+            multiple=False,
         )
 
         self.folder_ui.show()
@@ -42,7 +44,9 @@ class DisplayExportScreenshots:
         # images
         image_folder = self.folder_ui.selected
 
-        list_images = file_handler.retrieve_list_of_most_dominant_extension_from_folder(folder=image_folder)
+        list_images = file_handler.retrieve_list_of_most_dominant_extension_from_folder(
+            folder=image_folder
+        )
         list_images = list_images[0]
         self.nbr_images = len(list_images)
 
@@ -50,7 +54,9 @@ class DisplayExportScreenshots:
         file_name_vs_metadata_name = self.metadata_file_ui.selected
         self.file_name_vs_metadata = pd.read_csv(file_name_vs_metadata_name)
         self.metadata_name = list(self.file_name_vs_metadata.columns.values)[2]
-        nbr_metadata = len(self.file_name_vs_metadata[self.file_name_vs_metadata.columns[0]])
+        nbr_metadata = len(
+            self.file_name_vs_metadata[self.file_name_vs_metadata.columns[0]]
+        )
 
         assert self.nbr_images == nbr_metadata
 
@@ -68,7 +74,9 @@ class DisplayExportScreenshots:
         _metadata_array = np.array(self.file_name_vs_metadata["Metadata"])
         _time_array = np.array(self.file_name_vs_metadata["time"])
 
-        for _index, _file in enumerate(np.array(self.file_name_vs_metadata["file_name"])):
+        for _index, _file in enumerate(
+            np.array(self.file_name_vs_metadata["file_name"])
+        ):
             metadata_profile[_file] = {}
             metadata_profile[_file]["metadata"] = _metadata_array[_index]
             metadata_profile[_file]["time"] = _time_array[_index]
@@ -99,13 +107,18 @@ class DisplayExportScreenshots:
         preview = interact(
             plot_images_and_profile,
             file_index=widgets.IntSlider(
-                min=0, max=self.nbr_images - 1, description="Image Index", continuous_update=False
+                min=0,
+                max=self.nbr_images - 1,
+                description="Image Index",
+                continuous_update=False,
             ),
         )
 
     def select_export_folder(self):
         self.output_folder_ui = fileselector.FileSelectorPanel(
-            instruction="Select output Folder ...", start_dir=self.working_dir, type="directory"
+            instruction="Select output Folder ...",
+            start_dir=self.working_dir,
+            type="directory",
         )
         self.output_folder_ui.show()
 
@@ -113,7 +126,9 @@ class DisplayExportScreenshots:
         output_folder = self.output_folder_ui.selected
 
         input_folder_basename = os.path.basename(self.folder_ui.selected)
-        output_folder = os.path.join(output_folder, input_folder_basename + "_vs_metadata_screenshots")
+        output_folder = os.path.join(
+            output_folder, input_folder_basename + "_vs_metadata_screenshots"
+        )
         if os.path.exists(output_folder):
             import shutil
 
@@ -138,7 +153,9 @@ class DisplayExportScreenshots:
             plt.xlabel("Time (s)")
             plt.ylabel(self.metadata_name)
 
-            output_file_name = os.path.abspath(os.path.join(output_folder, _short_file + ".png"))
+            output_file_name = os.path.abspath(
+                os.path.join(output_folder, _short_file + ".png")
+            )
             plt.savefig(output_file_name)
 
             plt.close(fig)
@@ -146,7 +163,9 @@ class DisplayExportScreenshots:
         box = widgets.HBox(
             [
                 widgets.Label("Exporting Images:", layout=widgets.Layout(width="20%")),
-                widgets.IntProgress(min=0, max=self.nbr_images - 1, layout=widgets.Layout(width="50%")),
+                widgets.IntProgress(
+                    min=0, max=self.nbr_images - 1, layout=widgets.Layout(width="50%")
+                ),
             ]
         )
         progress_bar = box.children[1]
@@ -157,4 +176,10 @@ class DisplayExportScreenshots:
             progress_bar.value = _index + 1
 
         box.close()
-        display(HTML('<span style="font-size: 20px; color:blue">Images created in ' + output_folder + "</span>"))
+        display(
+            HTML(
+                '<span style="font-size: 20px; color:blue">Images created in '
+                + output_folder
+                + "</span>"
+            )
+        )

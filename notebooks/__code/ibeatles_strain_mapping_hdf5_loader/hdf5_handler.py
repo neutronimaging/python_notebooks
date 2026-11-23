@@ -19,11 +19,18 @@ class Hdf5Handler:
         entry = f["entry"]
 
         # integrated image
-        self.parent.integrated_normalized_radiographs = entry["integrated normalized radiographs"]["2D array"][:]
+        self.parent.integrated_normalized_radiographs = entry[
+            "integrated normalized radiographs"
+        ]["2D array"][:]
 
         # metadata
         self.parent.metadata = {}
-        list_key = ["detector_offset", "distance_source_detector", "hkl_value", "material_name"]
+        list_key = [
+            "detector_offset",
+            "distance_source_detector",
+            "hkl_value",
+            "material_name",
+        ]
         for _key in list_key:
             self.parent.metadata[_key] = entry["metadata"][_key][()].decode("utf-8")
         self.parent.metadata["d0"] = entry["metadata"]["d0"][()]
@@ -47,12 +54,18 @@ class Hdf5Handler:
                 "x1": key_entry["bin coordinates"]["x1"][()],
                 "y0": key_entry["bin coordinates"]["y0"][()],
                 "y1": key_entry["bin coordinates"]["y1"][()],
-                "row_index": entry["fitting"]["kropff"][_key]["fitted"]["row_index"][()],
-                "column_index": entry["fitting"]["kropff"][_key]["fitted"]["column_index"][()],
+                "row_index": entry["fitting"]["kropff"][_key]["fitted"]["row_index"][
+                    ()
+                ],
+                "column_index": entry["fitting"]["kropff"][_key]["fitted"][
+                    "column_index"
+                ][()],
             }
 
             list_row.append(entry["fitting"]["kropff"][_key]["fitted"]["row_index"][()])
-            list_column.append(entry["fitting"]["kropff"][_key]["fitted"]["column_index"][()])
+            list_column.append(
+                entry["fitting"]["kropff"][_key]["fitted"]["column_index"][()]
+            )
             self.parent.bin[_key] = _key_dict
 
         self.parent.bin_size = entry["metadata"]["bin_size"][()]
@@ -69,4 +82,6 @@ class Hdf5Handler:
 
         self.parent.lambda_hkl = {}
         for _key in kropff_entry.keys():
-            self.parent.lambda_hkl[_key] = kropff_entry[_key]["fitted"]["lambda_hkl"]["val"][()]
+            self.parent.lambda_hkl[_key] = kropff_entry[_key]["fitted"]["lambda_hkl"][
+                "val"
+            ][()]

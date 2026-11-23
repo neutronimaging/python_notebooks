@@ -41,9 +41,13 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from __code import system
-from __code.cylindrical_geometry_correction_embedded_widgets.main import CylindricalGeometryCorrectionEmbeddedWidgets
+from __code.cylindrical_geometry_correction_embedded_widgets.main import (
+    CylindricalGeometryCorrectionEmbeddedWidgets,
+)
 
-system.System.select_working_dir(notebook="cylindrical_geometry_correction_embedded_widgets")
+system.System.select_working_dir(
+    notebook="cylindrical_geometry_correction_embedded_widgets"
+)
 
 from __code.__all import custom_style
 
@@ -52,7 +56,9 @@ custom_style.style()
 
 # # Select Images
 
-o_ipts = CylindricalGeometryCorrectionEmbeddedWidgets(working_dir=system.System.get_working_dir())
+o_ipts = CylindricalGeometryCorrectionEmbeddedWidgets(
+    working_dir=system.System.get_working_dir()
+)
 o_ipts.select_images()
 
 # # Use config file (optional)

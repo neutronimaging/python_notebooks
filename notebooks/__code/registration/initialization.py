@@ -1,9 +1,8 @@
 import pyqtgraph as pg
-from pyqtgraph.dockarea import *
-from qtpy.QtWidgets import QProgressBar, QVBoxLayout
-
 from __code._utilities.color import Color
 from __code.registration.marker_default_settings import MarkerDefaultSettings
+from pyqtgraph.dockarea import *
+from qtpy.QtWidgets import QProgressBar, QVBoxLayout
 
 
 class Initialization:
@@ -50,7 +49,9 @@ class Initialization:
         self.parent.ui.profile_line = pg.LineSegmentROI([[50, 50], [100, 100]], pen="r")
         self.parent.ui.image_view.addItem(self.parent.ui.profile_line)
         d1.addWidget(self.parent.ui.image_view)
-        self.parent.ui.profile_line.sigRegionChanged.connect(self.parent.profile_line_moved)
+        self.parent.ui.profile_line.sigRegionChanged.connect(
+            self.parent.profile_line_moved
+        )
 
         # profile
         self.parent.ui.profile = pg.PlotWidget(title="Profile")
@@ -71,7 +72,9 @@ class Initialization:
         # update size of table columns
         nbr_columns = self.parent.ui.tableWidget.columnCount()
         for _col in range(nbr_columns):
-            self.parent.ui.tableWidget.setColumnWidth(_col, self.parent.table_column_width[_col])
+            self.parent.ui.tableWidget.setColumnWidth(
+                _col, self.parent.table_column_width[_col]
+            )
 
         # update slide widget of files
         nbr_files = len(self.parent.data_dict["file_name"])

@@ -1,11 +1,10 @@
-from qtpy.QtWidgets import QTableWidgetSelectionRange
-
 from __code._utilities.table_handler import TableHandler as UtilitiesTableHandler
 from __code.registration.check import Check
 from __code.registration.display import Display
 from __code.registration.event_handler import EventHandler
 from __code.registration.get import Get
 from __code.registration.marker_handler import MarkerHandler
+from qtpy.QtWidgets import QTableWidgetSelectionRange
 
 
 class TableHandler(UtilitiesTableHandler):
