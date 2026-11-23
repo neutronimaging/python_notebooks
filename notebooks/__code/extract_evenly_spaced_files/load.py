@@ -1,7 +1,6 @@
 import matplotlib.image as mpimg
-from NeuNorm.normalization import Normalization
-
 from __code._utilities.file import get_file_extension
+from NeuNorm.normalization import Normalization
 
 
 def load_file(file=None):

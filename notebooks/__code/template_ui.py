@@ -8,15 +8,14 @@ except ImportError:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import QMainWindow
 
-from NeuNorm.normalization import Normalization
-
 from __code.file_folder_browser import FileFolderBrowser
 from __code.ui_template import Ui_MainWindow as UiMainWindow
+from NeuNorm.normalization import Normalization
 
 
 class InterfaceHandler(FileFolderBrowser):
     def __init__(self, working_dir=""):
-        super(InterfaceHandler, self).__init__(working_dir=working_dir)
+        super().__init__(working_dir=working_dir)
 
     def load(self):
         list_images = self.list_images_ui.selected
@@ -61,7 +60,9 @@ class Interface(QMainWindow):
         self.ui.slider.valueChanged.connect(self.file_index_changed)
 
         # spacer
-        spacer = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacer = QtGui.QSpacerItem(
+            40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
+        )
 
         bottom_layout.addWidget(label_1)
         bottom_layout.addWidget(self.ui.slider)

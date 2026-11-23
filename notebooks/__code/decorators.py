@@ -15,9 +15,7 @@ def format_directory(function):
     """
 
     def new_function(dir=None, **kwargs):
-        if dir is None:
-            dir = "/"
-        elif dir == "":
+        if dir is None or dir == "":
             dir = "/"
         else:
             if os.sys.platform == "darwin":

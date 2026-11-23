@@ -30,27 +30,43 @@ class Ui_MainWindow:
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.pyqtgraph_widget = QtWidgets.QWidget(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pyqtgraph_widget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.pyqtgraph_widget.sizePolicy().hasHeightForWidth()
+        )
         self.pyqtgraph_widget.setSizePolicy(sizePolicy)
         self.pyqtgraph_widget.setObjectName("pyqtgraph_widget")
         self.horizontalLayout_2.addWidget(self.pyqtgraph_widget)
-        self.selection_reference_opacity_groupBox = QtWidgets.QGroupBox(self.layoutWidget)
+        self.selection_reference_opacity_groupBox = QtWidgets.QGroupBox(
+            self.layoutWidget
+        )
         self.selection_reference_opacity_groupBox.setMinimumSize(QtCore.QSize(70, 0))
-        self.selection_reference_opacity_groupBox.setMaximumSize(QtCore.QSize(60, 16777215))
-        self.selection_reference_opacity_groupBox.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.selection_reference_opacity_groupBox.setMaximumSize(
+            QtCore.QSize(60, 16777215)
+        )
+        self.selection_reference_opacity_groupBox.setLayoutDirection(
+            QtCore.Qt.LeftToRight
+        )
         self.selection_reference_opacity_groupBox.setTitle("")
         self.selection_reference_opacity_groupBox.setAlignment(QtCore.Qt.AlignCenter)
-        self.selection_reference_opacity_groupBox.setObjectName("selection_reference_opacity_groupBox")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.selection_reference_opacity_groupBox)
+        self.selection_reference_opacity_groupBox.setObjectName(
+            "selection_reference_opacity_groupBox"
+        )
+        self.verticalLayout = QtWidgets.QVBoxLayout(
+            self.selection_reference_opacity_groupBox
+        )
         self.verticalLayout.setContentsMargins(-1, -1, 19, -1)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label_2 = QtWidgets.QLabel(self.selection_reference_opacity_groupBox)
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
-        self.opacity_slider = QtWidgets.QSlider(self.selection_reference_opacity_groupBox)
+        self.opacity_slider = QtWidgets.QSlider(
+            self.selection_reference_opacity_groupBox
+        )
         self.opacity_slider.setCursor(QtGui.QCursor(QtCore.Qt.SizeVerCursor))
         self.opacity_slider.setAccessibleDescription("")
         self.opacity_slider.setLayoutDirection(QtCore.Qt.RightToLeft)
@@ -110,7 +126,9 @@ class Ui_MainWindow:
         self.calculate_markers_button.setObjectName("calculate_markers_button")
         self.verticalLayout_3.addWidget(self.calculate_markers_button)
         self.tableWidget = QtWidgets.QTableWidget(self.layoutWidget1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
@@ -145,7 +163,9 @@ class Ui_MainWindow:
         self.full_reset_button = QtWidgets.QPushButton(self.layoutWidget1)
         self.full_reset_button.setObjectName("full_reset_button")
         self.horizontalLayout.addWidget(self.full_reset_button)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem)
         self.pushButton = QtWidgets.QPushButton(self.layoutWidget1)
         self.pushButton.setObjectName("pushButton")
@@ -209,16 +229,24 @@ class Ui_MainWindow:
         self.file_slider.sliderMoved["int"].connect(MainWindow.slider_file_changed)
         self.file_slider.valueChanged["int"].connect(MainWindow.slider_file_changed)
         self.next_image_button.clicked.connect(MainWindow.next_image_button_clicked)
-        self.previous_image_button.clicked.connect(MainWindow.previous_image_button_clicked)
+        self.previous_image_button.clicked.connect(
+            MainWindow.previous_image_button_clicked
+        )
         self.opacity_slider.sliderMoved["int"].connect(MainWindow.opacity_slider_moved)
         self.export_button.clicked.connect(MainWindow.export_button_clicked)
-        self.calculate_markers_button.clicked.connect(MainWindow.calculate_markers_button_clicked)
+        self.calculate_markers_button.clicked.connect(
+            MainWindow.calculate_markers_button_clicked
+        )
         self.tableWidget.itemSelectionChanged.connect(MainWindow.table_row_clicked)
         self.actionSettings_3.triggered.connect(MainWindow.settings_clicked)
-        self.registered_all_images_button.clicked.connect(MainWindow.registered_all_images_button_clicked)
+        self.registered_all_images_button.clicked.connect(
+            MainWindow.registered_all_images_button_clicked
+        )
         self.full_reset_button.clicked.connect(MainWindow.full_reset)
         self.actionTutorial.triggered.connect(MainWindow.help_button_clicked)
-        self.pushButton.clicked.connect(MainWindow.registered_all_images_and_return_to_main_ui_button_clicked)
+        self.pushButton.clicked.connect(
+            MainWindow.registered_all_images_and_return_to_main_ui_button_clicked
+        )
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -231,7 +259,9 @@ class Ui_MainWindow:
         self.label.setText(_translate("MainWindow", "Reference Image:"))
         self.reference_image_label.setText(_translate("MainWindow", "N/A"))
         self.pushButton_3.setText(_translate("MainWindow", "Change ..."))
-        self.calculate_markers_button.setText(_translate("MainWindow", "Calculate Peaks Position from Profiles"))
+        self.calculate_markers_button.setText(
+            _translate("MainWindow", "Calculate Peaks Position from Profiles")
+        )
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "File Name"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -243,14 +273,22 @@ class Ui_MainWindow:
         item = self.tableWidget.horizontalHeaderItem(4)
         item.setText(_translate("MainWindow", "Y offset"))
         self.full_reset_button.setText(_translate("MainWindow", "Full Reset"))
-        self.pushButton.setText(_translate("MainWindow", "Registered Images and Return to Main UI"))
-        self.registered_all_images_button.setText(_translate("MainWindow", "Register Images"))
-        self.export_button.setText(_translate("MainWindow", "Register Images and Export ..."))
+        self.pushButton.setText(
+            _translate("MainWindow", "Registered Images and Return to Main UI")
+        )
+        self.registered_all_images_button.setText(
+            _translate("MainWindow", "Register Images")
+        )
+        self.export_button.setText(
+            _translate("MainWindow", "Register Images and Export ...")
+        )
         self.menuOptions.setTitle(_translate("MainWindow", "Options"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionExport_Profile.setText(_translate("MainWindow", "Profiles ..."))
         self.actionWater_Intake.setText(_translate("MainWindow", "Water Intake ..."))
-        self.actionImportedFilesMetadata.setText(_translate("MainWindow", "Imported Files and Metadata ..."))
+        self.actionImportedFilesMetadata.setText(
+            _translate("MainWindow", "Imported Files and Metadata ...")
+        )
         self.actionBy_Time_Stamp.setText(_translate("MainWindow", "by Time Stamp"))
         self.actionBy_File_Name.setText(_translate("MainWindow", "by File Name"))
         self.actionDsc_files.setText(_translate("MainWindow", "dsc files ..."))

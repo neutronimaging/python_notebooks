@@ -44,9 +44,8 @@ changepy = { git = "https://github.com/JeanBilheux/changepy" }
 neutronbraggedge = ">=2.0.6, <3"
 sectorizedradialprofile = ">=1.1.2, <2"
 imagingreso = ">=1.8.0, <2"
-timepix-geometry-correction = { git = "https://github.com/ornlneutronimaging/timepix_geometry_correction.git", branch="main"}
+timepix-geometry-correction = { git = "https://github.com/ornlneutronimaging/timepix_geometry_correction.git", branch = "main" }
 imageio-ffmpeg = ">=0.5, <1"
 
 [target.linux-64.pypi-dependencies]
 mbirjax = { version = ">=0.6.14, <0.7", extras = ["cuda12"] }
-

@@ -1,10 +1,9 @@
 import webbrowser
 
+from __code.ipywe import fileselector
 from IPython.display import display
 from ipywidgets import widgets
 from NeuNorm.normalization import Normalization
-
-from __code.ipywe import fileselector
 
 
 class FileSelection:
@@ -12,7 +11,9 @@ class FileSelection:
         self.working_dir = working_dir
 
     def select_file_help(self, value):
-        webbrowser.open("https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/file-selector-tool/")
+        webbrowser.open(
+            "https://neutronimaging.ornl.gov/tutorials/imaging-notebooks/file-selector-tool/"
+        )
 
     def load_files(self, files):
         files.sort()
@@ -26,7 +27,10 @@ class FileSelection:
         display(help_ui)
 
         self.files_ui = fileselector.FileSelectorPanel(
-            instruction="Select Images ...", start_dir=self.working_dir, next=self.load_files, multiple=True
+            instruction="Select Images ...",
+            start_dir=self.working_dir,
+            next=self.load_files,
+            multiple=True,
         )
 
         self.files_ui.show()

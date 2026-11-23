@@ -2,11 +2,10 @@ import copy
 
 import numpy as np
 import pyqtgraph as pg
-from PIL import Image
-from qtpy import QtGui
-
 from __code._utilities.table_handler import TableHandler
 from __code.overlay_images.get import Get
+from PIL import Image
+from qtpy import QtGui
 
 
 class EventHandler:
@@ -15,11 +14,13 @@ class EventHandler:
 
     def update_views(self, row_selected=0):
         self.update_view(
-            image_resolution="high_res", data=self.parent.o_norm_high_res.data["sample"]["data"][row_selected]
+            image_resolution="high_res",
+            data=self.parent.o_norm_high_res.data["sample"]["data"][row_selected],
         )
 
         self.update_view(
-            image_resolution="low_res", data=self.parent.o_norm_low_res.data["sample"]["data"][row_selected]
+            image_resolution="low_res",
+            data=self.parent.o_norm_low_res.data["sample"]["data"][row_selected],
         )
 
         if self.parent.resize_and_overlay_images:
@@ -147,7 +148,9 @@ class EventHandler:
 
             line_view_binning = pg.GraphItem()
             image_view.addItem(line_view_binning)
-            line_view_binning.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
+            line_view_binning.setData(
+                pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False
+            )
             self.parent.markers["overlay"]["1"]["target_ui"] = line_view_binning
         else:
             if self.parent.markers["overlay"]["1"]["target_ui"]:
@@ -158,7 +161,9 @@ class EventHandler:
         image_view = self.parent.image_view[image_resolution]
 
         if self.parent.markers[image_resolution][target_index]["target_ui"] is not None:
-            image_view.removeItem(self.parent.markers[image_resolution][target_index]["target_ui"])
+            image_view.removeItem(
+                self.parent.markers[image_resolution][target_index]["target_ui"]
+            )
 
         width = self.parent.markers["width"]
         height = self.parent.markers["height"]
@@ -193,12 +198,22 @@ class EventHandler:
         line_color = self.parent.markers["target"]["color"][target_index]
         lines = np.array(
             [line_color for _ in np.arange(len(pos))],
-            dtype=[("red", np.ubyte), ("green", np.ubyte), ("blue", np.ubyte), ("alpha", np.ubyte), ("width", float)],
+            dtype=[
+                ("red", np.ubyte),
+                ("green", np.ubyte),
+                ("blue", np.ubyte),
+                ("alpha", np.ubyte),
+                ("width", float),
+            ],
         )
         line_view_binning = pg.GraphItem()
         image_view.addItem(line_view_binning)
-        line_view_binning.setData(pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False)
-        self.parent.markers[image_resolution][target_index]["target_ui"] = line_view_binning
+        line_view_binning.setData(
+            pos=pos, adj=adj, pen=lines, symbol=None, pxMode=False
+        )
+        self.parent.markers[image_resolution][target_index]["target_ui"] = (
+            line_view_binning
+        )
 
     def get_marker_index_parameters(self, region_index="1"):
         region = {
@@ -232,11 +247,15 @@ class EventHandler:
         scaling_factor = distance_h / distance_l
         self.parent.ui.scaling_factor_lineEdit.setText(f"{scaling_factor:.2f}")
 
-        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data["sample"]["data"][0])
+        [image_height, image_width] = np.shape(
+            self.parent.o_norm_low_res.data["sample"]["data"][0]
+        )
         new_image_height = int(image_height * scaling_factor)
         new_image_width = int(image_width * scaling_factor)
 
-        self.parent.eventProgress.setMaximum(len(self.parent.o_norm_high_res.data["sample"]["data"]))
+        self.parent.eventProgress.setMaximum(
+            len(self.parent.o_norm_high_res.data["sample"]["data"])
+        )
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
         QtGui.QGuiApplication.processEvents()
@@ -265,8 +284,14 @@ class EventHandler:
         resize_hres_images = []
         resize_lres_images = []
 
-        for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data["sample"]["data"]):
-            new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+        for _row, _low_res_image in enumerate(
+            self.parent.o_norm_low_res.data["sample"]["data"]
+        ):
+            new_image = np.array(
+                Image.fromarray(_low_res_image).resize(
+                    (new_image_width, new_image_height)
+                )
+            )
             resize_lres_images.append(copy.deepcopy(new_image))
 
             high_res_image = self.get_full_high_res_image(
@@ -281,14 +306,18 @@ class EventHandler:
             resize_hres_images.append(high_res_image)
 
             if _row == 0:
-                self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
+                (
+                    self.parent.rescaled_low_res_height,
+                    self.parent.rescaled_low_res_width,
+                ) = np.shape(new_image)
             resize_and_overlay_modes.append("Auto")
             o_table.set_item_with_str(row=_row, column=2, cell_str="Auto")
 
             # add high resolution image
             new_working_image = copy.deepcopy(new_image)
             new_working_image[
-                y_index_array_resized_array : y_index_array_resized_array + image_height,
+                y_index_array_resized_array : y_index_array_resized_array
+                + image_height,
                 x_index_array_resized_array : x_index_array_resized_array + image_width,
             ] = high_res_images[_row]
 
@@ -296,7 +325,10 @@ class EventHandler:
             self.parent.eventProgress.setValue(_row + 1)
             QtGui.QGuiApplication.processEvents()
 
-        self.parent.resize_hres_lres_images = {"lres": resize_lres_images, "hres": resize_hres_images}
+        self.parent.resize_hres_lres_images = {
+            "lres": resize_lres_images,
+            "hres": resize_hres_images,
+        }
 
         self.parent.resize_and_overlay_images = resize_and_overlay_images
         self.parent.resize_and_overlay_modes = resize_and_overlay_modes
@@ -321,19 +353,27 @@ class EventHandler:
         self.parent.resize_and_overlay_modes[row_selected] = "Manual"
         o_table.set_item_with_str(row=row_selected, column=2, cell_str="Manual")
 
-        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data["sample"]["data"][0])
+        [image_height, image_width] = np.shape(
+            self.parent.o_norm_low_res.data["sample"]["data"][0]
+        )
         new_image_height = int(image_height * scaling_factor)
         new_image_width = int(image_width * scaling_factor)
         x_index_array_resized_array = int(str(self.parent.ui.xoffset_lineEdit.text()))
         y_index_array_resized_array = int(str(self.parent.ui.yoffset_lineEdit.text()))
 
         resize_and_overlay_images = self.parent.resize_and_overlay_images
-        _high_res_image = self.parent.o_norm_high_res.data["sample"]["data"][row_selected]
+        _high_res_image = self.parent.o_norm_high_res.data["sample"]["data"][
+            row_selected
+        ]
         _low_res_image = self.parent.o_norm_low_res.data["sample"]["data"][row_selected]
-        new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+        new_image = np.array(
+            Image.fromarray(_low_res_image).resize((new_image_width, new_image_height))
+        )
         # self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
 
-        self.parent.resize_hres_lres_images["hres"][row_selected] = copy.deepcopy(new_image)
+        self.parent.resize_hres_lres_images["hres"][row_selected] = copy.deepcopy(
+            new_image
+        )
         high_res_image = self.get_full_high_res_image(
             _high_res_image,
             image_height,
@@ -377,11 +417,15 @@ class EventHandler:
     def manual_overlay_stack_of_images_clicked(self):
         scaling_factor = float(str(self.parent.ui.scaling_factor_lineEdit.text()))
 
-        [image_height, image_width] = np.shape(self.parent.o_norm_low_res.data["sample"]["data"][0])
+        [image_height, image_width] = np.shape(
+            self.parent.o_norm_low_res.data["sample"]["data"][0]
+        )
         new_image_height = int(image_height * scaling_factor)
         new_image_width = int(image_width * scaling_factor)
 
-        self.parent.eventProgress.setMaximum(len(self.parent.o_norm_high_res.data["sample"]["data"]))
+        self.parent.eventProgress.setMaximum(
+            len(self.parent.o_norm_high_res.data["sample"]["data"])
+        )
         self.parent.eventProgress.setValue(0)
         self.parent.eventProgress.setVisible(True)
         QtGui.QGuiApplication.processEvents()
@@ -397,12 +441,21 @@ class EventHandler:
         resize_lres_images = []
 
         high_res_images = self.parent.o_norm_high_res.data["sample"]["data"]
-        for _row, _low_res_image in enumerate(self.parent.o_norm_low_res.data["sample"]["data"]):
-            new_image = np.array(Image.fromarray(_low_res_image).resize((new_image_width, new_image_height)))
+        for _row, _low_res_image in enumerate(
+            self.parent.o_norm_low_res.data["sample"]["data"]
+        ):
+            new_image = np.array(
+                Image.fromarray(_low_res_image).resize(
+                    (new_image_width, new_image_height)
+                )
+            )
 
             resize_lres_images.append(copy.deepcopy(new_image))
             if _row == 0:
-                self.parent.rescaled_low_res_height, self.parent.rescaled_low_res_width = np.shape(new_image)
+                (
+                    self.parent.rescaled_low_res_height,
+                    self.parent.rescaled_low_res_width,
+                ) = np.shape(new_image)
             resize_and_overlay_modes.append("Manual")
             o_table.set_item_with_str(row=_row, column=2, cell_str="Manual")
 
@@ -420,7 +473,8 @@ class EventHandler:
             # add high resolution image
             new_working_image = copy.deepcopy(new_image)
             new_working_image[
-                y_index_array_resized_array : y_index_array_resized_array + image_height,
+                y_index_array_resized_array : y_index_array_resized_array
+                + image_height,
                 x_index_array_resized_array : x_index_array_resized_array + image_width,
             ] = high_res_images[_row]
             resize_and_overlay_images.append(new_working_image)
@@ -430,7 +484,10 @@ class EventHandler:
         self.parent.resize_and_overlay_images = resize_and_overlay_images
         self.parent.resize_and_overlay_modes = resize_and_overlay_modes
 
-        self.parent.resize_hres_lres_images = {"lres": resize_lres_images, "hres": resize_hres_images}
+        self.parent.resize_hres_lres_images = {
+            "lres": resize_lres_images,
+            "hres": resize_hres_images,
+        }
 
         row_selected = o_table.get_row_selected()
 
@@ -458,15 +515,21 @@ class EventHandler:
             status_minus_minus_button = False
         elif xoffset_value < self.parent.DOUBLE_OFFSET:
             status_minus_minus_button = False
-        elif xoffset_value == (self.parent.rescaled_low_res_width - self.parent.high_res_image_width):
+        elif xoffset_value == (
+            self.parent.rescaled_low_res_width - self.parent.high_res_image_width
+        ):
             status_plus_button = False
             status_plus_plus_button = False
         elif xoffset_value > (
-            self.parent.rescaled_low_res_width - self.parent.high_res_image_width - self.parent.DOUBLE_OFFSET
+            self.parent.rescaled_low_res_width
+            - self.parent.high_res_image_width
+            - self.parent.DOUBLE_OFFSET
         ):
             status_plus_plus_button = False
 
-        self.parent.ui.xoffset_minus_minus_pushButton.setEnabled(status_minus_minus_button)
+        self.parent.ui.xoffset_minus_minus_pushButton.setEnabled(
+            status_minus_minus_button
+        )
         self.parent.ui.xoffset_minus_pushButton.setEnabled(status_minus_button)
         self.parent.ui.xoffset_plus_pushButton.setEnabled(status_plus_button)
         self.parent.ui.xoffset_plus_plus_pushButton.setEnabled(status_plus_plus_button)
@@ -483,15 +546,21 @@ class EventHandler:
             status_minus_minus_button = False
         elif yoffset_value < self.parent.DOUBLE_OFFSET:
             status_minus_minus_button = False
-        elif yoffset_value == (self.parent.rescaled_low_res_height - self.parent.high_res_image_height):
+        elif yoffset_value == (
+            self.parent.rescaled_low_res_height - self.parent.high_res_image_height
+        ):
             status_plus_button = False
             status_plus_plus_button = False
         elif yoffset_value > (
-            self.parent.rescaled_low_res_height - self.parent.high_res_image_height - self.parent.DOUBLE_OFFSET
+            self.parent.rescaled_low_res_height
+            - self.parent.high_res_image_height
+            - self.parent.DOUBLE_OFFSET
         ):
             status_plus_plus_button = False
 
-        self.parent.ui.yoffset_minus_minus_pushButton.setEnabled(status_minus_minus_button)
+        self.parent.ui.yoffset_minus_minus_pushButton.setEnabled(
+            status_minus_minus_button
+        )
         self.parent.ui.yoffset_minus_pushButton.setEnabled(status_minus_button)
         self.parent.ui.yoffset_plus_pushButton.setEnabled(status_plus_button)
         self.parent.ui.yoffset_plus_plus_pushButton.setEnabled(status_plus_plus_button)
@@ -502,7 +571,9 @@ class EventHandler:
             return
 
         o_get = Get(parent=self.parent)
-        overlay_1_dict = o_get.marker_location(image_resolution="overlay", target_index="1")
+        overlay_1_dict = o_get.marker_location(
+            image_resolution="overlay", target_index="1"
+        )
 
         width = self.parent.markers["width"]
         height = self.parent.markers["height"]
@@ -546,7 +617,9 @@ class EventHandler:
         self.parent.horizontal_profile_plot.axes.plot(
             x_axis, horizontal_profile_high_res, "-b", label="high resolution"
         )
-        self.parent.horizontal_profile_plot.axes.plot(x_axis, horizontal_profile_low_res, "--b", label="low resolution")
+        self.parent.horizontal_profile_plot.axes.plot(
+            x_axis, horizontal_profile_low_res, "--b", label="low resolution"
+        )
         self.parent.horizontal_profile_plot.axes.legend()
         self.parent.horizontal_profile_plot.draw()
 
@@ -559,8 +632,12 @@ class EventHandler:
 
         self.parent.vertical_profile_plot.axes.clear()
         self.parent.vertical_profile_plot.draw()
-        self.parent.vertical_profile_plot.axes.plot(y_axis, vertical_profile_high_res, "-r", label="high resolution")
-        self.parent.vertical_profile_plot.axes.plot(y_axis, vertical_profile_low_res, "--r", label="low resolution")
+        self.parent.vertical_profile_plot.axes.plot(
+            y_axis, vertical_profile_high_res, "-r", label="high resolution"
+        )
+        self.parent.vertical_profile_plot.axes.plot(
+            y_axis, vertical_profile_low_res, "--r", label="low resolution"
+        )
         self.parent.vertical_profile_plot.axes.legend()
         self.parent.vertical_profile_plot.draw()
 
@@ -578,7 +655,11 @@ class EventHandler:
         sf = str(self.parent.ui.scaling_factor_lineEdit.text())
         xoffset = str(self.parent.ui.xoffset_lineEdit.text())
         yoffset = str(self.parent.ui.yoffset_lineEdit.text())
-        self.parent.parameters_used_on_all_images = {"scaling_factor": sf, "xoffset": xoffset, "yoffset": yoffset}
+        self.parent.parameters_used_on_all_images = {
+            "scaling_factor": sf,
+            "xoffset": xoffset,
+            "yoffset": yoffset,
+        }
         self.parent.ui.export_pushButton.setEnabled(True)
 
     def check_export_button_status(self):

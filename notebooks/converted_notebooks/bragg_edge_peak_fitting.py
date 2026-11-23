@@ -82,7 +82,9 @@ assert os.path.exists(spectra_file)
 o_bragg = BraggEdge(working_dir=data_path)
 o_bragg.load_data(data_path)
 
-o_interface = Interface(o_bragg=o_bragg, working_dir=data_path, spectra_file=spectra_file)
+o_interface = Interface(
+    o_bragg=o_bragg, working_dir=data_path, spectra_file=spectra_file
+)
 o_interface.show()
 
 # # DEBUGGING using import straight

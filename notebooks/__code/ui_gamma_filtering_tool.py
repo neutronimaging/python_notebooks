@@ -20,7 +20,9 @@ class Ui_MainWindow:
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
         self.image_widget = QtWidgets.QWidget(self.splitter)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.image_widget.sizePolicy().hasHeightForWidth())
@@ -49,7 +51,9 @@ class Ui_MainWindow:
         self.file_index_value.setObjectName("file_index_value")
         self.horizontalLayout_2.addWidget(self.file_index_value)
         self.horizontalLayout_4.addLayout(self.horizontalLayout_2)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_4.addItem(spacerItem)
         self.label_3 = QtWidgets.QLabel(self.layoutWidget)
         self.label_3.setMinimumSize(QtCore.QSize(120, 0))
@@ -65,7 +69,9 @@ class Ui_MainWindow:
         self.horizontalLayout_4.addWidget(self.filtering_coefficient_value)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.tableWidget = QtWidgets.QTableWidget(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
@@ -90,7 +96,9 @@ class Ui_MainWindow:
         self.cancel_button = QtWidgets.QPushButton(self.layoutWidget)
         self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout.addWidget(self.cancel_button)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout.addItem(spacerItem1)
         self.apply_button = QtWidgets.QPushButton(self.layoutWidget)
         self.apply_button.setObjectName("apply_button")
@@ -111,7 +119,9 @@ class Ui_MainWindow:
         self.apply_button.clicked.connect(MainWindow.apply_clicked)
         self.file_index_slider.sliderPressed.connect(MainWindow.slider_clicked)
         self.file_index_slider.valueChanged["int"].connect(MainWindow.slider_moved)
-        self.filtering_coefficient_value.returnPressed.connect(MainWindow.filtering_coefficient_changed)
+        self.filtering_coefficient_value.returnPressed.connect(
+            MainWindow.filtering_coefficient_changed
+        )
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

@@ -24,7 +24,11 @@
 from __code import system
 from __code.bragg_edge.bragg_edge import BraggEdge, Interface
 
-system.System.select_working_dir(facility="SNS", instrument="SNAP", notebook="bragg_edge_normalized_sample_and_powder")
+system.System.select_working_dir(
+    facility="SNS",
+    instrument="SNAP",
+    notebook="bragg_edge_normalized_sample_and_powder",
+)
 from __code.__all import custom_style
 
 custom_style.style()
@@ -79,7 +83,9 @@ o_bragg.exp_setup()
 # # Display Bragg Edges vs Signal
 
 # + run_control={"frozen": false, "read_only": false}
-o_bragg.calculate_counts_vs_file_index_of_regions_selected(list_roi=o_interface.list_roi)
+o_bragg.calculate_counts_vs_file_index_of_regions_selected(
+    list_roi=o_interface.list_roi
+)
 o_bragg.load_time_spectra()
 o_bragg.plot()
 # -

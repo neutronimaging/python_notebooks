@@ -1,5 +1,4 @@
 import pyqtgraph as pg
-
 from __code.registration.get import Get
 from __code.registration.marker_default_settings import MarkerDefaultSettings
 
@@ -13,8 +12,12 @@ class MarkerHandler:
             return
 
         if all is False:
-            _current_tab = self.parent.registration_markers_ui.ui.tabWidget.currentIndex()
-            _tab_title = self.parent.registration_markers_ui.ui.tabWidget.tabText(_current_tab)
+            _current_tab = (
+                self.parent.registration_markers_ui.ui.tabWidget.currentIndex()
+            )
+            _tab_title = self.parent.registration_markers_ui.ui.tabWidget.tabText(
+                _current_tab
+            )
             self.display_markers_of_tab(marker_name=_tab_title)
         else:
             for _index, _marker_name in enumerate(self.parent.markers_table.keys()):
@@ -60,11 +63,19 @@ class MarkerHandler:
             _marker_ui.removeHandle(0)
             _marker_ui.sigRegionChanged.connect(self.parent.marker_has_been_moved)
 
-            if nbr_file_selected > 1:  # more than 1 file selected, we need to add the index of the file
+            if (
+                nbr_file_selected > 1
+            ):  # more than 1 file selected, we need to add the index of the file
                 text_ui = self.parent.add_marker_label(
-                    file_index=list_row_selected[_index], marker_index=marker_name, x=x, y=y, color=_color_marker
+                    file_index=list_row_selected[_index],
+                    marker_index=marker_name,
+                    x=x,
+                    y=y,
+                    color=_color_marker,
                 )
-                self.parent.markers_table[marker_name]["data"][_file]["label_ui"] = text_ui
+                self.parent.markers_table[marker_name]["data"][_file]["label_ui"] = (
+                    text_ui
+                )
 
             _marker_data["marker_ui"] = _marker_ui
 
@@ -81,7 +92,9 @@ class MarkerHandler:
                 _marker_data = self.parent.markers_table[_marker_name]["data"][_file]
                 marker_ui = _marker_data["marker_ui"]
 
-                region = marker_ui.getArraySlice(self.parent.live_image, self.parent.ui.image_view.imageItem)
+                region = marker_ui.getArraySlice(
+                    self.parent.live_image, self.parent.ui.image_view.imageItem
+                )
 
                 x0 = region[0][0].start
                 y0 = region[0][1].start
@@ -89,7 +102,9 @@ class MarkerHandler:
                 self.parent.markers_table[_marker_name]["data"][_file]["x"] = x0
                 self.parent.markers_table[_marker_name]["data"][_file]["y"] = y0
 
-                self.parent.registration_markers_ui.update_markers_table_entry(marker_name=_marker_name, file=_file)
+                self.parent.registration_markers_ui.update_markers_table_entry(
+                    marker_name=_marker_name, file=_file
+                )
 
                 if nbr_file_selected > 1:
                     _label_ui = _marker_data["label_ui"]
@@ -102,12 +117,19 @@ class MarkerHandler:
                         color=_color_marker,
                     )
                     self.parent.ui.image_view.addItem(_label_ui)
-                    self.parent.markers_table[_marker_name]["data"][_file]["label_ui"] = _label_ui
+                    self.parent.markers_table[_marker_name]["data"][_file][
+                        "label_ui"
+                    ] = _label_ui
 
     def add_marker_label(self, file_index=0, marker_index=1, x=0, y=0, color="white"):
         html_color = MarkerDefaultSettings.color_html[color]
         html_text = '<div style="text-align: center">Marker#:'
-        html_text += '<span style="color:#' + str(html_color) + ';">' + str(int(marker_index) + 1)
+        html_text += (
+            '<span style="color:#'
+            + str(html_color)
+            + ';">'
+            + str(int(marker_index) + 1)
+        )
         html_text += "</span> - File#:"
         html_text += '<span style="color:#' + str(html_color) + ';">' + str(file_index)
         html_text += "</span>"

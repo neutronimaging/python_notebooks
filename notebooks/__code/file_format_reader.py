@@ -55,7 +55,9 @@ class DscReader:
         self.dsc_metadata = _dsc_metadata
 
     def make_tif_file_name_the_key(self):
-        _dict_time_stamp_vs_tiff = defaultdict(lambda: {"time_stamp": 0, "time_stamp_user_format": "N/A"})
+        _dict_time_stamp_vs_tiff = defaultdict(
+            lambda: {"time_stamp": 0, "time_stamp_user_format": "N/A"}
+        )
         _dsc_metadata = self.dsc_metadata
 
         for _key in _dsc_metadata.keys():
@@ -63,6 +65,8 @@ class DscReader:
             _time_stamp = _dsc_metadata[_key]["time_stamp"]
             _time_stamp_user_format = _dsc_metadata[_key]["time_stamp_user_format"]
             _dict_time_stamp_vs_tiff[_tif_name]["time_stamp"] = _time_stamp
-            _dict_time_stamp_vs_tiff[_tif_name]["time_stamp_user_format"] = _time_stamp_user_format
+            _dict_time_stamp_vs_tiff[_tif_name]["time_stamp_user_format"] = (
+                _time_stamp_user_format
+            )
 
         self.dict_time_stamp_vs_tiff = _dict_time_stamp_vs_tiff

@@ -26,7 +26,8 @@ class Display:
 
         if not first_update:
             _histo_widget.setLevels(
-                self.parent.image_view_histogram_level[0], self.parent.image_view_histogram_level[1]
+                self.parent.image_view_histogram_level[0],
+                self.parent.image_view_histogram_level[1],
             )
 
     def get_x_axis(self):
@@ -43,27 +44,37 @@ class Display:
         nbr_plot = 0
         if self.parent.ui.mean_checkBox.isChecked():
             y_axis_mean = self.parent.y_axis["mean"]
-            self.parent.statistics_plot.axes.plot(x_axis, y_axis_mean, "bv", label="mean")
+            self.parent.statistics_plot.axes.plot(
+                x_axis, y_axis_mean, "bv", label="mean"
+            )
             nbr_plot += 1
 
         if self.parent.ui.min_checkBox.isChecked():
             y_axis_mean = self.parent.y_axis["min"]
-            self.parent.statistics_plot.axes.plot(x_axis, y_axis_mean, "r*", label="min")
+            self.parent.statistics_plot.axes.plot(
+                x_axis, y_axis_mean, "r*", label="min"
+            )
             nbr_plot += 1
 
         if self.parent.ui.max_checkBox.isChecked():
             y_axis_mean = self.parent.y_axis["max"]
-            self.parent.statistics_plot.axes.plot(x_axis, y_axis_mean, "r+", label="max")
+            self.parent.statistics_plot.axes.plot(
+                x_axis, y_axis_mean, "r+", label="max"
+            )
             nbr_plot += 1
 
         if self.parent.ui.median_checkBox.isChecked():
             y_axis_mean = self.parent.y_axis["median"]
-            self.parent.statistics_plot.axes.plot(x_axis, y_axis_mean, "gp", label="median")
+            self.parent.statistics_plot.axes.plot(
+                x_axis, y_axis_mean, "gp", label="median"
+            )
             nbr_plot += 1
 
         if self.parent.ui.std_checkBox.isChecked():
             y_axis_mean = self.parent.y_axis["std"]
-            self.parent.statistics_plot.axes.plot(x_axis, y_axis_mean, "cx", label="std")
+            self.parent.statistics_plot.axes.plot(
+                x_axis, y_axis_mean, "cx", label="std"
+            )
             nbr_plot += 1
 
         if nbr_plot > 0:

@@ -25,7 +25,9 @@ from __code import system
 from __code.bragg_edge.bragg_edge import Interface
 from __code.bragg_edge.bragg_edge_raw_sample_and_powder import BraggEdge
 
-system.System.select_working_dir(facility="SNS", instrument="SNAP", notebook="bragg_edge_raw_sample_and_powder")
+system.System.select_working_dir(
+    facility="SNS", instrument="SNAP", notebook="bragg_edge_raw_sample_and_powder"
+)
 from __code.__all import custom_style
 
 custom_style.style()
